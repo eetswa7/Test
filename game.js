@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 const lengthValue = document.getElementById('lengthValue');
 const overlay = document.getElementById('overlay');
 const overlayText = document.getElementById('overlayText');
+const boostButton = document.getElementById('boostButton');
 
 const WORLD_SIZE = 5200;
 const FOOD_COUNT = 380;
@@ -348,13 +349,18 @@ function tick(now) {
   requestAnimationFrame(tick);
 }
 
+function setPointer(clientX, clientY) {
+  state.pointer.x = clientX;
+  state.pointer.y = clientY;
+}
+
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('mousemove', (e) => {
-  state.pointer.x = e.clientX;
-  state.pointer.y = e.clientY;
+  setPointer(e.clientX, e.clientY);
 });
-window.addEventListener('mousedown', () => (state.boosting = true));
-window.addEventListener('mouseup', () => (state.boosting = false));
+window.addEventListener('mousedown', () => {
+  state.boosting = true;
+});
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space') state.boosting = true;
   if (e.code === 'Enter' && !state.running) resetGame();
@@ -362,6 +368,56 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => {
   if (e.code === 'Space') state.boosting = false;
+});
+
+canvas.addEventListener(
+  'touchstart',
+  (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+      setPointer(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    if (!state.running) resetGame();
+  },
+  { passive: false }
+);
+
+canvas.addEventListener(
+  'touchmove',
+  (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+      setPointer(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  },
+  { passive: false }
+);
+
+boostButton.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  state.boosting = true;
+  boostButton.classList.add('active');
+});
+
+boostButton.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  state.boosting = false;
+  boostButton.classList.remove('active');
+});
+
+boostButton.addEventListener('mousedown', () => {
+  state.boosting = true;
+  boostButton.classList.add('active');
+});
+
+window.addEventListener('mouseup', () => {
+  state.boosting = false;
+  boostButton.classList.remove('active');
+});
+
+window.addEventListener('touchend', () => {
+  state.boosting = false;
+  boostButton.classList.remove('active');
 });
 
 resizeCanvas();
