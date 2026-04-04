@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serpent Arena</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="hud">
+      <div><strong>Length:</strong> <span id="lengthValue">10</span></div>
+      <div><strong>Boost:</strong> Hold <kbd>Space</kbd> / Mouse</div>
+      <div><strong>Restart:</strong> <kbd>R</kbd></div>
+    </div>
+
+    <canvas id="gameCanvas" aria-label="Serpent arena game"></canvas>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="panel">
+        <h1>Serpent Arena</h1>
+        <p id="overlayText">Press Enter to start.</p>
+        <p class="note">Simple slither-style gameplay with muted visuals.</p>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

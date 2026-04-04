@@ -1,0 +1,101 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #16181d;
+  color: #e8ecf2;
+}
+
+#gameCanvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  cursor: crosshair;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 55%),
+    repeating-linear-gradient(
+      30deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      -30deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    #101218;
+}
+
+.hud {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(8, 10, 14, 0.72);
+  backdrop-filter: blur(4px);
+  font-size: 14px;
+}
+
+kbd {
+  background: #262c38;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 4;
+  background: rgba(6, 8, 12, 0.68);
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.panel {
+  max-width: 360px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #121620;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.panel h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+}
+
+.panel p {
+  margin: 8px 0;
+}
+
+.note {
+  color: #b2bdcc;
+  font-size: 13px;
+}
