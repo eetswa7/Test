@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Night Watch: AC-130 Gunship</title>
+  <style>
+    :root {
+      --hud-green: #a7ffca;
+      --hud-dim: #52b18b;
+      --danger: #ff5e5e;
+      --panel: rgba(8, 18, 16, 0.88);
+      --panel-line: rgba(153, 255, 209, 0.25);
+      --btn: rgba(24, 40, 35, 0.92);
+      --btn-active: rgba(62, 92, 82, 0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      touch-action: none;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #020a06;
+      color: var(--hud-green);
+      font-family: "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
+    }
+
+    #game {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #27322f 0%, #111916 50%, #060b09 100%);
+    }
+
+    .hud {
+      position: fixed;
+      inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      pointer-events: none;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      backdrop-filter: blur(1.5px);
+    }
+
+    .mission {
+      line-height: 1.35;
+      min-height: 58px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .weapon-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-top: 6px;
+      pointer-events: auto;
+    }
+
+    .weapon-btn {
+      border: 1px solid var(--panel-line);
+      border-radius: 10px;
+      padding: 8px 6px;
+      font-size: 11px;
+      text-align: center;
+      color: var(--hud-green);
+      background: var(--btn);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      pointer-events: auto;
+    }
+
+    .weapon-btn.active {
+      background: var(--btn-active);
+      border-color: rgba(160, 255, 220, 0.8);
+      box-shadow: 0 0 8px rgba(132, 255, 210, 0.35);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .joystick-wrap {
+      width: min(40vw, 170px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid var(--panel-line);
+      background: rgba(11, 22, 18, 0.7);
+      position: relative;
+      pointer-events: auto;
+      margin-bottom: 5px;
+    }
+
+    .joystick-base,
+    .joystick-knob {
+      position: absolute;
+      border-radius: 50%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .joystick-base {
+      width: 64%;
+      height: 64%;
+      border: 1px solid rgba(169, 255, 212, 0.25);
+    }
+
+    .joystick-knob {
+      width: 34%;
+      height: 34%;
+      border: 1px solid rgba(169, 255, 212, 0.5);
+      background: rgba(123, 240, 189, 0.12);
+      transition: transform 0.04s linear;
+    }
+
+    .fire-column {
+      display: grid;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .btn {
+      border: 1px solid var(--panel-line);
+      border-radius: 999px;
+      min-width: 86px;
+      min-height: 50px;
+      padding: 10px 14px;
+      color: var(--hud-green);
+      background: var(--btn);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      pointer-events: auto;
+    }
+
+    .btn.big {
+      min-height: 64px;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .btn:active,
+    .btn.hold {
+      background: var(--btn-active);
+      border-color: rgba(171, 255, 224, 0.7);
+      transform: scale(0.98);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px;
+      background: radial-gradient(circle at center, rgba(0, 20, 12, 0.72), rgba(0, 5, 3, 0.92));
+      z-index: 10;
+    }
+
+    .card {
+      max-width: 560px;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-line);
+      background: rgba(10, 18, 15, 0.9);
+    }
+
+    .title {
+      margin: 0 0 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: clamp(20px, 6vw, 34px);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .small {
+      opacity: 0.8;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div class="hud">
+    <div class="topbar">
+      <div class="panel mission" id="missionText">Mission loading...</div>
+      <div class="panel stats">
+        <span id="clock">00:00</span>
+        <span id="score">Score 0</span>
+        <span id="ammo">Ammo --</span>
+      </div>
+    </div>
+
+    <div></div>
+
+    <div class="panel">
+      <div class="weapon-row" id="weaponRow"></div>
+      <div class="controls">
+        <div class="joystick-wrap" id="joystick">
+          <div class="joystick-base"></div>
+          <div class="joystick-knob" id="joystickKnob"></div>
+        </div>
+        <div class="fire-column">
+          <button class="btn" id="pauseBtn">Pause</button>
+          <button class="btn big" id="fireBtn">Fire</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="card">
+      <h1 class="title">Night Watch</h1>
+      <p>Operate the AC-130 gunship. Track targets, protect friendlies, and clear each mission zone.</p>
+      <p>Touch the screen to aim. Use the left joystick to pan. Hold <strong>Fire</strong> to shoot.</p>
+      <p class="small">Best with headphones. Sounds are synthesized in-browser.</p>
+      <button class="btn big" id="startBtn">Start Mission</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+    const fireBtn = document.getElementById('fireBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const missionText = document.getElementById('missionText');
+    const clockText = document.getElementById('clock');
+    const scoreText = document.getElementById('score');
+    const ammoText = document.getElementById('ammo');
+    const weaponRow = document.getElementById('weaponRow');
+    const joystick = document.getElementById('joystick');
+    const joystickKnob = document.getElementById('joystickKnob');
+
+    const state = {
+      running: false,
+      paused: false,
+      score: 0,
+      camera: { x: 0, y: 0 },
+      aim: { x: 0, y: 0 },
+      panInput: { x: 0, y: 0 },
+      firing: false,
+      world: { w: 3200, h: 3200 },
+      missionIndex: 0,
+      missionTime: 0,
+      gameTime: 0,
+      lastTs: 0,
+      shots: [],
+      impacts: [],
+      targets: [],
+      friendlies: [],
+      rngSeed: 12873,
+    };
+
+    const weapons = [
+      { id: '25mm', label: '25mm', rate: 12, damage: 16, splash: 18, speed: 1900, ammo: 800, recoil: 2, sound: 'fast' },
+      { id: '40mm', label: '40mm', rate: 4.8, damage: 44, splash: 44, speed: 1200, ammo: 260, recoil: 4, sound: 'mid' },
+      { id: '105mm', label: '105mm', rate: 1.1, damage: 130, splash: 92, speed: 760, ammo: 52, recoil: 7, sound: 'heavy' },
+      { id: 'agm', label: 'Missile', rate: 0.45, damage: 240, splash: 130, speed: 500, ammo: 16, recoil: 10, sound: 'missile' },
+    ];
+
+    let activeWeapon = weapons[0];
+    let fireCooldown = 0;
+    let audioCtx;
+
+    const missions = [
+      { name: 'Mission 1 — Outskirts Sweep', infantry: 26, vehicles: 8, timeLimit: 165, friendlyConvoy: true },
+      { name: 'Mission 2 — City Interdiction', infantry: 40, vehicles: 15, timeLimit: 195, friendlyConvoy: true },
+      { name: 'Mission 3 — Last Stand', infantry: 54, vehicles: 22, timeLimit: 230, friendlyConvoy: false },
+    ];
+
+    function rand() {
+      state.rngSeed = (state.rngSeed * 1664525 + 1013904223) >>> 0;
+      return state.rngSeed / 0xffffffff;
+    }
+
+    function resize() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = `${innerWidth}px`;
+      canvas.style.height = `${innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function formatTime(seconds) {
+      const s = Math.max(0, Math.floor(seconds));
+      const m = String(Math.floor(s / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      return `${m}:${ss}`;
+    }
+
+    function createMission(index) {
+      const m = missions[index];
+      state.targets.length = 0;
+      state.friendlies.length = 0;
+      state.shots.length = 0;
+      state.impacts.length = 0;
+      state.missionTime = m.timeLimit;
+      state.camera.x = state.world.w * 0.5;
+      state.camera.y = state.world.h * 0.5;
+
+      for (let i = 0; i < m.infantry; i++) {
+        state.targets.push(makeTarget('infantry'));
+      }
+      for (let i = 0; i < m.vehicles; i++) {
+        state.targets.push(makeTarget(i % 2 ? 'apc' : 'truck'));
+      }
+      if (m.friendlyConvoy) {
+        for (let i = 0; i < 5; i++) {
+          state.friendlies.push({
+            x: 450 + i * 90,
+            y: 400 + i * 40,
+            speed: 20 + rand() * 16,
+            hp: 100,
+          });
+        }
+      }
+      missionText.innerHTML = `${m.name}<br>Eliminate all hostiles before clock hits zero.`;
+    }
+
+    function makeTarget(type) {
+      const base = {
+        x: 150 + rand() * (state.world.w - 300),
+        y: 150 + rand() * (state.world.h - 300),
+        heading: rand() * Math.PI * 2,
+        turnRate: (rand() - 0.5) * 0.2,
+        dead: false,
+      };
+      if (type === 'infantry') {
+        return { ...base, type, hp: 28, speed: 18 + rand() * 24, size: 7, value: 10 };
+      }
+      if (type === 'apc') {
+        return { ...base, type, hp: 180, speed: 20 + rand() * 18, size: 15, value: 45 };
+      }
+      return { ...base, type, hp: 120, speed: 16 + rand() * 15, size: 13, value: 35 };
+    }
+
+    function setupWeapons() {
+      weaponRow.innerHTML = '';
+      weapons.forEach((w) => {
+        const btn = document.createElement('button');
+        btn.className = `weapon-btn${w.id === activeWeapon.id ? ' active' : ''}`;
+        btn.textContent = w.label;
+        btn.addEventListener('click', () => {
+          activeWeapon = w;
+          document.querySelectorAll('.weapon-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          playClick();
+          updateHud();
+        });
+        weaponRow.appendChild(btn);
+      });
+    }
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function boomSound(kind = 'mid') {
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const noise = audioCtx.createBufferSource();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+
+      const length = audioCtx.sampleRate * 0.22;
+      const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
+      const ch = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / length * 9);
+      noise.buffer = buffer;
+
+      const map = {
+        fast: { f1: 170, f2: 90, dur: 0.08, v: 0.12 },
+        mid: { f1: 110, f2: 70, dur: 0.14, v: 0.2 },
+        heavy: { f1: 70, f2: 45, dur: 0.22, v: 0.28 },
+        missile: { f1: 56, f2: 30, dur: 0.32, v: 0.34 },
+      }[kind];
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(map.f1, t);
+      osc.frequency.exponentialRampToValueAtTime(map.f2, t + map.dur);
+      gain.gain.setValueAtTime(map.v, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + map.dur);
+
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      filter.Q.value = 0.6;
+
+      noise.connect(filter);
+      osc.connect(filter);
+      filter.connect(gain).connect(audioCtx.destination);
+
+      osc.start(t);
+      noise.start(t);
+      osc.stop(t + map.dur);
+      noise.stop(t + map.dur);
+    }
+
+    function playClick() {
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(460, t);
+      osc.frequency.exponentialRampToValueAtTime(320, t + 0.05);
+      gain.gain.setValueAtTime(0.05, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.06);
+    }
+
+    function fireShot() {
+      if (activeWeapon.ammo <= 0) return;
+      activeWeapon.ammo -= 1;
+      const dx = state.aim.x - innerWidth / 2;
+      const dy = state.aim.y - innerHeight / 2;
+      const len = Math.hypot(dx, dy) || 1;
+      const wx = state.camera.x + dx;
+      const wy = state.camera.y + dy;
+
+      state.shots.push({
+        x: wx,
+        y: wy,
+        vx: (dx / len) * activeWeapon.speed,
+        vy: (dy / len) * activeWeapon.speed,
+        ttl: activeWeapon.id === 'agm' ? 2.2 : 1.2,
+        weapon: activeWeapon,
+      });
+
+      boomSound(activeWeapon.sound);
+      updateHud();
+    }
+
+    function blast(x, y, weapon) {
+      state.impacts.push({ x, y, r: 0, max: weapon.splash, ttl: 0.4 });
+
+      for (const t of state.targets) {
+        if (t.dead) continue;
+        const d = Math.hypot(t.x - x, t.y - y);
+        if (d <= weapon.splash) {
+          const falloff = 1 - d / weapon.splash;
+          t.hp -= weapon.damage * (0.35 + falloff * 0.65);
+          if (t.hp <= 0) {
+            t.dead = true;
+            state.score += t.value;
+          }
+        }
+      }
+
+      for (const f of state.friendlies) {
+        const d = Math.hypot(f.x - x, f.y - y);
+        if (d <= weapon.splash * 0.7) {
+          f.hp -= weapon.damage * 0.9;
+          if (f.hp <= 0) {
+            state.score = Math.max(0, state.score - 80);
+          }
+        }
+      }
+    }
+
+    function updateHud() {
+      scoreText.textContent = `Score ${state.score}`;
+      ammoText.textContent = `${activeWeapon.label} Ammo ${activeWeapon.ammo}`;
+      clockText.textContent = formatTime(state.missionTime);
+    }
+
+    function worldToScreen(x, y) {
+      return {
+        x: x - state.camera.x + innerWidth / 2,
+        y: y - state.camera.y + innerHeight / 2,
+      };
+    }
+
+    function clampCamera() {
+      state.camera.x = Math.max(innerWidth * 0.25, Math.min(state.world.w - innerWidth * 0.25, state.camera.x));
+      state.camera.y = Math.max(innerHeight * 0.25, Math.min(state.world.h - innerHeight * 0.25, state.camera.y));
+    }
+
+    function update(dt) {
+      if (!state.running || state.paused) return;
+
+      state.gameTime += dt;
+      state.missionTime -= dt;
+      fireCooldown -= dt;
+
+      const panSpeed = 330;
+      state.camera.x += state.panInput.x * panSpeed * dt;
+      state.camera.y += state.panInput.y * panSpeed * dt;
+      clampCamera();
+
+      if (state.firing && fireCooldown <= 0) {
+        fireShot();
+        fireCooldown = 1 / activeWeapon.rate;
+      }
+
+      state.targets.forEach((t) => {
+        if (t.dead) return;
+        t.heading += t.turnRate * dt;
+        t.x += Math.cos(t.heading) * t.speed * dt;
+        t.y += Math.sin(t.heading) * t.speed * dt;
+        if (t.x < 60 || t.x > state.world.w - 60) t.heading = Math.PI - t.heading;
+        if (t.y < 60 || t.y > state.world.h - 60) t.heading = -t.heading;
+      });
+
+      state.friendlies.forEach((f, i) => {
+        if (f.hp <= 0) return;
+        f.x += f.speed * dt;
+        f.y += Math.sin(state.gameTime * 0.5 + i) * 8 * dt;
+        if (f.x > state.world.w - 80) f.x = 120;
+      });
+
+      state.shots.forEach((s) => {
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.ttl -= dt;
+      });
+
+      for (const s of state.shots) {
+        if (s.ttl <= 0 || s.x < 0 || s.y < 0 || s.x > state.world.w || s.y > state.world.h) {
+          blast(s.x, s.y, s.weapon);
+          s.dead = true;
+          continue;
+        }
+        for (const t of state.targets) {
+          if (t.dead) continue;
+          if (Math.hypot(s.x - t.x, s.y - t.y) < t.size + 3) {
+            blast(s.x, s.y, s.weapon);
+            s.dead = true;
+            break;
+          }
+        }
+      }
+      state.shots = state.shots.filter((s) => !s.dead);
+
+      state.impacts.forEach((i) => {
+        i.ttl -= dt;
+        i.r = i.max * (1 - i.ttl / 0.4);
+      });
+      state.impacts = state.impacts.filter((i) => i.ttl > 0);
+
+      const alive = state.targets.filter((t) => !t.dead).length;
+      if (alive === 0) {
+        nextMission(true);
+      } else if (state.missionTime <= 0) {
+        nextMission(false);
+      }
+
+      updateHud();
+    }
+
+    function drawWorld() {
+      const w = innerWidth;
+      const h = innerHeight;
+
+      ctx.fillStyle = '#14211d';
+      ctx.fillRect(0, 0, w, h);
+
+      const grid = 75;
+      ctx.globalAlpha = 0.18;
+      ctx.strokeStyle = '#8ee7be';
+      ctx.lineWidth = 0.7;
+
+      const startX = -((state.camera.x - w / 2) % grid);
+      const startY = -((state.camera.y - h / 2) % grid);
+      for (let x = startX; x <= w; x += grid) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      for (let y = startY; y <= h; y += grid) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      for (const t of state.targets) {
+        if (t.dead) continue;
+        const p = worldToScreen(t.x, t.y);
+        if (p.x < -40 || p.y < -40 || p.x > w + 40 || p.y > h + 40) continue;
+
+        if (t.type === 'infantry') {
+          ctx.fillStyle = '#d8ffe9';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = t.type === 'apc' ? '#f1f7ef' : '#cbefd9';
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(t.heading);
+          ctx.fillRect(-t.size, -t.size * 0.5, t.size * 2, t.size);
+          ctx.fillStyle = 'rgba(5, 25, 12, 0.45)';
+          ctx.fillRect(-t.size * 0.2, -t.size * 0.24, t.size * 0.9, t.size * 0.48);
+          ctx.restore();
+        }
+      }
+
+      for (const f of state.friendlies) {
+        if (f.hp <= 0) continue;
+        const p = worldToScreen(f.x, f.y);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.fillStyle = '#8bf9ff';
+        ctx.fillRect(-10, -6, 20, 12);
+        ctx.restore();
+      }
+
+      ctx.strokeStyle = 'rgba(196, 255, 222, 0.7)';
+      ctx.fillStyle = 'rgba(201, 255, 226, 0.1)';
+      for (const i of state.impacts) {
+        const p = worldToScreen(i.x, i.y);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, i.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      for (const s of state.shots) {
+        const p = worldToScreen(s.x, s.y);
+        ctx.fillStyle = s.weapon.id === 'agm' ? '#fff4b2' : '#f2ffdf';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, s.weapon.id === 'agm' ? 4.5 : 2.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const a = state.aim;
+      ctx.strokeStyle = '#c2ffe0';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 20, 0, Math.PI * 2);
+      ctx.moveTo(a.x - 32, a.y);
+      ctx.lineTo(a.x + 32, a.y);
+      ctx.moveTo(a.x, a.y - 32);
+      ctx.lineTo(a.x, a.y + 32);
+      ctx.stroke();
+
+      ctx.globalAlpha = 0.11;
+      ctx.fillStyle = '#a4ffcf';
+      for (let i = 0; i < 220; i++) {
+        ctx.fillRect(rand() * w, rand() * h, 1.2, 1.2);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function nextMission(win) {
+      state.running = false;
+      const wonText = win ? 'Mission Complete' : 'Mission Failed';
+      const detail = win
+        ? 'Target zone is clear. Prepare for next operation.'
+        : 'Time expired while hostiles remained in the AO.';
+
+      if (win && state.missionIndex < missions.length - 1) {
+        state.missionIndex += 1;
+        overlay.innerHTML = `<div class="card"><h1 class="title">${wonText}</h1><p>${detail}</p><p>Score: ${state.score}</p><button class="btn big" id="nextBtn">Next Mission</button></div>`;
+        overlay.style.display = 'grid';
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          initAudio();
+          createMission(state.missionIndex);
+          state.running = true;
+          overlay.style.display = 'none';
+          state.lastTs = performance.now();
+        });
+      } else {
+        const final = win ? '<span class="danger">All missions complete.</span>' : '<span class="danger">Try the operation again.</span>';
+        overlay.innerHTML = `<div class="card"><h1 class="title">${wonText}</h1><p>${detail}</p><p>${final}</p><p>Final Score: ${state.score}</p><button class="btn big" id="restartBtn">Restart Campaign</button></div>`;
+        overlay.style.display = 'grid';
+        document.getElementById('restartBtn').addEventListener('click', startCampaign);
+      }
+    }
+
+    function gameLoop(ts) {
+      if (!state.lastTs) state.lastTs = ts;
+      const dt = Math.min((ts - state.lastTs) / 1000, 0.033);
+      state.lastTs = ts;
+      update(dt);
+      drawWorld();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startCampaign() {
+      initAudio();
+      weapons.forEach((w, i) => {
+        const refill = [800, 260, 52, 16][i];
+        w.ammo = refill;
+      });
+      state.score = 0;
+      state.gameTime = 0;
+      state.missionIndex = 0;
+      activeWeapon = weapons[0];
+      createMission(0);
+      setupWeapons();
+      overlay.style.display = 'none';
+      state.running = true;
+      state.paused = false;
+      pauseBtn.textContent = 'Pause';
+      updateHud();
+    }
+
+    function setAimFromEvent(e) {
+      const t = e.touches ? e.touches[0] : e;
+      if (!t) return;
+      state.aim.x = t.clientX;
+      state.aim.y = t.clientY;
+    }
+
+    const joy = { active: false, id: null, cx: 0, cy: 0, radius: 0 };
+
+    joystick.addEventListener('touchstart', (e) => {
+      const rect = joystick.getBoundingClientRect();
+      joy.active = true;
+      joy.id = e.changedTouches[0].identifier;
+      joy.cx = rect.left + rect.width / 2;
+      joy.cy = rect.top + rect.height / 2;
+      joy.radius = rect.width * 0.34;
+      e.preventDefault();
+    }, { passive: false });
+
+    joystick.addEventListener('touchmove', (e) => {
+      if (!joy.active) return;
+      const touch = [...e.touches].find((t) => t.identifier === joy.id);
+      if (!touch) return;
+      const dx = touch.clientX - joy.cx;
+      const dy = touch.clientY - joy.cy;
+      const mag = Math.hypot(dx, dy) || 1;
+      const clamp = Math.min(1, mag / joy.radius);
+      state.panInput.x = (dx / mag) * clamp;
+      state.panInput.y = (dy / mag) * clamp;
+      joystickKnob.style.transform = `translate(-50%, -50%) translate(${state.panInput.x * joy.radius}px, ${state.panInput.y * joy.radius}px)`;
+      e.preventDefault();
+    }, { passive: false });
+
+    joystick.addEventListener('touchend', (e) => {
+      const ended = [...e.changedTouches].some((t) => t.identifier === joy.id);
+      if (ended) {
+        joy.active = false;
+        state.panInput.x = 0;
+        state.panInput.y = 0;
+        joystickKnob.style.transform = 'translate(-50%, -50%)';
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    fireBtn.addEventListener('touchstart', (e) => {
+      state.firing = true;
+      fireBtn.classList.add('hold');
+      e.preventDefault();
+    }, { passive: false });
+
+    fireBtn.addEventListener('touchend', (e) => {
+      state.firing = false;
+      fireBtn.classList.remove('hold');
+      e.preventDefault();
+    }, { passive: false });
+
+    fireBtn.addEventListener('mousedown', () => { state.firing = true; fireBtn.classList.add('hold'); });
+    fireBtn.addEventListener('mouseup', () => { state.firing = false; fireBtn.classList.remove('hold'); });
+    fireBtn.addEventListener('mouseleave', () => { state.firing = false; fireBtn.classList.remove('hold'); });
+
+    canvas.addEventListener('touchstart', (e) => { setAimFromEvent(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { setAimFromEvent(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('mousedown', setAimFromEvent);
+    canvas.addEventListener('mousemove', (e) => { if (e.buttons) setAimFromEvent(e); });
+
+    pauseBtn.addEventListener('click', () => {
+      if (!state.running) return;
+      state.paused = !state.paused;
+      pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
+      playClick();
+    });
+
+    startBtn.addEventListener('click', startCampaign);
+
+    resize();
+    state.aim.x = innerWidth / 2;
+    state.aim.y = innerHeight / 2;
+    setupWeapons();
+    updateHud();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
