@@ -3,246 +3,237 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <title>Night Watch: AC-130 Gunship</title>
+  <title>Night Watch // Gunship Console</title>
   <style>
     :root {
-      --hud-green: #a7ffca;
-      --hud-dim: #52b18b;
-      --danger: #ff5e5e;
-      --panel: rgba(8, 18, 16, 0.88);
-      --panel-line: rgba(153, 255, 209, 0.25);
-      --btn: rgba(24, 40, 35, 0.92);
-      --btn-active: rgba(62, 92, 82, 0.95);
+      --ui: rgba(235, 240, 235, 0.92);
+      --ui-dim: rgba(205, 215, 205, 0.55);
+      --panel: rgba(0, 0, 0, 0.46);
+      --line: rgba(255, 255, 255, 0.24);
+      --alert: #ff8a8a;
+      --friendly: #9adfff;
     }
 
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
       touch-action: none;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #020a06;
-      color: var(--hud-green);
-      font-family: "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
+      background: #050505;
+      color: var(--ui);
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
     }
 
-    #game {
+    #screen {
       position: fixed;
       inset: 0;
       width: 100vw;
       height: 100vh;
-      background: radial-gradient(circle at center, #27322f 0%, #111916 50%, #060b09 100%);
+      background: #0c0c0c;
     }
 
     .hud {
       position: fixed;
       inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-      pointer-events: none;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      padding: 10px;
-      gap: 10px;
+      pointer-events: none;
+      gap: 8px;
+      padding: 8px;
     }
 
-    .topbar {
+    .top {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto 1fr;
       gap: 8px;
-      font-size: 12px;
+      align-items: start;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.08em;
+      font-size: 11px;
     }
 
     .panel {
+      border: 1px solid var(--line);
       background: var(--panel);
-      border: 1px solid var(--panel-line);
-      border-radius: 12px;
-      padding: 8px 10px;
-      backdrop-filter: blur(1.5px);
-    }
-
-    .mission {
-      line-height: 1.35;
-      min-height: 58px;
-    }
-
-    .stats {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .weapon-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
-      margin-top: 6px;
-      pointer-events: auto;
-    }
-
-    .weapon-btn {
-      border: 1px solid var(--panel-line);
+      padding: 7px 9px;
       border-radius: 10px;
-      padding: 8px 6px;
-      font-size: 11px;
+      backdrop-filter: blur(1px);
+    }
+
+    .center {
       text-align: center;
-      color: var(--hud-green);
-      background: var(--btn);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      pointer-events: auto;
     }
 
-    .weapon-btn.active {
-      background: var(--btn-active);
-      border-color: rgba(160, 255, 220, 0.8);
-      box-shadow: 0 0 8px rgba(132, 255, 210, 0.35);
+    .right {
+      text-align: right;
     }
 
-    .controls {
+    .grid {
       display: grid;
-      grid-template-columns: 1fr auto;
+      gap: 2px;
+      line-height: 1.35;
+    }
+
+    .mid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--ui-dim);
+      letter-spacing: 0.08em;
+    }
+
+    .weapon-list {
+      white-space: pre;
+      line-height: 1.5;
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
       align-items: end;
-      gap: 12px;
       pointer-events: none;
     }
 
-    .joystick-wrap {
-      width: min(40vw, 170px);
+    .joy-wrap {
+      pointer-events: auto;
+      width: min(38vw, 170px);
       aspect-ratio: 1;
       border-radius: 50%;
-      border: 1px solid var(--panel-line);
-      background: rgba(11, 22, 18, 0.7);
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.5);
       position: relative;
-      pointer-events: auto;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
-    .joystick-base,
-    .joystick-knob {
+    .joy-base,
+    .joy-knob {
       position: absolute;
-      border-radius: 50%;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      border-radius: 50%;
     }
 
-    .joystick-base {
-      width: 64%;
-      height: 64%;
-      border: 1px solid rgba(169, 255, 212, 0.25);
+    .joy-base {
+      width: 66%;
+      height: 66%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    .joystick-knob {
-      width: 34%;
-      height: 34%;
-      border: 1px solid rgba(169, 255, 212, 0.5);
-      background: rgba(123, 240, 189, 0.12);
-      transition: transform 0.04s linear;
+    .joy-knob {
+      width: 32%;
+      height: 32%;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    .fire-column {
+    .fire-col {
+      pointer-events: auto;
       display: grid;
-      gap: 8px;
-      pointer-events: auto;
+      gap: 7px;
     }
 
-    .btn {
-      border: 1px solid var(--panel-line);
-      border-radius: 999px;
-      min-width: 86px;
-      min-height: 50px;
-      padding: 10px 14px;
-      color: var(--hud-green);
-      background: var(--btn);
-      font-size: 13px;
+    .btn,
+    .weapon-btn {
+      color: var(--ui);
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-width: 72px;
+      font-family: inherit;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.08em;
+      font-size: 11px;
       pointer-events: auto;
-    }
-
-    .btn.big {
-      min-height: 64px;
-      font-size: 15px;
-      font-weight: 650;
     }
 
     .btn:active,
-    .btn.hold {
-      background: var(--btn-active);
-      border-color: rgba(171, 255, 224, 0.7);
-      transform: scale(0.98);
+    .weapon-btn:active,
+    .btn.hold,
+    .weapon-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.58);
+    }
+
+    .weapon-grid {
+      pointer-events: auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(56px, 1fr));
+      gap: 7px;
+      margin-bottom: 4px;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
+      z-index: 12;
       display: grid;
       place-items: center;
+      background: radial-gradient(circle at center, rgba(5, 5, 5, 0.45), rgba(0, 0, 0, 0.94));
+      padding: 20px;
       text-align: center;
-      padding: 28px;
-      background: radial-gradient(circle at center, rgba(0, 20, 12, 0.72), rgba(0, 5, 3, 0.92));
-      z-index: 10;
     }
 
     .card {
-      max-width: 560px;
+      max-width: 580px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.83);
       padding: 20px;
-      border-radius: 16px;
-      border: 1px solid var(--panel-line);
-      background: rgba(10, 18, 15, 0.9);
+      line-height: 1.5;
     }
 
     .title {
       margin: 0 0 8px;
-      letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-size: clamp(20px, 6vw, 34px);
+      letter-spacing: 0.14em;
+      font-size: clamp(20px, 5vw, 34px);
     }
 
-    .danger {
-      color: var(--danger);
-    }
-
-    .small {
-      opacity: 0.8;
-      font-size: 12px;
-    }
+    .alert { color: var(--alert); }
   </style>
 </head>
 <body>
-  <canvas id="game"></canvas>
+  <canvas id="screen"></canvas>
 
   <div class="hud">
-    <div class="topbar">
-      <div class="panel mission" id="missionText">Mission loading...</div>
-      <div class="panel stats">
-        <span id="clock">00:00</span>
-        <span id="score">Score 0</span>
-        <span id="ammo">Ammo --</span>
-      </div>
+    <div class="top">
+      <div class="panel grid" id="objectiveBox">OBJECTIVES...</div>
+      <div class="panel center" id="clockBox">00:00:00</div>
+      <div class="panel right" id="telemetryBox">ALT 7000 FT<br>AZI 000°<br>ZOOM 10X</div>
     </div>
 
-    <div></div>
+    <div class="mid">
+      <div class="weapon-list" id="ammoList">25MM --</div>
+      <div class="center" id="statusLine">TARGET DESIGNATOR ONLINE</div>
+      <div class="right" id="scoreLine">KILL 000</div>
+    </div>
 
-    <div class="panel">
-      <div class="weapon-row" id="weaponRow"></div>
-      <div class="controls">
-        <div class="joystick-wrap" id="joystick">
-          <div class="joystick-base"></div>
-          <div class="joystick-knob" id="joystickKnob"></div>
+    <div>
+      <div class="weapon-grid" id="weaponGrid"></div>
+      <div class="bottom">
+        <div class="joy-wrap" id="joystick">
+          <div class="joy-base"></div>
+          <div class="joy-knob" id="joystickKnob"></div>
         </div>
-        <div class="fire-column">
+
+        <div></div>
+
+        <div class="fire-col">
           <button class="btn" id="pauseBtn">Pause</button>
-          <button class="btn big" id="fireBtn">Fire</button>
+          <button class="btn" id="fireBtn">Hold Fire</button>
         </div>
       </div>
     </div>
@@ -251,73 +242,81 @@
   <div class="overlay" id="overlay">
     <div class="card">
       <h1 class="title">Night Watch</h1>
-      <p>Operate the AC-130 gunship. Track targets, protect friendlies, and clear each mission zone.</p>
-      <p>Touch the screen to aim. Use the left joystick to pan. Hold <strong>Fire</strong> to shoot.</p>
-      <p class="small">Best with headphones. Sounds are synthesized in-browser.</p>
-      <button class="btn big" id="startBtn">Start Mission</button>
+      <p>Direct AC-130 fire support over multiple zones. Find and destroy hostile infantry and armor while avoiding friendly elements.</p>
+      <p>Touch/drag the screen to move the crosshair. Use left stick to pan the sensor view. Hold <b>Fire</b> to engage.</p>
+      <p>Visual style is tuned to mimic FLIR/TV feed with scanlines and thermal bloom while staying smooth on iPhone.</p>
+      <button class="btn" id="startBtn">Begin Sortie</button>
     </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('game');
+    const canvas = document.getElementById('screen');
     const ctx = canvas.getContext('2d');
 
     const overlay = document.getElementById('overlay');
     const startBtn = document.getElementById('startBtn');
+    const objectiveBox = document.getElementById('objectiveBox');
+    const clockBox = document.getElementById('clockBox');
+    const telemetryBox = document.getElementById('telemetryBox');
+    const ammoList = document.getElementById('ammoList');
+    const statusLine = document.getElementById('statusLine');
+    const scoreLine = document.getElementById('scoreLine');
+    const weaponGrid = document.getElementById('weaponGrid');
     const fireBtn = document.getElementById('fireBtn');
     const pauseBtn = document.getElementById('pauseBtn');
-    const missionText = document.getElementById('missionText');
-    const clockText = document.getElementById('clock');
-    const scoreText = document.getElementById('score');
-    const ammoText = document.getElementById('ammo');
-    const weaponRow = document.getElementById('weaponRow');
     const joystick = document.getElementById('joystick');
     const joystickKnob = document.getElementById('joystickKnob');
 
     const state = {
       running: false,
       paused: false,
+      worldW: 3800,
+      worldH: 3200,
+      camera: { x: 1800, y: 1500 },
+      aim: { x: innerWidth * 0.5, y: innerHeight * 0.5 },
+      pan: { x: 0, y: 0 },
+      holdFire: false,
       score: 0,
-      camera: { x: 0, y: 0 },
-      aim: { x: 0, y: 0 },
-      panInput: { x: 0, y: 0 },
-      firing: false,
-      world: { w: 3200, h: 3200 },
+      totalKills: 0,
       missionIndex: 0,
-      missionTime: 0,
-      gameTime: 0,
+      missionClock: 0,
       lastTs: 0,
-      shots: [],
-      impacts: [],
+      gameClock: 0,
+      terrain: [],
+      roads: [],
       targets: [],
       friendlies: [],
-      rngSeed: 12873,
+      projectiles: [],
+      impacts: [],
+      rng: 19311,
+      telemetryNoise: 0,
     };
 
     const weapons = [
-      { id: '25mm', label: '25mm', rate: 12, damage: 16, splash: 18, speed: 1900, ammo: 800, recoil: 2, sound: 'fast' },
-      { id: '40mm', label: '40mm', rate: 4.8, damage: 44, splash: 44, speed: 1200, ammo: 260, recoil: 4, sound: 'mid' },
-      { id: '105mm', label: '105mm', rate: 1.1, damage: 130, splash: 92, speed: 760, ammo: 52, recoil: 7, sound: 'heavy' },
-      { id: 'agm', label: 'Missile', rate: 0.45, damage: 240, splash: 130, speed: 500, ammo: 16, recoil: 10, sound: 'missile' },
+      { id: '25', label: '25MM', rof: 13, speed: 2100, damage: 12, splash: 16, ammo: 280, maxAmmo: 280, sound: 'light' },
+      { id: '40', label: '40MM', rof: 4.2, speed: 1300, damage: 52, splash: 46, ammo: 95, maxAmmo: 95, sound: 'mid' },
+      { id: '105', label: '105MM', rof: 1.05, speed: 820, damage: 170, splash: 96, ammo: 28, maxAmmo: 28, sound: 'heavy' },
+      { id: 'agm', label: 'AGM', rof: 0.38, speed: 530, damage: 260, splash: 150, ammo: 10, maxAmmo: 10, sound: 'missile' },
     ];
 
     let activeWeapon = weapons[0];
-    let fireCooldown = 0;
-    let audioCtx;
+    let fireCd = 0;
+    let audio;
 
     const missions = [
-      { name: 'Mission 1 — Outskirts Sweep', infantry: 26, vehicles: 8, timeLimit: 165, friendlyConvoy: true },
-      { name: 'Mission 2 — City Interdiction', infantry: 40, vehicles: 15, timeLimit: 195, friendlyConvoy: true },
-      { name: 'Mission 3 — Last Stand', infantry: 54, vehicles: 22, timeLimit: 230, friendlyConvoy: false },
+      { name: 'M1 / Rural Sweep', infantry: 24, vehicles: 8, compounds: 3, time: 170, convoy: true },
+      { name: 'M2 / Village Raid', infantry: 40, vehicles: 14, compounds: 5, time: 210, convoy: true },
+      { name: 'M3 / Highway Ambush', infantry: 54, vehicles: 20, compounds: 6, time: 230, convoy: false },
+      { name: 'M4 / Final Push', infantry: 72, vehicles: 28, compounds: 8, time: 260, convoy: false },
     ];
 
     function rand() {
-      state.rngSeed = (state.rngSeed * 1664525 + 1013904223) >>> 0;
-      return state.rngSeed / 0xffffffff;
+      state.rng = (1664525 * state.rng + 1013904223) >>> 0;
+      return state.rng / 0xffffffff;
     }
 
     function resize() {
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = Math.min(2, devicePixelRatio || 1);
       canvas.width = Math.floor(innerWidth * dpr);
       canvas.height = Math.floor(innerHeight * dpr);
       canvas.style.width = `${innerWidth}px`;
@@ -325,508 +324,608 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    function formatTime(seconds) {
-      const s = Math.max(0, Math.floor(seconds));
-      const m = String(Math.floor(s / 60)).padStart(2, '0');
+    function formatClock(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
       const ss = String(s % 60).padStart(2, '0');
-      return `${m}:${ss}`;
+      return `${h}:${m}:${ss}`;
     }
 
-    function createMission(index) {
-      const m = missions[index];
-      state.targets.length = 0;
-      state.friendlies.length = 0;
-      state.shots.length = 0;
-      state.impacts.length = 0;
-      state.missionTime = m.timeLimit;
-      state.camera.x = state.world.w * 0.5;
-      state.camera.y = state.world.h * 0.5;
+    function toScreen(wx, wy) {
+      return {
+        x: wx - state.camera.x + innerWidth / 2,
+        y: wy - state.camera.y + innerHeight / 2,
+      };
+    }
 
-      for (let i = 0; i < m.infantry; i++) {
-        state.targets.push(makeTarget('infantry'));
+    function clampCamera() {
+      const padX = innerWidth * 0.33;
+      const padY = innerHeight * 0.33;
+      state.camera.x = Math.max(padX, Math.min(state.worldW - padX, state.camera.x));
+      state.camera.y = Math.max(padY, Math.min(state.worldH - padY, state.camera.y));
+    }
+
+    function makeTerrain(compounds) {
+      state.terrain = [];
+      state.roads = [];
+
+      for (let i = 0; i < 120; i++) {
+        state.terrain.push({
+          type: 'tree',
+          x: 80 + rand() * (state.worldW - 160),
+          y: 80 + rand() * (state.worldH - 160),
+          r: 8 + rand() * 14,
+        });
       }
-      for (let i = 0; i < m.vehicles; i++) {
-        state.targets.push(makeTarget(i % 2 ? 'apc' : 'truck'));
-      }
-      if (m.friendlyConvoy) {
-        for (let i = 0; i < 5; i++) {
-          state.friendlies.push({
-            x: 450 + i * 90,
-            y: 400 + i * 40,
-            speed: 20 + rand() * 16,
-            hp: 100,
+
+      for (let i = 0; i < compounds; i++) {
+        const cx = 330 + rand() * (state.worldW - 660);
+        const cy = 320 + rand() * (state.worldH - 640);
+        const bCount = 2 + Math.floor(rand() * 5);
+        for (let b = 0; b < bCount; b++) {
+          state.terrain.push({
+            type: 'building',
+            x: cx + (rand() - 0.5) * 220,
+            y: cy + (rand() - 0.5) * 220,
+            w: 45 + rand() * 70,
+            h: 30 + rand() * 55,
+            rot: rand() * Math.PI,
           });
         }
       }
-      missionText.innerHTML = `${m.name}<br>Eliminate all hostiles before clock hits zero.`;
+
+      for (let i = 0; i < 3; i++) {
+        state.roads.push({
+          x1: rand() * state.worldW,
+          y1: rand() * state.worldH,
+          x2: rand() * state.worldW,
+          y2: rand() * state.worldH,
+          width: 34 + rand() * 42,
+        });
+      }
     }
 
     function makeTarget(type) {
-      const base = {
-        x: 150 + rand() * (state.world.w - 300),
-        y: 150 + rand() * (state.world.h - 300),
+      const core = {
+        x: 120 + rand() * (state.worldW - 240),
+        y: 120 + rand() * (state.worldH - 240),
         heading: rand() * Math.PI * 2,
-        turnRate: (rand() - 0.5) * 0.2,
+        turn: (rand() - 0.5) * 0.35,
         dead: false,
       };
-      if (type === 'infantry') {
-        return { ...base, type, hp: 28, speed: 18 + rand() * 24, size: 7, value: 10 };
-      }
-      if (type === 'apc') {
-        return { ...base, type, hp: 180, speed: 20 + rand() * 18, size: 15, value: 45 };
-      }
-      return { ...base, type, hp: 120, speed: 16 + rand() * 15, size: 13, value: 35 };
+      if (type === 'inf') return { ...core, type, hp: 28, speed: 18 + rand() * 20, size: 6, value: 10 };
+      if (type === 'apc') return { ...core, type, hp: 175, speed: 15 + rand() * 13, size: 15, value: 44 };
+      return { ...core, type, hp: 130, speed: 14 + rand() * 12, size: 13, value: 34 };
     }
 
-    function setupWeapons() {
-      weaponRow.innerHTML = '';
-      weapons.forEach((w) => {
-        const btn = document.createElement('button');
-        btn.className = `weapon-btn${w.id === activeWeapon.id ? ' active' : ''}`;
-        btn.textContent = w.label;
-        btn.addEventListener('click', () => {
-          activeWeapon = w;
-          document.querySelectorAll('.weapon-btn').forEach((b) => b.classList.remove('active'));
-          btn.classList.add('active');
-          playClick();
-          updateHud();
-        });
-        weaponRow.appendChild(btn);
-      });
+    function buildMission(i) {
+      const m = missions[i];
+      state.targets = [];
+      state.friendlies = [];
+      state.projectiles = [];
+      state.impacts = [];
+      state.missionClock = m.time;
+      state.camera.x = state.worldW / 2;
+      state.camera.y = state.worldH / 2;
+      makeTerrain(m.compounds);
+
+      for (let a = 0; a < m.infantry; a++) state.targets.push(makeTarget('inf'));
+      for (let v = 0; v < m.vehicles; v++) state.targets.push(makeTarget(v % 2 ? 'truck' : 'apc'));
+
+      if (m.convoy) {
+        for (let c = 0; c < 6; c++) {
+          state.friendlies.push({ x: 100 + c * 95, y: 250 + c * 40, hp: 100, speed: 22 + rand() * 15 });
+        }
+      }
+
+      objectiveBox.innerHTML = `OBJECTIVES<br>${m.name}<br>ELIM HOSTILES<br>PROTECT FRIENDLIES`;
+      statusLine.textContent = 'SENSOR LOCK READY';
     }
 
     function initAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
     }
 
-    function boomSound(kind = 'mid') {
-      if (!audioCtx) return;
-      const t = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const noise = audioCtx.createBufferSource();
-      const gain = audioCtx.createGain();
-      const filter = audioCtx.createBiquadFilter();
+    function weaponSound(kind) {
+      if (!audio) return;
+      const t = audio.currentTime;
+      const osc = audio.createOscillator();
+      const noise = audio.createBufferSource();
+      const gain = audio.createGain();
+      const filter = audio.createBiquadFilter();
+      const len = Math.floor(audio.sampleRate * 0.26);
+      const buf = audio.createBuffer(1, len, audio.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / len * 8);
+      noise.buffer = buf;
 
-      const length = audioCtx.sampleRate * 0.22;
-      const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
-      const ch = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / length * 9);
-      noise.buffer = buffer;
-
-      const map = {
-        fast: { f1: 170, f2: 90, dur: 0.08, v: 0.12 },
-        mid: { f1: 110, f2: 70, dur: 0.14, v: 0.2 },
-        heavy: { f1: 70, f2: 45, dur: 0.22, v: 0.28 },
-        missile: { f1: 56, f2: 30, dur: 0.32, v: 0.34 },
+      const config = {
+        light: { start: 160, end: 95, dur: 0.07, amp: 0.1 },
+        mid: { start: 112, end: 66, dur: 0.13, amp: 0.18 },
+        heavy: { start: 72, end: 44, dur: 0.23, amp: 0.27 },
+        missile: { start: 54, end: 27, dur: 0.31, amp: 0.34 },
       }[kind];
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(map.f1, t);
-      osc.frequency.exponentialRampToValueAtTime(map.f2, t + map.dur);
-      gain.gain.setValueAtTime(map.v, t);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + map.dur);
-
+      osc.frequency.setValueAtTime(config.start, t);
+      osc.frequency.exponentialRampToValueAtTime(config.end, t + config.dur);
+      gain.gain.setValueAtTime(config.amp, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + config.dur);
       filter.type = 'lowpass';
-      filter.frequency.value = 1200;
-      filter.Q.value = 0.6;
+      filter.frequency.value = 1300;
 
       noise.connect(filter);
       osc.connect(filter);
-      filter.connect(gain).connect(audioCtx.destination);
-
+      filter.connect(gain).connect(audio.destination);
       osc.start(t);
       noise.start(t);
-      osc.stop(t + map.dur);
-      noise.stop(t + map.dur);
+      osc.stop(t + config.dur);
+      noise.stop(t + config.dur);
     }
 
-    function playClick() {
-      if (!audioCtx) return;
-      const t = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+    function uiBeep(freq = 600, dur = 0.05, vol = 0.06) {
+      if (!audio) return;
+      const t = audio.currentTime;
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
       osc.type = 'square';
-      osc.frequency.setValueAtTime(460, t);
-      osc.frequency.exponentialRampToValueAtTime(320, t + 0.05);
-      gain.gain.setValueAtTime(0.05, t);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(gain).connect(audio.destination);
       osc.start(t);
-      osc.stop(t + 0.06);
+      osc.stop(t + dur);
     }
 
-    function fireShot() {
-      if (activeWeapon.ammo <= 0) return;
+    function updateHUD() {
+      clockBox.textContent = formatClock(state.missionClock);
+      const azi = Math.floor(((state.camera.x / state.worldW) * 360 + state.telemetryNoise) % 360);
+      const alt = 6950 + Math.floor(Math.sin(state.gameClock * 0.2) * 80);
+      telemetryBox.innerHTML = `ALT ${alt} FT<br>AZI ${String((azi + 360) % 360).padStart(3, '0')}°<br>ZOOM 10X`;
+      ammoList.textContent = weapons.map((w) => `${w.label.padEnd(4, ' ')}  ${String(w.ammo).padStart(3, ' ')}`).join('\n');
+      scoreLine.textContent = `KILL ${String(state.totalKills).padStart(3, '0')}  SCORE ${String(state.score).padStart(4, '0')}`;
+    }
+
+    function fire() {
+      if (activeWeapon.ammo <= 0) {
+        statusLine.innerHTML = '<span class="alert">OUT OF AMMO</span>';
+        return;
+      }
       activeWeapon.ammo -= 1;
+
       const dx = state.aim.x - innerWidth / 2;
       const dy = state.aim.y - innerHeight / 2;
-      const len = Math.hypot(dx, dy) || 1;
+      const mag = Math.hypot(dx, dy) || 1;
       const wx = state.camera.x + dx;
       const wy = state.camera.y + dy;
 
-      state.shots.push({
+      state.projectiles.push({
         x: wx,
         y: wy,
-        vx: (dx / len) * activeWeapon.speed,
-        vy: (dy / len) * activeWeapon.speed,
-        ttl: activeWeapon.id === 'agm' ? 2.2 : 1.2,
+        vx: (dx / mag) * activeWeapon.speed,
+        vy: (dy / mag) * activeWeapon.speed,
+        ttl: activeWeapon.id === 'agm' ? 2.3 : 1.3,
         weapon: activeWeapon,
       });
-
-      boomSound(activeWeapon.sound);
-      updateHud();
+      weaponSound(activeWeapon.sound);
+      statusLine.textContent = `${activeWeapon.label} FIRING`;
+      updateHUD();
     }
 
-    function blast(x, y, weapon) {
-      state.impacts.push({ x, y, r: 0, max: weapon.splash, ttl: 0.4 });
+    function explode(x, y, weapon) {
+      state.impacts.push({ x, y, r: 0, ttl: 0.45, maxR: weapon.splash });
 
       for (const t of state.targets) {
         if (t.dead) continue;
         const d = Math.hypot(t.x - x, t.y - y);
-        if (d <= weapon.splash) {
-          const falloff = 1 - d / weapon.splash;
-          t.hp -= weapon.damage * (0.35 + falloff * 0.65);
-          if (t.hp <= 0) {
-            t.dead = true;
-            state.score += t.value;
-          }
+        if (d > weapon.splash) continue;
+        const mult = 1 - d / weapon.splash;
+        t.hp -= weapon.damage * (0.35 + mult * 0.65);
+        if (t.hp <= 0) {
+          t.dead = true;
+          state.score += t.value;
+          state.totalKills += 1;
         }
       }
 
       for (const f of state.friendlies) {
         const d = Math.hypot(f.x - x, f.y - y);
-        if (d <= weapon.splash * 0.7) {
-          f.hp -= weapon.damage * 0.9;
+        if (d <= weapon.splash * 0.75) {
+          f.hp -= weapon.damage * 0.8;
           if (f.hp <= 0) {
-            state.score = Math.max(0, state.score - 80);
+            state.score = Math.max(0, state.score - 100);
+            statusLine.innerHTML = '<span class="alert">FRIENDLY CASUALTY</span>';
           }
         }
       }
-    }
-
-    function updateHud() {
-      scoreText.textContent = `Score ${state.score}`;
-      ammoText.textContent = `${activeWeapon.label} Ammo ${activeWeapon.ammo}`;
-      clockText.textContent = formatTime(state.missionTime);
-    }
-
-    function worldToScreen(x, y) {
-      return {
-        x: x - state.camera.x + innerWidth / 2,
-        y: y - state.camera.y + innerHeight / 2,
-      };
-    }
-
-    function clampCamera() {
-      state.camera.x = Math.max(innerWidth * 0.25, Math.min(state.world.w - innerWidth * 0.25, state.camera.x));
-      state.camera.y = Math.max(innerHeight * 0.25, Math.min(state.world.h - innerHeight * 0.25, state.camera.y));
     }
 
     function update(dt) {
       if (!state.running || state.paused) return;
 
-      state.gameTime += dt;
-      state.missionTime -= dt;
-      fireCooldown -= dt;
+      state.gameClock += dt;
+      state.telemetryNoise = Math.sin(state.gameClock * 2.4) * 3;
+      state.missionClock -= dt;
+      fireCd -= dt;
 
-      const panSpeed = 330;
-      state.camera.x += state.panInput.x * panSpeed * dt;
-      state.camera.y += state.panInput.y * panSpeed * dt;
+      state.camera.x += state.pan.x * 360 * dt;
+      state.camera.y += state.pan.y * 360 * dt;
       clampCamera();
 
-      if (state.firing && fireCooldown <= 0) {
-        fireShot();
-        fireCooldown = 1 / activeWeapon.rate;
+      if (state.holdFire && fireCd <= 0) {
+        fire();
+        fireCd = 1 / activeWeapon.rof;
       }
 
-      state.targets.forEach((t) => {
-        if (t.dead) return;
-        t.heading += t.turnRate * dt;
+      for (const t of state.targets) {
+        if (t.dead) continue;
+        t.heading += t.turn * dt;
         t.x += Math.cos(t.heading) * t.speed * dt;
         t.y += Math.sin(t.heading) * t.speed * dt;
-        if (t.x < 60 || t.x > state.world.w - 60) t.heading = Math.PI - t.heading;
-        if (t.y < 60 || t.y > state.world.h - 60) t.heading = -t.heading;
-      });
+        if (t.x < 60 || t.x > state.worldW - 60) t.heading = Math.PI - t.heading;
+        if (t.y < 60 || t.y > state.worldH - 60) t.heading = -t.heading;
+      }
 
       state.friendlies.forEach((f, i) => {
         if (f.hp <= 0) return;
         f.x += f.speed * dt;
-        f.y += Math.sin(state.gameTime * 0.5 + i) * 8 * dt;
-        if (f.x > state.world.w - 80) f.x = 120;
+        f.y += Math.sin(state.gameClock + i * 0.8) * 10 * dt;
+        if (f.x > state.worldW - 100) f.x = 120;
       });
 
-      state.shots.forEach((s) => {
-        s.x += s.vx * dt;
-        s.y += s.vy * dt;
-        s.ttl -= dt;
+      state.projectiles.forEach((p) => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.ttl -= dt;
       });
 
-      for (const s of state.shots) {
-        if (s.ttl <= 0 || s.x < 0 || s.y < 0 || s.x > state.world.w || s.y > state.world.h) {
-          blast(s.x, s.y, s.weapon);
-          s.dead = true;
+      for (const p of state.projectiles) {
+        if (p.ttl <= 0 || p.x < 0 || p.y < 0 || p.x > state.worldW || p.y > state.worldH) {
+          explode(p.x, p.y, p.weapon);
+          p.dead = true;
           continue;
         }
         for (const t of state.targets) {
           if (t.dead) continue;
-          if (Math.hypot(s.x - t.x, s.y - t.y) < t.size + 3) {
-            blast(s.x, s.y, s.weapon);
-            s.dead = true;
+          if (Math.hypot(t.x - p.x, t.y - p.y) < t.size + 3) {
+            explode(p.x, p.y, p.weapon);
+            p.dead = true;
             break;
           }
         }
       }
-      state.shots = state.shots.filter((s) => !s.dead);
+      state.projectiles = state.projectiles.filter((p) => !p.dead);
 
       state.impacts.forEach((i) => {
         i.ttl -= dt;
-        i.r = i.max * (1 - i.ttl / 0.4);
+        i.r = i.maxR * (1 - i.ttl / 0.45);
       });
       state.impacts = state.impacts.filter((i) => i.ttl > 0);
 
       const alive = state.targets.filter((t) => !t.dead).length;
-      if (alive === 0) {
-        nextMission(true);
-      } else if (state.missionTime <= 0) {
-        nextMission(false);
-      }
+      if (alive === 0) missionResult(true);
+      if (state.missionClock <= 0 && alive > 0) missionResult(false);
 
-      updateHud();
+      updateHUD();
     }
 
-    function drawWorld() {
-      const w = innerWidth;
-      const h = innerHeight;
-
-      ctx.fillStyle = '#14211d';
-      ctx.fillRect(0, 0, w, h);
-
-      const grid = 75;
-      ctx.globalAlpha = 0.18;
-      ctx.strokeStyle = '#8ee7be';
-      ctx.lineWidth = 0.7;
-
-      const startX = -((state.camera.x - w / 2) % grid);
-      const startY = -((state.camera.y - h / 2) % grid);
-      for (let x = startX; x <= w; x += grid) {
+    function drawTerrain() {
+      for (const road of state.roads) {
+        const p1 = toScreen(road.x1, road.y1);
+        const p2 = toScreen(road.x2, road.y2);
+        ctx.strokeStyle = 'rgba(205,205,205,0.34)';
+        ctx.lineWidth = road.width;
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
         ctx.stroke();
-      }
-      for (let y = startY; y <= h; y += grid) {
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([10, 10]);
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
         ctx.stroke();
+        ctx.setLineDash([]);
       }
-      ctx.globalAlpha = 1;
 
-      for (const t of state.targets) {
-        if (t.dead) continue;
-        const p = worldToScreen(t.x, t.y);
-        if (p.x < -40 || p.y < -40 || p.x > w + 40 || p.y > h + 40) continue;
+      for (const g of state.terrain) {
+        const p = toScreen(g.x, g.y);
+        if (p.x < -120 || p.y < -120 || p.x > innerWidth + 120 || p.y > innerHeight + 120) continue;
 
-        if (t.type === 'infantry') {
-          ctx.fillStyle = '#d8ffe9';
+        if (g.type === 'tree') {
+          ctx.fillStyle = 'rgba(150, 150, 150, 0.28)';
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 2.8, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, g.r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.beginPath();
+          ctx.arc(p.x - g.r * 0.2, p.y - g.r * 0.2, g.r * 0.48, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillStyle = t.type === 'apc' ? '#f1f7ef' : '#cbefd9';
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(g.rot);
+          ctx.fillStyle = 'rgba(205,205,205,0.37)';
+          ctx.fillRect(-g.w * 0.5, -g.h * 0.5, g.w, g.h);
+          ctx.fillStyle = 'rgba(250,250,250,0.2)';
+          ctx.fillRect(-g.w * 0.4, -g.h * 0.4, g.w * 0.8, g.h * 0.25);
+          ctx.restore();
+        }
+      }
+    }
+
+    function drawTargets() {
+      for (const t of state.targets) {
+        if (t.dead) continue;
+        const p = toScreen(t.x, t.y);
+        if (p.x < -50 || p.y < -50 || p.x > innerWidth + 50 || p.y > innerHeight + 50) continue;
+
+        if (t.type === 'inf') {
+          ctx.fillStyle = 'rgba(255,255,255,0.88)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 0.38;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        } else {
           ctx.save();
           ctx.translate(p.x, p.y);
           ctx.rotate(t.heading);
-          ctx.fillRect(-t.size, -t.size * 0.5, t.size * 2, t.size);
-          ctx.fillStyle = 'rgba(5, 25, 12, 0.45)';
-          ctx.fillRect(-t.size * 0.2, -t.size * 0.24, t.size * 0.9, t.size * 0.48);
+          ctx.fillStyle = t.type === 'apc' ? 'rgba(235,235,235,0.8)' : 'rgba(215,215,215,0.8)';
+          ctx.fillRect(-t.size, -t.size * 0.52, t.size * 2, t.size);
+          ctx.fillStyle = 'rgba(255,255,255,0.25)';
+          ctx.fillRect(-t.size * 0.2, -t.size * 0.2, t.size * 0.8, t.size * 0.38);
           ctx.restore();
         }
       }
 
       for (const f of state.friendlies) {
         if (f.hp <= 0) continue;
-        const p = worldToScreen(f.x, f.y);
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.fillStyle = '#8bf9ff';
-        ctx.fillRect(-10, -6, 20, 12);
-        ctx.restore();
+        const p = toScreen(f.x, f.y);
+        ctx.fillStyle = 'rgba(170, 240, 255, 0.6)';
+        ctx.fillRect(p.x - 10, p.y - 6, 20, 12);
       }
 
-      ctx.strokeStyle = 'rgba(196, 255, 222, 0.7)';
-      ctx.fillStyle = 'rgba(201, 255, 226, 0.1)';
-      for (const i of state.impacts) {
-        const p = worldToScreen(i.x, i.y);
+      for (const p of state.projectiles) {
+        const s = toScreen(p.x, p.y);
+        ctx.fillStyle = p.weapon.id === 'agm' ? 'rgba(255,235,170,0.95)' : 'rgba(255,255,255,0.8)';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, i.r, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, p.weapon.id === 'agm' ? 4 : 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+      ctx.fillStyle = 'rgba(255,255,255,0.16)';
+      for (const i of state.impacts) {
+        const s = toScreen(i.x, i.y);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, i.r, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
       }
-
-      for (const s of state.shots) {
-        const p = worldToScreen(s.x, s.y);
-        ctx.fillStyle = s.weapon.id === 'agm' ? '#fff4b2' : '#f2ffdf';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, s.weapon.id === 'agm' ? 4.5 : 2.3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      const a = state.aim;
-      ctx.strokeStyle = '#c2ffe0';
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.arc(a.x, a.y, 20, 0, Math.PI * 2);
-      ctx.moveTo(a.x - 32, a.y);
-      ctx.lineTo(a.x + 32, a.y);
-      ctx.moveTo(a.x, a.y - 32);
-      ctx.lineTo(a.x, a.y + 32);
-      ctx.stroke();
-
-      ctx.globalAlpha = 0.11;
-      ctx.fillStyle = '#a4ffcf';
-      for (let i = 0; i < 220; i++) {
-        ctx.fillRect(rand() * w, rand() * h, 1.2, 1.2);
-      }
-      ctx.globalAlpha = 1;
     }
 
-    function nextMission(win) {
+    function drawCrosshair() {
+      const x = state.aim.x;
+      const y = state.aim.y;
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.82)';
+      ctx.lineWidth = 1.15;
+      ctx.beginPath();
+      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      ctx.moveTo(x - 48, y);
+      ctx.lineTo(x + 48, y);
+      ctx.moveTo(x, y - 48);
+      ctx.lineTo(x, y + 48);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.rect(x - 3, y - 3, 6, 6);
+      ctx.stroke();
+
+      const heading = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.floor((((state.camera.x / state.worldW) * 360) % 360) / 45) % 8];
+      ctx.font = '13px "SF Mono", monospace';
+      ctx.fillStyle = 'rgba(255,255,255,0.76)';
+      ctx.fillText(heading, x + 56, y + 5);
+      ctx.fillText('LTM', x + 56, y + 22);
+    }
+
+    function drawVideoEffects() {
+      ctx.globalAlpha = 0.32;
+      const g = ctx.createRadialGradient(innerWidth / 2, innerHeight / 2, innerHeight * 0.22, innerWidth / 2, innerHeight / 2, innerHeight * 0.68);
+      g.addColorStop(0, 'rgba(255,255,255,0.08)');
+      g.addColorStop(1, 'rgba(0,0,0,0.42)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, innerWidth, innerHeight);
+
+      ctx.globalAlpha = 0.23;
+      ctx.fillStyle = '#fff';
+      for (let y = 0; y < innerHeight; y += 3) {
+        ctx.fillRect(0, y, innerWidth, 1);
+      }
+
+      ctx.globalAlpha = 0.08;
+      for (let i = 0; i < 170; i++) {
+        ctx.fillRect(rand() * innerWidth, rand() * innerHeight, 1, 1);
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.strokeRect(4, 4, innerWidth - 8, innerHeight - 8);
+    }
+
+    function render() {
+      ctx.fillStyle = '#505050';
+      ctx.fillRect(0, 0, innerWidth, innerHeight);
+
+      drawTerrain();
+      drawTargets();
+      drawCrosshair();
+      drawVideoEffects();
+    }
+
+    function missionResult(win) {
       state.running = false;
-      const wonText = win ? 'Mission Complete' : 'Mission Failed';
-      const detail = win
-        ? 'Target zone is clear. Prepare for next operation.'
-        : 'Time expired while hostiles remained in the AO.';
+      const text = win ? 'TARGET AREA SECURE' : 'MISSION FAILED';
+      const detail = win ? 'Hostile activity suppressed.' : 'Timer expired with hostiles active.';
 
       if (win && state.missionIndex < missions.length - 1) {
         state.missionIndex += 1;
-        overlay.innerHTML = `<div class="card"><h1 class="title">${wonText}</h1><p>${detail}</p><p>Score: ${state.score}</p><button class="btn big" id="nextBtn">Next Mission</button></div>`;
+        overlay.innerHTML = `<div class="card"><h1 class="title">${text}</h1><p>${detail}</p><p>Score ${state.score}</p><button class="btn" id="nextBtn">Next Mission</button></div>`;
         overlay.style.display = 'grid';
         document.getElementById('nextBtn').addEventListener('click', () => {
           initAudio();
-          createMission(state.missionIndex);
+          buildMission(state.missionIndex);
           state.running = true;
           overlay.style.display = 'none';
           state.lastTs = performance.now();
+          uiBeep(760, 0.06, 0.08);
         });
       } else {
-        const final = win ? '<span class="danger">All missions complete.</span>' : '<span class="danger">Try the operation again.</span>';
-        overlay.innerHTML = `<div class="card"><h1 class="title">${wonText}</h1><p>${detail}</p><p>${final}</p><p>Final Score: ${state.score}</p><button class="btn big" id="restartBtn">Restart Campaign</button></div>`;
+        overlay.innerHTML = `<div class="card"><h1 class="title">${text}</h1><p>${detail}</p><p class="${win ? '' : 'alert'}">Final score ${state.score}</p><button class="btn" id="restartBtn">Restart</button></div>`;
         overlay.style.display = 'grid';
-        document.getElementById('restartBtn').addEventListener('click', startCampaign);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
       }
     }
 
-    function gameLoop(ts) {
+    function loop(ts) {
       if (!state.lastTs) state.lastTs = ts;
       const dt = Math.min((ts - state.lastTs) / 1000, 0.033);
       state.lastTs = ts;
       update(dt);
-      drawWorld();
-      requestAnimationFrame(gameLoop);
+      render();
+      requestAnimationFrame(loop);
     }
 
-    function startCampaign() {
-      initAudio();
-      weapons.forEach((w, i) => {
-        const refill = [800, 260, 52, 16][i];
-        w.ammo = refill;
-      });
-      state.score = 0;
-      state.gameTime = 0;
-      state.missionIndex = 0;
-      activeWeapon = weapons[0];
-      createMission(0);
-      setupWeapons();
-      overlay.style.display = 'none';
-      state.running = true;
-      state.paused = false;
-      pauseBtn.textContent = 'Pause';
-      updateHud();
+    function setAim(evt) {
+      const touch = evt.touches ? evt.touches[0] : evt;
+      if (!touch) return;
+      state.aim.x = touch.clientX;
+      state.aim.y = touch.clientY;
     }
 
-    function setAimFromEvent(e) {
-      const t = e.touches ? e.touches[0] : e;
-      if (!t) return;
-      state.aim.x = t.clientX;
-      state.aim.y = t.clientY;
-    }
-
-    const joy = { active: false, id: null, cx: 0, cy: 0, radius: 0 };
+    const joy = { active: false, id: null, cx: 0, cy: 0, r: 0 };
 
     joystick.addEventListener('touchstart', (e) => {
       const rect = joystick.getBoundingClientRect();
       joy.active = true;
       joy.id = e.changedTouches[0].identifier;
-      joy.cx = rect.left + rect.width / 2;
-      joy.cy = rect.top + rect.height / 2;
-      joy.radius = rect.width * 0.34;
+      joy.cx = rect.left + rect.width * 0.5;
+      joy.cy = rect.top + rect.height * 0.5;
+      joy.r = rect.width * 0.34;
       e.preventDefault();
     }, { passive: false });
 
     joystick.addEventListener('touchmove', (e) => {
       if (!joy.active) return;
-      const touch = [...e.touches].find((t) => t.identifier === joy.id);
-      if (!touch) return;
-      const dx = touch.clientX - joy.cx;
-      const dy = touch.clientY - joy.cy;
+      const t = [...e.touches].find((x) => x.identifier === joy.id);
+      if (!t) return;
+      const dx = t.clientX - joy.cx;
+      const dy = t.clientY - joy.cy;
       const mag = Math.hypot(dx, dy) || 1;
-      const clamp = Math.min(1, mag / joy.radius);
-      state.panInput.x = (dx / mag) * clamp;
-      state.panInput.y = (dy / mag) * clamp;
-      joystickKnob.style.transform = `translate(-50%, -50%) translate(${state.panInput.x * joy.radius}px, ${state.panInput.y * joy.radius}px)`;
+      const c = Math.min(1, mag / joy.r);
+      state.pan.x = (dx / mag) * c;
+      state.pan.y = (dy / mag) * c;
+      joystickKnob.style.transform = `translate(-50%, -50%) translate(${state.pan.x * joy.r}px, ${state.pan.y * joy.r}px)`;
       e.preventDefault();
     }, { passive: false });
 
     joystick.addEventListener('touchend', (e) => {
       const ended = [...e.changedTouches].some((t) => t.identifier === joy.id);
-      if (ended) {
-        joy.active = false;
-        state.panInput.x = 0;
-        state.panInput.y = 0;
-        joystickKnob.style.transform = 'translate(-50%, -50%)';
-      }
+      if (!ended) return;
+      joy.active = false;
+      state.pan.x = 0;
+      state.pan.y = 0;
+      joystickKnob.style.transform = 'translate(-50%, -50%)';
       e.preventDefault();
     }, { passive: false });
 
-    fireBtn.addEventListener('touchstart', (e) => {
-      state.firing = true;
+    function holdStart(e) {
+      state.holdFire = true;
       fireBtn.classList.add('hold');
-      e.preventDefault();
-    }, { passive: false });
+      e?.preventDefault?.();
+    }
 
-    fireBtn.addEventListener('touchend', (e) => {
-      state.firing = false;
+    function holdEnd(e) {
+      state.holdFire = false;
       fireBtn.classList.remove('hold');
-      e.preventDefault();
-    }, { passive: false });
+      e?.preventDefault?.();
+    }
 
-    fireBtn.addEventListener('mousedown', () => { state.firing = true; fireBtn.classList.add('hold'); });
-    fireBtn.addEventListener('mouseup', () => { state.firing = false; fireBtn.classList.remove('hold'); });
-    fireBtn.addEventListener('mouseleave', () => { state.firing = false; fireBtn.classList.remove('hold'); });
+    fireBtn.addEventListener('touchstart', holdStart, { passive: false });
+    fireBtn.addEventListener('touchend', holdEnd, { passive: false });
+    fireBtn.addEventListener('touchcancel', holdEnd, { passive: false });
+    fireBtn.addEventListener('mousedown', holdStart);
+    fireBtn.addEventListener('mouseup', holdEnd);
+    fireBtn.addEventListener('mouseleave', holdEnd);
 
-    canvas.addEventListener('touchstart', (e) => { setAimFromEvent(e); e.preventDefault(); }, { passive: false });
-    canvas.addEventListener('touchmove', (e) => { setAimFromEvent(e); e.preventDefault(); }, { passive: false });
-    canvas.addEventListener('mousedown', setAimFromEvent);
-    canvas.addEventListener('mousemove', (e) => { if (e.buttons) setAimFromEvent(e); });
+    canvas.addEventListener('touchstart', (e) => { setAim(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { setAim(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('mousedown', setAim);
+    canvas.addEventListener('mousemove', (e) => { if (e.buttons) setAim(e); });
+
+    function setupWeapons() {
+      weaponGrid.innerHTML = '';
+      weapons.forEach((w) => {
+        const b = document.createElement('button');
+        b.textContent = w.label;
+        b.className = `weapon-btn${w.id === activeWeapon.id ? ' active' : ''}`;
+        b.addEventListener('click', () => {
+          activeWeapon = w;
+          document.querySelectorAll('.weapon-btn').forEach((x) => x.classList.remove('active'));
+          b.classList.add('active');
+          statusLine.textContent = `${w.label} SELECTED`;
+          uiBeep(520, 0.04, 0.06);
+          updateHUD();
+        });
+        weaponGrid.appendChild(b);
+      });
+    }
 
     pauseBtn.addEventListener('click', () => {
       if (!state.running) return;
       state.paused = !state.paused;
       pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
-      playClick();
+      statusLine.textContent = state.paused ? 'FEED PAUSED' : 'SENSOR LOCK READY';
+      uiBeep(state.paused ? 320 : 650, 0.06, 0.06);
     });
 
-    startBtn.addEventListener('click', startCampaign);
+    function startGame() {
+      initAudio();
+      weapons.forEach((w) => { w.ammo = w.maxAmmo; });
+      activeWeapon = weapons[0];
+      state.running = true;
+      state.paused = false;
+      state.score = 0;
+      state.totalKills = 0;
+      state.gameClock = 0;
+      state.missionIndex = 0;
+      state.holdFire = false;
+      fireBtn.classList.remove('hold');
+      pauseBtn.textContent = 'Pause';
+      buildMission(0);
+      setupWeapons();
+      updateHUD();
+      overlay.style.display = 'none';
+      state.lastTs = performance.now();
+    }
+
+    startBtn.addEventListener('click', startGame);
 
     resize();
     state.aim.x = innerWidth / 2;
     state.aim.y = innerHeight / 2;
     setupWeapons();
-    updateHud();
-    window.addEventListener('resize', resize);
-    requestAnimationFrame(gameLoop);
+    updateHUD();
+    addEventListener('resize', resize);
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
