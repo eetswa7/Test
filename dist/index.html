@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080e12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nightwatch">
+  <meta name="description" content="Take the gunner's seat. Protect your ground team through four AC-130 night operations in this touch-controlled thermal gunship game.">
+  <title>Nightwatch | AC-130</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main id="game" aria-label="Nightwatch AC-130 gunship game">
+  <canvas id="world" aria-label="Thermal battlefield. Drag to move the sensor. Use the sensor stick and hold the fire button to engage."></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div id="hud" class="hud hidden">
+    <header class="flightbar">
+      <div class="callsign"><span class="live-dot"></span><b>REAPER 01</b><span class="muted desktop">/ AC-130</span></div>
+      <span class="flightmeta desktop">ALT 2,100 M <span>·</span> SENSOR LIVE</span>
+      <button id="pause" class="icon-button" aria-label="Pause game">Ⅱ</button>
+    </header>
+    <div class="missionhud">
+      <div><span id="operation-label" class="eyebrow">OPERATION 01</span><h2 id="mission-title">Broken Arrow</h2><p id="objective">Protect the ground team</p><div class="progress-track"><i id="progress-fill"></i></div></div>
+      <div class="mission-readout"><span id="timer">01:30</span><span id="score">0 PTS</span></div>
+    </div>
+    <div class="supporthud"><span><i class="friendly-dot"></i> <span id="asset-name">VIPER TEAM</span></span><div class="health-track"><i id="asset-health"></i></div><b id="asset-value">100%</b></div>
+    <aside class="sensor-tools" aria-label="Sensor controls">
+      <button id="thermal" class="tool" aria-label="Change thermal mode">WHOT</button>
+      <button id="zoom" class="tool" aria-label="Change zoom">1.0×</button>
+      <button id="locate" class="tool" aria-label="Centre on nearest priority target">FIND</button>
+    </aside>
+    <div class="radar-wrap"><span class="eyebrow">TACTICAL MAP</span><canvas id="radar" width="240" height="176" role="button" tabindex="0" aria-label="Tactical map. Tap to relocate the sensor, or press Enter to centre on your ground team."></canvas><span class="radar-key"><i class="hostile-dot"></i> HOSTILE <i class="friendly-dot"></i> FRIENDLY</span></div>
+    <div id="feed" class="radio-feed" role="status" aria-live="polite"><span>OVERLORD</span><b id="radio-text">You are cleared to engage.</b></div>
+    <div class="control-deck">
+      <div class="stick-zone"><div id="stick" class="stick" role="group" aria-label="Drag sensor joystick"><div class="stick-ring"></div><div class="stick-cross"></div><div id="stick-knob"></div></div><span class="control-label">SENSOR</span></div>
+      <div class="weapons"><div id="weapon-rack" class="weapon-rack" role="group" aria-label="Select weapon"></div><div class="heatline"><span id="weapon-status">25 MM · READY</span><div><i id="heat-fill"></i></div></div></div>
+      <div class="fire-zone"><button id="fire" aria-label="Hold to fire selected weapon"><span class="fire-mark" aria-hidden="true">⊕</span><b>FIRE</b></button><span class="control-label">HOLD TO ENGAGE</span></div>
+    </div>
+    <div id="tutorial" class="tutorial">Drag the view or use the left stick to aim. Hold FIRE with your other thumb.</div>
+  </div>
+  <section id="menu" class="screen menu-screen" aria-label="Mission selection">
+    <div class="menu-top"><span class="brand-small">NW / GUNSHIP OPERATIONS</span><button id="menu-settings" class="text-button">SETTINGS</button></div>
+    <div class="menu-body">
+      <div class="title-block"><span class="eyebrow"><i class="live-dot"></i> AC-130 · NIGHT OPERATIONS</span><h1>NIGHT<br><span>WATCH</span><sup>02</sup></h1><p>Your eyes. Their way home.</p><div class="service-record"><span id="record-rank">GUNNER</span><i></i><span id="record-score">0 CAREER PTS</span></div></div>
+      <div class="operation-panel"><div class="panel-heading"><span class="eyebrow">SELECT OPERATION</span><span id="campaign-count">01 / 04</span></div><div id="missions"></div><div id="briefing" class="briefing"></div><button id="launch" class="primary-button"><span>BEGIN SORTIE</span><span aria-hidden="true">↗</span></button><p class="launch-note">Headphones recommended · Rotate for a wider view</p></div>
+    </div>
+    <footer class="menu-bottom"><span>WHITE HOT / SENSOR 01</span><span id="offline-state">TOUCH + KEYBOARD</span></footer>
+  </section>
+  <section id="modal" class="screen modal-screen hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-card"><span id="modal-kicker" class="eyebrow">SENSOR PAUSED</span><h2 id="modal-title">Holding orbit.</h2><p id="modal-detail"></p><div id="modal-content"></div><div id="modal-actions"></div></div></section>
+  <div id="toast" role="status" class="toast hidden"></div>
+</main>
+<noscript>This game needs JavaScript enabled in Safari.</noscript>
+<script type="module" src="./game.js"></script>
+</body></html>
