@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#101817"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Breachline">
+ <meta name="description" content="An original tactical first-person shooter. Five bot modes, four battlegrounds, and touch controls built for iPhone.">
+ <title>BREACHLINE</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.png"><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+ <canvas id="world" aria-label="3D battlefield"></canvas>
+ <div class="film-grain" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+ <main id="menu" class="menu safe">
+  <header class="topbar"><a class="wordmark" href="#" aria-label="Breachline home"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 3h15l7 7-7 4 7 4-7 7H3V3Zm6 6v4h8l3-2-3-2H9Zm0 8v3h8l3-2-3-1H9Z"/></svg>BREACHLINE<span class="edition">FIELD OPERATIONS</span></a><div class="profile"><span id="level-badge">01</span><div><strong>OPERATOR</strong><small id="career-xp">0 XP</small></div><button id="settings-top" class="icon-button" aria-label="Settings">⚙</button></div></header>
+  <nav class="tabs" aria-label="Main navigation"><button class="tab active" data-page="play">PLAY</button><button class="tab" data-page="loadout">LOADOUT</button><button class="tab" data-page="career">CAREER</button><button class="tab" data-page="settings">SETTINGS</button></nav>
+  <section id="play-page" class="page active">
+   <div class="menu-copy"><div class="eyebrow"><span class="short-line"></span> OFFLINE COMBAT</div><h1>HOLD<br>YOUR <em>GROUND.</em></h1><p class="brief">Choose your battleground.<br>Make every shot count.</p><div class="mission-line"><span class="diamond"></span><span id="selected-map-label">OLD QUARTER</span><small id="selected-map-type">URBAN / COASTAL CITY</small></div></div>
+   <div class="deployment-panel"><div class="panel-caption">MATCH SETUP <span>01 / READY</span></div><label class="field-label" for="mode-select">GAME MODE</label><select id="mode-select"></select><p id="mode-detail" class="mode-detail"></p><div class="map-heading"><span>BATTLEGROUND</span><span id="map-count">01 / 04</span></div><div class="map-selector" id="map-selector"></div><div class="difficulty-row"><label for="difficulty">BOT DIFFICULTY</label><select id="difficulty"><option value="recruit">Recruit</option><option value="regular" selected>Regular</option><option value="veteran">Veteran</option></select></div><button id="deploy" class="primary-button">DEPLOY <span>↗</span></button></div>
+  </section>
+  <section id="loadout-page" class="page"><div class="section-heading"><div><span class="eyebrow">ARMOURY</span><h2>YOUR LOADOUT</h2></div><p>Equip your primary and sidearm.<br>Attachments change handling and ballistics.</p></div><div class="loadout-grid"><div class="weapon-picker"><div class="weapon-tabs"><button class="active" data-slot="primary">PRIMARY</button><button data-slot="secondary">SIDEARM</button></div><div id="weapon-list"></div></div><div class="weapon-info"><span id="weapon-class" class="eyebrow">ASSAULT RIFLE</span><h3 id="weapon-name">Kestrel AR</h3><p id="weapon-unlock"></p><div id="weapon-stats" class="weapon-stats"></div><div class="attachment-grid"><label>OPTIC<select id="optic-select"></select></label><label>BARREL<select id="barrel-select"></select></label><label>HANDLING<select id="handling-select"></select></label><label>EQUIPMENT<select id="equipment-select"><option value="frag">Frag grenade</option><option value="smoke">Smoke grenade</option><option value="flash">Flash grenade</option></select></label></div></div></div></section>
+  <section id="career-page" class="page"><div class="section-heading"><div><span class="eyebrow">SERVICE RECORD</span><h2>YOUR CAREER</h2></div></div><div id="career-stats" class="career-stats"></div><div class="progression-panel"><span id="progress-label"></span><div class="xp-track"><i id="xp-progress"></i></div><p>Earn XP through eliminations, headshots and completed matches. All progress stays on this device.</p></div></section>
+  <section id="settings-page" class="page"><div class="section-heading"><div><span class="eyebrow">PREFERENCES</span><h2>MAKE IT YOURS</h2></div><button id="customise" class="secondary-button">EDIT TOUCH LAYOUT</button></div><div id="settings-grid" class="settings-grid"></div><div class="settings-footer"><p>iPhone: Safari → Share → Add to Home Screen.<br>Touch: left thumb moves; right side aims. Drag FIRE to aim while shooting.</p><button id="controls-help" class="text-button">CONTROLS GUIDE</button></div></section>
+  <footer class="menu-footer"><span>SOLO + BOTS <i>•</i> ORIGINAL ARSENAL</span><span id="save-status">PROGRESS SAVED ON THIS DEVICE</span><button id="install-help" class="text-button">ADD TO HOME SCREEN ↗</button></footer>
+ </main>
+ <section id="hud" class="hud safe hidden" aria-label="Match information">
+  <div class="radar-box"><canvas id="radar" width="160" height="160"></canvas><span id="radar-map">OLD QUARTER</span></div>
+  <div class="match-banner"><div class="match-scores"><b id="score-blue">0</b><div><span id="hud-mode">TEAM DEATHMATCH</span><strong id="timer">06:00</strong></div><b id="score-red">0</b></div><div id="objective" class="objective"></div></div>
+  <button id="pause-button" class="pause-button" aria-label="Pause match">Ⅱ</button>
+  <div id="killfeed" class="killfeed"></div><div id="announcement" class="announcement"></div>
+  <div id="crosshair" class="crosshair"><i></i><i></i><i></i><i></i><b></b></div><div id="hitmarker" class="hitmarker">×</div><div id="kill-confirm" class="kill-confirm"></div><div id="scope" class="scope hidden"><div></div></div>
+  <div class="health-display"><span>VITALS</span><strong id="health">100</strong><div><i id="health-fill"></i></div></div><div class="ammo-display"><div><span id="hud-weapon">KESTREL AR</span><small id="fire-mode">AUTO</small></div><strong id="ammo">30</strong><span class="ammo-divider">/</span><span id="reserve">150</span><small id="reload-label"></small></div>
+  <div id="interact-prompt" class="interact-prompt"></div><div id="damage-direction" class="damage-direction"></div><div id="damage-vignette"></div><div id="flash-overlay"></div>
+  <div id="death-overlay" class="death-overlay hidden"><span>OPERATOR DOWN</span><h2 id="death-name"></h2><p id="respawn-message"></p></div><div id="debug-hud" class="debug-hud hidden"></div>
+ </section>
+ <section id="touch-layer" class="touch-layer hidden" aria-label="Touch controls">
+  <div id="stick"><div id="stick-knob"></div><span>MOVE</span></div>
+  <button data-action="fire" class="touch-button fire-button" aria-label="Fire"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="11"/><path d="M20 3v10m0 14v10M3 20h10m14 0h10"/><circle cx="20" cy="20" r="3"/></svg></button>
+  <button data-action="ads" class="touch-button" aria-label="Aim down sights"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 5H5v5m17-5h5v5M5 22v5h5m17-5v5h-5"/><circle cx="16" cy="16" r="6"/><path d="M16 7v5m0 8v5M7 16h5m8 0h5"/></svg><span>ADS</span></button>
+  <button data-action="reload" class="touch-button" aria-label="Reload"><b>↻</b><span>RELOAD</span></button><button data-action="jump" class="touch-button" aria-label="Jump"><b>↑</b><span>JUMP</span></button><button data-action="crouch" class="touch-button" aria-label="Crouch"><b>⌄</b><span>CROUCH</span></button><button data-action="swap" class="touch-button" aria-label="Switch weapon"><b>⇄</b><span>SWAP</span></button><button data-action="grenade" class="touch-button" aria-label="Throw grenade"><b>◈</b><span id="grenade-count">FRAG · 2</span></button><button data-action="interact" class="touch-button" aria-label="Interact"><b>◎</b><span>HOLD</span></button><button data-action="melee" class="touch-button" aria-label="Melee"><b>╱</b><span>MELEE</span></button><button data-action="sprint" class="touch-button" aria-label="Sprint"><b>⇈</b><span>SPRINT</span></button>
+ </section>
+ <div id="edit-bar" class="edit-bar hidden"><strong>Drag buttons to reposition</strong><button id="reset-layout">RESET</button><button id="save-layout" class="primary-button">SAVE LAYOUT</button></div>
+ <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-card"><div class="eyebrow" id="modal-caption">BREACHLINE</div><h2 id="modal-title"></h2><div id="modal-content"></div><div id="modal-actions"></div></div></div>
+ <div id="rotation-hint" class="rotation-hint hidden"><svg viewBox="0 0 60 60" aria-hidden="true"><rect x="9" y="18" width="42" height="25" rx="4"/><path d="M16 10a24 24 0 0 1 30 5m0-8v8h-8"/></svg><strong>ROTATE TO LANDSCAPE</strong><span>Give yourself room to move.</span></div>
+ <div id="loading" class="loading"><div class="wordmark">BREACHLINE</div><div class="loading-track"><i></i></div><span id="loading-label">PREPARING THE BATTLEGROUND</span></div>
+ <div id="toast" class="toast hidden" role="status"></div>
+ <noscript><div class="fatal">JavaScript is required to play Breachline.</div></noscript>
+ <script type="module" src="./js/main.js"></script>
+</body></html>

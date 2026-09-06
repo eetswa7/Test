@@ -70,7 +70,7 @@ export class Arena {
   for(const [x,z] of [[-10,10],[10,-10],[-21,-22],[21,22]])if(!this.collides({x,y:0,z},.6,1.9)){const b=this.box(x,.65,z,.8,1.3,.8,'rust',{mesh:'cylinder',breakable:true,hp:45});this.breakables.push(b);}
  }
  collides(p,r=.32,h=1.75){for(const b of this.blocks){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
- floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.blocks){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.18&&Math.abs(p.z-b.z)<b.d/2+.18)floor=top;}return floor;}
+ floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.blocks){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.32&&Math.abs(p.z-b.z)<b.d/2+.32)floor=top;}return floor;}
  trace(o,d,limit=160){let t=limit,block=null;for(const b of this.blocks){if(b.destroyed)continue;let n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};}
  visible(a,b){const len=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);if(len<.01)return true;return this.trace(a,{x:(b.x-a.x)/len,y:(b.y-a.y)/len,z:(b.z-a.z)/len},len).t>=len-.12;}
  indoors(p){return this.blocks.some(b=>b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}

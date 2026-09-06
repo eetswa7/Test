@@ -19,9 +19,9 @@ export function updateBot(bot,dt,e){
    for(const p of e.arena.cover){const d=distance(bot,p);if(d<cost&&d<13&&!e.arena.collides(p,.35,1.7)&&(!target||!e.arena.visible({...p,y:p.y+1.3},e.eye(target)))){cover=p;cost=d;}}
    bot.goal=cover??{x:bot.x-Math.sin(bot.yaw)*7,y:bot.y,z:bot.z+Math.cos(bot.yaw)*7};
   }else if(target){
-   const preferred=ROLES[bot.role].range,d=distance(bot,target),side=bot.id%2?1:-1;
+   const preferred=bot.weapon.def.id===12?1.3:Math.min(ROLES[bot.role].range,bot.weapon.range*.9),d=distance(bot,target),side=bot.id%2?1:-1;
    if(d<preferred*.45){bot.goal={x:bot.x-(target.x-bot.x)*.45,y:bot.y,z:bot.z-(target.z-bot.z)*.45};bot.state='retreat';}
-   else if(d>preferred*1.25){bot.goal={x:target.x+Math.cos(bot.yaw)*side*5,y:target.y,z:target.z+Math.sin(bot.yaw)*side*5};bot.state='flank';}
+   else if(d>preferred*1.25){const flank=bot.weapon.def.id===12?0:Math.min(5,preferred*.25);bot.goal={x:target.x+Math.cos(bot.yaw)*side*flank,y:target.y,z:target.z+Math.sin(bot.yaw)*side*flank};bot.state='flank';}
    else{bot.goal={x:bot.x+Math.cos(bot.yaw)*side*1.8,y:bot.y,z:bot.z+Math.sin(bot.yaw)*side*1.8};bot.state='engage';}
   }else if(bot.state==='patrol'||bot.state==='investigate'&&distance(bot,bot.lastKnown)<2){
    if(e.rules.mode.id==='domination'){const pts=e.rules.points.filter(p=>p.owner!==bot.team);bot.goal=(pts.length?pts:e.rules.points)[bot.id%(pts.length||3)];bot.state='objective';}
