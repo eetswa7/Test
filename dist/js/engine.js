@@ -1,11 +1,11 @@
-import {Arena} from './maps.js';
-import {Navigation} from './navigation.js';
-import {MatchRules} from './modes.js';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js';
+import {Arena} from './maps.js?v=6';
+import {Navigation} from './navigation.js?v=6';
+import {MatchRules} from './modes.js?v=6';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=6';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=6';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=6';
 
-export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false});
+export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
 export class Actor {
  constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??ROLES[role].weapon,loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
@@ -71,7 +71,8 @@ export class Game {
    this.moveActor(p,dx,dz,dt);
    if(input.reload&&p.weapon.reload())this.emit('reload',{source:0,weapon:p.weapon.def.id});
    if(input.swap&&this.rules.mode.id!=='gun'){p.weapon.reloadLeft=0;p.slot=1-p.slot;p.switchLeft=.32;this.emit('switch');}
-   if((input.fire&&(p.weapon.def.automatic||input.firePressed))&&!p.sprinting)this.shoot(p,false);
+   if(input.autoReload&&p.weapon.ammo===0&&!p.weapon.reloadLeft&&p.weapon.reserve>0){if(p.weapon.reload())this.emit('reload',{source:0,weapon:p.weapon.def.id});}
+   if((input.fire&&(p.weapon.def.automatic||input.firePressed||input.repeatFire))&&!p.sprinting)this.shoot(p,false);
    if(input.grenade)this.throwGrenade(p);
    if(input.melee&&this.rules.mode.id!=='gun')this.melee(p);
    p.interacting=input.interact;

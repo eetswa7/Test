@@ -1,4 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js';
+import {rng,rayBox,distance,clamp} from './math.js?v=6';
+import {dressWorld} from './world-detail.js?v=6';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Loading bays, machinery and a warehouse with two entrances.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -6,8 +7,16 @@ export const MAPS=[
  {id:3,name:'RELAY',location:'Mountain listening station',size:44,weather:'sun',tag:'MIXED',description:'An operations centre, service tunnels and open approaches.',sky:[.36,.54,.68],fog:[.5,.61,.61],sun:[-.5,.8,-.4]}
 ];
 export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.76,metal:.45,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.8,metal:.1,pattern:1},blue:{color:[.12,.29,.37],rough:.52,metal:.6,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
+const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
+for(const [name,tile]of Object.entries(surfaceTexture))SURFACES[name].tile=tile;
+Object.assign(SURFACES,{
+ plaster:{color:[.94,.92,.84],rough:.94,metal:0,tile:1},limestone:{color:[.95,.9,.8],rough:.95,metal:0,tile:2},
+ asphalt:{color:[.82,.87,.89],rough:.92,metal:0,tile:4},dirt:{color:[.95,.89,.77],rough:1,metal:0,tile:5},gravel:{color:[.9,.9,.85],rough:1,metal:0,tile:7},
+ fabric:{color:[.8,.82,.71],rough:.98,metal:0,tile:9},rubber:{color:[.035,.044,.039],rough:.85,metal:0,tile:-1},skin:{color:[.41,.28,.19],rough:.82,metal:0,tile:-1},
+ bark:{color:[.47,.38,.28],rough:1,metal:0,tile:15},rock:{color:[.86,.88,.82],rough:1,metal:0,tile:15},grass:{color:[.8,.89,.65],rough:1,metal:0,tile:13},moss:{color:[.8,.9,.67],rough:1,metal:0,tile:12},tiles:{color:[.9,.81,.70],rough:.85,metal:0,tile:14},brass:{color:[.55,.37,.12],rough:.33,metal:.9,tile:-1}
+});
 export class Arena {
- constructor(id=0){this.info=MAPS[clamp(id,0,3)];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+id*511);this.build();}
+ constructor(id=0){this.info=MAPS[clamp(id,0,3)];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+id*511);this.build();dressWorld(this);}
  box(x,y,z,w,h,d,surface='concrete',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.blocks.push(b);if(h>.7&&h<2.3)this.cover.push({x:x+w/2+1,z,y:0},{x:x-w/2-1,z,y:0},{x,y:0,z:z+d/2+1},{x,y:0,z:z-d/2-1});return b;}
  detail(x,y,z,w,h,d,surface='dark',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.decor.push(b);return b;}
  crate(x,z,stack=1){for(let i=0;i<stack;i++){this.box(x,i*1.18+.59,z,1.25,1.18,1.25,'wood');for(const dx of [-.43,.43])this.detail(x+dx,i*1.18+.6,z,.075,1.2,1.28,'steel');}}
@@ -25,8 +34,8 @@ export class Arena {
  building(x,z,w,d,h=7,surface='stone'){this.box(x,h/2,z,w,h,d,surface);this.detail(x,h+.15,z,w+.45,.3,d+.45,'white');for(let y=2;y<h-.5;y+=2.2)for(let xx=x-w/2+1.2;xx<x+w/2-.6;xx+=2){for(const zz of [z-d/2-.015,z+d/2+.015]){this.detail(xx,y,zz,.8,1.1,.06,'glass');this.detail(xx,y-.62,zz,1,.1,.14,'white');}}this.detail(x+.5,h+.55,z,1.5,.8,1.2,'steel');}
  build(){
   const id=this.info.id,s=this.info.size;
-  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'stone':'concrete',{ground:true});
-  for(const sign of [-1,1]){this.box(sign*s,2.5,0,.8,5,s*2,'concrete');this.box(0,2.5,sign*s,s*2,5,.8,'concrete');}
+  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'dirt':id===3?'grass':'concrete',{ground:true});
+  for(const sign of [-1,1]){this.box(sign*s,1.4,0,.8,2.8,s*2,'plaster');this.box(0,1.4,sign*s,s*2,2.8,.8,'plaster');}
   this.spawns=[{x:-s+5,y:0,z:-s+5,team:0},{x:-s+9,y:0,z:-s+5,team:0},{x:-s+5,y:0,z:-s+9,team:0},{x:-s+10,y:0,z:-s+10,team:0},{x:s-5,y:0,z:s-5,team:1},{x:s-9,y:0,z:s-5,team:1},{x:s-5,y:0,z:s-9,team:1},{x:s-10,y:0,z:s-10,team:1},{x:-s+5,y:0,z:s-5,team:0},{x:s-5,y:0,z:-s+5,team:1}];
   this.objectives=[{name:'A',x:-s*.5,y:0,z:s*.28},{name:'B',x:0,y:0,z:0},{name:'C',x:s*.5,y:0,z:-s*.28}];
   if(id===0){
@@ -66,7 +75,7 @@ export class Arena {
   }
   // Set dressing stays separate from collision; small breakables have their own hit state.
   for(let i=0;i<26;i++){let x=(this.random()-.5)*(s*2-5),z=(this.random()-.5)*(s*2-5);if(this.collides({x,y:0,z},.6,1.9))continue;this.detail(x,.012,z,.06+this.random()*.22,.025,.1+this.random()*.15,'dark',{yaw:this.random()*6.28});}
-  for(const sign of [-1,1])for(let i=0;i<6;i++){const x=sign*(s+8),z=-s+i*s*.4;this.detail(x,4+this.random()*4,z,5+this.random()*7,8+this.random()*8,7,id===2?'sand':'concrete');}
+  
   for(const [x,z] of [[-10,10],[10,-10],[-21,-22],[21,22]])if(!this.collides({x,y:0,z},.6,1.9)){const b=this.box(x,.65,z,.8,1.3,.8,'rust',{mesh:'cylinder',breakable:true,hp:45});this.breakables.push(b);}
  }
  collides(p,r=.32,h=1.75){for(const b of this.blocks){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
