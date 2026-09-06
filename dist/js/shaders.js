@@ -17,7 +17,7 @@ export const fragment=`#version 300 es
 precision highp float;
 in vec3 vWorld;in vec3 vNormal;in vec4 vColor;in vec4 vMaterial;in vec4 vShadow;in vec2 vUV;
 uniform vec3 uEye;uniform vec3 uSun;uniform vec3 uFog;uniform vec3 uSky;
-uniform sampler2DShadow uDepth;uniform float uShadowOn;uniform float uViewModel;
+uniform highp sampler2DShadow uDepth;uniform float uShadowOn;uniform float uViewModel;
 out vec4 outColor;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
