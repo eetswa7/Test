@@ -1,5 +1,5 @@
-import {WEAPONS} from './weapons.js?v=6';
-import {distance,clamp} from './math.js?v=6';
+import {WEAPONS} from './weapons.js?v=7';
+import {distance,clamp} from './math.js?v=7';
 export class AudioSystem {
  constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.voices=0;this.hapticAt=0;this.muted=false;}
  async start(){try{if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C();this.master=this.context.createGain();this.master.gain.value=this.settings.volume;this.master.connect(this.context.destination);this.build();}if(this.context.state==='suspended')await this.context.resume();this.muted=false;}catch{}}

@@ -1,9 +1,9 @@
-import {Arena} from './maps.js?v=6';
-import {Navigation} from './navigation.js?v=6';
-import {MatchRules} from './modes.js?v=6';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=6';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=6';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=6';
+import {Arena} from './maps.js?v=7';
+import {Navigation} from './navigation.js?v=7';
+import {MatchRules} from './modes.js?v=7';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=7';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=7';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=7';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -129,7 +129,7 @@ export class Game {
    const weapon=killer.weapon.def.name;
    if(this.rules.mode.id==='gun'){killer.gunStage++;if(killer.gunStage<13){killer.weapons[0]=new Weapon(GUN_ORDER[killer.gunStage]);killer.slot=0;killer.switchLeft=.28;}}
    this.rules.onKill(killer);this.emit('kill',{source:killer.id,target:victim.id,text:`${killer.name}  ›  ${victim.name}`,weapon,headshot,streak:killer.streak,position:{x:victim.x,y:victim.y,z:victim.z}});
-   for(const ally of this.actors)if(ally.id!==victim.id&&!ally.dead&&ally.team===victim.team&&distance(ally,victim)<12){ally.lastKnown={x:killer.x,y:killer.y,z:killer.z};ally.memory=5;ally.pathClock=0;}
+   for(const ally of this.actors)if(this.rules.mode.teams&&ally.id!==victim.id&&!ally.dead&&ally.team===victim.team&&distance(ally,victim)<12){ally.lastKnown={x:killer.x,y:killer.y,z:killer.z};ally.memory=5;ally.pathClock=0;}
   }else this.emit('kill',{source:-1,target:victim.id,text:`${victim.name}  ·  ${killer?'SELF DAMAGE':'FALL'}`,position:{x:victim.x,y:victim.y,z:victim.z}});
  }
  melee(a){

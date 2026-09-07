@@ -1,4 +1,4 @@
-import {distance} from './math.js?v=6';
+import {distance} from './math.js?v=7';
 export const MODES=[
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
  {id:'ffa',name:'FREE FOR ALL',short:'FFA',description:'Every operator for themselves. First to 20.',limit:20,time:360,teams:false},
@@ -45,7 +45,7 @@ export class MatchRules {
      if((!this.planted&&a.team===this.attackingTeam)||(this.planted&&a.team!==this.attackingTeam&&index===this.bombSite)){chosen=a;site=index;break;}}
     if(chosen)break;
    }
-   if(chosen){if(this.interactor!==chosen.id)this.siteProgress=0;this.interactor=chosen.id;this.siteProgress+=dt/(this.planted?5:3);chosen.interactProgress=this.siteProgress;
+   if(chosen){if(this.interactor!==chosen.id){this.siteProgress=0;for(const a of engine.actors)a.interactProgress=0;}this.interactor=chosen.id;this.siteProgress+=dt/(this.planted?5:3);chosen.interactProgress=this.siteProgress;
     if(this.siteProgress>=1){if(this.planted){this.roundEnd(chosen.team,'CHARGE DEFUSED');}else{this.planted=true;this.bombSite=site;this.bombTime=35;engine.emit('capture',{text:'CHARGE ARMED · DEFEND IT'});}chosen.interactProgress=0;this.siteProgress=0;this.interactor=null;}
    }else{this.siteProgress=0;this.interactor=null;for(const a of engine.actors)a.interactProgress=0;}
   }

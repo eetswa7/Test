@@ -1,5 +1,5 @@
-import {emptyInput} from './engine.js?v=6';
-import {clamp} from './math.js?v=6';
+import {emptyInput} from './engine.js?v=7';
+import {clamp} from './math.js?v=7';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -27,8 +27,8 @@ export class TouchInput {
   const s=this.settings,box=this.layer.getBoundingClientRect();this.layer.classList.toggle('left-handed',!!s.leftHanded);this.layer.classList.toggle('simple-controls',this.simple);this.layer.style.setProperty('--control-opacity',s.opacity);
   for(const [id,defaults]of Object.entries(this.simple?CONTROL_LAYOUT:ADVANCED_LAYOUT)){
    const b=this.layer.querySelector(`[data-action="${id}"]`),custom=s.layout?.[id];
-   const size=defaults[2]*(s.buttonScale??1),xm=Math.max(.055,(size/2+8)/(box.width||844)),ym=Math.max(.08,(size/2+8)/(box.height||390));const x=clamp(custom?.x??defaults[0],xm,1-xm),y=clamp(custom?.y??defaults[1],Math.max(.13,ym),Math.min(.91,1-ym));
-   b.style.left=`${(s.leftHanded?1-x:x)*100}%`;b.style.top=`${y*100}%`;b.style.width=b.style.height=`${size}px`;
+   const size=defaults[2]*(s.buttonScale??1),utility=this.simple&&['reload','swap'].includes(id),width=utility?size*1.12:size,height=utility?size*.84:size,xm=Math.max(.055,(width/2+8)/(box.width||844)),ym=Math.max(.08,(height/2+8)/(box.height||390));const x=clamp(custom?.x??defaults[0],xm,1-xm),y=clamp(custom?.y??defaults[1],Math.max(.13,ym),Math.min(.91,1-ym));
+   b.style.left=`${(s.leftHanded?1-x:x)*100}%`;b.style.top=`${y*100}%`;b.style.width=`${width}px`;b.style.height=`${height}px`;
    b.hidden=(this.mode==='gun'&&['swap','grenade','melee'].includes(id))||this.simple&&simpleHidden.has(id)||id==='interact'&&!this.contextAvailable&&!this.editing;
   }
   this.stick.style.left=s.leftHanded?'85%':'15%';

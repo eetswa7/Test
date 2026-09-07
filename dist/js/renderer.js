@@ -1,9 +1,9 @@
-import {identity,perspective,lookAt,multiply,compose,ortho,clamp,lerp,direction,distance} from './math.js?v=6';
-import {makeCube,makeCylinder,makeSphere,weaponModel,actorModel,material,part} from './geometry.js?v=6';
-import * as shaders from './shaders.js?v=6';
-import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=6';
-import {TexturePack} from './textures.js?v=6';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=6';
+import {identity,perspective,lookAt,multiply,compose,ortho,clamp,lerp,direction,distance} from './math.js?v=7';
+import {makeCube,makeCylinder,makeSphere,weaponModel,actorModel,material,part} from './geometry.js?v=7';
+import * as shaders from './shaders.js?v=7';
+import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=7';
+import {TexturePack} from './textures.js?v=7';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=7';
 
 function program(gl,vs,fs){const compile=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;};const p=gl.createProgram(),v=compile(gl.VERTEX_SHADER,vs),f=compile(gl.FRAGMENT_SHADER,fs);gl.attachShader(p,v);gl.attachShader(p,f);gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));gl.deleteShader(v);gl.deleteShader(f);return p;}
 const levels={low:{scale:.65,shadow:false,fx:64},medium:{scale:.85,shadow:true,fx:110},high:{scale:1,shadow:true,fx:180}};
@@ -62,7 +62,7 @@ export class Renderer {
   if(e.type==='explosion'){this.buildWorld();for(let i=0;i<32;i++){const t=Math.random()*Math.PI*2,s=Math.random()*6;this.particle(p,i<16?'fire':'dust',i<16?[1,.32,.04]:[.24,.23,.21],i<16?.25:.4,.4+Math.random()*1.1,Math.cos(t)*s,Math.random()*5,Math.sin(t)*s);}}
   if(e.type==='flash')this.particle(p,'fire',[1,1,.9],.7,.12);
  }}
- updateEffects(dt,game){this.clear('fx');for(const e of this.effects){if(e.life<=0)continue;e.life-=dt;if(e.life<=0)continue;e.x+=e.vx*dt;e.y+=e.vy*dt;e.z+=e.vz*dt;if(e.type!=='dust'&&e.type!=='smoke')e.vy-=dt*8;if(e.y<.03){e.y=.03;e.vy=0;e.vx*=.8;e.vz*=.8;}const t=1-e.life/e.max,size=e.size*(e.type==='fire'||e.type==='dust'||e.type==='smoke'?1+t*3:1);const soft=e.type==='fire'||e.type==='dust'||e.type==='smoke';this.add('fx',part(e.x,e.y,e.z,soft?size*2:size,e.type==='shell'?size*.4:soft?size*2:size,e.type==='shell'?size*.4:size,'dark',{color:e.color,tile:-1,mesh:soft?'leaf':'cube',emissive:soft?(e.type==='fire'?-3:-2):e.type==='spark'?3:0,yaw:soft?this.effectYaw:e.yaw,pitch:soft?this.effectPitch:e.type==='shell'?game.time*8:0}),null,Math.min(1,e.life*6)*(e.type==='smoke'?.24:1));}
+ updateEffects(dt,game){this.clear('fx');for(const a of game.actors)if(!a.dead&&a.grounded)this.add('fx',part(a.x,a.y+.025,a.z,.95,.74,.01,'dark',{mesh:'leaf',tile:-1,emissive:-1,color:[.02,.03,.025],pitch:-Math.PI/2}),null,.25);for(const e of this.effects){if(e.life<=0)continue;e.life-=dt;if(e.life<=0)continue;e.x+=e.vx*dt;e.y+=e.vy*dt;e.z+=e.vz*dt;if(e.type!=='dust'&&e.type!=='smoke')e.vy-=dt*8;if(e.y<.03){e.y=.03;e.vy=0;e.vx*=.8;e.vz*=.8;}const t=1-e.life/e.max,size=e.size*(e.type==='fire'||e.type==='dust'||e.type==='smoke'?1+t*3:1);const soft=e.type==='fire'||e.type==='dust'||e.type==='smoke';this.add('fx',part(e.x,e.y,e.z,soft?size*2:size,e.type==='shell'?size*.4:soft?size*2:size,e.type==='shell'?size*.4:size,'dark',{color:e.color,tile:-1,mesh:soft?'leaf':'cube',emissive:soft?(e.type==='fire'?-3:-2):e.type==='spark'?3:0,yaw:soft?this.effectYaw:e.yaw,pitch:soft?this.effectPitch:e.type==='shell'?game.time*8:0}),null,Math.min(1,e.life*6)*(e.type==='smoke'?.24:1));}
   for(const d of this.decals){if(d.life>0){d.life-=dt;this.add('fx',d.part,null,Math.min(1,d.life));}}
   for(const g of game.grenades)this.add('fx',part(g.x,g.y,g.z,.14,.17,.14,'green',{mesh:'sphere'}));
   for(const s of game.smokes){const r=Math.min(5.2,s.age*4),alpha=Math.min(.86,s.age)*clamp((16-s.age)/3,0,1);for(let i=0;i<10;i++){const angle=i*2.399+s.age*.07;this.add('fx',part(s.x+Math.sin(angle)*r*.33,s.y+1.25+(i%3)*.48,s.z+Math.cos(angle)*r*.33,r*1.5,3.5,.01,'concrete',{mesh:'leaf',tile:-1,color:[.43,.46,.45],emissive:-2,yaw:this.effectYaw,pitch:this.effectPitch}),null,alpha);}}
@@ -71,7 +71,7 @@ export class Renderer {
  lighting(viewModel=false){const gl=this.gl,p=this.main,i=this.arena.info;gl.useProgram(p);gl.uniformMatrix4fv(this.uniform(p,'uVP'),false,this.vp);gl.uniformMatrix4fv(this.uniform(p,'uShadow'),false,this.shadowVP);gl.uniform3f(this.uniform(p,'uEye'),this.eye.x,this.eye.y,this.eye.z);gl.uniform3fv(this.uniform(p,'uSun'),i.sun);gl.uniform3fv(this.uniform(p,'uSky'),i.sky);gl.uniform3fv(this.uniform(p,'uFog'),i.fog);gl.uniform1f(this.uniform(p,'uShadowOn'),this.hasShadow&&levels[this.quality].shadow?1:0);gl.uniform1f(this.uniform(p,'uViewModel'),viewModel?1:0);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.shadowTexture);gl.uniform1i(this.uniform(p,'uDepth'),0);gl.uniform1f(this.uniform(p,'uShadowSize'),this.shadowSize);gl.uniform1f(this.uniform(p,'uTime'),this.time??0);this.textures.bind(p,(p,n)=>this.uniform(p,n));}
  render(game,dt,menu=false,elapsed=dt){
   if(this.lost||!this.textures.images)return;this.time=game.time;this.frames++;this.lastFPS+=elapsed;if(this.lastFPS>=.6){this.fps=Math.round(this.frames/this.lastFPS);this.frames=0;this.lastFPS=0;}
-  if(!menu&&!game.paused){this.frameAverage=lerp(this.frameAverage,Math.min(elapsed*1000,200),.02);this.slowTime=this.frameAverage>21?this.slowTime+elapsed:Math.max(0,this.slowTime-dt);this.fastTime=this.frameAverage<17.4?this.fastTime+elapsed:0;
+  if(!menu&&!game.paused&&game.rules.phase==='playing'){this.frameAverage=lerp(this.frameAverage,Math.min(elapsed*1000,200),.02);this.slowTime=this.frameAverage>21?this.slowTime+elapsed:Math.max(0,this.slowTime-dt);this.fastTime=this.frameAverage<17.4?this.fastTime+elapsed:0;
    if(this.slowTime>4){this.renderScale=Math.max(.58,this.renderScale-.1);if(this.renderScale<=.68){if(this.quality==='high')this.quality='medium';else if(this.quality==='medium')this.quality='low';}this.slowTime=0;}
    if(this.fastTime>15&&this.renderScale<1){this.renderScale=Math.min(1,this.renderScale+.05);this.fastTime=0;}
   }

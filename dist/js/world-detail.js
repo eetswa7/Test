@@ -1,4 +1,4 @@
-import {rng} from './math.js?v=6';
+import {rng} from './math.js?v=7';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */

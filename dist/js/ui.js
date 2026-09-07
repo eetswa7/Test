@@ -1,8 +1,8 @@
-import {MODES} from './modes.js?v=6';
-import {MAPS} from './maps.js?v=6';
-import {WEAPONS,ATTACHMENTS,Weapon} from './weapons.js?v=6';
-import {clamp,distance} from './math.js?v=6';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=6';
+import {MODES} from './modes.js?v=7';
+import {MAPS} from './maps.js?v=7';
+import {WEAPONS,ATTACHMENTS,Weapon} from './weapons.js?v=7';
+import {clamp,distance} from './math.js?v=7';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=7';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
