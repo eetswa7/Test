@@ -1,3 +1,5 @@
+import {animateWeaponParts} from './weapon-models.js?v=7';
+import {identityFor} from './combat-identity.js?v=7';
 import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=7';
 import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=7';
 import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=7';
@@ -98,12 +100,12 @@ export class CompatibilityRenderer {
   const c=this.ctx,p=game.player;let yaw=p.yaw,pitch=p.pitch;this.fov=aimFov(this.settings.fov??80,p.weapon,p.ads);
   if(menu){this.eye={x:15,y:6.5,z:25};this.target={x:-4,y:2,z:-8};this.fov=65*Math.PI/180;yaw=Math.atan2(this.target.x-this.eye.x,-(this.target.z-this.eye.z));pitch=-.12;}else{this.eye=game.eye(p);this.eye.y-=p.dead?1.2:0;const d=direction(p.yaw,p.pitch);this.target={x:this.eye.x+d.x,y:this.eye.y+d.y,z:this.eye.z+d.z};this.fov=verticalFov(this.fov,width/height);}
   this.worldFov=this.fov;lookAt(this.view,this.eye,this.target);this.sky(yaw,pitch);this.drawCalls=0;
-  const polygons=this.world.slice();for(const a of game.actors)if(a.id!==0&&distance(a,p)<55){compose(this.parent,a.x,a.y,a.z,1,1,1,-a.yaw,0,a.dead?1.5:0);for(const q of actorModel(a,game.time))polygons.push(...this.box(q,this.parent));}
+  const polygons=this.world.slice();for(const a of game.actors)if(a.id!==0&&distance(a,p)<55){compose(this.parent,a.x,a.y,a.z,1,1,1,-a.yaw,0,a.dead?1.5:0);for(const q of actorModel(a,game.time,identityFor(a,p,game.rules)))polygons.push(...this.box(q,this.parent));}
   if(['domination','sabotage'].includes(game.rules.mode.id))for(const point of game.rules.points)polygons.push(...this.box(part(point.x,1,point.z,.05,2,.05,'steel')),...this.box(part(point.x+.4,1.7,point.z,.8,.5,.06,'green',{color:point.owner===0?[.2,.8,.85]:point.owner===1?[.9,.4,.1]:[.8,.85,.4]})));
   for(const g of game.grenades)polygons.push(...this.box(part(g.x,g.y,g.z,.16,.16,.16,'green')));this.paint(polygons);
   for(const smoke of game.smokes){const from=this.eye,d=Math.hypot(smoke.x-from.x,smoke.z-from.z);if(d<7){c.fillStyle=`rgba(118,128,128,${clamp((7-d)/7,0,.8)*Math.min(1,smoke.age)})`;c.fillRect(0,0,width,height);}}
   if(!p.dead&&(menu||!scopeVisible(p))){
-   const weapon=p.weapon,key=[weapon.def.id,weapon.optic,weapon.barrel,weapon.grip].join('/');if(key!==this.weaponKey){this.weaponKey=key;this.weaponParts=weaponModel(weapon);}
+   const weapon=p.weapon,key=[weapon.def.id,weapon.optic,weapon.barrel,weapon.grip].join('/');if(key!==this.weaponKey){this.weaponKey=key;this.weaponParts=weaponModel(weapon);}animateWeaponParts(this.weaponParts,weapon,p,game.time);
    const pose=weaponPose(p,game.time,this.settings.motion!==false,menu);compose(this.parent,pose.x,pose.y,pose.z,pose.scale,pose.scale,pose.scale,pose.yaw,pose.pitch,pose.roll);
    const parts=[];for(const q of this.weaponParts)parts.push(...this.box(q,this.parent));if(weapon.sinceShot<.05&&weapon.barrel!==1)parts.push(...this.box(part(0,.082,-.58,.11,.11,.19,'orange',{emissive:4}),this.parent));this.fov=65*Math.PI/180;this.paint(parts,this.weaponView,true);
   }

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Game,emptyInput} from '../dist/js/engine.js';
 import {Weapon,WEAPONS,GUN_ORDER} from '../dist/js/weapons.js';
-import {Arena} from '../dist/js/maps.js';
+import {Arena,MAPS} from '../dist/js/maps.js';
 import {Navigation} from '../dist/js/navigation.js';
 import {rayBox,direction} from '../dist/js/math.js';
 
@@ -34,6 +34,6 @@ test('domination captures, contests, awards points and finishes',()=>{const{g,p,
 test('sabotage can plant, defuse, switch teams and start another round',()=>{const{g,p,t}=duel('sabotage'),site=g.rules.points[0];p.x=site.x;p.z=site.z;p.interacting=true;t.x=20;t.z=20;for(let i=0;i<190;i++)g.rules.update(1/60,g);assert(g.rules.planted);assert.equal(g.rules.bombSite,0);p.interacting=false;t.x=site.x;t.z=site.z;t.interacting=true;for(let i=0;i<310;i++)g.rules.update(1/60,g);assert.equal(g.rules.phase,'roundBreak');assert.equal(g.rules.scores[1],1);g.rules.round=3;g.rules.nextRound();assert.equal(g.rules.attackingTeam,1);assert(!g.rules.planted);});
 test('a planted charge remains live when all attackers die',()=>{const{g,p,t}=duel('sabotage');g.rules.planted=true;g.rules.bombSite=0;g.rules.bombTime=.05;p.health=0;g.rules.update(.02,g);assert.equal(g.rules.phase,'playing');g.rules.update(.04,g);assert.equal(g.rules.scores[0],1);});
 test('sabotage disables mid-round respawning',()=>{const{g,p,t}=duel('sabotage');g.actors.push(Object.assign(Object.create(Object.getPrototypeOf(t)),t,{id:1,team:0,x:15,z:15,health:100,aiClock:1000}));g.damage(p,200,t);advance(g,4);assert(p.dead);});
-test('every map has safe spawns and navigable routes to the objectives',()=>{for(let id=0;id<4;id++){const arena=new Arena(id),nav=new Navigation(arena);for(const spawn of arena.spawns)assert(!arena.collides(spawn,.31,1.75),`map ${id} invalid spawn`);for(const objective of arena.objectives){const path=nav.path(arena.spawns[0],objective);assert(path.length>0,`map ${id} no path`);assert(distance2(path.at(-1),objective)<4.5,`map ${id} ${objective.name} unreachable`);}}});
+test('every map has safe spawns and navigable routes to the objectives',()=>{for(let id=0;id<MAPS.length;id++){const arena=new Arena(id),nav=new Navigation(arena);for(const spawn of arena.spawns)assert(!arena.collides(spawn,.31,1.75),`map ${id} invalid spawn`);for(const objective of arena.objectives){const path=nav.path(arena.spawns[0],objective);assert(path.length>0,`map ${id} no path`);assert(distance2(path.at(-1),objective)<4.5,`map ${id} ${objective.name} unreachable`);}}});
 function distance2(a,b){return Math.hypot(a.x-b.x,a.z-b.z);}
-test('bots fight, investigate and complete Gun Game on every map',()=>{for(let map=0;map<4;map++){const g=new Game({mode:'gun',map},{seed:718});let shots=0;for(let i=0;i<12000&&g.rules.phase!=='finished';i++){g.update(1/30);for(const e of g.events)shots+=e.type==='shot';g.events.length=0;}assert(shots>20);assert.equal(g.rules.phase,'finished',`map ${map} incomplete`);assert(g.actors.some(a=>a.gunStage===13),`map ${map} needs a blade finish`);}});
+test('bots fight, investigate and complete Gun Game on every map',()=>{for(let map=0;map<MAPS.length;map++){const g=new Game({mode:'gun',map},{seed:718});let shots=0;for(let i=0;i<12000&&g.rules.phase!=='finished';i++){g.update(1/30);for(const e of g.events)shots+=e.type==='shot';g.events.length=0;}assert(shots>20);assert.equal(g.rules.phase,'finished',`map ${map} incomplete`);assert(g.actors.some(a=>a.gunStage===13),`map ${map} needs a blade finish`);}});
