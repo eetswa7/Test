@@ -77,7 +77,7 @@ export class Game {
    if(input.melee&&this.rules.mode.id!=='gun')this.melee(p);
    p.interacting=input.interact;
    // Recover only the recoil contribution, retaining the player's own look input.
-   if(p.weapon.sinceShot>.14){const rec=p.recoilPitch*(1-Math.exp(-dt*8));p.pitch-=rec;p.recoilPitch-=rec;}
+   if(p.weapon.sinceShot>.14){const rec=p.recoilPitch*(1-Math.exp(-dt*8));p.pitch=clamp(p.pitch-rec,-1.48,1.48);p.recoilPitch-=rec;}
   }
   for(let i=1;i<this.actors.length;i++)if(!this.actors[i].dead)updateBot(this.actors[i],dt,this);
   this.updateEquipment(dt);this.rules.update(dt,this);
@@ -110,7 +110,7 @@ export class Game {
    }
    if(i===0)this.emit('shot',{position:origin,end:impact,source:a.id,weapon:d.id,suppressed:w.barrel===1,indoor:this.arena.indoors(a)});
   }
-  if(a.id===0){this.shots++;if(anyHit){this.hits++;this.emit('hit',{headshot:head});}const r=w.recoil*lerp(1,.65,a.ads)*(a.crouched?.78:1);a.pitch=clamp(a.pitch+r,-1.48,1.48);a.recoilPitch+=r;a.yaw+=Math.sin(w.shotIndex*1.73+d.id)*r*.45;a.visualKick+=r*2.5;}
+  if(a.id===0){this.shots++;if(anyHit){this.hits++;this.emit('hit',{headshot:head});}const r=w.recoil*lerp(1,.65,a.ads)*(a.crouched?.78:1);const nextPitch=clamp(a.pitch+r,-1.48,1.48);a.recoilPitch+=nextPitch-a.pitch;a.pitch=nextPitch;a.yaw+=Math.sin(w.shotIndex*1.73+d.id)*r*.45;a.visualKick+=r*2.5;}
   a.lastShot=this.time;w.sinceShot=0;w.shotIndex++;
   for(const other of this.actors)if(other.id!==a.id&&!other.dead&&this.rules.enemies(a,other)&&distance(a,other)<(w.barrel===1?12:44)&&other.target===null){other.lastKnown={x:a.x,y:a.y,z:a.z};other.memory=5;other.state='investigate';}
   return true;
