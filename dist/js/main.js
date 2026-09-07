@@ -1,12 +1,12 @@
-import {Game,emptyInput} from './engine.js?v=7';
-import {Renderer} from './renderer.js?v=7';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=7';
-import {TouchInput} from './input.js?v=7';
-import {AudioSystem} from './audio.js?v=7';
-import {SaveStore} from './save.js?v=7';
-import {Interface,$} from './ui.js?v=7';
-import {Weapon} from './weapons.js?v=7';
-import {opticMagnification} from './aim.js?v=7';
+import {Game,emptyInput} from './engine.js?v=8';
+import {Renderer} from './three-renderer.js?v=8';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=8';
+import {TouchInput} from './input.js?v=8';
+import {AudioSystem} from './audio.js?v=8';
+import {SaveStore} from './save.js?v=8';
+import {Interface,$} from './ui.js?v=8';
+import {Weapon} from './weapons.js?v=8';
+import {opticMagnification} from './aim.js?v=8';
 
 class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;
@@ -21,7 +21,6 @@ class Application {
   $('world').addEventListener('click',()=>{if(this.playing&&!this.isTouch&&!this.game.paused)this.lockMouse();});
   window.addEventListener('graphicslost',()=>{if(this.playing)this.pause();this.ui.modal('GRAPHICS INTERRUPTED','BREACHLINE','<p>Your browser released the graphics context. Reload to start a fresh match. Saved career progress is kept.</p>',[['RELOAD',()=>location.reload(),true]]);});
   window.addEventListener('error',e=>{if(e.message?.includes('ResizeObserver'))return;if(this.playing)this.pause();this.ui.toast('A game error occurred. Reload if controls stop responding.');});
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});
  }
  orientation(){const portrait=innerHeight>innerWidth,need=(this.playing||this.input.editing)&&portrait;$('rotation-hint').classList.toggle('hidden',!need);if(need&&this.playing&&!this.game.paused)this.pause();}
  lockMouse(){try{const result=$('world').requestPointerLock?.();result?.catch?.(()=>{});}catch{}}

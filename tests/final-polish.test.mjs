@@ -4,8 +4,6 @@ import {Game,emptyInput} from '../dist/js/engine.js';
 import {Weapon,sanitizeLoadout} from '../dist/js/weapons.js';
 import {SaveStore} from '../dist/js/save.js';
 import {AudioSystem} from '../dist/js/audio.js';
-import {Batch} from '../dist/js/renderer.js';
-import {identity} from '../dist/js/math.js';
 
 test('recoil recovery cannot accumulate displacement beyond the vertical aim limit',()=>{
  const g=new Game(),p=g.player;for(const a of g.actors.slice(1)){a.health=0;a.respawnLeft=999;}p.pitch=1.479;p.spawnProtection=0;
@@ -25,8 +23,4 @@ test('corrupt saved button positions are discarded without losing valid settings
 test('completed spatial sounds release their panner and echo graph',()=>{
  const nodes=[],node=()=>{const n={gain:{value:1},pan:{value:0},playbackRate:{value:1},delayTime:{value:0},connect(){},disconnect(){this.disconnected=true;},start(){}};nodes.push(n);return n;};
  const audio=new AudioSystem({volume:1});audio.context={state:'running',createBufferSource:node,createGain:node,createStereoPanner:node,createDelay:node};audio.master={};audio.buffers.set('shot',{});audio.play('shot',{indoor:true});assert.equal(audio.voices,1);nodes[0].onended();assert.equal(audio.voices,0);assert(nodes.every(n=>n.disconnected));
-});
-test('instance batches grow without dropping objects or reserving maximum memory upfront',()=>{
- let drawn=0;const gl={createVertexArray:()=>({}),createBuffer:()=>({}),bindVertexArray(){},bindBuffer(){},bufferData(){},enableVertexAttribArray(){},vertexAttribPointer(){},vertexAttribDivisor(){},bufferSubData(){},drawArraysInstanced(mode,first,count,instances){drawn=instances;}};
- const b=new Batch(gl,new Float32Array(24));assert(b.data.byteLength<=8192);const m=identity(),material={color:[1,1,1],rough:1,metal:0,pattern:0,emissive:0};for(let i=0;i<5000;i++){m[12]=i;b.add(m,material);}b.upload();b.draw();assert.equal(drawn,5000);assert.equal(b.data[12],0);assert.equal(b.data[4999*24+12],4999);
 });

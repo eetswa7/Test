@@ -39,7 +39,7 @@ Movement, looking and firing use independent pointer tracking. Settings include 
 
 ## Content
 
-Five fully simulated player-versus-bot modes:
+Seven fully simulated player-versus-bot modes:
 
 | Mode | Rules |
 | --- | --- |
@@ -48,8 +48,10 @@ Five fully simulated player-versus-bot modes:
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
 | Gun Game | One elimination advances the weapon, 13 stages ending with a blade kill |
+| Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
+| Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 
-Four original maps: **Old Quarter**, **Foundry**, **Dustline** and **Relay**. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Six original maps: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater** and **Citadel**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
 The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, a marksman rifle, an LMG, two pistols and a field blade. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
@@ -59,9 +61,9 @@ Bots use sight and gunshot awareness, last-known positions, navigation, cover an
 
 ## Rendering and performance
 
-The primary renderer uses WebGL2, instanced geometry, original generated surface textures, alpha-tested foliage, directional soft shadows, a photographic mountain sky, haze, physically based surface lighting, anti-aliasing and a separate first-person weapon pass. Effects use bounded pools. A simpler textured Canvas2D compatibility renderer runs the same simulation if WebGL2 cannot initialise. It reduces geometry and foliage density and does not represent GPU performance. Both paths use the same true 4× scope projection and remove the viewmodel from the scope’s clear sight picture.
+The primary renderer is **Three.js r180**, with instanced world chunks, physically based standard/physical materials, generated normal and roughness maps, image-based environment reflections, alpha-tested wind-animated foliage, throttled directional soft shadows, contact shadows, interior lighting, ACES tone mapping and a separate first-person weapon scene. The previous custom WebGL renderer is removed. Effects use bounded pools. A simpler textured Canvas2D compatibility renderer runs the same simulation if WebGL2 cannot initialise. It reduces geometry and foliage density and does not represent GPU performance. Both paths use the same true 4× scope projection and remove the viewmodel from the scope’s clear sight picture.
 
-Rendering targets 60 frames per second during combat, 30 in the menu and 10 while paused. Automatic quality and dynamic render scaling reduce cost; shadows update at 30 Hz. The fixed 60 Hz gameplay simulation is independent of display refresh. AI updates are throttled, navigation is baked per map, geometry is batched, and generated audio buffers are reused. Backgrounding pauses the match and audio. Low, Medium and High quality options are available.
+Rendering targets 60 frames per second during combat, 30 in the menu and 10 while paused. Automatic quality and dynamic render scaling reduce cost; shadows update at 15 or 30 Hz according to quality. The fixed 60 Hz gameplay simulation is independent of display refresh. AI updates are throttled, navigation is baked per map, geometry is batched, and generated audio buffers are reused. Backgrounding pauses the match and audio. Low, Medium and High quality options are available.
 
 These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. The browser environment used for this build did not provide a WebGL2 context. The high-quality shader path, actual iPhone GPU and thermal behaviour, safe-area values from physical devices, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
 
@@ -76,7 +78,10 @@ Visuals use original procedural 3D geometry with rounded weapon parts, hollow op
 | `modes.js` | Scoring, rounds, captures, planting, defusing and completion |
 | `maps.js`, `navigation.js` | Authored world data, collision, spawn evaluation and A* routes |
 | `ai.js` | Perception, tactics, movement and bot actions |
-| `renderer.js`, `shaders.js`, `geometry.js`, `meshes.js` | WebGL2 scene, lighting, models and pooled visual effects |
+| `three-renderer.js` | Three.js scene, physical materials, lighting, batched geometry and pooled effects |
+| `weapon-models.js`, `geometry.js`, `meshes.js` | Distinct firearm mechanisms, animated hands, actors and geometry |
+| `combat-identity.js` | Player-relative ally/enemy uniforms, labels and visibility rules |
+| `boot.js`, `sw.js` | Complete-release installation before importing the game |
 | `compatibility-renderer.js` | CPU projection fallback using the same map and actor data |
 | `textures.js`, `world-detail.js` | Packaged surface/foliage images, environment and map dressing |
 | `aim.js` | Shared scope magnification and aligned first-person sights |
@@ -93,7 +98,7 @@ npm test
 npm run check
 ```
 
-The 48 regression tests cover ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all four maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates 21 JavaScript modules, local asset references, outward mesh winding the complete offline shell and the Home Screen manifest.
+The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all six maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
 
 Browser checks exercised launch, loadout persistence, deployment, touch actions, pause, match completion, results, restart, menu return and the layout editor. Layouts were inspected at 667 × 375, 844 × 390 and 932 × 430; switching to 390 × 844 displayed the rotation guard. These checks used compatibility graphics. The final revision’s browser recheck was blocked by the cloud browser URL policy; the final 48-test regression suite and static validation passed. Additional simulations reached completed TDM, Sabotage and Domination matches on Foundry, Dustline and Relay.
 
@@ -101,10 +106,12 @@ Tap the BREACHLINE logo five times quickly, or press F3, to open developer tools
 
 The preview server exposes `/__qa/viewport.html` for real-game responsive checks. The harness only changes the iframe viewport and enables touch controls; it does not inject game state and is excluded from the deployed `dist/` assets.
 
-## Performance and polish pass — 7 September 2026
+## Three.js expansion
 
-Initial per-batch instance storage falls from 4096 to 64 entries (98.4% less reserved instance memory before demand-driven growth). Buffers grow without dropping objects. Character bevels use 44% fewer vertices; weapon detail is retained. Bots avoid redundant firing visibility queries during cooldown/reload. Sustained slow frames can now disable expensive shadows; pause and results screens do not bias adaptive quality.
+All twelve firearms and the blade have rebuilt original geometry: distinct receivers, stocks, magazines, barrels, optics, controls, grips and hands. Cached animation moves slides, bolts, pump actions, magazines, belts, feed lids and support hands without replacing parts every frame. Firing sounds use unique attack, mechanical, body and tail profiles. Optics retain correct centred aim and magnified scopes clear the viewmodel.
 
-Graphics add soft billboard smoke, muzzle vapour, impact dust, ground contact shadows, map-tinted ambient light and subtle material weathering. Scope overlays now update with every simulation frame. Reload/swap sizing respects the control-size slider. Recoil at vertical aim limits, first-shot state after respawn, inaccessible storage, malformed saved layouts, audio-node cleanup, objective handover and FFA awareness are repaired. Missing assets show a retry flow. Results reduce frame rate and release the wake lock.
+Cyan diamonds and ALLY labels distinguish teammates from red triangles and ENEMY labels. Arm and vest identifiers use the same player-relative colours, including Free For All. Labels respect occlusion, smoke, death and flash blindness. Objective HUD, radar, kill feed and scoreboard use consistent relations. The simpler two-thumb input remains intact.
 
-Six additional regressions exercise the repaired behaviour and dynamic instance growth. WebGL runtime and physical iPhone performance remain unverified in this environment. Browser QA was not repeated in this focused pass.
+Official Three.js 0.180.0 modules are included under `dist/vendor/`, with the MIT licence and version/hash metadata. No CDN fetch is needed at runtime. The package lock pins the same version. See [Three.js installation](https://threejs.org/manual/en/installation.html). Authored modules and the offline cache advance together to release 8; boot waits for a complete update before starting the game.
+
+Verification for this expansion: 75 regression tests, including real Three geometry/material/instance tests on all six maps and all thirteen weapon models. Additional headless bot matches completed all 42 map/mode combinations. These are simulation and scene-construction checks, not browser GPU rendering tests. No new visual browser session or physical iPhone measurement was available during this expansion. Commercial AAA asset fidelity, GPU shader compilation and sustained iPhone frame rate remain unverified.
