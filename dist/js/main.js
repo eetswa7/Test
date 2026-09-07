@@ -45,7 +45,7 @@ class Application {
    this.accumulator=Math.min(.1,this.accumulator+dt);let steps=0;while(this.accumulator>=1/60&&steps++<6){this.game.update(1/60,this.pending);this.accumulator-=1/60;this.pending.lx=this.pending.ly=0;for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]=false;}
    this.renderer.events(this.game.events,this.game);this.audio.events(this.game.events,this.game);this.ui.events(this.game.events);this.game.events.length=0;this.ui.update(dt);
   }else if(!this.playing)this.game.time+=dt;
-  this.renderer.render(this.game,dt,!this.playing,elapsed);
+  this.renderer.render(this.game,dt,!this.playing,elapsed);if(this.playing&&!this.game.paused)this.ui.updateIdentities(dt);
   if(this.playing&&this.game.rules.phase==='finished'&&!this.resultShown){this.resultShown=true;this.wakeLock?.release();this.wakeLock=null;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.results();}
  }
 }

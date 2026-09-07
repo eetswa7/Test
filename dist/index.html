@@ -23,9 +23,9 @@
  </main>
  <section id="hud" class="hud safe hidden" aria-label="Match information">
   <div class="radar-box"><canvas id="radar" width="160" height="160"></canvas><span id="radar-map">OLD QUARTER</span></div>
-  <div class="match-banner"><div class="match-scores"><b id="score-blue">0</b><div><span id="hud-mode">TEAM DEATHMATCH</span><strong id="timer">06:00</strong></div><b id="score-red">0</b></div><div id="objective" class="objective"></div></div>
+  <div class="match-banner"><div class="match-scores"><div class="score-team"><b id="score-blue">0</b><small id="team-blue-label">ALLIES ◆</small></div><div><span id="hud-mode">TEAM DEATHMATCH</span><strong id="timer">06:00</strong></div><div class="score-team"><b id="score-red">0</b><small id="team-red-label">ENEMIES ▼</small></div></div><div id="objective" class="objective"></div></div>
   <button id="pause-button" class="pause-button" aria-label="Pause match">Ⅱ</button>
-  <div id="killfeed" class="killfeed"></div><div id="announcement" class="announcement"></div>
+  <div id="combat-labels" class="combat-labels" aria-hidden="true"></div><div id="target-identity" class="target-identity hidden"></div><div id="killfeed" class="killfeed"></div><div id="announcement" class="announcement"></div>
   <div id="crosshair" class="crosshair"><i></i><i></i><i></i><i></i><b></b></div><div id="hitmarker" class="hitmarker">×</div><div id="kill-confirm" class="kill-confirm"></div><div id="ads-reticle" class="ads-reticle hidden"></div><div id="scope" class="scope hidden"><div class="scope-lens"><i class="scope-marks"></i><span id="scope-zoom">4×</span></div></div>
   <div class="health-display"><span>VITALS</span><strong id="health">100</strong><div><i id="health-fill"></i></div></div><div class="ammo-display"><div><span id="hud-weapon">KESTREL AR</span><small id="fire-mode">AUTO</small></div><strong id="ammo">30</strong><span class="ammo-divider">/</span><span id="reserve">150</span><small id="reload-label"></small></div>
   <div id="interact-prompt" class="interact-prompt"></div><div id="damage-direction" class="damage-direction"></div><div id="damage-vignette"></div><div id="flash-overlay"></div>
