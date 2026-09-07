@@ -38,7 +38,7 @@ export function updateBot(bot,dt,e){
  if(e.rules.mode.id==='sabotage'&&bot.state==='objective'&&distance(bot,bot.goal)<2.9)bot.interacting=true;
  if(target&&bot.flashed<=.3){
   const eye=e.eye(bot),t=e.eye(target),d=Math.max(.1,distance(bot,target));bot.yaw+=angleDelta(bot.yaw,Math.atan2(t.x-eye.x,-(t.z-eye.z)))*clamp(dt*12,0,1);bot.pitch+=(Math.atan2(t.y-eye.y-.28,d)-bot.pitch)*clamp(dt*10,0,1);bot.ads=Math.min(1,bot.ads+dt*5);
-  if(bot.reaction<=0&&bot.burstPause<=0&&bot.state!=='evade'&&e.canSee(bot,target)){
+  if(bot.reaction<=0&&bot.burstPause<=0&&bot.state!=='evade'&&bot.weapon.cooldown<=0&&bot.weapon.reloadLeft<=0&&e.canSee(bot,target)){
    if(bot.weapon.ammo===0)bot.weapon.reload();
    else if(e.shoot(bot,true)){bot.burst++;if(bot.burst>=(bot.role===4?9:bot.role===3?1:3)){bot.burst=0;bot.burstPause=.25+e.random()*.5;}}
   }

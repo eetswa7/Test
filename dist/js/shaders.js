@@ -36,6 +36,13 @@ float shadowTerm(float ndl){
  return shadow/9.;
 }
 void main(){
+ // Analytic soft sprites replace dense spherical smoke meshes.
+ if(vMaterial.w<-.5){vec2 q=vUV*2.-1.;float r2=dot(q,q);if(r2>1.)discard;
+  float soft=pow(max(0.,1.-r2),1.5),fire=step(vMaterial.w,-2.5);
+  float grain=.88+.12*sin(vWorld.x*11.+vWorld.y*13.)*sin(vWorld.z*9.-vWorld.y*8.);
+  vec3 color=mix(vColor.rgb,mix(vec3(1.,.28,.035),vec3(1.,.88,.42),soft),fire);
+  float fog=1.-exp(-length(uEye-vWorld)*.0048);outColor=vec4(mix(color,uFog,fog),soft*grain*vColor.a);return;
+ }
  vec3 n=normalize(vNormal),view=normalize(uEye-vWorld),sun=normalize(uSun);
  float tile=vMaterial.z,leaf=step(tile,-.5),alpha=vColor.a;
  vec3 base=vColor.rgb;float textureHeight=0.;
@@ -46,7 +53,7 @@ void main(){
   vec3 an=abs(n);vec2 uv=an.y>an.x&&an.y>an.z?vWorld.xz:an.x>an.z?vWorld.zy:vWorld.xy;
   float scale=uViewModel>.5?9.:.42;if(tile==5.||tile==6.||tile==7.||tile==8.||tile==13.||tile==14.)scale=.7;
   vec3 tex=texture(uSurfaces,vec3(uv*scale,tile-1.)).rgb;
-  textureHeight=dot(tex,vec3(.299,.587,.114));base=pow(tex,vec3(2.2))*mix(vec3(1.),vColor.rgb,.65);
+  textureHeight=dot(tex,vec3(.299,.587,.114));float weathering=uViewModel>.5?1.:.94+.06*sin(vWorld.x*.43+vWorld.z*.27)*sin(vWorld.y*.61+vWorld.z*.31);tex*=weathering;base=pow(tex,vec3(2.2))*mix(vec3(1.),vColor.rgb,.65);
   vec3 dpdx=dFdx(vWorld),dpdy=dFdy(vWorld),r1=cross(dpdy,n),r2=cross(n,dpdx);float det=dot(dpdx,r1);
   vec3 grad=(r1*dFdx(textureHeight)+r2*dFdy(textureHeight))*sign(det)/max(abs(det),.0001);
   n=normalize(n-grad*(uViewModel>.5?.0008:.026));
@@ -57,12 +64,12 @@ void main(){
  float D=a2/(3.14159*d*d+.0001),k=(rough+1.)*(rough+1.)/8.,G=ndl/(ndl*(1.-k)+k)*ndv/(ndv*(1.-k)+k);
  vec3 F0=mix(vec3(.04),base,metal),F=F0+(1.-F0)*pow(1.-vdh,5.);
  vec3 specular=D*G*F/max(4.*ndl*ndv,.001);
- vec3 skyLight=mix(vec3(.095,.10,.075),vec3(.33,.40,.47),n.y*.5+.5);
+ vec3 skyLight=mix(vec3(.105,.105,.085),mix(vec3(.33,.40,.47),uSky*.65,.45),n.y*.5+.5);
  float contact=mix(.66,1.,smoothstep(0.,1.7,max(vWorld.y,0.)));
  vec3 reflection=pow(texture(uEnvironment,environmentUV(reflect(-view,n))).rgb,vec3(2.2));
  vec3 lit=base*skyLight*contact*(1.-metal*.5);
  lit+=(base*(1.-metal)/3.14159+specular)*ndl*vec3(3.7,3.35,2.78)*mix(.07,1.,shadow);
- lit+=reflection*F0*(.26+(1.-rough)*.60);
+ lit+=reflection*F0*(.26+(1.-rough)*.60);lit+=uSky*pow(1.-ndv,4.)*.06*(1.-metal);
  if(leaf>.5)lit+=base*(.13+.35*pow(max(dot(-sun,view),0.),3.))*mix(.5,1.,shadow);
  if(uViewModel>.5)lit+=base*.26+vec3(.08,.1,.11)*pow(max(dot(n,normalize(vec3(-.5,.8,1.))),0.),3.)*metal;
  lit+=base*max(vMaterial.w,0.);
