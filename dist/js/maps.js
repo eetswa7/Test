@@ -1,8 +1,8 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=9';
-import {dressWorld} from './world-detail.js?v=9';
+import {rng,rayBox,distance,clamp} from './math.js?v=10';
+import {dressWorld} from './world-detail.js?v=10';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
- {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Loading bays, machinery and a warehouse with two entrances.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
+ {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
  {id:2,name:'DUSTLINE',location:'Arid forward base',size:36,weather:'sun',tag:'DESERT',description:'A fortified compound, firing lanes and a radar outpost.',sky:[.54,.66,.72],fog:[.74,.69,.56],sun:[.4,.85,.3]},
  {id:3,name:'RELAY',location:'Mountain listening station',size:44,weather:'sun',tag:'MIXED',description:'An operations centre, service tunnels and open approaches.',sky:[.36,.54,.68],fog:[.5,.61,.61],sun:[-.5,.8,-.4]},
  {id:4,name:'BREAKWATER',location:'Maritime repair terminal',size:39,weather:'sun',tag:'DOCKYARD',description:'A dry-dock crossing, raised service walks and a cargo warehouse.',sky:[.49,.64,.72],fog:[.58,.67,.69],sun:[-.7,.72,.22]},
@@ -24,12 +24,15 @@ export class Arena {
  crate(x,z,stack=1){for(let i=0;i<stack;i++){this.box(x,i*1.18+.59,z,1.25,1.18,1.25,'wood');for(const dx of [-.43,.43])this.detail(x+dx,i*1.18+.6,z,.075,1.2,1.28,'steel');}}
  barrier(x,z,turn=false){this.box(x,.65,z,turn?.8:3.1,1.3,turn?3.1:.8,'concrete');this.detail(x,1.31,z,turn?.8:3.1,.04,turn?3.1:.8,'orange');}
  container(x,z,turn=false,surface='blue'){this.box(x,1.45,z,turn?2.6:6,2.9,turn?6:2.6,surface);for(let i=-2;i<=2;i++)this.detail(x+(turn?0:i),1.48,z+(turn?i:0),turn?2.65:.065,2.78,turn?.065:2.65,'steel');this.detail(x,2.94,z,turn?2.65:6.05,.1,turn?6.05:2.65,'dark');}
- room(x,z,w,d,height=4,surface='stone',roof=true){
-  this.box(x-w/2,height/2,z,.4,height,d,surface);this.box(x+w/2,height/2,z,.4,height,d,surface);
+ room(x,z,w,d,height=4,surface='stone',roof=true,sideDoors=false){
+  for(const xx of [x-w/2,x+w/2]){
+   if(sideDoors){for(const sign of [-1,1])this.box(xx,height/2,z+sign*(d/4+.8),.4,height,d/2-1.6,surface);this.box(xx,height-.5,z,.4,1,3.2,surface);}
+   else this.box(xx,height/2,z,.4,height,d,surface);
+  }
   for(const zz of [z-d/2,z+d/2]){this.box(x-w/4-.65,height/2,zz,w/2-1.3,height,.4,surface);this.box(x+w/4+.65,height/2,zz,w/2-1.3,height,.4,surface);this.box(x,height-.5,zz,2.6,1,.4,surface);}
   if(roof)this.box(x,height+.15,z,w+.6,.3,d+.6,surface,{roof:true});
   this.detail(x,.015,z,w-.4,.03,d-.4,'concrete');
-  for(const xx of [x-w/2+.22,x+w/2-.22]){this.detail(xx,2.25,z,.06,1.4,2,'glass');this.detail(xx,2.25,z,.07,.06,2.1,'dark');}
+  for(const xx of [x-w/2+.22,x+w/2-.22]){if(sideDoors)continue;this.detail(xx,2.25,z,.06,1.4,2,'glass');this.detail(xx,2.25,z,.07,.06,2.1,'dark');}
   this.detail(x,height-.25,z,.7,.08,1.5,'white',{emissive:.9});
  }
  stairs(x,z,width=2.6,height=2.4,dir=1){for(let i=0;i<8;i++){const h=height*(i+1)/8;this.box(x,h/2,z+dir*i*.48,width,h,.49,'concrete',{stair:true});}}
@@ -50,7 +53,7 @@ export class Arena {
    for(const [x,z] of [[-20,6],[11,-4],[-7,-7],[8,13]])this.crate(x,z,2);
    for(const z of [-7,8]){this.detail(-23,2.7,z,4,.08,2.8,'green');for(const x of [-24.8,-21.2])this.detail(x,1.35,z,.09,2.7,.09,'wood');}
   }else if(id===1){
-   this.room(0,0,26,23,6,'steel');
+   this.room(0,0,26,23,6,'steel',true,true);
    for(const x of [-8,7])for(const z of [-6,5]){this.box(x,1.3,z,3,2.6,4,'dark');this.detail(x,2.75,z,2.7,.3,3.6,'rust');this.detail(x-1.53,1.6,z,.08,.8,1,'orange');}
    for(const x of [-12,12])for(const z of [-10,0,10])this.detail(x,3,z,.28,6,.28,'orange');
    this.container(-24,-6,true);this.container(24,6,true,'rust');this.container(-20,16);this.container(20,-17,false,'rust');
@@ -66,7 +69,7 @@ export class Arena {
    for(const [x,z] of [[-9,-3],[11,3],[-28,19],[28,-18]])this.crate(x,z,2);
    this.stairs(17,-22,2.8,3.6,1);
   }else if(id===3){
-   this.room(0,0,17,23,4.4,'concrete');this.room(-23,-16,12,9,3.4,'steel');this.room(23,16,12,9,3.4,'steel');
+   this.room(0,0,17,23,4.4,'concrete',true,true);this.room(-23,-16,12,9,3.4,'steel');this.room(23,16,12,9,3.4,'steel');
    this.room(-24,15,10,14,3.8,'stone');this.room(24,-16,10,14,3.8,'stone');
    for(const [x,z] of [[-14,-2],[15,3],[-6,-23],[6,23],[-32,-2],[32,0]])this.barrier(x,z);
    this.container(-5,31,false,'green');this.container(4,-31);
@@ -78,10 +81,29 @@ export class Arena {
   // Shallow access stairs keep each navigation-grid transition below the step limit.
   if(id===4)this.buildBreakwater();
   if(id===5)this.buildCitadel();
+  this.improveFlow();
   // Set dressing stays separate from collision; small breakables have their own hit state.
   for(let i=0;i<26;i++){let x=(this.random()-.5)*(s*2-5),z=(this.random()-.5)*(s*2-5);if(this.collides({x,y:0,z},.6,1.9))continue;this.detail(x,.012,z,.06+this.random()*.22,.025,.1+this.random()*.15,'dark',{yaw:this.random()*6.28});}
   
   for(const [x,z] of [[-10,10],[10,-10],[-21,-22],[21,22]])if(!this.collides({x,y:0,z},.6,1.9)){const b=this.box(x,.65,z,.8,1.3,.8,'rust',{mesh:'cylinder',breakable:true,hp:45});this.breakables.push(b);}
+ }
+ improveFlow(){
+  // Staggered perimeter screens break the boundary-to-boundary camping lanes.
+  // Each screen is freestanding, with room to leave around either end.
+  const s=this.info.size,e=s-9,offset=s*.28,material=this.info.id===2?'stone':this.info.id===5?'limestone':'concrete';
+  const screens=[];
+  for(const sign of [-1,1])for(const side of [-1,1]){
+   screens.push({x:sign*e,z:side*offset,w:.7,d:4.2});
+   screens.push({x:side*offset,z:sign*e,w:4.2,d:.7});
+  }
+  for(const p of screens){
+   if(this.blocks.some(b=>!b.ground&&Math.abs(p.x-b.x)<(p.w+b.w)/2+2&&Math.abs(p.z-b.z)<(p.d+b.d)/2+2))continue;
+   if(this.objectives.some(q=>Math.hypot(p.x-q.x,p.z-q.z)<6)||this.spawns.some(q=>Math.hypot(p.x-q.x,p.z-q.z)<3))continue;
+   this.box(p.x,.99,p.z,p.w,1.98,p.d,material,{spawnScreen:true});
+   this.detail(p.x,2,p.z,p.w+.08,.055,p.d+.08,'dark');
+   const dx=p.w>p.d?1.25:0,dz=p.d>p.w?1.25:0;
+   for(const sign of [-1,1])this.detail(p.x+dx*sign,.12,p.z+dz*sign,p.w>p.d?.3:1.1,.24,p.d>p.w?.3:1.1,'dark');
+  }
  }
  accessSteps(x,edge,width,height,dir=1){
   // Landings align with the baked 1.25 m navigation cells; short dense treads can

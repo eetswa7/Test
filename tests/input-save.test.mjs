@@ -51,3 +51,7 @@ test('window-level release listeners handle a contact ending outside the control
  tracked.pointerDown(ev(5,90,260));tracked.pointerMove(ev(5,30,260));assert(tracked.sample(.016).mx<-.9);for(const fn of callbacks.pointerup)fn(ev(5,-10,260));assert.equal(tracked.sample(.016).mx,0);
  tracked.pointerDown(ev(6,90,260));tracked.pointerMove(ev(6,30,260));for(const fn of callbacks.pagehide)fn({});assert.equal(tracked.sample(.016).mx,0);
 });
+
+test('array-like native TouchLists work without a JavaScript iterator',()=>{
+ const {input,ev}=fixture();input.pointerDown(ev(5,90,260));const touches={0:{identifier:44,clientX:90,clientY:260},length:1};assert.doesNotThrow(()=>input.syncTouches({type:'touchstart',touches}));input.pointerMove(ev(5,20,260));assert(input.sample(.016).mx<-.9);input.syncTouches({type:'touchend',touches:{length:0}});assert.equal(input.sample(.016).mx,0);
+});

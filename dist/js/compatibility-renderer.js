@@ -1,10 +1,10 @@
-import {animateWeaponParts} from './weapon-models.js?v=9';
-import {identityFor} from './combat-identity.js?v=9';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=9';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=9';
-import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=9';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=9';
-import {loadImages} from './textures.js?v=9';
+import {animateWeaponParts} from './weapon-models.js?v=10';
+import {identityFor} from './combat-identity.js?v=10';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=10';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=10';
+import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=10';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=10';
+import {loadImages} from './textures.js?v=10';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];

@@ -1,9 +1,10 @@
-import {Arena,MAPS} from './maps.js?v=9';
-import {Navigation} from './navigation.js?v=9';
-import {MatchRules} from './modes.js?v=9';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=9';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=9';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=9';
+import {Arena,MAPS} from './maps.js?v=10';
+import {Navigation} from './navigation.js?v=10';
+import {SpawnDirector} from './spawns.js?v=10';
+import {MatchRules} from './modes.js?v=10';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=10';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=10';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=10';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -18,7 +19,7 @@ export class Actor {
 export class Game {
  constructor(config={},options={}){
   this.config={mode:config.mode??'tdm',map:clamp(Math.floor(Number(config.map)||0),0,MAPS.length-1),difficulty:config.difficulty??'regular',loadout:sanitizeLoadout(config.loadout)};
-  this.arena=new Arena(this.config.map);this.nav=new Navigation(this.arena);this.rules=new MatchRules(this.config.mode,this.arena);this.random=rng(options.seed??Date.now());this.difficulty=DIFFICULTY[this.config.difficulty]??DIFFICULTY.regular;
+  this.arena=new Arena(this.config.map);this.nav=new Navigation(this.arena);this.spawner=new SpawnDirector(this.arena,this.nav);this.rules=new MatchRules(this.config.mode,this.arena);this.random=rng(options.seed??Date.now());this.difficulty=DIFFICULTY[this.config.difficulty]??DIFFICULTY.regular;
   this.time=0;this.paused=false;this.events=[];this.grenades=[];this.smokes=[];this.actors=[];this.shots=0;this.hits=0;this.headshots=0;this.weaponKills={};this.debug={god:false,ammo:false};this.damageYaw=0;this.lastKiller='';this.saved=false;
   this.actors.push(new Actor(0,0,0,this.config.loadout));for(let i=1;i<8;i++)this.actors.push(new Actor(i,i<4?0:1,(i-1)%6));this.player=this.actors[0];
   if(this.rules.mode.id==='gun')for(const a of this.actors)a.weapons=[new Weapon(GUN_ORDER[0]),new Weapon(10)];
@@ -27,16 +28,9 @@ export class Game {
  eye(a){return{x:a.x,y:a.y+a.height-.12,z:a.z};}
  emit(type,data={}){if(this.events.length<180)this.events.push({type,time:this.time,...data});}
  spawn(a,initial=false){
-  let best=null,bestScore=-Infinity;
-  for(const p of this.arena.spawns){if(this.rules.mode.teams&&initial&&p.team!==a.team)continue;let score=(p.team===a.team&&this.rules.mode.teams?6:0)+this.random()*2;
-   for(const other of this.actors)if(!other.dead&&other.id!==a.id){const d=distance(p,other);if(this.rules.enemies(a,other)){score+=Math.min(d,40)*.22;if(d<12)score-=45;if(this.arena.visible({...p,y:1.5},this.eye(other)))score-=18;}else if(d<2)score-=25;}
-   if(this.arena.collides(p,.35,1.8))continue;if(score>bestScore){best=p;bestScore=score;}
-  }
-  const p=best??this.arena.spawns[a.team?4:0];let x=p.x,z=p.z;
-  for(let i=0;i<8&&this.actors.some(o=>o.id!==a.id&&!o.dead&&Math.hypot(o.x-x,o.z-z)<.85);i++){x=p.x+(this.random()-.5)*4;z=p.z+(this.random()-.5)*4;if(this.arena.collides({x,y:p.y,z},.35,1.8)){x=p.x;z=p.z;}}
-  a.reset({x,y:p.y,z},Math.atan2(-x,z));
+  const p=this.spawner.select(a,this,initial);a.reset(p,p.yaw);
  }
- resetRound(){for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
+ resetRound(){this.spawner.resetRound();for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
  canSee(a,b){if(a.flashed>.3)return false;const from=this.eye(a),to=this.eye(b);if(!this.arena.visible(from,to))return false;for(const s of this.smokes)if(s.age<13&&pointSegment(s,from,to)<Math.min(5.2,s.age*4))return false;return true;}
  moveActor(a,tx,tz,dt){
   const speed=Math.hypot(tx,tz),accel=clamp(dt*(speed>0?24:30),0,1);a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
@@ -122,7 +116,7 @@ export class Game {
   victim.health-=amount;victim.lastDamage=this.time;
   if(victim.id===0){this.damageYaw=killer?Math.atan2(killer.x-victim.x,-(killer.z-victim.z)):victim.yaw;this.emit('hurt',{value:amount,angle:this.damageYaw});}
   if(victim.health>0)return;
-  victim.health=0;victim.deaths++;victim.streak=0;victim.respawnLeft=3;victim.interacting=false;
+  victim.health=0;this.spawner.noteDeath(victim,this.time);victim.deaths++;victim.streak=0;victim.respawnLeft=3;victim.interacting=false;
   if(victim.id===0)this.lastKiller=killer?.name??'FALL';
   if(killer&&killer.id!==victim.id){killer.kills++;killer.streak++;killer.bestStreak=Math.max(killer.bestStreak,killer.streak);
    if(killer.id===0){this.weaponKills[killer.weapon.def.id]=(this.weaponKills[killer.weapon.def.id]??0)+1;if(headshot)this.headshots++;}

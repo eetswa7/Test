@@ -1,20 +1,22 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=9';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=9';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=9';
-import { loadImages } from './textures.js?v=9';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=9';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=9';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=9';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=10';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=10';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=10';
+import { loadImages } from './textures.js?v=10';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=10';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=10';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=10';
 
 const QUALITY = {
-  low: { scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, foliage: .55, range: 65 },
-  medium: { scale: .9, dpr: 1.65, shadow: 1024, shadowHz: 15, effects: 130, foliage: .8, range: 85 },
-  high: { scale: 1, dpr: 1.85, shadow: 1536, shadowHz: 30, effects: 200, foliage: 1, range: 110 }
+  low: { scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, smokeLayers: 4, foliage: .55, range: 65 },
+  medium: { scale: .9, dpr: 1.65, shadow: 1024, shadowHz: 15, effects: 130, smokeLayers: 5, foliage: .8, range: 85 },
+  high: { scale: 1, dpr: 1.85, shadow: 1536, shadowHz: 24, effects: 200, smokeLayers: 6, foliage: 1, range: 110 }
 };
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
 const RAD = Math.PI / 180;
+const FAR_ACTOR_PARTS = new Set([0,1,2,3,4,5,6,7,8,10,11,14,15,16,17,20,21]);
+const IDLE_FRAME = () => new Promise(resolve => setTimeout(resolve, 0));
 
 // The gameplay model remains engine independent. Only this module owns Three.js.
 export function isFriendly(game, actor) {
@@ -39,6 +41,18 @@ function tileCanvas(image, columns, index, size) {
   context.drawImage(image, index % columns * edge, Math.floor(index / columns) * height,
     edge, height, 0, 0, size, size);
   return canvas;
+}
+
+// Remove a tile's average colour before applying the authored weapon finish.
+// This keeps dark graphite legible and prevents a tan tile from tinting twice.
+export function neutraliseFinish(pixels) {
+  let red = 0, green = 0, blue = 0, count = pixels.length / 4;
+  for (let i = 0; i < pixels.length; i += 4) { red += pixels[i]; green += pixels[i+1]; blue += pixels[i+2]; }
+  const sr = 178 / Math.max(24, red / count), sg = 178 / Math.max(24, green / count), sb = 178 / Math.max(24, blue / count);
+  for (let i = 0; i < pixels.length; i += 4) {
+    pixels[i] = clamp(pixels[i] * sr, 18, 248); pixels[i+1] = clamp(pixels[i+1] * sg, 18, 248); pixels[i+2] = clamp(pixels[i+2] * sb, 18, 248);
+  }
+  return pixels;
 }
 
 // Original detail maps are derived once at load time, never during a frame.
@@ -129,6 +143,7 @@ export class Renderer {
     this.geometry = {
       cube: bufferGeometry(makeCube()), cylinder: bufferGeometry(makeCylinder(16)),
       sphere: bufferGeometry(makeSphere()), bevel: bufferGeometry(roundedBox(.1, 4)),
+      bevelWorld: bufferGeometry(roundedBox(.08, 3)), bevelActor: bufferGeometry(roundedBox(.1, 2)),
       tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh())
     };
     // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.
@@ -140,7 +155,8 @@ export class Renderer {
     this.localMatrix = new THREE.Matrix4(); this.rawMatrix = new Float32Array(16);
     this.color = new THREE.Color(); this.target = new THREE.Vector3(); this.projected = new THREE.Vector4();
     this.worldVP = new THREE.Matrix4(); this.eye = { x: 0, y: 2, z: 0 }; this.cameraY = null;
-    this.windTime = { value: 0 }; this.weaponKey = ''; this.weaponParts = [];
+    this.windTime = { value: 0 }; this.weaponKey = ''; this.weaponParts = []; this.weaponPoseState = {};
+    this.frustum = new THREE.Frustum(); this.actorBounds = new THREE.Sphere(new THREE.Vector3(), 1.5);
     this.renderScale = 1; this.frameAverage = 16.7; this.slowTime = 0; this.fastTime = 0;
     this.frames = 0; this.fps = 60; this.lastFPS = 0; this.drawCalls = 0; this.shadowClock = 1;
     this.quality = this.chooseQuality(); this.appliedQuality = ''; this.width = 0; this.height = 0;
@@ -165,12 +181,23 @@ export class Renderer {
 
   async loadAssets() {
     const images = await loadImages(), anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
-    this.surfaceMaps = []; this.leafMaps = [];
+    this.surfaceMaps = []; this.leafMaps = []; this.weaponMaps = [];
     for (let i = 0; i < 16; i++) {
       const canvas = tileCanvas(images.surfaces, 4, i, 256), map = new THREE.CanvasTexture(canvas);
       map.colorSpace = THREE.SRGBColorSpace; map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
       const detail = detailMaps(canvas); this.surfaceMaps.push({ map, ...detail });
       this.textures.push(map, detail.normal, detail.roughness);
+      if (i % 4 === 3) await IDLE_FRAME(); // Let input/loading UI paint between CPU texture work.
+    }
+    if (images.weapon) for (let i = 0; i < 4; i++) {
+      const canvas = tileCanvas(images.weapon, 2, i, 256), context = canvas.getContext('2d');
+      const detail = detailMaps(canvas), pixels = context.getImageData(0, 0, 256, 256);
+      neutraliseFinish(pixels.data); context.putImageData(pixels, 0, 0);
+      const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
+      map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
+      detail.normal.anisotropy = anisotropy;
+      this.weaponMaps.push({ map, ...detail }); this.textures.push(map, detail.normal, detail.roughness);
+      await IDLE_FRAME();
     }
     for (let i = 0; i < 4; i++) {
       const map = new THREE.CanvasTexture(tileCanvas(images.leaves, 2, i, 512));
@@ -189,7 +216,7 @@ export class Renderer {
     this.environment = pmrem.fromEquirectangular(this.horizon); pmrem.dispose();
     this.scene.background = this.horizon; this.scene.backgroundIntensity = .85;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
-    this.scene.environmentIntensity = .65; this.weaponScene.environmentIntensity = .85;
+    this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
@@ -219,36 +246,37 @@ export class Renderer {
 
   partMaterial(p) {
     let data = this.partData.get(p);
-    if (!data) { const m = material(p); data = { ...m, keys: Object.create(null) }; this.partData.set(p, data); }
+    if (!data) { const m = material(p); data = { ...m, finishTile: p.finishTile, keys: Object.create(null), bindings: Object.create(null) }; this.partData.set(p, data); }
     return data;
   }
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${m.pattern}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
     const key = this.materialKey(p, category);
     if (this.materials.has(key)) return this.materials.get(key);
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, tile = Math.round(m.pattern - 1);
-    const maps = !leaf && tile >= 0 ? this.surfaceMaps[tile] : null;
+    const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
+    const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
     const options = { color: 0xffffff, roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
-      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .32 : .45,
-        category === 'weapon' ? .32 : .45), envMapIntensity: category === 'weapon' ? 1.2 : .65 };
+      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
+        category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaTest: .58, metalness: 0, roughness: 1 });
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
     const mat = p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .08, roughness: .14, metalness: .25 }) : new THREE.MeshStandardMaterial(options);
     // Per-instance dimensions give architecture a consistent material scale.
-    if (category === 'world' && !leaf && maps) {
+    if (!leaf && maps && (category === 'world' || finish)) {
       mat.onBeforeCompile = shader => {
         shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
           #ifdef USE_INSTANCING
           vec3 dims=vec3(length(instanceMatrix[0].xyz),length(instanceMatrix[1].xyz),length(instanceMatrix[2].xyz));
           vec3 axis=abs(normal); vec2 repeats=axis.y>.7?dims.xz:(axis.x>.7?dims.zy:dims.xy);
-          repeats=max(vec2(.18),repeats*.7);
+          repeats=max(vec2(${category === 'weapon' ? '.2' : '.18'}),repeats*${category === 'weapon' ? '18.0' : '.7'});
           #ifdef USE_MAP
           vMapUv*=repeats;
           #endif
@@ -260,7 +288,7 @@ export class Renderer {
           #endif
           #endif`);
       };
-      mat.customProgramCacheKey = () => 'world-scaled-uv-v1';
+      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-finish-uv-v2' : 'world-scaled-uv-v2';
     }
     if (leaf) {
       this.patchWind(mat);
@@ -286,8 +314,10 @@ export class Renderer {
   }
 
   instanceColor(p, category, override) {
-    const m = this.partMaterial(p), c = override ?? m.color;
+    const m = this.partMaterial(p), c = override ?? p.color ?? m.color;
     // Architectural textures contain their own albedo; retain a light tint rather than multiplying it twice.
+    if (category === 'weapon' && m.finishTile >= 0) return this.color.setRGB(
+      .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
     const brighten = category === 'world' && m.pattern > 0 && !p.color;
     return this.color.setRGB(brighten ? .55 + c[0] * .45 : c[0],
       brighten ? .55 + c[1] * .45 : c[1], brighten ? .55 + c[2] * .45 : c[2], THREE.SRGBColorSpace);
@@ -306,7 +336,7 @@ export class Renderer {
     }
     for (const parts of bins.values()) {
       const p = parts[0], leaf = p.leaf !== undefined;
-      const batch = new THREE.InstancedMesh(this.geometry[p.mesh ?? 'cube'] ?? this.geometry.cube,
+      const batch = new THREE.InstancedMesh(this.partGeometry(p, 'world'),
         this.makeMaterial(p, 'world'), parts.length);
       for (let i = 0; i < parts.length; i++) { batch.setMatrixAt(i, this.partMatrix(parts[i]));
         batch.setColorAt(i, this.instanceColor(parts[i], 'world')); }
@@ -333,35 +363,75 @@ export class Renderer {
     this.shadowClock=1;
   }
 
-  clearDynamic(map) { for (const entry of map.values()) { entry.mesh.parent?.remove(entry.mesh); entry.mesh.dispose(); } map.clear(); }
-  resetDynamic(map) { for (const entry of map.values()) { entry.used = 0; entry.mesh.count = 0; } }
+  partGeometry(p, category) {
+    if (p.mesh === 'bevel') {
+      const simpler = category === 'actor' ? this.geometry.bevelActor : category === 'world' ? this.geometry.bevelWorld : null;
+      if (simpler) return simpler;
+    }
+    return this.geometry[p.mesh ?? 'cube'] ?? this.geometry.cube;
+  }
+
+  clearDynamic(map) {
+    for (const entry of map.values()) { entry.alive = false; entry.mesh.parent?.remove(entry.mesh); entry.mesh.dispose(); }
+    map.clear();
+  }
+  resetDynamic(map) { for (const entry of map.values()) { entry.used = 0; entry.matrixDirty = false; entry.colorDirty = false; } }
+
   addDynamic(map, group, p, category, parent, color) {
-    const key = `${p.mesh ?? 'cube'}/${this.materialKey(p, category)}`;
-    let entry = map.get(key);
-    if (!entry) {
-      const capacity = 64;
-      const mesh = new THREE.InstancedMesh(this.geometry[p.mesh ?? 'cube'] ?? this.geometry.cube,
-        this.makeMaterial(p, category), capacity);
-      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.frustumCulled = false;
-      mesh.castShadow = category === 'actor'; mesh.receiveShadow = category === 'actor';
-      group.add(mesh); entry = { mesh, used: 0, capacity }; map.set(key, entry);
+    const data = this.partMaterial(p);
+    let binding = data.bindings?.[category], entry = binding?.entry;
+    if (!entry?.alive || binding.map !== map) {
+      const key = `${p.mesh ?? 'cube'}/${this.materialKey(p, category)}`;
+      entry = map.get(key);
+      if (!entry) {
+        const capacity = 64;
+        const mesh = new THREE.InstancedMesh(this.partGeometry(p, category), this.makeMaterial(p, category), capacity);
+        mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.frustumCulled = false;
+        mesh.castShadow = category === 'actor'; mesh.receiveShadow = category === 'actor';
+        group.add(mesh); entry = { mesh, used: 0, capacity, alive: true, version: 0, matrixDirty: false, colorDirty: false, slots: [] };
+        map.set(key, entry);
+      }
+      binding = { map, entry, slot: -1, version: -1, matrix: new THREE.Matrix4(), pose: new Float64Array(9).fill(NaN), color: new THREE.Color(-1,-1,-1) };
+      (data.bindings ?? (data.bindings = Object.create(null)))[category] = binding;
     }
     if (entry.used >= entry.capacity) {
-      const old=entry.mesh,capacity=entry.capacity*2;
-      const mesh=new THREE.InstancedMesh(old.geometry,old.material,capacity);
-      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.instanceMatrix.array.set(old.instanceMatrix.array);
-      if(old.instanceColor){mesh.setColorAt(0,this.color);mesh.instanceColor.array.set(old.instanceColor.array);}
-      mesh.frustumCulled=old.frustumCulled;mesh.castShadow=old.castShadow;mesh.receiveShadow=old.receiveShadow;
-      group.remove(old);old.dispose();group.add(mesh);entry.mesh=mesh;entry.capacity=capacity;
+      const old = entry.mesh, capacity = entry.capacity * 2;
+      const mesh = new THREE.InstancedMesh(old.geometry, old.material, capacity);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.instanceMatrix.array.set(old.instanceMatrix.array);
+      if (old.instanceColor) { mesh.setColorAt(0, this.color); mesh.instanceColor.array.set(old.instanceColor.array); }
+      mesh.frustumCulled = old.frustumCulled; mesh.castShadow = old.castShadow; mesh.receiveShadow = old.receiveShadow;
+      group.remove(old); old.dispose(); group.add(mesh); entry.mesh = mesh; entry.capacity = capacity; entry.version++;
     }
-    this.partMatrix(p, this.localMatrix);
-    if (parent) this.matrix.multiplyMatrices(parent, this.localMatrix); else this.matrix.copy(this.localMatrix);
-    entry.mesh.setMatrixAt(entry.used, this.matrix); entry.mesh.setColorAt(entry.used, this.instanceColor(p, category, color));
-    entry.used++;
+    const pose = binding.pose, yaw = p.yaw ?? 0, pitch = p.pitch ?? 0, roll = p.roll ?? 0;
+    const moved = pose[0] !== p.x || pose[1] !== p.y || pose[2] !== p.z || pose[3] !== p.w || pose[4] !== p.h || pose[5] !== p.d || pose[6] !== yaw || pose[7] !== pitch || pose[8] !== roll;
+    if (moved) {
+      this.partMatrix(p, binding.matrix);
+      pose[0]=p.x; pose[1]=p.y; pose[2]=p.z; pose[3]=p.w; pose[4]=p.h; pose[5]=p.d; pose[6]=yaw; pose[7]=pitch; pose[8]=roll;
+    }
+    const slotChanged = entry.slots[entry.used] !== p || binding.slot !== entry.used || binding.version !== entry.version;
+    if (parent || moved || slotChanged) {
+      if (parent) this.matrix.multiplyMatrices(parent, binding.matrix); else this.matrix.copy(binding.matrix);
+      entry.mesh.setMatrixAt(entry.used, this.matrix); entry.matrixDirty = true;
+    }
+    const tint = this.instanceColor(p, category, color);
+    if (slotChanged || !binding.color.equals(tint)) {
+      entry.mesh.setColorAt(entry.used, tint); binding.color.copy(tint); entry.colorDirty = true;
+    }
+    entry.slots[entry.used] = p; binding.slot = entry.used; binding.version = entry.version; entry.used++;
   }
   uploadDynamic(map) {
-    for (const entry of map.values()) { entry.mesh.count = entry.used;
-      if (entry.used) { entry.mesh.instanceMatrix.needsUpdate = true; entry.mesh.instanceColor.needsUpdate = true; } }
+    for (const entry of map.values()) {
+      entry.mesh.count = entry.used;
+      if (!entry.used) continue;
+      if (entry.matrixDirty) {
+        entry.mesh.instanceMatrix.clearUpdateRanges(); entry.mesh.instanceMatrix.addUpdateRange(0, entry.used * 16);
+        entry.mesh.instanceMatrix.needsUpdate = true;
+      }
+      if (entry.colorDirty && entry.mesh.instanceColor) {
+        entry.mesh.instanceColor.clearUpdateRanges(); entry.mesh.instanceColor.addUpdateRange(0, entry.used * 3);
+        entry.mesh.instanceColor.needsUpdate = true;
+      }
+    }
   }
 
   applyQuality(force = false) {
@@ -373,10 +443,13 @@ export class Renderer {
       this.sun.shadow.mapSize.set(q.shadow, q.shadow); this.sun.shadow.needsUpdate = true;
     }
     for (const batch of this.worldBatches) if (batch.userData.leaf) {
-      batch.count = Math.max(1, Math.floor(batch.userData.fullCount * q.foliage));
+      batch.count = Math.min(batch.userData.fullCount, Math.max(1, Math.floor(batch.userData.fullCount * q.foliage)));
       batch.castShadow = this.quality === 'high';
     }
-    this.scene.environmentIntensity = this.quality === 'low' ? .5 : .65;
+    this.scene.environmentIntensity = this.quality === 'low' ? .48 : .58;
+    const half = this.quality === 'high' ? 34 : 28;
+    Object.assign(this.sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half });
+    this.sun.shadow.camera.updateProjectionMatrix();
     this.shadowClock = 1;
   }
 
@@ -488,7 +561,12 @@ export class Renderer {
       compose(this.rawMatrix, a.x, a.y + .025, a.z, 1.15, .82, 1, 0, -Math.PI / 2, 0); this.matrix.fromArray(this.rawMatrix);
       this.contactShadows.setMatrixAt(shadowCount++, this.matrix);
     }
-    this.contactShadows.count = shadowCount; this.contactShadows.instanceMatrix.needsUpdate = true;
+    this.contactShadows.count = shadowCount;
+    if (shadowCount) {
+      this.contactShadows.instanceMatrix.clearUpdateRanges();
+      this.contactShadows.instanceMatrix.addUpdateRange(0, shadowCount * 16);
+      this.contactShadows.instanceMatrix.needsUpdate = true;
+    }
     for (const e of this.effects) {
       if (e.life <= 0) continue;
       e.life -= dt; if (e.life <= 0) continue;
@@ -502,13 +580,18 @@ export class Renderer {
     }
     for (const smoke of game.smokes) {
       const radius = Math.min(5.2, smoke.age * 4), alpha = Math.min(.8, smoke.age) * clamp((16 - smoke.age) / 3, 0, 1);
-      for (let i = 0; i < 8; i++) { const angle = i * 2.399 + smoke.age * .07;
+      const layers = (QUALITY[this.quality] ?? QUALITY.medium).smokeLayers;
+      // Match eight layers' total opacity with fewer overlapping fragments.
+      const opacity = 1 - Math.pow(1 - alpha, 8 / layers);
+      for (let i = 0; i < layers; i++) { const angle = i * 2.399 + smoke.age * .07;
         count = this.writeBillboard(count, smoke.x + Math.sin(angle) * radius * .34,
           smoke.y + 1.25 + i % 3 * .48, smoke.z + Math.cos(angle) * radius * .34,
-          radius * 1.7, 3.7, .38, .41, .40, alpha, 0); }
+          radius * 1.7, 3.7, .38, .41, .40, opacity, 0); }
     }
     this.fxMesh.geometry.instanceCount = count;
-    if (count) for (const attr of this.fxAttributeList) attr.needsUpdate = true;
+    if (count) for (const attr of this.fxAttributeList) {
+      attr.clearUpdateRanges(); attr.addUpdateRange(0, count * attr.itemSize); attr.needsUpdate = true;
+    }
     for (const decal of this.decals) if (decal.life > 0) { decal.life -= dt;
       if (decal.life > 0) this.addDynamic(this.actorBatches, this.scene, decal.part, 'actor'); }
     for (const grenade of game.grenades) {
@@ -522,12 +605,19 @@ export class Renderer {
     this.resetDynamic(this.actorBatches);
     const player = game.player, range = (QUALITY[this.quality] ?? QUALITY.medium).range;
     for (const a of game.actors) {
-      if (a.id === player.id || distance(a, player) > range) continue;
+      const actorDistance = distance(a, player);
+      if (a.id === player.id || actorDistance > range) continue;
+      if (this.frustum && actorDistance > 12) {
+        this.actorBounds.center.set(a.x, a.y + .9, a.z);
+        if (!this.frustum.intersectsSphere(this.actorBounds)) continue;
+      }
+      const distant = actorDistance > (this.quality === 'low' ? 24 : 38);
       const death = a.dead ? Math.min(1, (3 - a.respawnLeft) * 2) : 0;
       if (a.dead && death >= 1) continue;
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
       const identity = identityFor(a, player, game.rules), parts = actorModel(a, game.time, identity);
       for (let i = 0; i < parts.length; i++) {
+        if (distant && !FAR_ACTOR_PARTS.has(i)) continue;
         const q = parts[i]; let color;
         // Navy/cyan versus warm charcoal/crimson is stable after sides switch and in FFA.
         if (q.surface === 'fabric') color = identity.cloth;
@@ -566,8 +656,14 @@ export class Renderer {
 
   updateLighting(dt) {
     const eye = this.eye, sun = this.arena.info.sun;
-    const cx = Math.round(eye.x / 2) * 2, cz = Math.round(eye.z / 2) * 2;
-    this.sun.position.set(cx + sun[0] * 65, 58, cz + sun[2] * 65); this.sun.target.position.set(cx, 0, cz);
+    const sx = sun[0] * 65, sy = 58, sz = sun[2] * 65, length = Math.hypot(sx, sy, sz), horizontal = Math.hypot(sx, sz) || 1;
+    const dx = sx / length, dy = sy / length, dz = sz / length;
+    const rx = sz / horizontal, rz = -sx / horizontal, ux = dy * rz, uy = dz * rx - dx * rz, uz = -dy * rx;
+    const texel = (this.sun.shadow.camera.right - this.sun.shadow.camera.left) / this.sun.shadow.mapSize.x;
+    const u = Math.round((eye.x * rx + eye.z * rz) / texel) * texel;
+    const v = Math.round((eye.x * ux + eye.z * uz) / texel) * texel, depth = eye.x * dx + eye.z * dz;
+    const cx = rx * u + ux * v + dx * depth, cy = uy * v + dy * depth, cz = rz * u + uz * v + dz * depth;
+    this.sun.position.set(cx + sx, cy + sy, cz + sz); this.sun.target.position.set(cx, cy, cz);
     // Three unshadowed bulbs at most, selected from authored interior fixtures at 5 Hz.
     this.lightClock = (this.lightClock ?? 0) - dt;
     if (this.lightClock <= 0) {
@@ -587,6 +683,12 @@ export class Renderer {
       }
     }
     const inside = this.arena.indoors(eye);
+    // Rotate view-model sunlight with the player's heading, so the gun belongs
+    // to the world instead of wearing a camera-fixed studio highlight.
+    this.target.set(this.sun.position.x - this.sun.target.position.x, 58, this.sun.position.z - this.sun.target.position.z);
+    this.target.transformDirection(this.camera.matrixWorldInverse);
+    this.weaponKeyLight.position.copy(this.target).multiplyScalar(5);
+    this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, inside ? .34 : .85, clamp(dt * 5, 0, 1));
     this.weaponFill.intensity = lerp(this.weaponFill.intensity, inside ? .95 : 1.75, clamp(dt * 5, 0, 1));
     this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, inside ? 1.6 : 3.4, clamp(dt * 5, 0, 1));
     this.shadowClock += dt;
@@ -606,7 +708,7 @@ export class Renderer {
     this.resetDynamic(this.weaponBatches);
     for (const q of this.weaponParts) if (!q.hidden) this.addDynamic(this.weaponBatches, this.weaponRoot, q, 'weapon');
     this.uploadDynamic(this.weaponBatches);
-    const pose = weaponPose(p, game.time, this.settings.motion !== false, menu);
+    const pose = weaponPose(p, game.time, this.settings.motion !== false, menu, this.weaponPoseState ?? (this.weaponPoseState = {}));
     this.weaponRoot.position.set(pose.x, pose.y, pose.z);
     this.weaponRoot.rotation.set(pose.pitch, pose.yaw, pose.roll, 'YXZ'); this.weaponRoot.scale.setScalar(pose.scale);
     const muzzle = this.weaponParts.muzzle;
@@ -651,6 +753,7 @@ export class Renderer {
     this.camera.position.set(this.eye.x, this.eye.y, this.eye.z); this.camera.lookAt(this.target);
     this.camera.fov = fov; this.camera.aspect = aspect; this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld();
     this.worldVP.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
+    this.frustum?.setFromProjectionMatrix(this.worldVP);
     this.windTime.value = game.time;
     this.updateActors(game); this.updateEffects(menu || game.paused ? 0 : dt, game); this.uploadDynamic(this.actorBatches);
     this.updateLighting(dt);

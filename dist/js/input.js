@@ -1,5 +1,5 @@
-import {emptyInput} from './engine.js?v=9';
-import {clamp} from './math.js?v=9';
+import {emptyInput} from './engine.js?v=10';
+import {clamp} from './math.js?v=10';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -72,7 +72,7 @@ export class TouchInput {
  bindTouch(pointer){
   if(pointer.type!=='touch'||pointer.touchID!==null||!this.nativeTouches)return;
   let best=null,distance=48*48;
-  for(const t of this.nativeTouches){let used=false;for(const p of this.pointers.values())if(p!==pointer&&p.touchID===t.identifier){used=true;break;}if(used)continue;
+  for(let i=0;i<this.nativeTouches.length;i++){const t=this.nativeTouches[i];let used=false;for(const p of this.pointers.values())if(p!==pointer&&p.touchID===t.identifier){used=true;break;}if(used)continue;
    const d=(t.clientX-pointer.x)**2+(t.clientY-pointer.y)**2;if(d<distance){distance=d;best=t;}
   }
   if(best)pointer.touchID=best.identifier;
@@ -83,7 +83,7 @@ export class TouchInput {
   const ending=event.type==='touchend'||event.type==='touchcancel';
   for(const [id,p]of this.pointers){if(p.type!=='touch')continue;
    if(!ending)this.bindTouch(p);
-   let active=false;for(const t of this.nativeTouches)if(t.identifier===p.touchID){active=true;break;}
+   let active=false;for(let i=0;i<this.nativeTouches.length;i++)if(this.nativeTouches[i].identifier===p.touchID){active=true;break;}
    // Touch.identifier and PointerEvent.pointerId are different on iOS. Bind by
    // initial contact position, then trust the complete native contact list.
    if(ending&&(!this.nativeTouches.length||p.touchID!==null&&!active))this.pointerUp({pointerId:id},event.type==='touchcancel');

@@ -1,8 +1,8 @@
 // Original, metre-scaled view models. Forward is -Z; optics share aim.js heights.
 // Only weapon construction allocates. Animation modifies cached parts in place.
 const C={steel:[.27,.30,.32],edge:[.42,.45,.46],black:[.115,.13,.14],polymer:[.16,.175,.17],tan:[.48,.39,.27],olive:[.28,.32,.22],wood:[.48,.29,.145],rubber:[.043,.048,.044],glove:[.36,.38,.30],sleeve:[.23,.28,.22],brass:[.66,.44,.16],red:[.55,.055,.025]};
-const finish=(color=C.black,metal=.72,rough=.39,tile=-1)=>({color,metal,rough,tile});
-const METAL=finish(),EDGE=finish(C.edge,.88,.28),POLY=finish(C.polymer,0,.7),RUBBER=finish(C.rubber,0,.87),WOOD=finish(C.wood,0,.71,10),TAN=finish(C.tan,.08,.63),OLIVE=finish(C.olive,.08,.64),BRASS=finish(C.brass,.92,.31),GLOVE=finish(C.glove,0,.94,9),SLEEVE=finish(C.sleeve,0,.98,9);
+const finish=(color=C.black,metal=.72,rough=.39,tile=-1)=>({color,metal,rough,tile,...(tile===9?{finishTile:2}:tile===-1&&metal>.45?{finishTile:0}:{})});
+const METAL=finish(),EDGE=finish(C.edge,.88,.28),POLY={...finish(C.polymer,0,.7),finishTile:3},RUBBER=finish(C.rubber,0,.87),WOOD=finish(C.wood,0,.71,10),TAN={...finish(C.tan,.08,.63),finishTile:1},OLIVE={...finish(C.olive,.08,.64),finishTile:1},BRASS={...finish(C.brass,.92,.31),finishTile:undefined},GLOVE=finish(C.glove,0,.94,9),SLEEVE=finish(C.sleeve,0,.98,9);
 const PROFILES=[
  {barrel:-.604,grip:.103,support:-.293,width:.088,mag:.017,stock:.278},
  {barrel:-.668,grip:.109,support:-.302,width:.105,mag:-.01,stock:.298},
@@ -86,6 +86,9 @@ function breach(b){
  grip(.10,WOOD,-.29,.17);stock(.322,WOOD,'solid');
  for(let i=0;i<5;i++){cyl(-.064,.024,.064-i*.034,.024,.059,finish(C.red,.03,.44));cyl(-.064,-.009,.064-i*.034,.025,.01,BRASS);}
  box(.052,.032,-.071,.006,.029,.082,RUBBER);box(.057,.029,-.083,.012,.018,.059,EDGE,'bolt');
+ // The next shell only exists visually while the loading hand approaches the port.
+ cyl(-.059,-.161,.004,.025,.067,finish(C.red,.03,.44),'loadShell',{hidden:true});
+ cyl(-.059,-.161,.044,.026,.012,BRASS,'loadShell',{hidden:true});
 }
 function tempest(b){
  const {box,receiver,barrel,grip,magazine,stock,rail,vents,cyl,controls}=b;
@@ -206,6 +209,8 @@ function addHands(b,w){
 export function weaponModel(w){
  const b=builder(w);(BUILDERS[w.def.id]??kestrel)(b);addOptic(b,w);addMuzzle(b,w);addAttachments(b,w);addHands(b,w);
  const p=b.parts;p.weaponId=w.def.id;p.muzzle=muzzlePosition(w);p.animated=[];
+ // Give textured finishes the same small material palette on every weapon.
+ for(const q of p)if(q.finishTile!==undefined)q.finishTile=Math.round(q.finishTile);
  for(let i=0;i<p.length;i++){const q=p[i];if(q.tag){q.baseX=q.x;q.baseY=q.y;q.baseZ=q.z;q.baseYaw=q.yaw;q.basePitch=q.pitch;q.baseRoll=q.roll;p.animated.push(i);}}
  return p;
 }
@@ -220,17 +225,25 @@ export function animateWeaponParts(parts,w,p,time){
  const pump=smooth(.075,.22,shot)*(1-smooth(.38,.56,shot));
  const magDrop=reloading?smooth(.10,.28,r)*(1-smooth(.65,.83,r)):0;
  const leftReach=reloading?Math.sin(Math.PI*smooth(.07,.9,r)):0;
- const boltReload=reloading?smooth(.82,.88,r)*(1-smooth(.9,.98,r)):0;
+ const boltReload=reloading&&w.reloadStartedEmpty!==false?smooth(.82,.88,r)*(1-smooth(.9,.98,r)):0;
  const lid=reloading?smooth(.08,.24,r)*(1-smooth(.77,.93,r)):0;
+ const emptySlide=w.ammo===0&&(!reloading||r<.87)?1:0;
  for(const index of parts.animated){const q=parts[index];q.x=q.baseX;q.y=q.baseY;q.z=q.baseZ;q.yaw=q.baseYaw;q.pitch=q.basePitch;q.roll=q.baseRoll;
   switch(q.tag){
-   case 'slide':q.z+=slide*.035;break;
-   case 'bolt':q.z+=(w.def.id===7?boltOpen*.068:slide*.026)+boltReload*.04;if(w.def.id===7)q.roll-=boltOpen*.35;break;
-   case 'pump':case 'pumpHand':q.z+=pump*.079;if(reloading&&q.tag==='pumpHand'){q.y-=leftReach*.085;q.z+=leftReach*.17;}break;
-   case 'magazine':q.y-=magDrop*(w.def.id===9?.23:.29);q.z+=magDrop*.055;q.roll-=magDrop*.14;break;
+   case 'slide':q.z+=Math.max(slide,emptySlide)*.035;break;
+   case 'bolt':q.z+=(w.def.id===7?boltOpen*.068:slide*.026)+boltReload*.04;if(w.def.id===7)q.roll-=(boltOpen+boltReload)*.68;break;
+   case 'pump':case 'pumpHand':q.z+=pump*.079;if(reloading&&q.tag==='pumpHand'){q.x-=leftReach*.035;q.y-=leftReach*.095;q.z+=leftReach*.27;q.roll-=leftReach*.5;}break;
+   case 'magazine':
+    if(w.def.id===4){q.y+=magDrop*.155;q.x-=magDrop*.07;q.roll+=magDrop*.16;}
+    else{q.y-=magDrop*(w.def.id===9?.23:.29);q.x-=magDrop*.045;q.z+=magDrop*.035;q.roll-=magDrop*.22;}
+    break;
    case 'belt':q.y-=lid*.07;q.x-=magDrop*.09;break;
-   case 'lid':q.pitch-=lid*1.10;q.y+=lid*.083;q.z+=lid*.035;break;
-   case 'supportHand':q.y-=leftReach*.13;q.z+=leftReach*(w.def.id>=10?.07:.24);q.roll-=leftReach*.5;break;
+   case 'lid':{const angle=lid*1.10;q.pitch-=angle;q.y+=Math.sin(angle)*.145;q.z+=.145*(1-Math.cos(angle));break;}
+   case 'supportHand':
+    if(w.def.id===4){q.y+=leftReach*.16;q.x-=leftReach*.08;q.z+=leftReach*.09;q.roll+=leftReach*.5;}
+    else{q.y-=leftReach*.15;q.x-=leftReach*.05;q.z+=leftReach*(w.def.id>=10?.04:.23);q.roll-=leftReach*.5;}
+    break;
+   case 'loadShell':q.hidden=!reloading||r<.08||r>.87;q.x-=leftReach*.045;q.y-=leftReach*.035;q.z+=leftReach*.08;break;
    case 'hammer':q.pitch-=slide*.5;break;
   }
  }

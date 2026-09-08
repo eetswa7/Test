@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../dist/vendor/three.module.min.js';
-import {Renderer,isFriendly} from '../dist/js/three-renderer.js';
+import {Renderer,isFriendly,neutraliseFinish} from '../dist/js/three-renderer.js';
 import {Arena,MAPS} from '../dist/js/maps.js';
 import {Weapon} from '../dist/js/weapons.js';
 import {makeCube,makeCylinder,makeSphere,part} from '../dist/js/geometry.js';
@@ -12,10 +12,10 @@ import {direction} from '../dist/js/math.js';
 // deliberately replaced; these tests do not claim a device or shader compile.
 function fixture(){
  const r=Object.create(Renderer.prototype);
- Object.assign(r,{partData:new WeakMap(),materials:new Map(),depthMaterials:new Map(),surfaceMaps:Array.from({length:16},()=>({map:new THREE.Texture(),normal:new THREE.Texture(),roughness:new THREE.Texture()})),leafMaps:Array.from({length:4},()=>new THREE.Texture()),color:new THREE.Color(),matrix:new THREE.Matrix4(),localMatrix:new THREE.Matrix4(),parentMatrix:new THREE.Matrix4(),rawMatrix:new Float32Array(16),world:new THREE.Group(),worldBatches:[],actorBatches:new Map(),weaponBatches:new Map(),windTime:{value:0},quality:'medium',geometry:{},scene:new THREE.Scene(),sun:new THREE.DirectionalLight(),settings:{motion:false,fov:80},camera:new THREE.PerspectiveCamera(55,1,.055,190),weaponCamera:new THREE.PerspectiveCamera(65,1,.018,10),weaponScene:new THREE.Scene(),weaponRoot:new THREE.Group(),muzzle:new THREE.Sprite(new THREE.SpriteMaterial()),muzzleLight:new THREE.PointLight(),worldVP:new THREE.Matrix4(),projected:new THREE.Vector4(),target:new THREE.Vector3(),eye:{x:0,y:0,z:0},cameraY:null,frames:0,lastFPS:0,frameAverage:16.7,slowTime:0,fastTime:0,renderScale:1,loaded:true,weaponKey:''});
+ Object.assign(r,{partData:new WeakMap(),materials:new Map(),depthMaterials:new Map(),surfaceMaps:Array.from({length:16},()=>({map:new THREE.Texture(),normal:new THREE.Texture(),roughness:new THREE.Texture()})),leafMaps:Array.from({length:4},()=>new THREE.Texture()),weaponMaps:Array.from({length:4},()=>({map:new THREE.Texture(),normal:new THREE.Texture(),roughness:new THREE.Texture()})),color:new THREE.Color(),matrix:new THREE.Matrix4(),localMatrix:new THREE.Matrix4(),parentMatrix:new THREE.Matrix4(),rawMatrix:new Float32Array(16),world:new THREE.Group(),worldBatches:[],actorBatches:new Map(),weaponBatches:new Map(),windTime:{value:0},quality:'medium',geometry:{},scene:new THREE.Scene(),sun:new THREE.DirectionalLight(),settings:{motion:false,fov:80},camera:new THREE.PerspectiveCamera(55,1,.055,190),weaponCamera:new THREE.PerspectiveCamera(65,1,.018,10),weaponScene:new THREE.Scene(),weaponRoot:new THREE.Group(),muzzle:new THREE.Sprite(new THREE.SpriteMaterial()),muzzleLight:new THREE.PointLight(),worldVP:new THREE.Matrix4(),projected:new THREE.Vector4(),target:new THREE.Vector3(),eye:{x:0,y:0,z:0},cameraY:null,frames:0,lastFPS:0,frameAverage:16.7,slowTime:0,fastTime:0,renderScale:1,loaded:true,weaponKey:''});
  r.weaponRoot.add(r.muzzle);r.weaponScene.add(r.weaponRoot,r.muzzleLight);
  r.rendered=[];r.renderer={shadowMap:{},info:{reset(){},render:{calls:0}},clearDepth(){},render(scene){r.rendered.push(scene);},setRenderTarget(){},clear(){}};
- for(const [key,make]of Object.entries({cube:makeCube,cylinder:makeCylinder,sphere:makeSphere,bevel:roundedBox,tube,leaf:leafCard,rock:rockMesh})){
+ for(const [key,make]of Object.entries({cube:makeCube,cylinder:makeCylinder,sphere:makeSphere,bevel:roundedBox,bevelWorld:()=>roundedBox(.08,3),bevelActor:()=>roundedBox(.1,2),tube,leaf:leafCard,rock:rockMesh})){
   const g=new THREE.BufferGeometry(),b=new THREE.InterleavedBuffer(make(),8);
   g.setAttribute('position',new THREE.InterleavedBufferAttribute(b,3,0));g.setAttribute('normal',new THREE.InterleavedBufferAttribute(b,3,3));g.setAttribute('uv',new THREE.InterleavedBufferAttribute(b,2,6));r.geometry[key]=g;
  }
@@ -85,4 +85,85 @@ test('destroyed props disappear without rebuilding intact world batches',()=>{
  const r=fixture();r.arena=new Arena(0);r.buildWorld();const count=r.worldBatches.reduce((n,b)=>n+b.count,0),refs=r.worldBatches.slice();
  const victim=r.worldBatches.find(b=>!b.userData.leaf&&b.userData.parts.some(p=>!p.ground)).userData.parts[0];victim.destroyed=true;r.refreshDestroyed();
  assert.equal(r.worldBatches.reduce((n,b)=>n+b.count,0),count-1);assert.deepEqual(r.worldBatches,refs);r.refreshDestroyed();assert.equal(r.worldBatches.reduce((n,b)=>n+b.count,0),count-1);
+});
+
+test('idle weapon transforms and instance buffers stop uploading after warmup',()=>{
+ const r=fixture(),weapon=new Weapon(0,{optic:1});weapon.sinceShot=10;
+ const game={time:1,player:{weapon,ads:0,vx:0,vz:0,visualKick:0,switchLeft:0,sprinting:false}};
+ r.renderWeapon(game,844/390,false);
+ const versions=[...r.weaponBatches.values()].map(e=>[e.mesh.instanceMatrix.version,e.mesh.instanceColor.version]);
+ let recomposed=0;const original=r.partMatrix.bind(r);r.partMatrix=(...args)=>{recomposed++;return original(...args);};
+ game.time+=1/60;r.renderWeapon(game,844/390,false);
+ assert.equal(recomposed,0,'static local component transforms should be reused');
+ assert.deepEqual([...r.weaponBatches.values()].map(e=>[e.mesh.instanceMatrix.version,e.mesh.instanceColor.version]),versions,'an idle view model needs no instance buffer writes');
+ weapon.reload();weapon.reloadLeft=weapon.reloadTime*.65;r.renderWeapon(game,844/390,false);
+ assert(recomposed>0,'magazine and hand transforms still animate during a reload');
+ assert([...r.weaponBatches.values()].some((e,i)=>e.mesh.instanceMatrix.version>versions[i][0]));
+});
+
+test('culled and restored parts cannot reuse another actor slot transform or colour',()=>{
+ const r=fixture(),a=part(3,1,0,1,1,1,'white',{tile:-1,color:[.1,.72,.91]}),b=part(8,1,0,1,1,1,'white',{tile:-1,color:[.94,.16,.11]});
+ const draw=parts=>{r.resetDynamic(r.actorBatches);for(const p of parts)r.addDynamic(r.actorBatches,r.scene,p,'actor');r.uploadDynamic(r.actorBatches);};
+ draw([a,b]);draw([b]);draw([a,b]);
+ const entry=[...r.actorBatches.values()][0],matrix=new THREE.Matrix4(),color=new THREE.Color();
+ entry.mesh.getMatrixAt(0,matrix);assert.equal(matrix.elements[12],3);entry.mesh.getColorAt(0,color);assert(color.b>color.r);
+ entry.mesh.getMatrixAt(1,matrix);assert.equal(matrix.elements[12],8);entry.mesh.getColorAt(1,color);assert(color.r>color.b);
+ r.clearDynamic(r.actorBatches);draw([a,b]);assert.equal([...r.actorBatches.values()][0].mesh.count,2,'reused parts reconnect to fresh batches after a map reset');
+});
+
+test('instance uploads contain only occupied slots and world/actor meshes use fewer triangles',()=>{
+ const r=fixture(),p=part(0,0,-2,1,1,1,'white',{tile:-1,mesh:'bevel'});
+ r.addDynamic(r.actorBatches,r.scene,p,'actor');r.uploadDynamic(r.actorBatches);
+ const entry=[...r.actorBatches.values()][0];
+ assert.deepEqual(entry.mesh.instanceMatrix.updateRanges,[{start:0,count:16}]);
+ assert.deepEqual(entry.mesh.instanceColor.updateRanges,[{start:0,count:3}]);
+ const original=r.partGeometry(p,'weapon').getAttribute('position').count;
+ assert.equal(r.partGeometry(p,'actor').getAttribute('position').count,original/4);
+ assert(r.partGeometry(p,'world').getAttribute('position').count<original*.6);
+});
+
+test('dedicated weapon finishes retain wear contrast and occupy independent material batches',()=>{
+ const r=fixture(),metal=part(0,0,-1,.1,.1,.1,'dark',{tile:-1,finishTile:0}),polymer={...metal,finishTile:3};
+ const a=r.makeMaterial(metal,'weapon'),b=r.makeMaterial(polymer,'weapon');
+ assert.notEqual(a,b);assert.equal(a.map,r.weaponMaps[0].map);assert.equal(b.map,r.weaponMaps[3].map);
+ assert.equal(a.normalMap,r.weaponMaps[0].normal);assert(a.normalScale.x<.3,'fine weapon finishes must not look like rock');
+ const pixels=new Uint8ClampedArray([20,30,40,255,40,60,80,255]);neutraliseFinish(pixels);
+ assert(pixels[0]<pixels[4]);assert(Math.abs(pixels[4]-pixels[5])<2);assert.equal(pixels[3],255);
+});
+
+test('mobile smoke keeps concealment while reducing overlapping billboard layers',()=>{
+ const r=fixture();r.effects=[];r.decals=[];r.fxAttributes={};r.fxAttributeList=[];
+ for(const [key,size] of [['instancePosition',3],['instanceTint',3],['instanceSize',2],['instanceAlpha',1],['instanceKind',1]]){
+  r.fxAttributes[key]=new THREE.InstancedBufferAttribute(new Float32Array(280*size),size);r.fxAttributeList.push(r.fxAttributes[key]);
+ }
+ r.fxMesh={geometry:{instanceCount:0}};r.contactShadows=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial(),64);
+ const game={actors:[],grenades:[],smokes:[{x:0,y:0,z:0,age:4}]};
+ const counts=[];for(const quality of ['low','medium','high']){r.quality=quality;r.updateEffects(0,game);counts.push(r.fxMesh.geometry.instanceCount);assert(r.fxAttributes.instanceAlpha.getX(0)>=.8);}
+ assert.deepEqual(counts,[4,5,6]);
+ assert.deepEqual(r.fxAttributes.instancePosition.updateRanges,[{start:0,count:18}]);
+ assert.equal(r.contactShadows.instanceMatrix.version,0,'empty contact-shadow buffers do not upload');
+});
+
+
+test('replaced authored colours refresh cached instance tints without rebuilding materials',()=>{
+ const r=fixture(),p=part(0,1,-2,1,1,1,'white',{tile:-1,color:[.1,.72,.91]});
+ const draw=()=>{r.resetDynamic(r.actorBatches);r.addDynamic(r.actorBatches,r.scene,p,'actor');r.uploadDynamic(r.actorBatches);};
+ draw();const entry=[...r.actorBatches.values()][0],material=entry.mesh.material,color=new THREE.Color();
+ p.color=[.94,.16,.11];draw();entry.mesh.getColorAt(0,color);
+ assert(color.r>color.b);assert.equal(entry.mesh.material,material);
+});
+
+test('shadow texels stay stable through small movements and gun lighting follows the world',()=>{
+ const r=fixture();r.arena={info:{sun:[.6,.7,.45]},indoors:()=>false};
+ Object.assign(r,{nearestLights:[null,null,null],lightDistances:[Infinity,Infinity,Infinity],interiorLights:[],lightPositions:[],weaponKeyLight:new THREE.DirectionalLight(),weaponFill:new THREE.HemisphereLight(),shadowClock:1});
+ r.sun.shadow.mapSize.set(1024,1024);Object.assign(r.sun.shadow.camera,{left:-28,right:28,top:28,bottom:-28});r.sun.shadow.camera.updateProjectionMatrix();
+ r.scene.add(r.sun,r.sun.target);r.weaponScene.environmentIntensity=.85;
+ const point=new THREE.Vector3(2,0,3),project=()=>{r.scene.updateMatrixWorld(true);r.sun.shadow.updateMatrices(r.sun);return point.clone().applyMatrix4(r.sun.shadow.matrix);};
+ r.updateLighting(1/60);const a=project(),key=r.weaponKeyLight.position.clone();
+ r.eye.x+=.00001;r.eye.z+=.00001;r.updateLighting(1/60);const b=project();
+ assert(Math.abs(a.x-b.x)<1e-10);assert(Math.abs(a.y-b.y)<1e-10);
+ r.camera.rotation.y=Math.PI/2;r.camera.updateMatrixWorld();r.updateLighting(1/60);
+ assert(key.distanceTo(r.weaponKeyLight.position)>1,'turning changes camera-space sunlight');
+ r.arena.indoors=()=>true;r.updateLighting(.2);assert(r.weaponScene.environmentIntensity<.5);
+ assert(r.sun.shadow.matrix.elements.every(Number.isFinite));
 });

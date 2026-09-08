@@ -1,3 +1,4 @@
+import {WEAPONS} from './weapons.js?v=10';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -11,7 +12,7 @@ function randomStream(seed){let n=seed>>>0;return()=>{n^=n<<13;n^=n>>>17;n^=n<<5
 export class AudioSystem {
  constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.voices=0;this.active=new Set();this.hapticAt=0;this.muted=false;}
  async start(){try{
-  if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C();this.master=this.context.createGain();this.master.gain.value=this.settings.volume;this.master.connect(this.context.destination);this.build();this.makeRoom();}
+  if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C();this.master=this.context.createGain();this.master.gain.value=this.settings.volume;if(this.context.createDynamicsCompressor){this.limiter=this.context.createDynamicsCompressor();this.limiter.threshold.value=-7;this.limiter.knee.value=5;this.limiter.ratio.value=5;this.limiter.attack.value=.003;this.limiter.release.value=.12;this.master.connect(this.limiter);this.limiter.connect(this.context.destination);}else this.master.connect(this.context.destination);this.build();this.makeRoom();}
   if(this.context.state==='suspended')await this.context.resume();this.muted=false;
  }catch{}}
  build(){
@@ -24,17 +25,24 @@ export class AudioSystem {
    const duration=Math.max(.31,Math.min(.92,5.5/decay));
    for(const suppressed of [false,true])synth(`${suppressed?'suppressed':'shot'}${id}`,duration,(t,n,low)=>{
     const crack=(n-low)*Math.exp(-t*(suppressed?390:210))*(suppressed?.21:.82);
-    const pressure=(Math.sin(t*6.283185*bass)+Math.sin(t*6.283185*bass*1.57)*.19)*Math.exp(-t*decay)*weight*(suppressed?.40:.81);
+    const phase=6.283185*bass*(t+.0028*(1-Math.exp(-t*95)));
+    const pressure=(Math.sin(phase)*.72+Math.sin(phase*1.63)*.17+Math.sin(phase*2.39)*.08)*Math.exp(-t*decay)*weight*(suppressed?.40:.81);
     const blast=(low*2.8+(n-low)*.11)*Math.exp(-t*decay*.83)*weight*(suppressed?.24:.89);
     const mech=t>.027?Math.sin((t-.027)*mechanical*6.283185)*Math.exp(-(t-.027)*155)*.075:0;
     const shell=t>.135&&id!==7?(n-low)*Math.exp(-(t-.135)*195)*.022:0;
-    return crack+pressure+blast+mech+shell;
+    // Pump and bolt closures follow the same animation timing, below the initial blast.
+    const open=(id===5||id===7)&&t>.14?(n-low)*Math.exp(-(t-.14)*100)*.058:0;
+    const close=(id===5||id===7)&&t>.47?(low*1.6+Math.sin((t-.47)*7300)*.13)*Math.exp(-(t-.47)*72)*.17:0;
+    return crack+pressure+blast+mech+shell+open+close;
    },7133+id*811);
-   synth(`reload${id}`,.30,(t,n,low)=>{
-    const clack=(n-low)*Math.exp(-t*83)*.23;
-    const seating=t>.11?(low*1.5+Math.sin(t*(1200+id*49))*.09)*Math.exp(-(t-.11)*67):0;
-    return clack+seating;
+   const reload=WEAPONS[id].reload||.3;
+   synth(`reload${id}`,Math.max(.3,reload*.84),(t,n,low)=>{
+    const phase=t/reload,extract=phase>.13?(n-low)*Math.exp(-(phase-.13)*reload*65)*.21:0;
+    const handling=(n*.024+low*.15)*Math.sin(Math.min(1,phase/.85)*Math.PI);
+    const seat=phase>.69?(low*1.35+Math.sin((phase-.69)*reload*(1280+id*31))*.08)*Math.exp(-(phase-.69)*reload*61):0;
+    return id===5?(n*.1+low*.3)*Math.exp(-t*24):extract+handling+seat;
    },1013+id*13);
+   synth(`seat${id}`,.11,(t,n,low)=>low*Math.exp(-t*49)*.31+(n-low)*Math.exp(-t*95)*.065,931+id*37);
    synth(`rack${id}`,.15,(t,n,low)=>(n-low)*Math.exp(-t*61)*.16+Math.sin(t*mechanical*3.14159)*Math.exp(-t*100)*.09,712+id*91);
   });
   synth('stepHard',.17,(t,n,low)=>low*Math.exp(-t*32)*.9+Math.sin(t*730)*Math.exp(-t*55)*.16);
@@ -77,12 +85,12 @@ export class AudioSystem {
    const d=Math.hypot(dx,dy,dz),own=e.source===0,volume=own||!e.position?1:clamp(1/(1+d*d*.004)-.015,0,.85);
    const pan=e.position?Math.sin(Math.atan2(dx,-dz)-game.player.yaw):0;
    switch(e.type){
-    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:true});if(own)this.haptic(8);break;
+    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:own});if(own)this.haptic(8);break;
     case 'step':if(d<24){const hard=game.arena.indoors(e.position),soft=game.arena.info?.tag==='MIXED'||game.arena.info?.tag==='FOREST';this.play(hard?'stepHard':soft?'stepSoft':'stepGravel',{volume:volume*(own?.28:.48)*(e.value??1),pan,rate:.91+Math.random()*.16,distance:d});}break;
     case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d});}break;
     case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true});if(d<14)this.haptic(30);break;
-    case 'reload':this.play(`reload${e.weapon??game.player.weapon.def.id}`,{volume:.7});break;
-    case 'reloadDone':this.play(`rack${e.weapon??game.player.weapon.def.id}`,{volume:.55});this.haptic(9);break;
+    case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime)});break;}
+    case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&id!==5?'rack':'seat'}${id}`,{volume:.55});this.haptic(9);break;}
     case 'empty':case 'switch':this.play('click',{volume:.7});break;
     case 'hit':this.play('hit',{volume:e.headshot?1.1:.8,important:true});break;
     case 'kill':if(own)this.play('kill',{volume:.8,important:true});break;
