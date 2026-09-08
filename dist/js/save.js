@@ -1,4 +1,4 @@
-import {sanitizeLoadout,defaultLoadout} from './weapons.js?v=8';
+import {sanitizeLoadout,defaultLoadout} from './weapons.js?v=9';
 const KEY='breachline-save-v1';
 export const DEFAULT_SETTINGS={controlProfile:'simple',aimFire:true,autoReload:true,quality:'auto',fov:80,sensitivity:.85,adsSensitivity:.6,aimAcceleration:false,adsMode:'toggle',autoSprint:true,leftHanded:false,gyro:false,gyroSensitivity:1,motion:true,volume:.75,music:.22,haptics:true,opacity:.7,buttonScale:1,layout:{}};
 export class SaveStore {

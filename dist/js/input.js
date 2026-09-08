@@ -1,5 +1,5 @@
-import {emptyInput} from './engine.js?v=8';
-import {clamp} from './math.js?v=8';
+import {emptyInput} from './engine.js?v=9';
+import {clamp} from './math.js?v=9';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -10,9 +10,14 @@ export class TouchInput {
  constructor(canvas,layer,settings){
   this.canvas=canvas;this.layer=layer;this.settings=settings;this.active=false;this.editing=false;
   this.pointers=new Map();this.keys=new Set();this.actions=emptyInput();this.holds={};this.look={x:0,y:0};this.move={x:0,z:0};
-  this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.gyro={x:0,y:0};this.lastGamepadButtons=[];this.contextAvailable=false;
+  this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.gyro={x:0,y:0};this.lastGamepadButtons=[];this.contextAvailable=false;this.nativeTouches=null;
   this.stick=layer.querySelector('#stick');this.knob=layer.querySelector('#stick-knob');
-  for(const [name,fn]of [['pointerdown',e=>this.pointerDown(e)],['pointermove',e=>this.pointerMove(e)],['pointerup',e=>this.pointerUp(e)],['pointercancel',e=>this.pointerUp(e,true)],['lostpointercapture',e=>this.pointerUp(e,true)]])layer.addEventListener(name,fn,{passive:false});
+  layer.addEventListener('pointerdown',e=>this.pointerDown(e),{passive:false});
+  // Window capture still receives releases outside the HUD or after Safari loses capture.
+  for(const [name,fn]of [['pointermove',e=>this.pointerMove(e)],['pointerup',e=>this.pointerUp(e)],['pointercancel',e=>this.pointerUp(e,true)]])window.addEventListener(name,fn,{passive:false,capture:true});
+  layer.addEventListener('lostpointercapture',e=>{if(e.target===this.layer)this.pointerUp(e,true);},{passive:true});
+  for(const type of ['touchstart','touchmove','touchend','touchcancel'])window.addEventListener(type,e=>this.syncTouches(e),{passive:true,capture:true});
+  window.addEventListener('pagehide',()=>this.reset());
   layer.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener?.('contextmenu',e=>e.preventDefault());
   window.addEventListener('keydown',e=>{if(!this.active||e.target.matches('input,select,textarea'))return;this.keys.add(e.code);const action={KeyR:'reload',Space:'jump',KeyC:'crouch',ControlLeft:'crouch',KeyQ:'swap',Digit1:'swap',KeyG:'grenade',KeyV:'melee'}[e.code];if(action&&!e.repeat)this.actions[action]=true;if(['Space','Tab','ControlLeft'].includes(e.code))e.preventDefault();});
   window.addEventListener('keyup',e=>this.keys.delete(e.code));
@@ -36,17 +41,20 @@ export class TouchInput {
  }
  setContext(available){if(available===this.contextAvailable)return;this.contextAvailable=available;this.layer.querySelector('[data-action="interact"]').hidden=!available&&!this.editing;}
  reset(){
-  this.pointers.clear();this.keys.clear();this.holds={};this.actions=emptyInput();this.look.x=this.look.y=0;this.move.x=this.move.z=0;this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.lastGamepadButtons=[];this.gyro.x=this.gyro.y=0;
+  // Remove ownership before releasing capture; the lost-capture event can be synchronous.
+  for(const id of this.pointers.keys())this.pointerUp({pointerId:id},true);
+  this.pointers.clear();this.nativeTouches=null;this.keys.clear();this.holds={};this.actions=emptyInput();this.look.x=this.look.y=0;this.move.x=this.move.z=0;this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.lastGamepadButtons=[];this.gyro.x=this.gyro.y=0;
   if(this.knob)this.knob.style.transform='translate(-50%,-50%)';for(const b of this.layer.querySelectorAll('.pressed'))b.classList.remove('pressed');
  }
  isAiming(){return this.adsToggle||this.holds.mouseADS||(this.settings.adsMode==='hold'&&this.holds.ads)||(this.simple&&this.settings.aimFire!==false&&this.holds.fire);}
  addLook(dx,dy){
+  if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
   let mult=this.settings.sensitivity*.0027;if(this.isAiming())mult*=this.settings.adsSensitivity*(this.scopeScale??1);
   if(this.settings.aimAcceleration)mult*=1+Math.min(1,Math.hypot(dx,dy)/28)*.5;
   this.look.x+=clamp(dx,-180,180)*mult;this.look.y-=clamp(dy,-180,180)*mult;
  }
  pointerDown(e){
-  if(!this.active&&!this.editing)return;if(e.pointerType==='mouse'&&document.pointerLockElement)return;e.preventDefault();
+  if(!this.active&&!this.editing)return;if(e.pointerType==='mouse'&&document.pointerLockElement)return;if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;if(this.pointers.has(e.pointerId))this.pointerUp(e,true);e.preventDefault();
   const button=e.target.closest('[data-action]'),action=button?.dataset.action,rect=this.layer.getBoundingClientRect();let role='look';
   if(this.editing){if(!button||button.hidden)return;role='edit';}
   else if(action){
@@ -58,14 +66,35 @@ export class TouchInput {
    this.holds[action]=true;
   }else if(this.stickID===null&&(this.settings.leftHanded?e.clientX>rect.left+rect.width*.55:e.clientX<rect.left+rect.width*.45)){role='stick';this.stickID=e.pointerId;}
   // Capture each contact separately: leaving a button must not drop a held shot.
-  this.layer.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,{role,x:e.clientX,y:e.clientY,ox:e.clientX,oy:e.clientY,button,action,age:0,held:false});
+  const pointer={role,type:e.pointerType??'touch',touchID:null,x:e.clientX,y:e.clientY,ox:e.clientX,oy:e.clientY,button,action,age:0,held:false};this.pointers.set(e.pointerId,pointer);this.bindTouch(pointer);
+  try{this.layer.setPointerCapture?.(e.pointerId);}catch{/* Global release and native touch tracking remain active. */}
+ }
+ bindTouch(pointer){
+  if(pointer.type!=='touch'||pointer.touchID!==null||!this.nativeTouches)return;
+  let best=null,distance=48*48;
+  for(const t of this.nativeTouches){let used=false;for(const p of this.pointers.values())if(p!==pointer&&p.touchID===t.identifier){used=true;break;}if(used)continue;
+   const d=(t.clientX-pointer.x)**2+(t.clientY-pointer.y)**2;if(d<distance){distance=d;best=t;}
+  }
+  if(best)pointer.touchID=best.identifier;
+ }
+ syncTouches(event){
+  this.nativeTouches=event.touches;
+  if(!this.nativeTouches)return;
+  const ending=event.type==='touchend'||event.type==='touchcancel';
+  for(const [id,p]of this.pointers){if(p.type!=='touch')continue;
+   if(!ending)this.bindTouch(p);
+   let active=false;for(const t of this.nativeTouches)if(t.identifier===p.touchID){active=true;break;}
+   // Touch.identifier and PointerEvent.pointerId are different on iOS. Bind by
+   // initial contact position, then trust the complete native contact list.
+   if(ending&&(!this.nativeTouches.length||p.touchID!==null&&!active))this.pointerUp({pointerId:id},event.type==='touchcancel');
+  }
  }
  pointerMove(e){
-  const p=this.pointers.get(e.pointerId);if(!p)return;e.preventDefault();const dx=e.clientX-p.x,dy=e.clientY-p.y;
+  const p=this.pointers.get(e.pointerId);if(!p)return;if(!this.active&&!this.editing||e.pointerType==='mouse'&&e.buttons===0){this.pointerUp(e,true);return;}if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;e.preventDefault();const dx=e.clientX-p.x,dy=e.clientY-p.y;
   if(['look','fire','ads'].includes(p.role))this.addLook(dx,dy);
   if(p.role==='stick'){
-   let x=(e.clientX-p.ox)/45,z=-(e.clientY-p.oy)/45,n=Math.max(1,Math.hypot(x,z));
-   this.move.x=x/n;this.move.z=z/n;this.knob.style.transform=`translate(calc(-50% + ${x/n*28}px),calc(-50% + ${-z/n*28}px))`;
+   const x=(e.clientX-p.ox)/45,z=-(e.clientY-p.oy)/45,n=Math.hypot(x,z),gain=n>.1?Math.min(1,(n-.1)/.9)/n:0;
+   this.move.x=x*gain;this.move.z=z*gain;this.knob.style.transform=`translate(calc(-50% + ${this.move.x*28}px),calc(-50% + ${-this.move.z*28}px))`;
   }
   if(p.role==='edit'){
    const b=this.layer.getBoundingClientRect(),x=clamp((e.clientX-b.left)/b.width,.055,.945),y=clamp((e.clientY-b.top)/b.height,.13,.91);
@@ -77,8 +106,9 @@ export class TouchInput {
   const p=this.pointers.get(e.pointerId);if(!p)return;
   if(!cancelled&&p.role==='jump'&&this.simple&&!p.held&&Math.hypot(p.x-p.ox,p.y-p.oy)<TAP_SLOP*3)this.actions[this.crouched?'crouch':'jump']=true;
   this.pointers.delete(e.pointerId);
+  try{if(this.layer.hasPointerCapture?.(e.pointerId))this.layer.releasePointerCapture(e.pointerId);}catch{}
   if(p.role==='stick'){this.stickID=null;this.move.x=this.move.z=0;this.knob.style.transform='translate(-50%,-50%)';}
-  if(p.action){this.holds[p.action]=false;for(const q of this.pointers.values())if(q.action===p.action)this.holds[p.action]=true;p.button?.classList.remove('pressed');}
+  if(p.action){this.holds[p.action]=false;for(const q of this.pointers.values())if(q.action===p.action)this.holds[p.action]=true;if(!this.holds[p.action])p.button?.classList.remove('pressed');}
   if(cancelled&&p.action==='ads')this.adsToggle=false;
   if(cancelled&&p.action==='fire'&&!this.holds.fire)this.actions.firePressed=false;
  }
@@ -89,6 +119,7 @@ export class TouchInput {
   }catch{return false;}
  }
  sample(dt){
+  if(this.stickID===null||this.pointers.get(this.stickID)?.role!=='stick'){this.stickID=null;this.move.x=this.move.z=0;this.knob.style.transform='translate(-50%,-50%)';}
   for(const p of this.pointers.values())if(p.role==='jump'&&this.simple&&!p.held){p.age+=dt;if(p.age>.34){p.held=true;this.actions.crouch=true;}}
   const f={...this.actions};this.actions=emptyInput();
   f.mx=this.move.x+(this.keys.has('KeyD')?1:0)-(this.keys.has('KeyA')?1:0);f.mz=this.move.z+(this.keys.has('KeyW')?1:0)-(this.keys.has('KeyS')?1:0);
@@ -106,7 +137,7 @@ export class TouchInput {
    f.fire||=!!pad.buttons[7]?.pressed;f.sprint||=!!pad.buttons[10]?.pressed;f.interact||=!!pad.buttons[2]?.pressed;
    for(const [i,action]of [[0,'jump'],[1,'crouch'],[2,'reload'],[3,'swap'],[4,'grenade'],[11,'melee']])if(pad.buttons[i]?.pressed&&!this.lastGamepadButtons[i])f[action]=true;
    this.lastGamepadButtons=pad.buttons.map(b=>b.pressed);
-  }
+  }else this.lastGamepadButtons.length=0;
   f.firePressed||=f.fire&&!this.previousFire;this.previousFire=f.fire;return f;
  }
 }

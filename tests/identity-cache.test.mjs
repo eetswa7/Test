@@ -19,22 +19,23 @@ test('combat labels respect walls, smoke, death and flash blindness',()=>{
 });
 
 const swSource=await readFile(new URL('../dist/sw.js',import.meta.url),'utf8');
+const RELEASE=swSource.match(/const RELEASE='(\d+)'/)[1];
 function worker(fetcher=async request=>({ok:true,redirected:false,url:String(request)})){
  const handlers={},state={matches:0,puts:0,activated:false,deleted:[]};
  const cache={match:async()=>{state.matches++;return 'cached release';},put:async()=>{state.puts++;}};
  const self={registration:{scope:'https://game.example/'},location:{origin:'https://game.example'},addEventListener:(type,fn)=>{handlers[type]=fn;},skipWaiting:async()=>{state.activated=true;},clients:{claim:async()=>{}}};
- vm.runInNewContext(swSource,{self,URL,Set,Promise,Error,Response,fetch:fetcher,caches:{open:async()=>cache,keys:async()=>['breachline-v7','breachline-v8','other-app'],delete:async name=>state.deleted.push(name)}});
+ vm.runInNewContext(swSource,{self,URL,Set,Promise,Error,Response,fetch:fetcher,caches:{open:async()=>cache,keys:async()=>[`breachline-v${+RELEASE-1}`,`breachline-v${RELEASE}`,'other-app'],delete:async name=>state.deleted.push(name)}});
  return {handlers,state};
 }
 test('offline cache never substitutes this release for another release module',async()=>{
  const {handlers,state}=worker();let response;
- for(const version of ['7','9'])handlers.fetch({request:{method:'GET',mode:'cors',url:`https://game.example/js/main.js?v=${version}`},respondWith:r=>{response=r;}});
+ for(const version of [String(+RELEASE-1),String(+RELEASE+1)])handlers.fetch({request:{method:'GET',mode:'cors',url:`https://game.example/js/main.js?v=${version}`},respondWith:r=>{response=r;}});
  assert.equal(response,undefined);assert.equal(state.matches,0);
- handlers.fetch({request:{method:'GET',mode:'cors',url:'https://game.example/js/main.js?v=8'},respondWith:r=>{response=r;}});assert.equal(await response,'cached release');
- let release;handlers.message({data:{type:'VERSION'},ports:[{postMessage:r=>{release=r.release;}}]});assert.equal(release,'8');
+ handlers.fetch({request:{method:'GET',mode:'cors',url:`https://game.example/js/main.js?v=${RELEASE}`},respondWith:r=>{response=r;}});assert.equal(await response,'cached release');
+ let release;handlers.message({data:{type:'VERSION'},ports:[{postMessage:r=>{release=r.release;}}]});assert.equal(release,RELEASE);
 });
 test('an incomplete update cannot activate, and activation preserves unrelated caches',async()=>{
  const bad=worker(async url=>({ok:false,redirected:false,url:String(url)}));let installing;bad.handlers.install({waitUntil:p=>{installing=p;}});await assert.rejects(installing);assert.equal(bad.state.activated,false);
  const good=worker();good.handlers.install({waitUntil:p=>{installing=p;}});await installing;assert(good.state.puts>30);assert(good.state.activated);
- good.handlers.activate({waitUntil:p=>{installing=p;}});await installing;assert.deepEqual(good.state.deleted,['breachline-v7']);
+ good.handlers.activate({waitUntil:p=>{installing=p;}});await installing;assert.deepEqual(good.state.deleted,[`breachline-v${+RELEASE-1}`]);
 });

@@ -1,9 +1,9 @@
-import {Arena,MAPS} from './maps.js?v=8';
-import {Navigation} from './navigation.js?v=8';
-import {MatchRules} from './modes.js?v=8';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=8';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=8';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=8';
+import {Arena,MAPS} from './maps.js?v=9';
+import {Navigation} from './navigation.js?v=9';
+import {MatchRules} from './modes.js?v=9';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=9';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=9';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=9';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
