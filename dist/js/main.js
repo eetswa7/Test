@@ -1,12 +1,12 @@
-import {Game,emptyInput} from './engine.js?v=10';
-import {Renderer} from './three-renderer.js?v=10';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=10';
-import {TouchInput} from './input.js?v=10';
-import {AudioSystem} from './audio.js?v=10';
-import {SaveStore} from './save.js?v=10';
-import {Interface,$} from './ui.js?v=10';
-import {Weapon} from './weapons.js?v=10';
-import {opticMagnification} from './aim.js?v=10';
+import {Game,emptyInput} from './engine.js?v=11';
+import {Renderer} from './three-renderer.js?v=11';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=11';
+import {TouchInput} from './input.js?v=11';
+import {AudioSystem} from './audio.js?v=11';
+import {SaveStore} from './save.js?v=11';
+import {Interface,$} from './ui.js?v=11';
+import {Weapon} from './weapons.js?v=11';
+import {opticMagnification} from './aim.js?v=11';
 
 class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;
@@ -39,6 +39,10 @@ class Application {
  previewMap(id){if(this.playing)return;this.game=new Game({...this.config,map:id},{seed:881});this.renderer.setArena(this.game.arena);}
  previewWeapon(){if(this.playing)return;const slot=this.ui?.slot??'primary',id=this.store.data.loadout[slot];this.game.player.weapons[0]=new Weapon(id,slot==='primary'?this.store.data.loadout:{});this.game.player.slot=0;this.renderer.weaponKey='';}
  frame(now){requestAnimationFrame(this.frame);if(document.hidden||this.renderer.lost)return;const activeMatch=this.playing&&!this.game.paused&&this.game.rules.phase!=='finished',frameRate=activeMatch?60:this.playing?10:30;if(this.last&&now-this.last<1000/frameRate-1)return;const elapsed=this.last?Math.max(.001,(now-this.last)/1000):1/60,dt=Math.min(.08,elapsed);this.last=now;if(this.starting)return;
+  this.input.controller.poll();
+  if(this.input.controller.lost&&this.playing&&!this.game.paused){this.pause();this.ui.toast("Controller disconnected. Reconnect or use touch controls.");}
+  if(this.input.controller.edges[9]&&this.playing&&this.game.rules.phase!=='finished'){if(this.game.paused)this.resume();else this.pause();}
+  if(!this.playing||this.game.paused||this.game.rules.phase==='finished')this.ui.controllerMenu(this.input.controller);
   if(this.playing&&!this.game.paused&&this.game.rules.phase!=='finished'){
    this.input.crouched=this.game.player.crouched;this.input.scopeScale=1/Math.sqrt(opticMagnification(this.game.player.weapon));const next=this.input.sample(dt);this.pending.mx=next.mx;this.pending.mz=next.mz;this.pending.lx+=next.lx;this.pending.ly+=next.ly;for(const key of ['fire','ads','sprint','interact','repeatFire','autoReload'])this.pending[key]=next[key];for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]||=next[key];
    this.accumulator=Math.min(.1,this.accumulator+dt);let steps=0;while(this.accumulator>=1/60&&steps++<6){this.game.update(1/60,this.pending);this.accumulator-=1/60;this.pending.lx=this.pending.ly=0;for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]=false;}

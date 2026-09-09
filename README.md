@@ -127,3 +127,12 @@ A new original ultra-realistic 2×2 material atlas provides anodised metal, sand
 Rendering reuses unchanged instance transforms, sends occupied buffer ranges and skips idle weapon uploads. Actor bevel triangles fall 75%, world bevel triangles 43.75%; distant actor detail and overlapping smoke layers are reduced. Shadow projection snaps to texels. These savings are measured geometry and buffer costs, not FPS claims. All gameplay, six maps, seven modes, equipment, loadouts, local progression and two-thumb controls are retained.
 
 Each deployment advances the complete offline release using `node scripts/release.mjs <number>` before static validation, committing and publishing. This prevents an installed copy combining assets from different checkpoints. Touch handling follows [Pointer Events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events) and the native [TouchList interface](https://developer.mozilla.org/en-US/docs/Web/API/TouchList).
+
+
+## Release 11: DualSense controller support
+
+Standard-mapped Bluetooth DualSense controllers use left stick movement, right stick aiming, L2 ADS, R2 fire, Cross jump, Circle crouch, Square reload or objective interaction, Triangle weapon switch, L1 grenade, R1/R3 melee, L3 sprint and Options pause/resume. D-pad navigates menus and adjusts settings; Cross confirms. Touch controls remain available. Controller sensitivity, ADS sensitivity, radial dead zone and inverted vertical aim are saved independently. Disconnecting pauses the match; neutral rearming prevents stale movement or shots after interruption.
+
+Pair the controller using iPhone Bluetooth settings, open the game and press a controller button. Release the controls after connection or resume to arm gameplay. Initial game launch and audio may require a screen tap. Uses the browser standard Gamepad mapping; adaptive triggers and controller gyro are not implemented.
+
+Validation: 107 automated tests passed, including seven controller regressions; static validation passed. Physical Bluetooth DualSense testing on iPhone remains required.

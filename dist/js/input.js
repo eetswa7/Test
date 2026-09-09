@@ -1,5 +1,6 @@
-import {emptyInput} from './engine.js?v=10';
-import {clamp} from './math.js?v=10';
+import {emptyInput} from './engine.js?v=11';
+import {ControllerInput} from './gamepad.js?v=11';
+import {clamp} from './math.js?v=11';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -8,7 +9,7 @@ const TAP_SLOP=9;
 
 export class TouchInput {
  constructor(canvas,layer,settings){
-  this.canvas=canvas;this.layer=layer;this.settings=settings;this.active=false;this.editing=false;
+  this.controller=new ControllerInput(settings);this.canvas=canvas;this.layer=layer;this.settings=settings;this.active=false;this.editing=false;
   this.pointers=new Map();this.keys=new Set();this.actions=emptyInput();this.holds={};this.look={x:0,y:0};this.move={x:0,z:0};
   this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.gyro={x:0,y:0};this.lastGamepadButtons=[];this.contextAvailable=false;this.nativeTouches=null;
   this.stick=layer.querySelector('#stick');this.knob=layer.querySelector('#stick-knob');
@@ -41,6 +42,7 @@ export class TouchInput {
  }
  setContext(available){if(available===this.contextAvailable)return;this.contextAvailable=available;this.layer.querySelector('[data-action="interact"]').hidden=!available&&!this.editing;}
  reset(){
+  this.controller.suspend();
   // Remove ownership before releasing capture; the lost-capture event can be synchronous.
   for(const id of this.pointers.keys())this.pointerUp({pointerId:id},true);
   this.pointers.clear();this.nativeTouches=null;this.keys.clear();this.holds={};this.actions=emptyInput();this.look.x=this.look.y=0;this.move.x=this.move.z=0;this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.lastGamepadButtons=[];this.gyro.x=this.gyro.y=0;
@@ -128,16 +130,7 @@ export class TouchInput {
   f.lx=this.look.x+this.gyro.x*aimGain;f.ly=this.look.y+this.gyro.y*aimGain;this.look.x=this.look.y=this.gyro.x=this.gyro.y=0;
   f.sprint=this.sprintToggle||this.keys.has('ShiftLeft')||this.settings.autoSprint&&f.mz>.87;f.interact=!!(this.holds.interact||this.keys.has('KeyE'));
   f.repeatFire=this.simple&&!!this.holds.fire;f.autoReload=this.settings.autoReload!==false;
-  const pad=navigator.getGamepads?.()?.find(p=>p?.connected);
-  if(pad){
-   const dead=v=>Number.isFinite(v)&&Math.abs(v)>.14?v:0;
-   f.mx+=dead(pad.axes[0]);f.mz-=dead(pad.axes[1]);f.ads||=!!pad.buttons[6]?.pressed;
-   const gain=f.ads?this.settings.adsSensitivity*(this.scopeScale??1):1;
-   f.lx+=dead(pad.axes[2])*dt*2.8*this.settings.sensitivity*gain;f.ly-=dead(pad.axes[3])*dt*2.4*this.settings.sensitivity*gain;
-   f.fire||=!!pad.buttons[7]?.pressed;f.sprint||=!!pad.buttons[10]?.pressed;f.interact||=!!pad.buttons[2]?.pressed;
-   for(const [i,action]of [[0,'jump'],[1,'crouch'],[2,'reload'],[3,'swap'],[4,'grenade'],[11,'melee']])if(pad.buttons[i]?.pressed&&!this.lastGamepadButtons[i])f[action]=true;
-   this.lastGamepadButtons=pad.buttons.map(b=>b.pressed);
-  }else this.lastGamepadButtons.length=0;
+  this.controller.apply(f,dt,this.scopeScale??1,this.contextAvailable);
   f.firePressed||=f.fire&&!this.previousFire;this.previousFire=f.fire;return f;
  }
 }
