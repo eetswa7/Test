@@ -1,6 +1,21 @@
-import {distance,direction,angleDelta,clamp} from './math.js?v=6';
+import {distance,direction,angleDelta,clamp} from './math.js?v=10';
 export const ROLES=[{name:'Rifleman',weapon:0,range:19},{name:'Rusher',weapon:3,range:9},{name:'Shotgunner',weapon:5,range:7},{name:'Marksman',weapon:8,range:37},{name:'Heavy',weapon:9,range:28},{name:'Elite',weapon:1,range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
+function nearestTag(bot,rules){
+ let best=null,cost=Infinity;
+ for(const tag of rules.tags){
+  const d=distance(bot,tag)+Math.abs(bot.y-tag.y)*3;
+  const score=d*(tag.team===bot.team?1.12:1);
+  if(score<cost&&d<65){best=tag;cost=score;}
+ }
+ return best;
+}
+function hardpointGoal(bot,rules){
+ const p=rules.points[rules.activePoint];
+ // Spread defenders inside the ring; the centre may contain a fountain or cover.
+ const angle=bot.id*2.399963;
+ return {x:p.x+Math.cos(angle)*2.9,y:p.y,z:p.z+Math.sin(angle)*2.9};
+}
 export function updateBot(bot,dt,e){
  bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.interacting=false;
  if(bot.aiClock<=0){
@@ -12,12 +27,17 @@ export function updateBot(bot,dt,e){
   if(target){if(bot.target!==target.id){bot.reaction=e.difficulty.reaction+(bot.role===5?-.07:.08)*e.random();bot.burst=0;}
    bot.target=target.id;bot.lastKnown={x:target.x,y:target.y,z:target.z};bot.memory=6;bot.state='engage';
   }else{bot.target=null;if(bot.memory>0&&bot.lastKnown){bot.state='investigate';bot.goal=bot.lastKnown;}else bot.state='patrol';}
+  const pickup=e.rules.mode.id==='confirmed'?nearestTag(bot,e.rules):null;
   let danger=null;for(const g of e.grenades)if(g.kind==='frag'&&g.fuse<1.8&&distance(bot,g)<7){danger=g;break;}
   if(danger){const n=Math.max(.1,distance(bot,danger));bot.goal={x:bot.x+(bot.x-danger.x)/n*9,y:bot.y,z:bot.z+(bot.z-danger.z)/n*9};bot.state='evade';}
   else if(bot.weapon.reloadLeft>0||bot.health<28&&target){
    bot.state=bot.weapon.reloadLeft>0?'reload':'retreat';let cover=null,cost=Infinity;
    for(const p of e.arena.cover){const d=distance(bot,p);if(d<cost&&d<13&&!e.arena.collides(p,.35,1.7)&&(!target||!e.arena.visible({...p,y:p.y+1.3},e.eye(target)))){cover=p;cost=d;}}
    bot.goal=cover??{x:bot.x-Math.sin(bot.yaw)*7,y:bot.y,z:bot.z+Math.cos(bot.yaw)*7};
+  }else if(e.rules.mode.id==='hardpoint'){
+   bot.goal=hardpointGoal(bot,e.rules);bot.state='objective';
+  }else if(pickup&&(!target||distance(bot,pickup)<Math.max(5,Math.min(12,distance(bot,target)*.7)))){
+   bot.goal=pickup;bot.state='collect';
   }else if(target){
    const preferred=bot.weapon.def.id===12?1.3:Math.min(ROLES[bot.role].range,bot.weapon.range*.9),d=distance(bot,target),side=bot.id%2?1:-1;
    if(d<preferred*.45){bot.goal={x:bot.x-(target.x-bot.x)*.45,y:bot.y,z:bot.z-(target.z-bot.z)*.45};bot.state='retreat';}
@@ -38,7 +58,7 @@ export function updateBot(bot,dt,e){
  if(e.rules.mode.id==='sabotage'&&bot.state==='objective'&&distance(bot,bot.goal)<2.9)bot.interacting=true;
  if(target&&bot.flashed<=.3){
   const eye=e.eye(bot),t=e.eye(target),d=Math.max(.1,distance(bot,target));bot.yaw+=angleDelta(bot.yaw,Math.atan2(t.x-eye.x,-(t.z-eye.z)))*clamp(dt*12,0,1);bot.pitch+=(Math.atan2(t.y-eye.y-.28,d)-bot.pitch)*clamp(dt*10,0,1);bot.ads=Math.min(1,bot.ads+dt*5);
-  if(bot.reaction<=0&&bot.burstPause<=0&&bot.state!=='evade'&&e.canSee(bot,target)){
+  if(bot.reaction<=0&&bot.burstPause<=0&&bot.state!=='evade'&&bot.weapon.cooldown<=0&&bot.weapon.reloadLeft<=0&&e.canSee(bot,target)){
    if(bot.weapon.ammo===0)bot.weapon.reload();
    else if(e.shoot(bot,true)){bot.burst++;if(bot.burst>=(bot.role===4?9:bot.role===3?1:3)){bot.burst=0;bot.burstPause=.25+e.random()*.5;}}
   }

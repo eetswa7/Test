@@ -28,3 +28,30 @@ test('tap jumps and holding the same button changes stance once',()=>{const{inpu
 test('cancelled trigger and ADS touches do not leave active input',()=>{const{input,ev}=fixture();input.pointerDown(ev(1,730,150,'ads'));input.pointerUp(ev(1,730,150,'ads'),true);assert(!input.sample(.016).ads);input.pointerDown(ev(2,710,245,'fire'));input.pointerUp(ev(2,710,245,'fire'),true);assert(!input.sample(.016).fire);});
 test('large controls remain inside the smallest landscape safe area',()=>{const {input,buttons}=fixture(667,375);input.settings.buttonScale=1.4;input.settings.layout={fire:{x:.99,y:.99}};input.layout();const b=buttons.fire,x=parseFloat(b.style.left)*6.67,y=parseFloat(b.style.top)*3.75,r=parseFloat(b.style.width)/2;assert(x+r<=667-7.9&&y+r<=375-7.9);});
 test('a controller with missing axes cannot inject NaN into aiming',()=>{const{input}=fixture();Object.defineProperty(globalThis,'navigator',{value:{getGamepads:()=>[{connected:true,axes:[0,0],buttons:[]}]},configurable:true});const f=input.sample(.016);assert(Number.isFinite(f.lx)&&Number.isFinite(f.ly));});
+
+test('native iOS touch release clears a lost joystick while the other thumb keeps firing',()=>{
+ const {input,ev}=fixture();input.pointerDown(ev(8,90,260));input.syncTouches({type:'touchstart',touches:[{identifier:0,clientX:90,clientY:260}]});input.pointerMove(ev(8,40,260));
+ input.pointerDown(ev(12,700,240,'fire'));input.syncTouches({type:'touchstart',touches:[{identifier:0,clientX:40,clientY:260},{identifier:1,clientX:700,clientY:240}]});assert(input.sample(.016).mx<-.9);
+ input.syncTouches({type:'touchend',touches:[{identifier:1,clientX:700,clientY:240}]});const f=input.sample(.016);assert.equal(f.mx,0);assert(f.fire);assert.equal(input.stickID,null);
+ input.syncTouches({type:'touchend',touches:[]});assert(!input.sample(.016).fire);
+});
+test('failed pointer capture and reused iOS pointer IDs cannot latch movement',()=>{
+ const {input,ev}=fixture();input.layer.setPointerCapture=()=>{throw new Error('Capture lost');};assert.doesNotThrow(()=>input.pointerDown(ev(1,90,260)));input.pointerMove(ev(1,30,260));assert(input.sample(.016).mx<-.9);
+ input.pointerDown(ev(1,700,230,'fire'));const f=input.sample(.016);assert.equal(f.mx,0);assert(f.fire);input.pointerUp(ev(1,700,230));assert.equal(input.pointers.size,0);
+});
+test('stationary held sticks remain active while tiny thumb drift stays in the dead zone',()=>{
+ const {input,ev}=fixture();input.pointerDown(ev(1,90,260));input.pointerMove(ev(1,88,261));assert.equal(input.sample(.016).mx,0);input.pointerMove(ev(1,30,260));for(let i=0;i<600;i++)assert(input.sample(.016).mx<-.9);input.pointerUp(ev(1,30,260));assert.equal(input.sample(.016).mx,0);
+});
+test('orphaned joystick ownership and cancelled native touches return to neutral',()=>{
+ const {input,ev}=fixture();input.pointerDown(ev(1,90,260));input.pointerMove(ev(1,30,260));input.pointers.delete(1);assert.equal(input.sample(.016).mx,0);
+ input.pointerDown(ev(2,700,230,'fire'));input.syncTouches({type:'touchcancel',touches:[]});assert(!input.sample(.016).fire);
+});
+test('window-level release listeners handle a contact ending outside the control layer',()=>{
+ const callbacks={};const {input,ev}=fixture();globalThis.window.addEventListener=(type,fn)=>{(callbacks[type]??=[]).push(fn);};const tracked=new TouchInput({},input.layer,{...DEFAULT_SETTINGS,layout:{}});tracked.active=true;
+ tracked.pointerDown(ev(5,90,260));tracked.pointerMove(ev(5,30,260));assert(tracked.sample(.016).mx<-.9);for(const fn of callbacks.pointerup)fn(ev(5,-10,260));assert.equal(tracked.sample(.016).mx,0);
+ tracked.pointerDown(ev(6,90,260));tracked.pointerMove(ev(6,30,260));for(const fn of callbacks.pagehide)fn({});assert.equal(tracked.sample(.016).mx,0);
+});
+
+test('array-like native TouchLists work without a JavaScript iterator',()=>{
+ const {input,ev}=fixture();input.pointerDown(ev(5,90,260));const touches={0:{identifier:44,clientX:90,clientY:260},length:1};assert.doesNotThrow(()=>input.syncTouches({type:'touchstart',touches}));input.pointerMove(ev(5,20,260));assert(input.sample(.016).mx<-.9);input.syncTouches({type:'touchend',touches:{length:0}});assert.equal(input.sample(.016).mx,0);
+});
