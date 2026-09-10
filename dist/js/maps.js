@@ -1,5 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=11';
-import {dressWorld} from './world-detail.js?v=11';
+import {rng,rayBox,distance,clamp} from './math.js?v=12';
+import {dressWorld} from './world-detail.js?v=12';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -18,8 +18,8 @@ Object.assign(SURFACES,{
  bark:{color:[.47,.38,.28],rough:1,metal:0,tile:15},rock:{color:[.86,.88,.82],rough:1,metal:0,tile:15},grass:{color:[.8,.89,.65],rough:1,metal:0,tile:13},moss:{color:[.8,.9,.67],rough:1,metal:0,tile:12},tiles:{color:[.9,.81,.70],rough:.85,metal:0,tile:14},brass:{color:[.55,.37,.12],rough:.33,metal:.9,tile:-1}
 });
 export class Arena {
- constructor(id=0){this.info=MAPS[Number.isFinite(id)?clamp(Math.floor(id),0,MAPS.length-1):0];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+this.info.id*511);this.build();dressWorld(this);}
- box(x,y,z,w,h,d,surface='concrete',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.blocks.push(b);if(h>.7&&h<2.3)this.cover.push({x:x+w/2+1,z,y:0},{x:x-w/2-1,z,y:0},{x,y:0,z:z+d/2+1},{x,y:0,z:z-d/2-1});return b;}
+ constructor(id=0){this.info=MAPS[Number.isFinite(id)?clamp(Math.floor(id),0,MAPS.length-1):0];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+this.info.id*511);this.build();dressWorld(this);this.bakeCollision();}
+ box(x,y,z,w,h,d,surface='concrete',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.blocks.push(b);this.collisionCells=null;if(h>.7&&h<2.3)this.cover.push({x:x+w/2+1,z,y:0},{x:x-w/2-1,z,y:0},{x,y:0,z:z+d/2+1},{x,y:0,z:z-d/2-1});return b;}
  detail(x,y,z,w,h,d,surface='dark',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.decor.push(b);return b;}
  crate(x,z,stack=1){for(let i=0;i<stack;i++){this.box(x,i*1.18+.59,z,1.25,1.18,1.25,'wood');for(const dx of [-.43,.43])this.detail(x+dx,i*1.18+.6,z,.075,1.2,1.28,'steel');}}
  barrier(x,z,turn=false){this.box(x,.65,z,turn?.8:3.1,1.3,turn?3.1:.8,'concrete');this.detail(x,1.31,z,turn?.8:3.1,.04,turn?3.1:.8,'orange');}
@@ -170,8 +170,24 @@ export class Arena {
   for(const [x,z]of [[-25,17],[20,22],[-16,3],[16,-3],[-2,-23]])this.crate(x,z,2);
   this.objectives=[{name:'A',x:-20,y:0,z:0},{name:'B',x:0,y:0,z:0},{name:'C',x:20,y:0,z:0}];
  }
- collides(p,r=.32,h=1.75){for(const b of this.blocks){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
- floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.blocks){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.32&&Math.abs(p.z-b.z)<b.d/2+.32)floor=top;}return floor;}
+ bakeCollision(){
+  // Expand by the largest gameplay capsule. Point queries then touch one bucket.
+  this.collisionBlocks=this.blocks;this.collisionCount=this.blocks.length;
+  const n=Math.ceil(this.info.size*2/4)+2;this.collisionSize=n;
+  this.collisionCells=Array.from({length:n*n},()=>[]);
+  for(const b of this.blocks){if(b.ground)continue;
+   const x0=Math.max(0,Math.floor((b.x-b.w/2-1+this.info.size)/4)),x1=Math.min(n-1,Math.floor((b.x+b.w/2+1+this.info.size)/4));
+   const z0=Math.max(0,Math.floor((b.z-b.d/2-1+this.info.size)/4)),z1=Math.min(n-1,Math.floor((b.z+b.d/2+1+this.info.size)/4));
+   for(let z=z0;z<=z1;z++)for(let x=x0;x<=x1;x++)this.collisionCells[z*n+x].push(b);
+  }
+ }
+ nearby(p,r=.32){
+  if(!this.collisionCells||this.collisionBlocks!==this.blocks||this.collisionCount!==this.blocks.length||r>1)return this.blocks;
+  const x=Math.floor((p.x+this.info.size)/4),z=Math.floor((p.z+this.info.size)/4),n=this.collisionSize;
+  return x>=0&&z>=0&&x<n&&z<n?this.collisionCells[z*n+x]:this.blocks;
+ }
+ collides(p,r=.32,h=1.75){for(const b of this.nearby(p,r)){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
+ floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.nearby(p)){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.32&&Math.abs(p.z-b.z)<b.d/2+.32)floor=top;}return floor;}
  trace(o,d,limit=160){let t=limit,block=null;for(const b of this.blocks){if(b.destroyed)continue;let n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};}
  visible(a,b){const len=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);if(len<.01)return true;return this.trace(a,{x:(b.x-a.x)/len,y:(b.y-a.y)/len,z:(b.z-a.z)/len},len).t>=len-.12;}
  indoors(p){return this.blocks.some(b=>b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}

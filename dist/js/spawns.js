@@ -54,6 +54,12 @@ export class SpawnDirector {
    }
    pool=keep;
   }
+  for(const p of pool){let best=-Infinity;p.yaw=Math.atan2(-p.x,p.z);
+   for(const id of nav.nodes[p.node].links){const q=nav.nodes[id],dx=q.x-p.x,dz=q.z-p.z,n=Math.hypot(dx,dz)||1;
+    const exit={x:p.x+dx/n*2.2,y:p.y,z:p.z+dz/n*2.2};if(!nav.walkable(p,exit))continue;
+    const score=-(exit.x**2+exit.z**2);if(score>best){best=score;p.yaw=Math.atan2(dx,-dz);}
+   }
+  }
   return pool;
  }
  noteDeath(actor,time){
@@ -85,7 +91,10 @@ export class SpawnDirector {
    for(const other of actors)if(other.id!==actor.id&&!other.dead&&Math.abs(other.y-p.y)<1.9&&separation(p,other)<1.6){occupied=true;break;}
    if(occupied)continue;
    let nearest=100;
-   for(const enemy of enemies)nearest=Math.min(nearest,separation(p,enemy));
+   for(const enemy of enemies){nearest=Math.min(nearest,separation(p,enemy));
+    // Anticipate a rushing enemy reaching an otherwise empty spawn pocket.
+    const predicted=Math.hypot(p.x-enemy.x-(enemy.vx||0)*1.1,p.z-enemy.z-(enemy.vz||0)*1.1);nearest=Math.min(nearest,predicted);
+   }
    // Threats dominate flow preferences. Losing a home side naturally flips the
    // spawn to an unoccupied rear pocket instead of feeding the same corner.
    let score=Math.min(nearest,42)*1.2;
@@ -145,6 +154,7 @@ export class SpawnDirector {
   if(!best)throw new Error('Map has no reachable spawn position');
   this.recent.push({x:best.x,z:best.z,id:actor.id,team:actor.team,time});
   if(this.recent.length>MAX_HISTORY)this.recent.shift();
-  return{x:best.x,y:best.y,z:best.z,yaw:Math.atan2(-best.x,best.z)};
+  const yaw=best.yaw??Math.atan2(-best.x,best.z);
+  return{x:best.x,y:best.y,z:best.z,yaw};
  }
 }

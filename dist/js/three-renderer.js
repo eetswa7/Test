@@ -1,11 +1,11 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=11';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=11';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=11';
-import { loadImages } from './textures.js?v=11';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=11';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=11';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=11';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=12';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=12';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=12';
+import { loadImages } from './textures.js?v=12';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=12';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=12';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=12';
 
 const QUALITY = {
   low: { scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, smokeLayers: 4, foliage: .55, range: 65 },

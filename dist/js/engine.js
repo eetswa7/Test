@@ -1,10 +1,10 @@
-import {Arena,MAPS} from './maps.js?v=11';
-import {Navigation} from './navigation.js?v=11';
-import {SpawnDirector} from './spawns.js?v=11';
-import {MatchRules} from './modes.js?v=11';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=11';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=11';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=11';
+import {Arena,MAPS} from './maps.js?v=12';
+import {Navigation} from './navigation.js?v=12';
+import {SpawnDirector} from './spawns.js?v=12';
+import {MatchRules} from './modes.js?v=12';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=12';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=12';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=12';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -13,7 +13,7 @@ export class Actor {
  get weapon(){return this.weapons[this.slot];}
  get dead(){return this.health<=0;}
  get height(){return this.crouched?1.12:1.78;}
- reset(p,yaw){this.x=p.x;this.y=p.y;this.z=p.z;this.vx=this.vz=this.vy=0;this.yaw=yaw;this.pitch=0;this.health=100;this.crouched=false;this.grounded=true;this.sprinting=false;this.ads=0;this.grenades=2;this.spawnProtection=1.5;this.respawnLeft=0;this.switchLeft=0;this.slot=0;this.lastDamage=-100;this.lastShot=-100;this.flashed=0;this.stepClock=0;this.knifeCooldown=0;this.interacting=false;this.interactProgress=0;this.state='patrol';this.aiClock=this.id*.019;this.pathClock=0;this.target=null;this.lastKnown=null;this.memory=0;this.reaction=0;this.burst=0;this.burstPause=0;this.path=[];this.pathIndex=0;this.goal=null;this.recoilPitch=0;this.visualKick=0;this.landKick=0;for(const w of this.weapons)w.reset();}
+ reset(p,yaw){this.x=p.x;this.y=p.y;this.z=p.z;this.vx=this.vz=this.vy=0;this.yaw=yaw;this.pitch=0;this.health=100;this.crouched=false;this.grounded=true;this.sprinting=false;this.ads=0;this.grenades=2;this.spawnProtection=1.5;this.respawnLeft=0;this.switchLeft=0;this.slot=0;this.lastDamage=-100;this.lastShot=-100;this.flashed=0;this.stepClock=0;this.knifeCooldown=0;this.interacting=false;this.interactProgress=0;this.state='patrol';this.aiClock=this.id*.019;this.pathClock=0;this.target=null;this.lastKnown=null;this.memory=0;this.reaction=0;this.burst=0;this.burstPause=0;this.path=[];this.pathIndex=0;this.goal=null;this.stuckTime=0;this.jumpBuffer=0;this.coyote=0;this.recoilPitch=0;this.visualKick=0;this.landKick=0;for(const w of this.weapons)w.reset();}
 }
 
 export class Game {
@@ -33,7 +33,7 @@ export class Game {
  resetRound(){this.spawner.resetRound();for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
  canSee(a,b){if(a.flashed>.3)return false;const from=this.eye(a),to=this.eye(b);if(!this.arena.visible(from,to))return false;for(const s of this.smokes)if(s.age<13&&pointSegment(s,from,to)<Math.min(5.2,s.age*4))return false;return true;}
  moveActor(a,tx,tz,dt){
-  const speed=Math.hypot(tx,tz),accel=clamp(dt*(speed>0?24:30),0,1);a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
+  const speed=Math.hypot(tx,tz),accel=1-Math.exp(-dt*(speed>0?30:38));a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
   const radius=.31,height=a.height,step=a.grounded?.36:0;
   for(const key of ['x','z']){
    let p={x:a.x,y:a.y,z:a.z};p[key]+=(key==='x'?a.vx:a.vz)*dt;let ground=this.arena.floorAt(p,a.y+step);let nextY=a.grounded&&ground>=a.y-.08?ground:a.y;p.y=nextY+.04;
@@ -61,7 +61,8 @@ export class Game {
    let adsTarget=input.ads&&!p.sprinting&&!p.weapon.reloadLeft&&!p.switchLeft?1:0;p.ads=lerp(p.ads,adsTarget,clamp(dt/p.weapon.adsTime*3,0,1));
    const maxSpeed=p.crouched?2.15:p.sprinting?6.1:4.1,speed=maxSpeed*(p.weapon.def.kind==='LMG'?.88:1)*lerp(1,.6,p.ads),n=Math.max(1,Math.hypot(input.mx,input.mz));
    const dx=(Math.cos(p.yaw)*input.mx+Math.sin(p.yaw)*input.mz)/n*speed,dz=(Math.sin(p.yaw)*input.mx-Math.cos(p.yaw)*input.mz)/n*speed;
-   if(input.jump&&p.grounded&&!p.crouched){p.vy=6.7;p.grounded=false;}
+   p.coyote=p.grounded?.09:Math.max(0,p.coyote-dt);p.jumpBuffer=input.jump?.12:Math.max(0,p.jumpBuffer-dt);
+   if(p.jumpBuffer>0&&p.coyote>0&&!p.crouched){p.vy=6.7;p.grounded=false;p.coyote=0;p.jumpBuffer=0;}
    this.moveActor(p,dx,dz,dt);
    if(input.reload&&p.weapon.reload())this.emit('reload',{source:0,weapon:p.weapon.def.id});
    if(input.swap&&this.rules.mode.id!=='gun'){p.weapon.reloadLeft=0;p.slot=1-p.slot;p.switchLeft=.32;this.emit('switch');}
@@ -73,6 +74,7 @@ export class Game {
    // Recover only the recoil contribution, retaining the player's own look input.
    if(p.weapon.sinceShot>.14){const rec=p.recoilPitch*(1-Math.exp(-dt*8));p.pitch=clamp(p.pitch-rec,-1.48,1.48);p.recoilPitch-=rec;}
   }
+  this.pathBudget=2;
   for(let i=1;i<this.actors.length;i++)if(!this.actors[i].dead)updateBot(this.actors[i],dt,this);
   this.updateEquipment(dt);this.rules.update(dt,this);
  }

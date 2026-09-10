@@ -1,4 +1,4 @@
-import {distance} from './math.js?v=11';
+import {distance} from './math.js?v=12';
 // A small layered navigation grid includes room floors and reachable stairs/terraces.
 // Connectivity is baked once per match; A* runs at most once per bot per second.
 export class Navigation {
@@ -13,10 +13,20 @@ export class Navigation {
    const ix=node.ix+dx,iz=node.iz+dz;if(ix<0||ix>=this.n||iz<0||iz>=this.n)continue;
    for(const id of this.cells[iz*this.n+ix]){let to=this.nodes[id];if(Math.abs(to.y-node.y)>.36)continue;
     if(dx&&dz&&(arena.collides({x:node.x,y:Math.max(node.y,to.y)+.05,z:to.z},.34,1.75)||arena.collides({x:to.x,y:Math.max(node.y,to.y)+.05,z:node.z},.34,1.75)))continue;
-    node.links.push(id);
+    if(this.walkable(node,to))node.links.push(id);
    }
   }
   this.g=new Float32Array(this.nodes.length);this.previous=new Int32Array(this.nodes.length);this.closed=new Uint8Array(this.nodes.length);
+ }
+ // Sweep a standing capsule along each edge, including intermediate step heights.
+ walkable(from,to){
+  const length=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(length/.25));
+  let y=from.y;const p={x:from.x,y,z:from.z};
+  for(let i=1;i<=steps;i++){const t=i/steps;p.x=from.x+(to.x-from.x)*t;p.z=from.z+(to.z-from.z)*t;
+   const floor=this.arena.floorAt(p,y+.36);if(floor<y-.37)return false;y=floor;p.y=y+.04;
+   if(this.arena.collides(p,.34,1.75))return false;
+  }
+  return Math.abs(y-to.y)<.12;
  }
  nearest(p){let best=-1,cost=Infinity,ix=Math.floor((p.x+this.size)/this.step),iz=Math.floor((p.z+this.size)/this.step);for(let r=0;r<=5;r++){for(let z=Math.max(0,iz-r);z<=Math.min(this.n-1,iz+r);z++)for(let x=Math.max(0,ix-r);x<=Math.min(this.n-1,ix+r);x++)for(const id of this.cells[z*this.n+x]){const n=this.nodes[id],d=distance(p,n)+Math.abs(n.y-p.y)*3;if(d<cost){cost=d;best=id;}}if(best>=0)break;}return best;}
  path(from,to){
