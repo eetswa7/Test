@@ -5,7 +5,7 @@ import {Navigation} from '../dist/js/navigation.js';
 
 const freshMaps=MAPS.filter(m=>m.id>=4);
 test('Breakwater and Citadel have unique themes and stable selectable map IDs',()=>{
- assert.equal(MAPS.length,6);assert.equal(new Set(MAPS.map(m=>m.id)).size,6);
+ assert.equal(MAPS.length,8);assert.equal(new Set(MAPS.map(m=>m.id)).size,8);
  assert.equal(new Arena(4).info.name,'BREAKWATER');assert.equal(new Arena(5).info.name,'CITADEL');
  assert.equal(new Arena(99).info.id,MAPS.length-1);assert.equal(new Arena(NaN).info.id,0);
 });

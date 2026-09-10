@@ -1,11 +1,12 @@
-import {distance} from './math.js?v=12';
+import {GUN_ORDER} from './weapons.js?v=13';
+import {distance} from './math.js?v=13';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
  {id:'ffa',name:'FREE FOR ALL',short:'FFA',description:'Every operator for themselves. First to 20.',limit:20,time:360,teams:false},
  {id:'sabotage',name:'SABOTAGE',short:'SAB',description:'Plant or defuse. One life per round. First to 4 rounds.',limit:4,time:110,teams:true},
  {id:'domination',name:'DOMINATION',short:'DOM',description:'Capture A, B and C. Hold them to reach 150 points.',limit:150,time:480,teams:true},
- {id:'gun',name:'GUN GAME',short:'GUN',description:'13 weapons. One elimination per tier. Finish with the blade.',limit:13,time:480,teams:false},
+ {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} weapons. One elimination per tier. Finish with the blade.`,limit:GUN_ORDER.length,time:480,teams:false},
  {id:'hardpoint',name:'HARDPOINT',short:'HARD',description:'Hold the rotating zone. Contested zones score nothing. First to 150.',limit:150,time:480,teams:true},
  {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true}
 ];
@@ -35,7 +36,7 @@ export class MatchRules {
    if(this.scores[killer.team]>=this.mode.limit)this.finish(killer.team);
   }
   if(this.mode.id==='ffa'&&killer.kills>=this.mode.limit)this.finish(killer.id);
-  if(this.mode.id==='gun'&&killer.gunStage>=13)this.finish(killer.id);
+  if(this.mode.id==='gun'&&killer.gunStage>=GUN_ORDER.length)this.finish(killer.id);
   if(this.mode.id==='confirmed'&&victim&&this.enemies(killer,victim)) {
    if(this.tags.length>=MAX_TAGS)this.tags.shift();
    const y=engine?engine.arena.floorAt(victim,victim.y+.08):victim.y;

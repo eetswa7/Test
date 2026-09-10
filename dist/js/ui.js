@@ -1,9 +1,9 @@
-import {MODES} from './modes.js?v=12';
-import {MAPS} from './maps.js?v=12';
-import {WEAPONS,ATTACHMENTS,Weapon} from './weapons.js?v=12';
-import {clamp,distance} from './math.js?v=12';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=12';
-import {identityFor,canIdentify} from './combat-identity.js?v=12';
+import {MODES} from './modes.js?v=13';
+import {MAPS} from './maps.js?v=13';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=13';
+import {clamp,distance} from './math.js?v=13';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=13';
+import {identityFor,canIdentify} from './combat-identity.js?v=13';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -30,9 +30,9 @@ export class Interface {
  modeDetail(){$('mode-detail').textContent=MODES.find(m=>m.id===this.app.config.mode).description;}
  setPage(page){this.page=page;for(const b of document.querySelectorAll('[data-page]'))b.classList.toggle('active',b.dataset.page===page);for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===`${page}-page`);this.app.audio.ui();if(page==='career')this.refreshCareer();if(page==='loadout'){this.renderWeapons();this.app.previewWeapon();}}
  renderWeapons(){const loadout=this.store.data.loadout,chosen=loadout[this.slot],w=new Weapon(chosen,this.slot==='primary'?loadout:{}),d=w.def;for(const b of document.querySelectorAll('[data-slot]'))b.classList.toggle('active',b.dataset.slot===this.slot);
-  $('weapon-list').innerHTML=WEAPONS.filter(d=>this.slot==='primary'?d.id<10:d.id>=10&&d.id<12).map(d=>`<button class="weapon-row ${d.id===chosen?'active':''} ${this.store.unlocked(d)?'':'locked'}" data-weapon="${d.id}"><span>${d.name}</span><small>${this.store.unlocked(d)?d.kind:`LV ${d.unlock}`}</small></button>`).join('');
+  $('weapon-list').innerHTML=WEAPONS.filter(d=>this.slot==='primary'?PRIMARY_IDS.includes(d.id):d.kind==='PISTOL').map(d=>`<button class="weapon-row ${d.id===chosen?'active':''} ${this.store.unlocked(d)?'':'locked'}" data-weapon="${d.id}"><span>${d.name}</span><small>${this.store.unlocked(d)?d.kind:`LV ${d.unlock}`}</small></button>`).join('');
   for(const b of document.querySelectorAll('[data-weapon]'))b.onclick=()=>{const id=+b.dataset.weapon;if(!this.store.unlocked(WEAPONS[id])){this.toast(`Unlocks at operator level ${WEAPONS[id].unlock}.`);return;}loadout[this.slot]=id;this.persist();this.renderWeapons();this.app.previewWeapon();this.app.audio.ui();};
-  $('weapon-class').textContent=d.kind;$('weapon-name').textContent=d.name;$('weapon-unlock').textContent=`${this.store.data.weaponXP[d.id]??0} WEAPON XP · ${d.automatic?'AUTOMATIC':d.id===5?'PUMP ACTION':d.id===7?'BOLT ACTION':'SEMI AUTOMATIC'}`;
+  $('weapon-class').textContent=d.kind;$('weapon-name').textContent=d.name;$('weapon-unlock').textContent=`${this.store.data.weaponXP[d.id]??0} WEAPON XP · ${d.burst?'3-ROUND BURST':d.automatic?'AUTOMATIC':d.id===5?'PUMP ACTION':d.id===7?'BOLT ACTION':'SEMI AUTOMATIC'}`;
   $('weapon-stats').innerHTML=[['DAMAGE',`${d.damage}${d.pellets>1?` × ${d.pellets}`:''}`,''],['FIRE RATE',d.rpm,'RPM'],['MAGAZINE',w.capacity,''],['RANGE',Math.round(w.range),'m'],['RELOAD',w.reloadTime.toFixed(2),'s'],['ADS',Math.round(w.adsTime*1000),'ms']].map(([name,v,unit])=>`<div class="stat"><span>${name}</span><strong>${v}</strong> <small>${unit}</small></div>`).join('');
   for(const key of Object.keys(ATTACHMENTS)){const el=$(`${key}-select`);el.value=loadout[key];el.disabled=this.slot!=='primary';}$('equipment-select').value=loadout.equipment;
  }
@@ -83,7 +83,7 @@ export class Interface {
   else if(r.mode.id==='hardpoint'){const q=r.points[r.activePoint];$('objective').textContent=`HOLD ${q.name} · ${q.contested?'CONTESTED':q.owner===p.team?'ALLIED CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
   else if(r.mode.id==='confirmed')$('objective').textContent='COLLECT ENEMY TAGS · DENY ALLIED TAGS';
   else if(r.mode.id==='sabotage')$('objective').textContent=r.phase==='roundBreak'?r.message:r.planted?(r.attackingTeam===p.team?'DEFEND THE CHARGE':'DEFUSE THE CHARGE'):`ROUND ${r.round} · ${r.attackingTeam===p.team?'PLANT AT A OR C':'DEFEND A AND C'}`;
-  else $('objective').textContent=r.mode.id==='gun'?`TIER ${Math.min(13,p.gunStage+1)} / 13`:`FIRST TO ${r.mode.limit}`;
+  else $('objective').textContent=r.mode.id==='gun'?`TIER ${Math.min(GUN_ORDER.length,p.gunStage+1)} / ${GUN_ORDER.length}`:`FIRST TO ${r.mode.limit}`;
   const near=r.points.find((q,i)=>(i===0||i===2)&&(!r.planted||r.bombSite===i)&&distance(p,q)<3&&Math.abs(p.y-q.y)<=2);$('interact-prompt').textContent=r.mode.id==='sabotage'&&near&&!p.dead?(p.interactProgress>0?`${r.planted?'DEFUSING':'PLANTING'} ${Math.floor(p.interactProgress*100)}%`:r.planted&&p.team!==r.attackingTeam?'HOLD INTERACT TO DEFUSE':!r.planted&&p.team===r.attackingTeam?'HOLD INTERACT TO PLANT':''):'';
   this.app.input.setContext(r.mode.id==='sabotage'&&!!near&&!p.dead&&((r.planted&&p.team!==r.attackingTeam)||(!r.planted&&p.team===r.attackingTeam)));
   $('hitmarker').style.opacity=g.time<this.hitUntil?1:0;$('kill-confirm').style.opacity=g.time<this.killUntil?1:0;$('announcement').style.opacity=g.time<this.announceUntil?1:0;

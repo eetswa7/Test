@@ -1,10 +1,10 @@
-import {SURFACES} from './maps.js?v=12';
+import {SURFACES} from './maps.js?v=13';
 export function makeCube(){const data=[];const faces=[[[1,0,0],[1,-1,-1],[1,-1,1],[1,1,1],[1,1,-1]],[[-1,0,0],[-1,-1,1],[-1,-1,-1],[-1,1,-1],[-1,1,1]],[[0,1,0],[-1,1,-1],[1,1,-1],[1,1,1],[-1,1,1]],[[0,-1,0],[-1,-1,1],[1,-1,1],[1,-1,-1],[-1,-1,-1]],[[0,0,1],[1,-1,1],[-1,-1,1],[-1,1,1],[1,1,1]],[[0,0,-1],[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1]]];for(const f of faces)for(const i of [0,1,2,0,2,3]){const p=f[i+1],uv=[[0,0],[1,0],[1,1],[0,1]][i];data.push(...p.map(v=>v*.5),...f[0],...uv);}return outward(new Float32Array(data));}
 export function makeCylinder(sides=12){const d=[];for(let i=0;i<sides;i++){const a=i/sides*Math.PI*2,b=(i+1)/sides*Math.PI*2;const p=[Math.cos(a)*.5,Math.sin(a)*.5],q=[Math.cos(b)*.5,Math.sin(b)*.5];for(const [x,y,z,nx,ny,nz,u,v]of [[...p.slice(0,1),-.5,p[1],p[0]*2,0,p[1]*2,0,0],[q[0],-.5,q[1],q[0]*2,0,q[1]*2,1,0],[q[0],.5,q[1],q[0]*2,0,q[1]*2,1,1],[p[0],-.5,p[1],p[0]*2,0,p[1]*2,0,0],[q[0],.5,q[1],q[0]*2,0,q[1]*2,1,1],[p[0],.5,p[1],p[0]*2,0,p[1]*2,0,1]])d.push(x,y,z,nx,ny,nz,u,v);for(const y of [-.5,.5]){let pts=y>0?[p,q]:[q,p];for(const v of [[0,0],...pts])d.push(v[0],y,v[1],0,y*2,0,v[0]+.5,v[1]+.5);}}return outward(new Float32Array(d));}
 export function makeSphere(){const d=[],lat=8,lon=12;const p=(a,b)=>[Math.sin(a)*Math.cos(b),Math.cos(a),Math.sin(a)*Math.sin(b)];for(let y=0;y<lat;y++)for(let x=0;x<lon;x++){let pts=[p(y/lat*Math.PI,x/lon*Math.PI*2),p((y+1)/lat*Math.PI,x/lon*Math.PI*2),p((y+1)/lat*Math.PI,(x+1)/lon*Math.PI*2),p(y/lat*Math.PI,(x+1)/lon*Math.PI*2)];for(const i of [0,1,2,0,2,3])d.push(...pts[i].map(v=>v*.5),...pts[i],0,0);}return outward(new Float32Array(d));}
 
 export const part=(x,y,z,w,h,d,surface='dark',extra={})=>({x,y,z,w,h,d,surface,...extra});
-export {weaponModel} from './weapon-models.js?v=12';
+export {weaponModel} from './weapon-models.js?v=13';
 export function actorModel(a,time,relation){
  const team=relation?.cloth??(a.team===0?[.24,.40,.46]:[.52,.32,.25]);
  if(!a.renderParts){

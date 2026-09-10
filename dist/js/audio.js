@@ -1,4 +1,4 @@
-import {WEAPONS} from './weapons.js?v=12';
+import {WEAPONS} from './weapons.js?v=13';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -6,7 +6,7 @@ const SHOTS=[
  [91,19,.32,1430],[69,12,.49,1020],[118,27,.24,1770],
  [137,37,.19,2180],[122,30,.25,1890],[52,9,.61,670],
  [61,12,.52,810],[46,7,.7,980],[64,12,.48,1280],
- [75,15,.54,880],[148,30,.26,2380],[81,16,.44,1720],[230,50,.1,3300]
+ [75,15,.54,880],[148,30,.26,2380],[81,16,.44,1720],[230,50,.1,3300],[106,23,.34,1620],[82,20,.39,1270]
 ];
 function randomStream(seed){let n=seed>>>0;return()=>{n^=n<<13;n^=n>>>17;n^=n<<5;return(n>>>0)/2147483648-1;};}
 export class AudioSystem {

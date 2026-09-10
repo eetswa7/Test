@@ -1,12 +1,14 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=12';
-import {dressWorld} from './world-detail.js?v=12';
+import {rng,rayBox,distance,clamp} from './math.js?v=13';
+import {dressWorld} from './world-detail.js?v=13';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
  {id:2,name:'DUSTLINE',location:'Arid forward base',size:36,weather:'sun',tag:'DESERT',description:'A fortified compound, firing lanes and a radar outpost.',sky:[.54,.66,.72],fog:[.74,.69,.56],sun:[.4,.85,.3]},
  {id:3,name:'RELAY',location:'Mountain listening station',size:44,weather:'sun',tag:'MIXED',description:'An operations centre, service tunnels and open approaches.',sky:[.36,.54,.68],fog:[.5,.61,.61],sun:[-.5,.8,-.4]},
  {id:4,name:'BREAKWATER',location:'Maritime repair terminal',size:39,weather:'sun',tag:'DOCKYARD',description:'A dry-dock crossing, raised service walks and a cargo warehouse.',sky:[.49,.64,.72],fog:[.58,.67,.69],sun:[-.7,.72,.22]},
- {id:5,name:'CITADEL',location:'Upland communications fortress',size:40,weather:'overcast',tag:'HIGHLANDS',description:'A four-way courtyard, covered approaches and a radar overlook.',sky:[.36,.49,.59],fog:[.47,.56,.58],sun:[.35,.81,-.46]}
+ {id:5,name:'CITADEL',location:'Upland communications fortress',size:40,weather:'overcast',tag:'HIGHLANDS',description:'A four-way courtyard, covered approaches and a radar overlook.',sky:[.36,.49,.59],fog:[.47,.56,.58],sun:[.35,.81,-.46]},
+ {id:6,name:'SWITCHYARD',location:'Rail freight interchange',size:38,weather:'overcast',tag:'RAIL TERMINAL',description:'Offset freight cars, a four-door depot and raised signal platform.',sky:[.38,.49,.58],fog:[.5,.56,.59],sun:[-.58,.75,.3]},
+ {id:7,name:'CANOPY',location:'Forest research outpost',size:42,weather:'sun',tag:'FOREST BASE',description:'Interconnected cabins, a sheltered courtyard and an observation deck.',sky:[.4,.57,.66],fog:[.5,.62,.58],sun:[.55,.82,-.35]}
 ];
 export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.76,metal:.45,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.8,metal:.1,pattern:1},blue:{color:[.12,.29,.37],rough:.52,metal:.6,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
 const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
@@ -39,7 +41,7 @@ export class Arena {
  building(x,z,w,d,h=7,surface='stone'){this.box(x,h/2,z,w,h,d,surface);this.detail(x,h+.15,z,w+.45,.3,d+.45,'white');for(let y=2;y<h-.5;y+=2.2)for(let xx=x-w/2+1.2;xx<x+w/2-.6;xx+=2){for(const zz of [z-d/2-.015,z+d/2+.015]){this.detail(xx,y,zz,.8,1.1,.06,'glass');this.detail(xx,y-.62,zz,1,.1,.14,'white');}}this.detail(x+.5,h+.55,z,1.5,.8,1.2,'steel');}
  build(){
   const id=this.info.id,s=this.info.size;
-  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'dirt':id===3||id===5?'grass':id===4?'asphalt':'concrete',{ground:true});
+  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'dirt':id===3||id===5||id===7?'grass':id===4?'asphalt':'concrete',{ground:true});
   for(const sign of [-1,1]){this.box(sign*s,id===4&&sign===1?.65:1.4,0,.8,id===4&&sign===1?1.3:2.8,s*2,id===4?'concrete':'plaster');this.box(0,1.4,sign*s,s*2,2.8,.8,'plaster');}
   this.spawns=[{x:-s+5,y:0,z:-s+5,team:0},{x:-s+9,y:0,z:-s+5,team:0},{x:-s+5,y:0,z:-s+9,team:0},{x:-s+10,y:0,z:-s+10,team:0},{x:s-5,y:0,z:s-5,team:1},{x:s-9,y:0,z:s-5,team:1},{x:s-5,y:0,z:s-9,team:1},{x:s-10,y:0,z:s-10,team:1},{x:-s+5,y:0,z:s-5,team:0},{x:s-5,y:0,z:-s+5,team:1}];
   this.objectives=[{name:'A',x:-s*.5,y:0,z:s*.28},{name:'B',x:0,y:0,z:0},{name:'C',x:s*.5,y:0,z:-s*.28}];
@@ -81,6 +83,8 @@ export class Arena {
   // Shallow access stairs keep each navigation-grid transition below the step limit.
   if(id===4)this.buildBreakwater();
   if(id===5)this.buildCitadel();
+  if(id===6)this.buildSwitchyard();
+  if(id===7)this.buildCanopy();
   this.improveFlow();
   // Set dressing stays separate from collision; small breakables have their own hit state.
   for(let i=0;i<26;i++){let x=(this.random()-.5)*(s*2-5),z=(this.random()-.5)*(s*2-5);if(this.collides({x,y:0,z},.6,1.9))continue;this.detail(x,.012,z,.06+this.random()*.22,.025,.1+this.random()*.15,'dark',{yaw:this.random()*6.28});}
@@ -169,6 +173,37 @@ export class Arena {
   for(const [x,z,t]of [[-31,-8,true],[-16,-30,false],[14,-31,false],[32,3,true],[-13,28,false],[12,29,false],[-30,29,false],[30,-27,false]])this.barrier(x,z,t);
   for(const [x,z]of [[-25,17],[20,22],[-16,3],[16,-3],[-2,-23]])this.crate(x,z,2);
   this.objectives=[{name:'A',x:-20,y:0,z:0},{name:'B',x:0,y:0,z:0},{name:'C',x:20,y:0,z:0}];
+ }
+ buildSwitchyard(){
+  // Offset rolling stock leaves crossovers through all three lanes.
+  this.room(-22,0,12,20,4.5,'steel',true,true);
+  this.room(23,22,11,9,3.5,'concrete',true,true);
+  for(const [x,z,c]of [[-5,-19,'blue'],[6,-3,'rust'],[-5,15,'green'],[20,-19,'blue']]){
+   this.box(x,1.35,z,3.1,2.7,10,c);this.detail(x,2.75,z,3.2,.12,10.1,'steel');
+   for(const dz of [-3.3,3.3])for(const side of [-1,1])this.detail(x+side*1.56,.43,z+dz,.19,.75,.75,'dark',{mesh:'cylinder',roll:Math.PI/2});
+   for(let dz=-4;dz<=4;dz+=1.3)this.detail(x,1.55,z+dz,3.14,2.1,.06,'steel');
+  }
+  for(const x of [-5,6,20]){for(const dx of [-.8,.8])this.detail(x+dx,.032,0,.07,.06,61,'steel');for(let z=-30;z<=30;z+=1.5)this.detail(x,.015,z,2.2,.025,.22,'wood');}
+  this.box(23,.54,3,7,1.08,9,'concrete');this.accessSteps(23,-1.5,3,1.08,1);this.accessSteps(23,7.5,3,1.08,-1);
+  this.detail(25,2.75,3,.22,3.4,.22,'steel',{mesh:'cylinder'});this.detail(25,4.4,3,.6,.9,.35,'dark');this.detail(24.99,4.58,2.81,.25,.25,.04,'orange',{emissive:.4});
+  for(const [x,z,t]of [[-15,-18,true],[-15,18,true],[9,-27,false],[11,23,false],[29,-4,true],[-27,-26,false],[-25,25,false]])this.barrier(x,z,t);
+  for(const [x,z]of [[-24,-5],[-20,5],[14,12],[14,-12],[-11,5]])this.crate(x,z,2);
+  this.objectives=[{name:'A',x:-22,y:0,z:0},{name:'B',x:0,y:0,z:0},{name:'C',x:23,y:0,z:22}];
+ }
+ buildCanopy(){
+  // Cabins have four exits. A central courtyard is reached without a single choke.
+  this.room(-22,-15,12,11,3.6,'plaster',true,true);this.room(22,15,12,11,3.6,'plaster',true,true);
+  this.room(-22,17,11,13,3.4,'wood',true,true);this.room(23,-18,12,10,3.8,'concrete',true,true);
+  for(const sign of [-1,1]){
+   this.box(sign*9,1.25,-4,.65,2.5,11,'stone');this.box(sign*9,1.25,10,.65,2.5,5,'stone');
+   this.detail(sign*9,2.53,-4,.8,.08,11.1,'moss');
+  }
+  this.box(0,.54,-21,8,1.08,8,'concrete');this.accessSteps(0,-17,3,1.08,-1);
+  for(const x of [-3.7,3.7])this.detail(x,2.9,-21,.18,3.64,.18,'steel');this.detail(0,4.8,-21,8.5,.18,8.5,'green');
+  this.box(2,1.7,-23,2,1.24,1.6,'steel');
+  for(const [x,z,t]of [[-13,-4,true],[14,4,true],[-9,25,false],[10,-30,false],[-31,2,true],[31,-1,true],[-27,-29,false],[28,29,false]])this.barrier(x,z,t);
+  this.container(0,27,false,'green');for(const [x,z]of [[-18,-14],[19,14],[-17,19],[22,-19],[-4,5],[4,-5]])this.crate(x,z,2);
+  this.objectives=[{name:'A',x:-22,y:0,z:1},{name:'B',x:0,y:0,z:0},{name:'C',x:23,y:0,z:-1}];
  }
  bakeCollision(){
   // Expand by the largest gameplay capsule. Point queries then touch one bucket.

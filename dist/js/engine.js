@@ -1,10 +1,10 @@
-import {Arena,MAPS} from './maps.js?v=12';
-import {Navigation} from './navigation.js?v=12';
-import {SpawnDirector} from './spawns.js?v=12';
-import {MatchRules} from './modes.js?v=12';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=12';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=12';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=12';
+import {Arena,MAPS} from './maps.js?v=13';
+import {Navigation} from './navigation.js?v=13';
+import {SpawnDirector} from './spawns.js?v=13';
+import {MatchRules} from './modes.js?v=13';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=13';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=13';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=13';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -65,9 +65,9 @@ export class Game {
    if(p.jumpBuffer>0&&p.coyote>0&&!p.crouched){p.vy=6.7;p.grounded=false;p.coyote=0;p.jumpBuffer=0;}
    this.moveActor(p,dx,dz,dt);
    if(input.reload&&p.weapon.reload())this.emit('reload',{source:0,weapon:p.weapon.def.id});
-   if(input.swap&&this.rules.mode.id!=='gun'){p.weapon.reloadLeft=0;p.slot=1-p.slot;p.switchLeft=.32;this.emit('switch');}
+   if(input.swap&&this.rules.mode.id!=='gun'){p.weapon.reloadLeft=0;p.weapon.burstRemaining=0;p.slot=1-p.slot;p.switchLeft=.32;this.emit('switch');}
    if(input.autoReload&&p.weapon.ammo===0&&!p.weapon.reloadLeft&&p.weapon.reserve>0){if(p.weapon.reload())this.emit('reload',{source:0,weapon:p.weapon.def.id});}
-   if((input.fire&&(p.weapon.def.automatic||input.firePressed||input.repeatFire))&&!p.sprinting)this.shoot(p,false);
+   if((p.weapon.burstRemaining>0||input.fire&&(p.weapon.def.automatic||input.firePressed||input.repeatFire))&&!p.sprinting)this.shoot(p,false);
    if(input.grenade)this.throwGrenade(p);
    if(input.melee&&this.rules.mode.id!=='gun')this.melee(p);
    p.interacting=input.interact;
@@ -83,7 +83,8 @@ export class Game {
   if(d.id===12)return this.melee(a);
   if(w.reloadLeft>0){if(d.id===5&&w.ammo>0)w.reloadLeft=0;else return false;}
   if(w.ammo<=0){w.cooldown=.22;if(a.id===0)this.emit('empty');w.reload();return false;}
-  w.cooldown=d.interval;if(!(a.id===0&&this.debug.ammo))w.ammo--;a.spawnProtection=0;
+  if(d.burst){if(!w.burstRemaining)w.burstRemaining=d.burst;w.burstRemaining--;}
+  w.cooldown=d.burst&&!w.burstRemaining?.28:d.interval;if(!(a.id===0&&this.debug.ammo))w.ammo--;a.spawnProtection=0;
   const origin=this.eye(a),baseSpread=w.spread(a.ads,Math.hypot(a.vx,a.vz)>.6,a.crouched)+(bot?this.difficulty.accuracy*(a.role===5?.8:1)*(a.flashed>.1?6:1):0);
   let anyHit=false,head=false;
   for(let i=0;i<d.pellets;i++){
@@ -123,7 +124,7 @@ export class Game {
   if(killer&&killer.id!==victim.id){killer.kills++;killer.streak++;killer.bestStreak=Math.max(killer.bestStreak,killer.streak);
    if(killer.id===0){this.weaponKills[killer.weapon.def.id]=(this.weaponKills[killer.weapon.def.id]??0)+1;if(headshot)this.headshots++;}
    const weapon=killer.weapon.def.name;
-   if(this.rules.mode.id==='gun'){killer.gunStage++;if(killer.gunStage<13){killer.weapons[0]=new Weapon(GUN_ORDER[killer.gunStage]);killer.slot=0;killer.switchLeft=.28;}}
+   if(this.rules.mode.id==='gun'){killer.gunStage++;if(killer.gunStage<GUN_ORDER.length){killer.weapons[0]=new Weapon(GUN_ORDER[killer.gunStage]);killer.slot=0;killer.switchLeft=.28;}}
    this.rules.onKill(killer,victim,this);this.emit('kill',{source:killer.id,target:victim.id,text:`${killer.name}  ›  ${victim.name}`,weapon,headshot,streak:killer.streak,position:{x:victim.x,y:victim.y,z:victim.z}});
    for(const ally of this.actors)if(this.rules.mode.teams&&ally.id!==victim.id&&!ally.dead&&ally.team===victim.team&&distance(ally,victim)<12){ally.lastKnown={x:killer.x,y:killer.y,z:killer.z};ally.memory=5;ally.pathClock=0;}
   }else this.emit('kill',{source:-1,target:victim.id,text:`${victim.name}  ·  ${killer?'SELF DAMAGE':'FALL'}`,position:{x:victim.x,y:victim.y,z:victim.z}});
