@@ -1,16 +1,17 @@
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=14';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=13';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=13';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=13';
-import { loadImages } from './textures.js?v=13';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=13';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=13';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=13';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=14';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=14';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=14';
+import { loadImages } from './textures.js?v=14';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=14';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=14';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=14';
 
 const QUALITY = {
-  low: { scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, smokeLayers: 4, foliage: .55, range: 65 },
-  medium: { scale: .9, dpr: 1.65, shadow: 1024, shadowHz: 15, effects: 130, smokeLayers: 5, foliage: .8, range: 85 },
-  high: { scale: 1, dpr: 1.85, shadow: 1536, shadowHz: 24, effects: 200, smokeLayers: 6, foliage: 1, range: 110 }
+  low: { pixels: 850000, scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, smokeLayers: 4, foliage: .55, range: 65 },
+  medium: { pixels: 1400000, scale: .9, dpr: 1.65, shadow: 1024, shadowHz: 15, effects: 130, smokeLayers: 5, foliage: .8, range: 85 },
+  high: { pixels: 2200000, scale: 1, dpr: 1.85, shadow: 1536, shadowHz: 24, effects: 200, smokeLayers: 6, foliage: 1, range: 110 }
 };
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -185,13 +186,13 @@ export class Renderer {
     for (let i = 0; i < 16; i++) {
       const canvas = tileCanvas(images.surfaces, 4, i, 256), map = new THREE.CanvasTexture(canvas);
       map.colorSpace = THREE.SRGBColorSpace; map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
-      const detail = detailMaps(canvas); this.surfaceMaps.push({ map, ...detail });
+      const detail = detailMaps(canvas);detail.normal.anisotropy=detail.roughness.anisotropy=anisotropy; this.surfaceMaps.push({ map, ...detail });
       this.textures.push(map, detail.normal, detail.roughness);
       if (i % 4 === 3) await IDLE_FRAME(); // Let input/loading UI paint between CPU texture work.
     }
     if (images.weapon) for (let i = 0; i < 4; i++) {
-      const canvas = tileCanvas(images.weapon, 2, i, 256), context = canvas.getContext('2d');
-      const detail = detailMaps(canvas), pixels = context.getImageData(0, 0, 256, 256);
+      const canvas = tileCanvas(images.weapon, 2, i, 512), context = canvas.getContext('2d');
+      const detail = detailMaps(canvas), pixels = context.getImageData(0, 0, 512, 512);
       neutraliseFinish(pixels.data); context.putImageData(pixels, 0, 0);
       const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
       map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
@@ -261,7 +262,7 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { color: 0xffffff, roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
+    const options = { dithering: true, color: 0xffffff, roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
@@ -288,7 +289,26 @@ export class Renderer {
           #endif
           #endif`);
       };
-      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-finish-uv-v2' : 'world-scaled-uv-v2';
+      const patchUV=mat.onBeforeCompile;
+      mat.onBeforeCompile=shader=>{
+        patchUV(shader);
+        if(category==='world'){
+          shader.vertexShader='varying vec3 vBreachSurface;\n'+shader.vertexShader;
+          shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+            #ifdef USE_INSTANCING
+            vBreachSurface=(modelMatrix*instanceMatrix*vec4(position,1.0)).xyz;
+            #else
+            vBreachSurface=(modelMatrix*vec4(position,1.0)).xyz;
+            #endif`);
+          shader.fragmentShader='varying vec3 vBreachSurface;\n'+shader.fragmentShader;
+          shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+            // Low-frequency mottling breaks repeated tiles without another texture read.
+            float patina=sin(vBreachSurface.x*.61+sin(vBreachSurface.z*.47))*sin(vBreachSurface.z*.39+vBreachSurface.y*.72);
+            diffuseColor.rgb*=.965+patina*.035;
+          `);
+        }
+      };
+      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-finish-uv-v2' : 'world-patina-uv-v3';
     }
     if (leaf) {
       this.patchWind(mat);
@@ -319,8 +339,10 @@ export class Renderer {
     if (category === 'weapon' && m.finishTile >= 0) return this.color.setRGB(
       .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
     const brighten = category === 'world' && m.pattern > 0 && !p.color;
-    return this.color.setRGB(brighten ? .55 + c[0] * .45 : c[0],
+    this.color.setRGB(brighten ? .55 + c[0] * .45 : c[0],
       brighten ? .55 + c[1] * .45 : c[1], brighten ? .55 + c[2] * .45 : c[2], THREE.SRGBColorSpace);
+    if(category==='world'&&this.arena){m.occlusion??=sceneryOcclusion(p,this.arena);this.color.multiplyScalar(m.occlusion);}
+    return this.color;
   }
 
   buildWorld() {
@@ -348,7 +370,16 @@ export class Renderer {
       batch.computeBoundingBox(); batch.computeBoundingSphere();
       this.world.add(batch); this.worldBatches.push(batch);
     }
-    this.applyQuality(true); this.shadowClock = 1;
+    this.buildStaticContacts();this.applyQuality(true); this.shadowClock = 1;
+  }
+
+  buildStaticContacts(){
+    if(this.staticContacts){this.scene.remove(this.staticContacts);this.staticContacts.dispose();this.staticContacts=null;}
+    if(!this.contactShadows)return; // CPU-only renderer validation omits texture construction.
+    const s=this.arena.info.size,parts=this.arena.blocks.filter(p=>!p.ground&&!p.destroyed&&!p.invisible&&p.h>.5&&p.w>.5&&p.d>.5&&Math.abs(p.y-p.h*.5)<.08&&Math.abs(p.x)<s-2&&Math.abs(p.z)<s-2);
+    const mesh=new THREE.InstancedMesh(this.contactShadows.geometry,this.contactShadows.material,Math.max(1,parts.length));
+    for(let i=0;i<parts.length;i++){const p=parts[i];compose(this.rawMatrix,p.x,.022,p.z,p.w+1.1,p.d+1.1,1,0,-Math.PI/2,0);this.matrix.fromArray(this.rawMatrix);mesh.setMatrixAt(i,this.matrix);}
+    mesh.count=parts.length;mesh.userData.parts=parts;mesh.renderOrder=1;mesh.computeBoundingSphere();mesh.instanceMatrix.needsUpdate=true;this.scene.add(mesh);this.staticContacts=mesh;
   }
 
   refreshDestroyed() {
@@ -360,7 +391,7 @@ export class Renderer {
       batch.count=count;batch.userData.fullCount=count;batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;
       batch.computeBoundingSphere();batch.computeBoundingBox();
     }
-    this.shadowClock=1;
+    this.buildStaticContacts();this.shadowClock=1;
   }
 
   partGeometry(p, category) {
@@ -456,8 +487,8 @@ export class Renderer {
   resize() {
     const q = QUALITY[this.quality] ?? QUALITY.medium;
     const width = Math.max(2, this.canvas.clientWidth), height = Math.max(2, this.canvas.clientHeight);
-    const ratio = Math.min(window.devicePixelRatio || 1, q.dpr) * q.scale * this.renderScale;
-    const pixelWidth = Math.floor(width * ratio), pixelHeight = Math.floor(height * ratio);
+    const size=framebufferSize(width,height,Math.min(window.devicePixelRatio || 1,q.dpr),q.scale*this.renderScale,q.pixels);
+    const pixelWidth=size.width,pixelHeight=size.height;
     if (pixelWidth !== this.width || pixelHeight !== this.height) {
       this.width = pixelWidth; this.height = pixelHeight;
       this.renderer.setPixelRatio(1); this.renderer.setSize(pixelWidth, pixelHeight, false);
@@ -781,6 +812,7 @@ export class Renderer {
     for (const mat of this.depthMaterials.values()) mat.dispose();
     for (const texture of this.textures) texture.dispose();
     this.fxMesh.geometry.dispose(); this.fxMesh.material.dispose();
+    this.staticContacts?.dispose();
     this.contactShadows.geometry.dispose(); this.contactShadows.material.dispose(); this.contactShadows.dispose();
     this.muzzle.material.dispose(); this.environment?.dispose(); this.sun.shadow.map?.dispose(); this.renderer.dispose();
   }

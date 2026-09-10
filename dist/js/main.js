@@ -1,17 +1,18 @@
-import {Game,emptyInput} from './engine.js?v=13';
-import {Renderer} from './three-renderer.js?v=13';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=13';
-import {TouchInput} from './input.js?v=13';
-import {AudioSystem} from './audio.js?v=13';
-import {SaveStore} from './save.js?v=13';
-import {Interface,$} from './ui.js?v=13';
-import {Weapon} from './weapons.js?v=13';
-import {opticMagnification} from './aim.js?v=13';
+import {Game,emptyInput} from './engine.js?v=14';
+import {Renderer} from './three-renderer.js?v=14';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=14';
+import {TouchInput} from './input.js?v=14';
+import {AudioSystem} from './audio.js?v=14';
+import {SaveStore} from './save.js?v=14';
+import {Interface,$} from './ui.js?v=14';
+import {Weapon} from './weapons.js?v=14';
+import {opticMagnification} from './aim.js?v=14';
 
 class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;
   try{this.renderer=new Renderer($('world'),this.store.data.settings);}catch(error){console.warn('WebGL renderer unavailable:',error.message);const fresh=$('world').cloneNode();$('world').replaceWith(fresh);this.renderer=new CompatibilityRenderer(fresh,this.store.data.settings);}
-  this.game=new Game(this.config,{seed:881});this.renderer.setArena(this.game.arena);this.audio=new AudioSystem(this.store.data.settings);this.input=new TouchInput($('world'),$('touch-layer'),this.store.data.settings);this.ui=new Interface(this);
+  this.game=new Game(this.config,{seed:881});this.renderer.setArena(this.game.arena);this.audio=new AudioSystem(this.store.data.settings);this.input=new TouchInput($('world'),$('touch-layer'),this.store.data.settings);this.ui=new Interface(this);this.controllerHUD=false;
+  window.addEventListener('pointerdown',()=>{this.controllerHUD=false;this.touchUntil=performance.now()+750;document.body.classList.remove('controller-active');},{capture:true,passive:true});
   if(this.renderer.compatibility)this.ui.toast('Compatibility graphics enabled. WebGL is unavailable in this browser.');
   this.isTouch=new URLSearchParams(location.search).get('controls')==='touch'||matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;document.body.classList.toggle('desktop',!this.isTouch);
   this.frame=this.frame.bind(this);requestAnimationFrame(this.frame);Promise.resolve(this.renderer.ready).then(()=>$('loading').classList.add('hidden')).catch(e=>{this.assetsFailed=true;$('loading').classList.add('hidden');this.ui.modal('DOWNLOAD INTERRUPTED','BREACHLINE','<p>The battleground could not finish loading. Check your connection and retry. Saved progress is kept.</p>',[['RETRY',()=>location.reload(),true]]);});
@@ -40,6 +41,10 @@ class Application {
  previewWeapon(){if(this.playing)return;const slot=this.ui?.slot??'primary',id=this.store.data.loadout[slot];this.game.player.weapons[0]=new Weapon(id,slot==='primary'?this.store.data.loadout:{});this.game.player.slot=0;this.renderer.weaponKey='';}
  frame(now){requestAnimationFrame(this.frame);if(document.hidden||this.renderer.lost)return;const activeMatch=this.playing&&!this.game.paused&&this.game.rules.phase!=='finished',frameRate=activeMatch?60:this.playing?10:30;if(this.last&&now-this.last<1000/frameRate-1)return;const elapsed=this.last?Math.max(.001,(now-this.last)/1000):1/60,dt=Math.min(.08,elapsed);this.last=now;if(this.starting)return;
   this.input.controller.poll();
+  const pad=this.input.controller;
+  if(!pad.connected&&this.controllerHUD){this.controllerHUD=false;document.body.classList.remove('controller-active');}
+  if(pad.connected&&this.playing&&!this.input.editing&&now>(this.touchUntil??0)&&(pad.sticks.some(v=>Math.abs(v)>.1)||pad.edges.some(v=>v))&&!this.controllerHUD){this.controllerHUD=true;document.body.classList.add('controller-active');}
+
   if(this.input.controller.lost&&this.playing&&!this.game.paused){this.pause();this.ui.toast("Controller disconnected. Reconnect or use touch controls.");}
   if(this.input.controller.edges[9]&&this.playing&&this.game.rules.phase!=='finished'){if(this.game.paused)this.resume();else this.pause();}
   if(!this.playing||this.game.paused||this.game.rules.phase==='finished')this.ui.controllerMenu(this.input.controller);

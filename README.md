@@ -47,7 +47,7 @@ Seven fully simulated player-versus-bot modes:
 | Free For All | Eight combatants, first to 20, respawns, 6-minute limit |
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
-| Gun Game | One elimination advances the weapon, 13 stages ending with a blade kill |
+| Gun Game | One elimination advances the weapon, 15 stages ending with a blade kill |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 
@@ -141,3 +141,10 @@ Validation: 107 automated tests passed, including seven controller regressions; 
 ## Release 13: Switchyard, Canopy and expanded arsenal
 
 Eight maps now include SWITCHYARD (offset freight cars, depot crossovers, raised signal platform) and CANOPY (four-exit cabins, covered courtyard and observation deck). HARROW B3 is a three-round-burst rifle; MARTEN 45 is a slower, heavier SMG. Both have original first-person models, recoil, attachments, handling and synthesized sound. Stable weapon IDs preserve saved careers. Gun Game has 15 stages including the final blade. All 114 tests passed, including traversal, new maps and burst behaviour.
+
+
+## Release 14: rendering and control polish
+
+Added softly baked contact shading under props, ambient attenuation in roofed interiors, subtle world-space surface variation without extra texture reads, dithered materials, anisotropic detail maps and 512 px weapon finish tiles. Pixel budgets cap large display render targets. Bot stride and crouch animation blend continuously. Controller auto-sprint works, touch pads clear on controller activity and return on screen contact, and hidden diagnostics show draw calls, render size and coordinates.
+
+Final validation: all 117 automated tests passed; static checks validated 28 JavaScript modules, local assets and the complete offline shell. Collision/floor queries in a deterministic 12,000-position container benchmark returned identical results and took 1.9–6.0 ms using buckets versus 49.1–81.0 ms with full scans across eight maps. These are CPU workload measurements, not iPhone FPS claims. Physical iPhone GPU, touch ergonomics, controller and thermal endurance checks remain necessary.

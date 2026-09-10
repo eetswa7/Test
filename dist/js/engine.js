@@ -1,15 +1,15 @@
-import {Arena,MAPS} from './maps.js?v=13';
-import {Navigation} from './navigation.js?v=13';
-import {SpawnDirector} from './spawns.js?v=13';
-import {MatchRules} from './modes.js?v=13';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=13';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=13';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=13';
+import {Arena,MAPS} from './maps.js?v=14';
+import {Navigation} from './navigation.js?v=14';
+import {SpawnDirector} from './spawns.js?v=14';
+import {MatchRules} from './modes.js?v=14';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=14';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=14';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=14';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
 export class Actor {
- constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??ROLES[role].weapon,loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
+ constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??(role===0&&id%2?13:role===1&&id%2===0?14:ROLES[role].weapon),loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
  get weapon(){return this.weapons[this.slot];}
  get dead(){return this.health<=0;}
  get height(){return this.crouched?1.12:1.78;}
