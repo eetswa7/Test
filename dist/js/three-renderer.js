@@ -1,17 +1,22 @@
-import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=16';
-import {LightingField} from './lighting-field.js?v=16';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=16';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=16';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=16';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=16';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=17';
+import {positionSun,shadowDue} from './shadow-system.js?v=17';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=17';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=17';
+import {DecalSystem} from './decal-system.js?v=17';
+import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=17';
+import {LightingField} from './lighting-field.js?v=17';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=17';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=17';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=17';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=17';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=16';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=16';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=16';
-import { loadImages } from './textures.js?v=16';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=16';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=16';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=16';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=17';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=17';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=17';
+import { loadImages } from './textures.js?v=17';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=17';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=17';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=17';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -56,34 +61,6 @@ export function neutraliseFinish(pixels) {
   return pixels;
 }
 
-const billboardVertex = `
-attribute vec3 instancePosition;
-attribute vec3 instanceTint;
-attribute vec2 instanceSize;
-attribute float instanceAlpha;
-attribute float instanceKind;
-varying vec2 vUv; varying vec3 vTint; varying float vAlpha; varying float vKind;
-void main() {
-  vUv=uv; vTint=instanceTint; vAlpha=instanceAlpha; vKind=instanceKind;
-  vec4 centre=modelViewMatrix*vec4(instancePosition,1.0);
-  centre.xy+=position.xy*instanceSize;
-  gl_Position=projectionMatrix*centre;
-}`;
-const billboardFragment = `
-varying vec2 vUv; varying vec3 vTint; varying float vAlpha; varying float vKind;
-void main(){
-  vec2 p=vUv*2.0-1.0; float radius=length(p);
-  float edge=1.0-smoothstep(.22,1.0,radius);
-  float wisps=.78+.22*sin(p.x*13.0+sin(p.y*11.0))*sin(p.y*16.0+p.x*7.0);
-  float a=edge*vAlpha; if(vKind<.5)a*=wisps;
-  if(a<.012)discard;
-  vec3 c=vTint;
-  if(vKind>1.5)c=mix(vTint,vec3(2.8,2.2,1.3),pow(max(0.0,1.0-radius),4.0));
-  gl_FragColor=vec4(c,a);
-  #include <tonemapping_fragment>
-  #include <colorspace_fragment>
-}`;
-
 export class Renderer {
   constructor(canvas, settings) {
     this.canvas = canvas; this.settings = settings; this.lost = false; this.compatibility = false;
@@ -91,15 +68,11 @@ export class Renderer {
       depth: true, stencil: false, powerPreference: 'high-performance' });
     this.gl = this.renderer.getContext();
     this.profiler=new GraphicsProfiler(this.gl);this.qualityController=new GraphicsQuality(settings.quality);
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.renderer.autoClear = false;
-    this.renderer.info.autoReset = false;
+    configurePresentation(this.renderer);this.presentation=presentationCapabilities(this.gl);
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.shadowMap.autoUpdate = false;
     this.scene = new THREE.Scene(); this.weaponScene = new THREE.Scene();
-    this.lightingField=new LightingField();
+    this.lightingField=new LightingField();this.sceneLOD=new SceneLOD();
     this.camera = new THREE.PerspectiveCamera(55, 1, .055, 190);
     this.weaponCamera = new THREE.PerspectiveCamera(65, 1, .018, 10);
     this.world = new THREE.Group(); this.scene.add(this.world);
@@ -141,8 +114,7 @@ export class Renderer {
     this.effects = Array.from({ length: 200 }, () => ({ life: 0, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0,
       size: 0, max: 1, kind: 0, r: 1, g: 1, b: 1 }));
     this.effectCursor = 0; this.nearestLights = [null, null, null]; this.lightDistances = [Infinity, Infinity, Infinity];
-    this.decals = Array.from({ length: 64 }, () => ({ life: 0, part: null })); this.decalCursor = 0;
-    this.createEffectPool(); this.createMuzzle();
+    this.createEffectPool(); this.createMuzzle();this.decalSystem=new DecalSystem(this.scene);
     this.onContextLost = event => { event.preventDefault(); this.lost = true;
       window.dispatchEvent(new CustomEvent('graphicslost')); };
     this.onContextRestored = () => window.location.reload();
@@ -164,7 +136,7 @@ export class Renderer {
   }
 
   diagnostics(){const p=this.profiler,q=QUALITY[this.quality]??QUALITY.medium;
-    return `${this.compatibility?'Canvas':'WebGL2'} · ${this.quality.toUpperCase()} · ${this.width} × ${this.height}\n${this.drawCalls} draws · ${Math.round(this.triangles??0).toLocaleString()} triangles\nCPU ${p?.cpuMs.toFixed(1)??'N/A'} ms · GPU ${p?.gpuMs?.toFixed(1)??'unavailable'} ms\nFrame p95 ${p?.frameP95.toFixed(1)??'N/A'} ms · textures ~${((this.textureMemory??0)/1048576).toFixed(1)} MiB\n${q.shadow}px shadows / ${q.shadowHz} Hz · ${this.shaderPrograms??0} programs`;
+    return `${this.compatibility?'Canvas':'WebGL2'} · ${this.quality.toUpperCase()} · ${this.width} × ${this.height}\n${this.drawCalls} draws · ${Math.round(this.triangles??0).toLocaleString()} triangles\nCPU ${p?.cpuMs.toFixed(1)??'N/A'} ms · GPU ${p?.gpuMs?.toFixed(1)??'unavailable'} ms\nFrame p95 ${p?.frameP95.toFixed(1)??'N/A'} ms · textures ~${((this.textureMemory??0)/1048576).toFixed(1)} MiB\n${q.shadow}px shadows / ${q.shadowHz} Hz / ${q.shadow?this.lastShadowDraws??0:0} draws · ${this.shaderPrograms??0} programs`;
   }
 
   async loadAssets() {
@@ -216,8 +188,9 @@ export class Renderer {
 
   setArena(arena) {
     this.arena = arena; this.cameraY = null; this.shadowClock = 1;
+    if(this.qualityController){this.qualityController.warmup=2;this.qualityController.slow=this.qualityController.fast=0;}
     for (const effect of this.effects) effect.life = 0;
-    for (const decal of this.decals) decal.life = 0;
+    this.decalSystem?.clear();
     this.clearDynamic(this.actorBatches);
     const info = arena.info, overcast = info.weather === 'overcast';
     this.scene.fog = new THREE.Fog(this.color.setRGB(...info.fog, THREE.SRGBColorSpace).clone(), 45, 155);
@@ -344,6 +317,8 @@ export class Renderer {
   buildWorld() {
     for (const batch of this.worldBatches) { this.world.remove(batch); batch.dispose(); }
     this.worldBatches.length = 0;
+    for(const p of this.arena.decor)p.renderMicroDetail=!p.ground&&!p.emissive&&p.surface!=='glass'&&detailThickness(p)<.13;
+    for(const p of this.arena.blocks)p.renderMicroDetail=false;
     const bins = new Map();
     for (const list of [this.arena.blocks, this.arena.decor, this.arena.foliage ?? []]) for (const p of list) {
       if (p.destroyed || p.invisible) continue;
@@ -362,6 +337,8 @@ export class Renderer {
       // Tiny decorative strips do not warrant another shadow-caster draw call.
       batch.castShadow = !p.ground && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = true;
       batch.userData.leaf = leaf; batch.userData.parts = parts; batch.userData.fullCount = parts.length;
+      batch.userData.hasMicroDetail=parts.some(q=>q.renderMicroDetail);
+      batch.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};
       if (leaf) batch.customDepthMaterial = this.depthMaterials.get(this.materialKey(p, 'world'));
       batch.computeBoundingBox(); batch.computeBoundingSphere();
       this.world.add(batch); this.worldBatches.push(batch);
@@ -380,14 +357,16 @@ export class Renderer {
 
   refreshDestroyed() {
     // Explosions update only affected prop instances; do not rebuild a whole map.
+    let changed=false;
     for(const batch of this.worldBatches){const parts=batch.userData.parts;
       if(!parts||!parts.some(p=>p.destroyed&&!p.renderDestroyed))continue;
-      let count=0;
+      changed=true;let count=0;
       for(const p of parts){if(p.destroyed){p.renderDestroyed=true;continue;}batch.setMatrixAt(count,this.partMatrix(p));batch.setColorAt(count,this.instanceColor(p,'world'));count++;}
-      batch.count=count;batch.userData.fullCount=count;batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;
+      batch.count=count;batch.userData.fullCount=count;batch.userData.lodParts=null;batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;
       batch.computeBoundingSphere();batch.computeBoundingBox();
     }
-    this.buildStaticContacts();this.lightingField?.setArena(this.arena);this.shadowClock=1;
+    if(!changed)return;
+    this.buildStaticContacts();this.lightingField?.invalidate(this.arena);if(this.sceneLOD)this.sceneLOD.clock=0;this.shadowClock=1;
   }
 
   partGeometry(p, category) {
@@ -414,6 +393,7 @@ export class Renderer {
         const capacity = 64;
         const mesh = new THREE.InstancedMesh(this.partGeometry(p, category), this.makeMaterial(p, category), capacity);
         mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.frustumCulled = false;
+        mesh.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};
         mesh.castShadow = category === 'actor'; mesh.receiveShadow = category === 'actor';
         group.add(mesh); entry = { mesh, used: 0, capacity, alive: true, version: 0, matrixDirty: false, colorDirty: false, slots: [] };
         map.set(key, entry);
@@ -427,6 +407,7 @@ export class Renderer {
       mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.instanceMatrix.array.set(old.instanceMatrix.array);
       if (old.instanceColor) { mesh.setColorAt(0, this.color); mesh.instanceColor.array.set(old.instanceColor.array); }
       mesh.frustumCulled = old.frustumCulled; mesh.castShadow = old.castShadow; mesh.receiveShadow = old.receiveShadow;
+      mesh.onBeforeShadow=old.onBeforeShadow;
       group.remove(old); old.dispose(); group.add(mesh); entry.mesh = mesh; entry.capacity = capacity; entry.version++;
     }
     const pose = binding.pose, yaw = p.yaw ?? 0, pitch = p.pitch ?? 0, roll = p.roll ?? 0;
@@ -561,9 +542,7 @@ export class Renderer {
           steel ? [2, 1.2, .3] : [.38, .32, .25], .025, .15 + Math.random() * .18,
           (Math.random() - .5) * 2.5, Math.random() * 2.2, (Math.random() - .5) * 2.5);
         this.particle(p, 0, [.42, .39, .33], .11, .6, 0, .28, 0);
-        const n = event.normal ?? { x: 0, y: 1, z: 0 }, decal = this.decals[this.decalCursor++ % this.decals.length];
-        decal.life = 18; decal.part = part(p.x + n.x * .012, p.y + n.y * .012, p.z + n.z * .012,
-          n.x ? .008 : .065, n.y ? .008 : .065, n.z ? .008 : .065, 'rubber');
+        const n=event.normal??{x:0,y:1,z:0};this.decalSystem?.add(p,n,steel);
       } else if (event.type === 'blood') {
         for (let i = 0; i < Math.min(6, event.value ?? 4); i++) this.particle(p, 1, [.27, .025, .016], .035, .28,
           (Math.random() - .5) * 1.5, Math.random(), (Math.random() - .5) * 1.5);
@@ -585,6 +564,7 @@ export class Renderer {
   }
 
   updateEffects(dt, game) {
+    this.decalSystem?.update(dt);
     let count = 0, shadowCount = 0;
     for (const a of game.actors) if (!a.dead && a.grounded && shadowCount < 64) {
       compose(this.rawMatrix, a.x, a.y + .025, a.z, 1.15, .82, 1, 0, -Math.PI / 2, 0); this.matrix.fromArray(this.rawMatrix);
@@ -617,12 +597,11 @@ export class Renderer {
           smoke.y + 1.25 + i % 3 * .48, smoke.z + Math.cos(angle) * radius * .34,
           radius * 1.7, 3.7, .38, .41, .40, opacity, 0); }
     }
+    count=ambientDust(this,count,game.time??0);
     this.fxMesh.geometry.instanceCount = count;
     if (count) for (const attr of this.fxAttributeList) {
       attr.clearUpdateRanges(); attr.addUpdateRange(0, count * attr.itemSize); attr.needsUpdate = true;
     }
-    for (const decal of this.decals) if (decal.life > 0) { decal.life -= dt;
-      if (decal.life > 0) this.addDynamic(this.actorBatches, this.scene, decal.part, 'actor'); }
     for (const grenade of game.grenades) {
       const model = grenade.renderPart ?? (grenade.renderPart = part(0, 0, 0, .13, .17, .13, 'green', { mesh: 'sphere' }));
       model.x = grenade.x; model.y = grenade.y; model.z = grenade.z;
@@ -632,15 +611,16 @@ export class Renderer {
 
   updateActors(game) {
     this.resetDynamic(this.actorBatches);
-    const player = game.player, range = (QUALITY[this.quality] ?? QUALITY.medium).range;
+    const player = game.player;
     for (const a of game.actors) {
       const actorDistance = distance(a, player);
-      if (a.id === player.id || actorDistance > range) continue;
+      if (a.id === player.id || actorDistance > this.camera.far) continue;
       if (this.frustum && actorDistance > 12) {
         this.actorBounds.center.set(a.x, a.y + .9, a.z);
         if (!this.frustum.intersectsSphere(this.actorBounds)) continue;
       }
-      const distant = actorDistance > (this.quality === 'low' ? 24 : 38);
+      const detailRange=(this.quality==='low'?24:38)*Math.tan(27.5*RAD)/Math.tan(this.camera.fov*RAD/2);
+      a.renderLOD=actorDetailLevel(a.renderLOD,actorDistance,detailRange);const distant=a.renderLOD===1;
       const death = a.dead ? Math.min(1, (3 - a.respawnLeft) * 2) : 0;
       if (a.dead && death >= 1) continue;
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
@@ -685,14 +665,7 @@ export class Renderer {
 
   updateLighting(dt) {
     const eye = this.eye, sun = this.arena.info.sun;
-    const sx = sun[0] * 65, sy = sun[1] * 65, sz = sun[2] * 65, length = Math.hypot(sx, sy, sz), horizontal = Math.hypot(sx, sz) || 1;
-    const dx = sx / length, dy = sy / length, dz = sz / length;
-    const rx = sz / horizontal, rz = -sx / horizontal, ux = dy * rz, uy = dz * rx - dx * rz, uz = -dy * rx;
-    const texel = (this.sun.shadow.camera.right - this.sun.shadow.camera.left) / this.sun.shadow.mapSize.x;
-    const u = Math.round((eye.x * rx + eye.z * rz) / texel) * texel;
-    const v = Math.round((eye.x * ux + eye.z * uz) / texel) * texel, depth = eye.x * dx + eye.z * dz;
-    const cx = rx * u + ux * v + dx * depth, cy = uy * v + dy * depth, cz = rz * u + uz * v + dz * depth;
-    this.sun.position.set(cx + sx, cy + sy, cz + sz); this.sun.target.position.set(cx, cy, cz);
+    positionSun(this.sun,eye,sun);
     // Three unshadowed bulbs at most, selected from authored interior fixtures at 5 Hz.
     this.lightClock = (this.lightClock ?? 0) - dt;
     if (this.lightClock <= 0) {
@@ -724,16 +697,14 @@ export class Renderer {
 
     // Rotate view-model sunlight with the player's heading, so the gun belongs
     // to the world instead of wearing a camera-fixed studio highlight.
-    this.target.set(this.sun.position.x - this.sun.target.position.x, sy, this.sun.position.z - this.sun.target.position.z);
+    this.target.set(this.sun.position.x - this.sun.target.position.x, sun[1]*65, this.sun.position.z - this.sun.target.position.z);
     this.target.transformDirection(this.camera.matrixWorldInverse);
     this.weaponKeyLight.position.copy(this.target).multiplyScalar(5);
     this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, inside ? .34 : .85, clamp(dt * 5, 0, 1));
     this.weaponFill.intensity = lerp(this.weaponFill.intensity, inside ? .62 : 1.2, clamp(dt * 5, 0, 1));
     this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, inside ? .35 : this.sun.intensity, clamp(dt * 5, 0, 1));
-    this.shadowClock += dt;
     const q = QUALITY[this.quality] ?? QUALITY.medium;
-    if (q.shadowHz && this.shadowClock >= 1 / q.shadowHz) {
-      this.shadowClock = 0; this.renderer.shadowMap.needsUpdate = true; this.sun.shadow.needsUpdate = true;
+    if (shadowDue(this,dt,q.shadowHz)) { this.renderer.shadowMap.needsUpdate = true; this.sun.shadow.needsUpdate = true;
     }
   }
 
@@ -785,15 +756,18 @@ export class Renderer {
     this.camera.fov = fov; this.camera.aspect = aspect; this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld();
     this.worldVP.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
     this.frustum?.setFromProjectionMatrix(this.worldVP);
+    this.lightingField?.update();this.sceneLOD?.update(this,dt);
     this.windTime.value = game.time;
     this.updateActors(game); this.updateEffects(menu || game.paused ? 0 : dt, game); this.uploadDynamic(this.actorBatches);
     this.updateLighting(dt);
+    this.shadowDraws=0;
     const renderStart=performance.now();this.profiler?.begin();
     this.renderer.info.reset(); this.renderer.setRenderTarget(null); this.renderer.clear(true, true, false);
     this.renderer.render(this.scene, this.camera);
     // A magnified optic sees only the world scene. The shared HUD draws the clear reticle.
     if (!p.dead && (menu || !scopeVisible(p))) this.renderWeapon(game, aspect, menu);
     this.profiler?.end();if(this.profiler)this.profiler.renderCpuMs=performance.now()-renderStart;
+    if(this.shadowDraws)this.lastShadowDraws=this.shadowDraws;
     this.drawCalls = this.renderer.info.render.calls;this.triangles=this.renderer.info.render.triangles??0;this.shaderPrograms=this.renderer.info.programs?.length??0;
   }
 
@@ -805,7 +779,7 @@ export class Renderer {
   }
 
   dispose() {
-    this.profiler?.dispose();this.lightingField?.dispose();
+    this.profiler?.dispose();this.lightingField?.dispose();this.decalSystem?.dispose();
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
     this.clearDynamic(this.actorBatches); this.clearDynamic(this.weaponBatches);

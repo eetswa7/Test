@@ -32,3 +32,11 @@ test('original HDR reflection probes remain finite and put the sun above the hor
  const r=environmentRadiance({...MAPS[0],sun:[1,1,0]},256,128);let peak=0,at=0;
  for(let i=0;i<r.pixels.length;i+=4){const v=THREE.DataUtils.fromHalfFloat(r.pixels[i]);if(v>peak){peak=v;at=i/4;}}assert(peak>5);assert(Math.floor(at/256)>64);
 });
+
+test('destruction spreads light-field work across frames and uploads only a complete field',()=>{
+ const roof={x:0,y:4,z:0,w:10,h:.3,d:10,roof:true},arena={info:{size:8},blocks:[roof],decor:[]};
+ const field=new LightingField();field.setArena(arena);const texture=field.texture.value,old=texture.image.data;
+ roof.destroyed=true;field.invalidate(arena);
+ for(let i=0;i<31;i++){field.update();assert.equal(texture.image.data,old);}
+ field.update();assert.equal(field.texture.value,texture);assert.notEqual(texture.image.data,old);assert.equal(field.pending,null);assert.equal(field.field.data[4*(32*64+32)],255);field.dispose();
+});
