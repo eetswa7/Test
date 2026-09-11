@@ -1,12 +1,12 @@
-import {Game,emptyInput} from './engine.js?v=14';
-import {Renderer} from './three-renderer.js?v=14';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=14';
-import {TouchInput} from './input.js?v=14';
-import {AudioSystem} from './audio.js?v=14';
-import {SaveStore} from './save.js?v=14';
-import {Interface,$} from './ui.js?v=14';
-import {Weapon} from './weapons.js?v=14';
-import {opticMagnification} from './aim.js?v=14';
+import {Game,emptyInput} from './engine.js?v=15';
+import {Renderer} from './three-renderer.js?v=15';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=15';
+import {TouchInput} from './input.js?v=15';
+import {AudioSystem} from './audio.js?v=15';
+import {SaveStore} from './save.js?v=15';
+import {Interface,$} from './ui.js?v=15';
+import {Weapon} from './weapons.js?v=15';
+import {opticMagnification} from './aim.js?v=15';
 
 class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;
@@ -40,6 +40,7 @@ class Application {
  previewMap(id){if(this.playing)return;this.game=new Game({...this.config,map:id},{seed:881});this.renderer.setArena(this.game.arena);}
  previewWeapon(){if(this.playing)return;const slot=this.ui?.slot??'primary',id=this.store.data.loadout[slot];this.game.player.weapons[0]=new Weapon(id,slot==='primary'?this.store.data.loadout:{});this.game.player.slot=0;this.renderer.weaponKey='';}
  frame(now){requestAnimationFrame(this.frame);if(document.hidden||this.renderer.lost)return;const activeMatch=this.playing&&!this.game.paused&&this.game.rules.phase!=='finished',frameRate=activeMatch?60:this.playing?10:30;if(this.last&&now-this.last<1000/frameRate-1)return;const elapsed=this.last?Math.max(.001,(now-this.last)/1000):1/60,dt=Math.min(.08,elapsed);this.last=now;if(this.starting)return;
+  const cpuStart=performance.now();
   this.input.controller.poll();
   const pad=this.input.controller;
   if(!pad.connected&&this.controllerHUD){this.controllerHUD=false;document.body.classList.remove('controller-active');}
@@ -54,6 +55,7 @@ class Application {
    this.renderer.events(this.game.events,this.game);this.audio.events(this.game.events,this.game);this.ui.events(this.game.events);this.game.events.length=0;this.ui.update(dt);
   }else if(!this.playing)this.game.time+=dt;
   this.renderer.render(this.game,dt,!this.playing,elapsed);if(this.playing&&!this.game.paused)this.ui.updateIdentities(dt);
+  this.renderer.recordFrame?.(performance.now()-cpuStart,elapsed,activeMatch);
   if(this.playing&&this.game.rules.phase==='finished'&&!this.resultShown){this.resultShown=true;this.wakeLock?.release();this.wakeLock=null;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.results();}
  }
 }

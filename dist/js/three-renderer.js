@@ -1,18 +1,15 @@
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=14';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=15';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=15';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=15';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=14';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=14';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=14';
-import { loadImages } from './textures.js?v=14';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=14';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=14';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=14';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=15';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=15';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=15';
+import { loadImages } from './textures.js?v=15';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=15';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=15';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=15';
 
-const QUALITY = {
-  low: { pixels: 850000, scale: .7, dpr: 1.35, shadow: 0, shadowHz: 0, effects: 70, smokeLayers: 4, foliage: .55, range: 65 },
-  medium: { pixels: 1400000, scale: .9, dpr: 1.65, shadow: 1024, shadowHz: 15, effects: 130, smokeLayers: 5, foliage: .8, range: 85 },
-  high: { pixels: 2200000, scale: 1, dpr: 1.85, shadow: 1536, shadowHz: 24, effects: 200, smokeLayers: 6, foliage: 1, range: 110 }
-};
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
 const RAD = Math.PI / 180;
@@ -116,6 +113,7 @@ export class Renderer {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false,
       depth: true, stencil: false, powerPreference: 'high-performance' });
     this.gl = this.renderer.getContext();
+    this.profiler=new GraphicsProfiler(this.gl);this.qualityController=new GraphicsQuality(settings.quality);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
@@ -175,9 +173,19 @@ export class Renderer {
   }
 
   chooseQuality() {
-    if (QUALITY[this.settings.quality]) return this.settings.quality;
-    const mobile = (navigator.maxTouchPoints ?? 0) > 0;
-    return !mobile && (navigator.hardwareConcurrency ?? 4) >= 8 ? 'high' : 'medium';
+    return QUALITY[this.settings.quality] ? this.settings.quality : 'medium';
+  }
+
+  resetQuality(){this.qualityController?.reset(this.settings.quality);this.quality=this.chooseQuality();this.renderScale=1;}
+
+  recordFrame(cpuMs,elapsed,active){
+    this.profiler?.record(cpuMs,elapsed,active);
+    this.qualityController?.sample(elapsed,this.profiler?.cpuMs??cpuMs,this.profiler?.gpuMs,active);
+    if(this.qualityController){this.quality=this.qualityController.tier;this.renderScale=this.qualityController.scale;}
+  }
+
+  diagnostics(){const p=this.profiler,q=QUALITY[this.quality]??QUALITY.medium;
+    return `${this.compatibility?'Canvas':'WebGL2'} · ${this.quality.toUpperCase()} · ${this.width} × ${this.height}\n${this.drawCalls} draws · ${Math.round(this.triangles??0).toLocaleString()} triangles\nCPU ${p?.cpuMs.toFixed(1)??'N/A'} ms · GPU ${p?.gpuMs?.toFixed(1)??'unavailable'} ms\nFrame p95 ${p?.frameP95.toFixed(1)??'N/A'} ms · textures ~${((this.textureMemory??0)/1048576).toFixed(1)} MiB\n${q.shadow}px shadows / ${q.shadowHz} Hz · ${this.shaderPrograms??0} programs`;
   }
 
   async loadAssets() {
@@ -218,6 +226,7 @@ export class Renderer {
     this.scene.background = this.horizon; this.scene.backgroundIntensity = .85;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
     this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
+    this.textureMemory=textureBytes([...this.textures,this.environment?.texture]);
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
@@ -475,10 +484,12 @@ export class Renderer {
     }
     for (const batch of this.worldBatches) if (batch.userData.leaf) {
       batch.count = Math.min(batch.userData.fullCount, Math.max(1, Math.floor(batch.userData.fullCount * q.foliage)));
-      batch.castShadow = this.quality === 'high';
+      batch.castShadow = ['high','ultra'].includes(this.quality);
     }
     this.scene.environmentIntensity = this.quality === 'low' ? .48 : .58;
-    const half = this.quality === 'high' ? 34 : 28;
+    const half = q.shadowHalf;
+    const anisotropy=Math.min(q.anisotropy,this.renderer.capabilities?.getMaxAnisotropy?.()??4);
+    for(const t of this.textures??[])if(t.wrapS===THREE.RepeatWrapping&&t.anisotropy!==anisotropy){t.anisotropy=anisotropy;t.needsUpdate=true;}
     Object.assign(this.sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half });
     this.sun.shadow.camera.updateProjectionMatrix();
     this.shadowClock = 1;
@@ -757,14 +768,6 @@ export class Renderer {
     if (this.lost || !this.loaded) return;
     this.frames++; this.lastFPS += elapsed;
     if (this.lastFPS >= .6) { this.fps = Math.round(this.frames / this.lastFPS); this.frames = 0; this.lastFPS = 0; }
-    if (!menu && !game.paused && game.rules.phase === 'playing') {
-      this.frameAverage = lerp(this.frameAverage, Math.min(200, elapsed * 1000), .025);
-      this.slowTime = this.frameAverage > 21 ? this.slowTime + elapsed : Math.max(0, this.slowTime - dt);
-      this.fastTime = this.frameAverage < 17.4 ? this.fastTime + elapsed : 0;
-      if (this.slowTime > 4) { this.renderScale = Math.max(.6, this.renderScale - .1);
-        if (this.renderScale <= .7) this.quality = this.quality === 'high' ? 'medium' : 'low'; this.slowTime = 0; }
-      if (this.fastTime > 15 && this.renderScale < 1) { this.renderScale = Math.min(1, this.renderScale + .05); this.fastTime = 0; }
-    }
     this.applyQuality(); const aspect = this.resize(), p = game.player;
     let yaw = p.yaw, pitch = p.pitch, fov;
     if (menu) {
@@ -788,11 +791,13 @@ export class Renderer {
     this.windTime.value = game.time;
     this.updateActors(game); this.updateEffects(menu || game.paused ? 0 : dt, game); this.uploadDynamic(this.actorBatches);
     this.updateLighting(dt);
+    const renderStart=performance.now();this.profiler?.begin();
     this.renderer.info.reset(); this.renderer.setRenderTarget(null); this.renderer.clear(true, true, false);
     this.renderer.render(this.scene, this.camera);
     // A magnified optic sees only the world scene. The shared HUD draws the clear reticle.
     if (!p.dead && (menu || !scopeVisible(p))) this.renderWeapon(game, aspect, menu);
-    this.drawCalls = this.renderer.info.render.calls;
+    this.profiler?.end();if(this.profiler)this.profiler.renderCpuMs=performance.now()-renderStart;
+    this.drawCalls = this.renderer.info.render.calls;this.triangles=this.renderer.info.render.triangles??0;this.shaderPrograms=this.renderer.info.programs?.length??0;
   }
 
   project(point) {
@@ -803,6 +808,7 @@ export class Renderer {
   }
 
   dispose() {
+    this.profiler?.dispose();
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
     this.clearDynamic(this.actorBatches); this.clearDynamic(this.weaponBatches);

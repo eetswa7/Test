@@ -1,6 +1,6 @@
 // Activate a complete release before importing its module graph. This also
 // upgrades older Home Screen installations whose cache ignored URL versions.
-const RELEASE='14';
+const RELEASE='15';
 function version(worker){
  if(!worker)return Promise.resolve(null);
  return new Promise(resolve=>{const channel=new MessageChannel();let settled=false;const finish=value=>{if(settled)return;settled=true;clearTimeout(timer);channel.port1.close();resolve(value);};const timer=setTimeout(()=>finish(null),700);channel.port1.onmessage=e=>finish(e.data?.release);try{worker.postMessage({type:'VERSION'},[channel.port2]);}catch{finish(null);}});
@@ -27,7 +27,7 @@ async function activateRelease(){
  // Reload the stylesheet through the newly activated cache as well.
  const style=document.querySelector('link[rel="stylesheet"]');if(style)style.href=`./style.css?v=${RELEASE}&ready=1`;
 }
-async function boot(){try{await activateRelease();await import('./main.js?v=14');}catch(error){
+async function boot(){try{await activateRelease();await import('./main.js?v=15');}catch(error){
  console.error(error);const loading=document.getElementById('loading');loading.classList.remove('hidden');loading.innerHTML='<div class="fatal"><h2>Game update interrupted</h2><p>Check your connection, then retry. Your saved progress is kept.</p><button type="button">RETRY</button></div>';loading.querySelector('button').onclick=()=>location.reload();
 }}
 boot();
