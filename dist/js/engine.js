@@ -1,10 +1,10 @@
-import {Arena,MAPS} from './maps.js?v=17';
-import {Navigation} from './navigation.js?v=17';
-import {SpawnDirector} from './spawns.js?v=17';
-import {MatchRules} from './modes.js?v=17';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=17';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=17';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=17';
+import {Arena,MAPS} from './maps.js?v=18';
+import {Navigation} from './navigation.js?v=18';
+import {SpawnDirector} from './spawns.js?v=18';
+import {MatchRules} from './modes.js?v=18';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=18';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=18';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=18';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];

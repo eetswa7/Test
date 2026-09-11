@@ -21,3 +21,6 @@ body:not(.desktop):has(.touch-layer.left-handed) .health-display{left:auto;right
 
 /* Controller play clears thumb pads; a screen contact restores them immediately. */
 .controller-active #touch-layer:not(.editing) > *{opacity:0!important;pointer-events:none}
+
+/* The installed release is shown at the end of Settings. */
+.game-version{margin:20px 0 0;padding-bottom:4px;color:var(--muted);font-size:10px;letter-spacing:1px;text-align:center}
