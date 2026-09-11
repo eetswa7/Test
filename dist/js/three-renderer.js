@@ -1,14 +1,17 @@
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=15';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=15';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=15';
+import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=16';
+import {LightingField} from './lighting-field.js?v=16';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=16';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=16';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=16';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=16';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=15';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=15';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=15';
-import { loadImages } from './textures.js?v=15';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=15';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=15';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=15';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=16';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=16';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=16';
+import { loadImages } from './textures.js?v=16';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=16';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=16';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=16';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -51,32 +54,6 @@ export function neutraliseFinish(pixels) {
     pixels[i] = clamp(pixels[i] * sr, 18, 248); pixels[i+1] = clamp(pixels[i+1] * sg, 18, 248); pixels[i+2] = clamp(pixels[i+2] * sb, 18, 248);
   }
   return pixels;
-}
-
-// Original detail maps are derived once at load time, never during a frame.
-function detailMaps(canvas) {
-  const size = canvas.width, data = canvas.getContext('2d').getImageData(0, 0, size, size).data;
-  const normal = new Uint8Array(size * size * 4), rough = new Uint8Array(size * size * 4);
-  const height = (x, y) => { const i = (((y + size) % size) * size + (x + size) % size) * 4;
-    return (data[i] * .25 + data[i + 1] * .6 + data[i + 2] * .15) / 255; };
-  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    const i = (y * size + x) * 4;
-    const dx = (height(x - 1, y) - height(x + 1, y)) * 1.5;
-    const dy = (height(x, y + 1) - height(x, y - 1)) * 1.5;
-    const length = Math.hypot(dx, dy, 1);
-    normal[i] = (dx / length * .5 + .5) * 255;
-    normal[i + 1] = (dy / length * .5 + .5) * 255;
-    normal[i + 2] = (1 / length * .5 + .5) * 255; normal[i + 3] = 255;
-    const r = 180 + height(x, y) * 70;
-    rough[i] = rough[i + 1] = rough[i + 2] = r; rough[i + 3] = 255;
-  }
-  const n = new THREE.DataTexture(normal, size, size, THREE.RGBAFormat);
-  const r = new THREE.DataTexture(rough, size, size, THREE.RGBAFormat);
-  // CanvasTexture flips vertically; keep the derived maps in the same orientation.
-  n.flipY = r.flipY = true;
-  for (const texture of [n, r]) { texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.generateMipmaps = true; texture.minFilter = THREE.LinearMipmapLinearFilter; texture.needsUpdate = true; }
-  return { normal: n, roughness: r };
 }
 
 const billboardVertex = `
@@ -122,6 +99,7 @@ export class Renderer {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.shadowMap.autoUpdate = false;
     this.scene = new THREE.Scene(); this.weaponScene = new THREE.Scene();
+    this.lightingField=new LightingField();
     this.camera = new THREE.PerspectiveCamera(55, 1, .055, 190);
     this.weaponCamera = new THREE.PerspectiveCamera(65, 1, .018, 10);
     this.world = new THREE.Group(); this.scene.add(this.world);
@@ -136,6 +114,7 @@ export class Renderer {
     this.weaponKeyLight.position.set(-2, 4, 1);
     this.weaponFill = new THREE.HemisphereLight(0xbddaea, 0x38302a, 1.75);
     this.weaponScene.add(this.weaponKeyLight, this.weaponFill);
+    this.weaponLocalLight=new THREE.PointLight(0xffdfad,0,11,2);this.weaponScene.add(this.weaponLocalLight);
     this.interiorLights = Array.from({ length: 3 }, () => { const light = new THREE.PointLight(0xffdfad, 0, 11, 2);
       this.scene.add(light); return light; });
     this.muzzleLight = new THREE.PointLight(0xffb345, 0, 2.3, 2); this.weaponScene.add(this.muzzleLight);
@@ -200,7 +179,7 @@ export class Renderer {
     }
     if (images.weapon) for (let i = 0; i < 4; i++) {
       const canvas = tileCanvas(images.weapon, 2, i, 512), context = canvas.getContext('2d');
-      const detail = detailMaps(canvas), pixels = context.getImageData(0, 0, 512, 512);
+      const detail = detailMaps(canvas,true), pixels = context.getImageData(0, 0, 512, 512);
       neutraliseFinish(pixels.data); context.putImageData(pixels, 0, 0);
       const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
       map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
@@ -221,12 +200,12 @@ export class Renderer {
     context.drawImage(images.horizon, 0, 0, 1024, 1024); context.restore();
     this.horizon = new THREE.CanvasTexture(panorama); this.horizon.colorSpace = THREE.SRGBColorSpace;
     this.horizon.mapping = THREE.EquirectangularReflectionMapping; this.textures.push(this.horizon);
-    const pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.environment = pmrem.fromEquirectangular(this.horizon); pmrem.dispose();
+    this.environmentProbes=new EnvironmentProbes(this.renderer);
+    this.environment=this.environmentProbes.setArena(this.arena.info);
     this.scene.background = this.horizon; this.scene.backgroundIntensity = .85;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
     this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
-    this.textureMemory=textureBytes([...this.textures,this.environment?.texture]);
+    this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.lightingField?.texture.value]);
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
@@ -244,9 +223,14 @@ export class Renderer {
     this.scene.fog = new THREE.Fog(this.color.setRGB(...info.fog, THREE.SRGBColorSpace).clone(), 45, 155);
     this.sun.color.setHex(overcast ? 0xd6e4ef : 0xffefd8); this.sun.intensity = overcast ? 1.8 : 3.1;
     this.hemi.intensity = overcast ? 1.65 : 1.35;
+    this.lightingField?.setArena(arena);
+    this.lightClock=0;
     this.lightPositions = arena.decor.filter(p => p.emissive > .5 && p.y > 1 && p.surface === 'white')
       .map(p => ({ x: p.x, y: p.y - .25, z: p.z }));
-    if (this.loaded) this.buildWorld();
+    if (this.loaded){
+      if(this.environmentProbes){this.environment=this.environmentProbes.setArena(info);this.scene.environment=this.weaponScene.environment=this.environment.texture;}
+      this.buildWorld();
+    }
   }
 
   partMatrix(p, target = this.matrix) {
@@ -275,10 +259,10 @@ export class Renderer {
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
-    if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaTest: .58, metalness: 0, roughness: 1 });
+    if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
     const mat = p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
-      clearcoatRoughness: .08, roughness: .14, metalness: .25 }) : new THREE.MeshStandardMaterial(options);
+      clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
     // Per-instance dimensions give architecture a consistent material scale.
     if (!leaf && maps && (category === 'world' || finish)) {
       mat.onBeforeCompile = shader => {
@@ -325,6 +309,9 @@ export class Renderer {
         map: this.leafMaps[p.leaf], alphaTest: .58, side: THREE.DoubleSide });
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
+    const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf)this.lightingField?.patch(shader);};
+    mat.customProgramCacheKey=()=>`${previousKey}/packed-orm-lightfield-v1`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -350,7 +337,7 @@ export class Renderer {
     const brighten = category === 'world' && m.pattern > 0 && !p.color;
     this.color.setRGB(brighten ? .55 + c[0] * .45 : c[0],
       brighten ? .55 + c[1] * .45 : c[1], brighten ? .55 + c[2] * .45 : c[2], THREE.SRGBColorSpace);
-    if(category==='world'&&this.arena){m.occlusion??=sceneryOcclusion(p,this.arena);this.color.multiplyScalar(m.occlusion);}
+    if(category==='world'&&this.arena&&!this.lightingField){m.occlusion??=sceneryOcclusion(p,this.arena);this.color.multiplyScalar(m.occlusion);}
     return this.color;
   }
 
@@ -400,7 +387,7 @@ export class Renderer {
       batch.count=count;batch.userData.fullCount=count;batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;
       batch.computeBoundingSphere();batch.computeBoundingBox();
     }
-    this.buildStaticContacts();this.shadowClock=1;
+    this.buildStaticContacts();this.lightingField?.setArena(this.arena);this.shadowClock=1;
   }
 
   partGeometry(p, category) {
@@ -518,7 +505,7 @@ export class Renderer {
     }
     geometry.instanceCount = 0;
     const material = new THREE.ShaderMaterial({ vertexShader: billboardVertex, fragmentShader: billboardFragment,
-      transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: true });
+      transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass:true, toneMapped: true });
     this.fxAttributeList = Object.values(this.fxAttributes);
     this.fxMesh = new THREE.Mesh(geometry, material); this.fxMesh.frustumCulled = false; this.fxMesh.renderOrder = 3;
     this.scene.add(this.fxMesh);
@@ -698,7 +685,7 @@ export class Renderer {
 
   updateLighting(dt) {
     const eye = this.eye, sun = this.arena.info.sun;
-    const sx = sun[0] * 65, sy = 58, sz = sun[2] * 65, length = Math.hypot(sx, sy, sz), horizontal = Math.hypot(sx, sz) || 1;
+    const sx = sun[0] * 65, sy = sun[1] * 65, sz = sun[2] * 65, length = Math.hypot(sx, sy, sz), horizontal = Math.hypot(sx, sz) || 1;
     const dx = sx / length, dy = sy / length, dz = sz / length;
     const rx = sz / horizontal, rz = -sx / horizontal, ux = dy * rz, uy = dz * rx - dx * rz, uz = -dy * rx;
     const texel = (this.sun.shadow.camera.right - this.sun.shadow.camera.left) / this.sun.shadow.mapSize.x;
@@ -718,6 +705,7 @@ export class Renderer {
           distances[i] = d; nearest[i] = p; break;
         }
       }
+      this.weaponLampVisible=nearest[0]&&this.arena.visible?.(eye,nearest[0])!==false;
       for (let i = 0; i < this.interiorLights.length; i++) {
         const light = this.interiorLights[i], selected = nearest[i];
         light.intensity = selected && this.quality !== 'low' ? 17 : 0;
@@ -725,14 +713,23 @@ export class Renderer {
       }
     }
     const inside = this.arena.indoors(eye);
+    const lamp=this.nearestLights[0],local=this.weaponLocalLight;
+    if(local){
+      if(lamp)local.position.set(lamp.x,lamp.y,lamp.z).applyMatrix4(this.camera.matrixWorldInverse);
+      const unobstructed=this.weaponLampVisible;
+      local.intensity=lerp(local.intensity,unobstructed&&this.quality!=='low'?17:0,1-Math.exp(-dt*8));
+    }
+    this.weaponKeyLight.color.copy(this.sun.color);
+    if(this.weaponScene.environmentRotation)orientWeaponEnvironment(this.weaponScene,this.camera);
+
     // Rotate view-model sunlight with the player's heading, so the gun belongs
     // to the world instead of wearing a camera-fixed studio highlight.
-    this.target.set(this.sun.position.x - this.sun.target.position.x, 58, this.sun.position.z - this.sun.target.position.z);
+    this.target.set(this.sun.position.x - this.sun.target.position.x, sy, this.sun.position.z - this.sun.target.position.z);
     this.target.transformDirection(this.camera.matrixWorldInverse);
     this.weaponKeyLight.position.copy(this.target).multiplyScalar(5);
     this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, inside ? .34 : .85, clamp(dt * 5, 0, 1));
-    this.weaponFill.intensity = lerp(this.weaponFill.intensity, inside ? .95 : 1.75, clamp(dt * 5, 0, 1));
-    this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, inside ? 1.6 : 3.4, clamp(dt * 5, 0, 1));
+    this.weaponFill.intensity = lerp(this.weaponFill.intensity, inside ? .62 : 1.2, clamp(dt * 5, 0, 1));
+    this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, inside ? .35 : this.sun.intensity, clamp(dt * 5, 0, 1));
     this.shadowClock += dt;
     const q = QUALITY[this.quality] ?? QUALITY.medium;
     if (q.shadowHz && this.shadowClock >= 1 / q.shadowHz) {
@@ -808,7 +805,7 @@ export class Renderer {
   }
 
   dispose() {
-    this.profiler?.dispose();
+    this.profiler?.dispose();this.lightingField?.dispose();
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
     this.clearDynamic(this.actorBatches); this.clearDynamic(this.weaponBatches);
@@ -820,6 +817,6 @@ export class Renderer {
     this.fxMesh.geometry.dispose(); this.fxMesh.material.dispose();
     this.staticContacts?.dispose();
     this.contactShadows.geometry.dispose(); this.contactShadows.material.dispose(); this.contactShadows.dispose();
-    this.muzzle.material.dispose(); this.environment?.dispose(); this.sun.shadow.map?.dispose(); this.renderer.dispose();
+    this.muzzle.material.dispose(); this.environmentProbes?.dispose(); this.sun.shadow.map?.dispose(); this.renderer.dispose();
   }
 }
