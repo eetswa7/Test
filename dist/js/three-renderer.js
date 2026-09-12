@@ -1,22 +1,22 @@
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=18';
-import {positionSun,shadowDue} from './shadow-system.js?v=18';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=18';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=18';
-import {DecalSystem} from './decal-system.js?v=18';
-import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=18';
-import {LightingField} from './lighting-field.js?v=18';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=18';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=18';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=18';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=18';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=19';
+import {positionSun,shadowDue} from './shadow-system.js?v=19';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=19';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=19';
+import {DecalSystem} from './decal-system.js?v=19';
+import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=19';
+import {LightingField} from './lighting-field.js?v=19';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=19';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=19';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=19';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=19';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=18';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=18';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=18';
-import { loadImages } from './textures.js?v=18';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=18';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=18';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=18';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=19';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=19';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=19';
+import { loadImages } from './textures.js?v=19';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=19';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=19';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=19';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -678,6 +678,7 @@ export class Renderer {
           distances[i] = d; nearest[i] = p; break;
         }
       }
+      this.weaponSunVisible=this.arena.visible?.(eye,{x:eye.x+sun[0]*70,y:eye.y+sun[1]*70,z:eye.z+sun[2]*70})!==false;
       this.weaponLampVisible=nearest[0]&&this.arena.visible?.(eye,nearest[0])!==false;
       for (let i = 0; i < this.interiorLights.length; i++) {
         const light = this.interiorLights[i], selected = nearest[i];
@@ -685,7 +686,7 @@ export class Renderer {
         if (selected) light.position.set(selected.x, selected.y, selected.z);
       }
     }
-    const inside = this.arena.indoors(eye);
+    const inside = this.arena.indoors(eye), sky=this.lightingField?.sample(eye)??(inside?.38:1);
     const lamp=this.nearestLights[0],local=this.weaponLocalLight;
     if(local){
       if(lamp)local.position.set(lamp.x,lamp.y,lamp.z).applyMatrix4(this.camera.matrixWorldInverse);
@@ -700,9 +701,9 @@ export class Renderer {
     this.target.set(this.sun.position.x - this.sun.target.position.x, sun[1]*65, this.sun.position.z - this.sun.target.position.z);
     this.target.transformDirection(this.camera.matrixWorldInverse);
     this.weaponKeyLight.position.copy(this.target).multiplyScalar(5);
-    this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, inside ? .34 : .85, clamp(dt * 5, 0, 1));
-    this.weaponFill.intensity = lerp(this.weaponFill.intensity, inside ? .62 : 1.2, clamp(dt * 5, 0, 1));
-    this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, inside ? .35 : this.sun.intensity, clamp(dt * 5, 0, 1));
+    this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, .18+sky*.67, clamp(dt * 5, 0, 1));
+    this.weaponFill.intensity = lerp(this.weaponFill.intensity, .3+sky*.7, clamp(dt * 5, 0, 1));
+    this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, this.weaponSunVisible===false ? .08 : this.sun.intensity, clamp(dt * 5, 0, 1));
     const q = QUALITY[this.quality] ?? QUALITY.medium;
     if (shadowDue(this,dt,q.shadowHz)) { this.renderer.shadowMap.needsUpdate = true; this.sun.shadow.needsUpdate = true;
     }

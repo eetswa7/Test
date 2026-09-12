@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {clamp} from './math.js?v=18';
+import {clamp} from './math.js?v=19';
 
 // Small ground-plan light field, baked once per map. This is an approximation
 // of indirect light, not a GI solver. R sky access, G warm bounce, B roof height,
@@ -12,7 +12,7 @@ export function bakeLightField(arena,resolution=64,options={}){
   for(let z=start;z<end;z++)for(let x=0;x<resolution;x++){
     const px=((x+.5)/resolution*2-1)*size,pz=((z+.5)/resolution*2-1)*size;
     const roof=roofs.find(b=>Math.abs(px-b.x)<b.w/2&&Math.abs(pz-b.z)<b.d/2);
-    let contact=1,edge=0,bounce=0;
+    let contact=1,edge=0,bounce=0,portal=0;
     for(const b of blocks){
       if(b.roof||b.y-b.h/2>.3||b.h<.5)continue;
       const dx=Math.max(0,Math.abs(px-b.x)-b.w/2),dz=Math.max(0,Math.abs(pz-b.z)-b.d/2),d=Math.hypot(dx,dz);
@@ -20,6 +20,13 @@ export function bakeLightField(arena,resolution=64,options={}){
       if(d<3)edge=Math.max(edge,(1-d/3)*Math.min(.22,b.h*.04));
     }
     if(roof){
+      // Doorway daylight falls with distance into a room. Four visibility rays
+      // per covered texel, only during baking, add no fragment texture samples.
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const reach=dx?roof.w/2-dx*(px-roof.x):roof.d/2-dz*(pz-roof.z);
+        const target={x:px+dx*(reach+1),y:1.6,z:pz+dz*(reach+1)};
+        if(arena.visible?.({x:px,y:1.2,z:pz},target)!==false)portal+=1/(1+reach*.4);
+      }
       for(const p of lamps){const d2=(p.x-px)**2+(p.z-pz)**2+(p.y-1.2)**2;
         if(d2>90)continue;
         if(arena.visible?.({x:px,y:1.2,z:pz},{x:p.x,y:p.y-.15,z:p.z})===false)continue;
@@ -27,7 +34,7 @@ export function bakeLightField(arena,resolution=64,options={}){
       }
     }
     const i=(z*resolution+x)*4;
-    data[i]=Math.round(255*(roof?.38:1-edge));data[i+1]=Math.round(255*Math.min(.55,bounce));
+    data[i]=Math.round(255*(roof?Math.min(.68,.22+portal*.16):1-edge));data[i+1]=Math.round(255*Math.min(.55,bounce));
     data[i+2]=Math.round(255*(roof?Math.min(16,roof.y-roof.h/2)/16:0));data[i+3]=Math.round(255*contact);
   }
   return {data,resolution,size};
@@ -40,6 +47,17 @@ export class LightingField {
     const t=new THREE.DataTexture(field.data,field.resolution,field.resolution,THREE.RGBAFormat);
     t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;
     this.texture.value=t;this.size.value=field.size;this.enabled.value=1;this.field=field;
+  }
+  sample(point){
+    const f=this.field;if(!f)return 1;
+    const x=clamp((point.x/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
+    const z=clamp((point.z/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
+    const x0=Math.floor(x),z0=Math.floor(z),fx=x-x0,fz=z-z0;
+    const at=(xx,zz)=>{const i=(zz*f.resolution+xx)*4,roof=f.data[i+2]/255*16;
+      return point.y>roof+.45?1:f.data[i]/255;};
+    const a=at(x0,z0)*(1-fx)+at(Math.min(x0+1,f.resolution-1),z0)*fx;
+    const b=at(x0,Math.min(z0+1,f.resolution-1))*(1-fx)+at(Math.min(x0+1,f.resolution-1),Math.min(z0+1,f.resolution-1))*fx;
+    return a*(1-fz)+b*fz;
   }
   patch(shader){
     shader.uniforms.uBreachField=this.texture;shader.uniforms.uBreachFieldSize=this.size;shader.uniforms.uBreachFieldEnabled=this.enabled;

@@ -95,3 +95,8 @@ GitHub checkpoints: release 15 at 4b8dcac30c2653d104c4d9f9177befdb7802b8f2; rele
 ## Release 18: visible game version
 
 Settings now ends with BREACHLINE · VERSION 18. The label reads the boot release constant, which scripts/release.mjs updates with every release, so no separate display number needs manual maintenance. Static validation passed.
+
+
+## Release 19: doorway daylight and weapon sun occlusion
+
+Renderer audit starts from release 18. The first fix replaces uniform roof shading with visibility-tested doorway daylight gradients in the existing 16 KiB field. First-person indirect illumination samples that same field continuously; sun visibility checks at 5 Hz prevent the gun keeping a sun highlight behind solid cover. No extra GPU light, texture lookup or render pass. Focused lighting/renderer regressions and static validation run before checkpointing. GPU appearance and iPhone timings remain unverified.

@@ -40,3 +40,14 @@ test('destruction spreads light-field work across frames and uploads only a comp
  for(let i=0;i<31;i++){field.update();assert.equal(texture.image.data,old);}
  field.update();assert.equal(field.texture.value,texture);assert.notEqual(texture.image.data,old);assert.equal(field.pending,null);assert.equal(field.field.data[4*(32*64+32)],255);field.dispose();
 });
+
+
+test('doorway visibility produces indirect gradients and CPU lighting samples stay bounded',()=>{
+ const roof={x:0,y:4,z:0,w:12,h:.3,d:12,roof:true};
+ const arena={info:{size:10},blocks:[roof],decor:[],visible:(a,b)=>b.z>6};
+ const f=new LightingField();f.setArena(arena);
+ assert(f.sample({x:0,y:1.6,z:5})>f.sample({x:0,y:1.6,z:0}));
+ assert.equal(f.sample({x:0,y:5,z:0}),1);
+ for(let x=-20;x<20;x+=.5)assert(f.sample({x,y:1.6,z:0})>=0&&f.sample({x,y:1.6,z:0})<=1);
+ f.dispose();
+});
