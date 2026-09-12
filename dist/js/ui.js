@@ -1,9 +1,9 @@
-import {MODES} from './modes.js?v=23';
-import {MAPS} from './maps.js?v=23';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=23';
-import {clamp,distance} from './math.js?v=23';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=23';
-import {identityFor,canIdentify} from './combat-identity.js?v=23';
+import {MODES} from './modes.js?v=24';
+import {MAPS} from './maps.js?v=24';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=24';
+import {clamp,distance} from './math.js?v=24';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=24';
+import {identityFor,canIdentify} from './combat-identity.js?v=24';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

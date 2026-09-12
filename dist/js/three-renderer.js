@@ -1,24 +1,24 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=23';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=23';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=23';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=23';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=23';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=23';
-import {DecalSystem} from './decal-system.js?v=23';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected} from './environment-probes.js?v=23';
-import {LightingField} from './lighting-field.js?v=23';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=23';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=23';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=23';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=23';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=24';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=24';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=24';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=24';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=24';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=24';
+import {DecalSystem} from './decal-system.js?v=24';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=24';
+import {LightingField} from './lighting-field.js?v=24';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=24';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=24';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=24';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=24';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=23';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=23';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=23';
-import { loadImages } from './textures.js?v=23';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=23';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=23';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=23';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=24';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=24';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=24';
+import { loadImages } from './textures.js?v=24';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=24';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=24';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=24';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -167,20 +167,13 @@ export class Renderer {
       map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = anisotropy;
       this.leafMaps.push(map); this.textures.push(map);
     }
-    // Mirror the original horizon around a full panorama: no visible wrap seam.
-    const panorama = document.createElement('canvas'); panorama.width = 2048; panorama.height = 1024;
-    const context = panorama.getContext('2d');
-    context.drawImage(images.horizon, 0, 0, 1024, 1024);
-    context.save(); context.translate(2048, 0); context.scale(-1, 1);
-    context.drawImage(images.horizon, 0, 0, 1024, 1024); context.restore();
-    this.horizon = new THREE.CanvasTexture(panorama); this.horizon.colorSpace = THREE.SRGBColorSpace;
-    this.horizon.mapping = THREE.EquirectangularReflectionMapping; this.textures.push(this.horizon);
-    this.environmentProbes=new EnvironmentProbes(this.renderer);
+    this.environmentProbes=new EnvironmentProbes(this.renderer,cloudMask(images.horizon));
     this.environment=this.environmentProbes.setArena(this.arena.info);
-    this.scene.background = this.horizon; this.scene.backgroundIntensity = .85;
+    // The visible sky and reflections now share weather, horizon and sun.
+    this.scene.background = this.environmentProbes.sky; this.scene.backgroundIntensity = 1;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
     this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
-    this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.environmentProbes?.interior?.texture,this.lightingField?.texture.value]);
+    this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.environmentProbes?.sky,this.environmentProbes?.interior?.texture,this.lightingField?.texture.value]);
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
@@ -204,7 +197,7 @@ export class Renderer {
     this.lightPositions = arena.decor.filter(p => p.emissive > .5 && p.y > 1 && p.surface === 'white')
       .map(p => ({ x: p.x, y: p.y - .25, z: p.z }));
     if (this.loaded){
-      if(this.environmentProbes){this.environment=this.environmentProbes.setArena(info);this.scene.environment=this.weaponScene.environment=this.environment.texture;}
+      if(this.environmentProbes){this.environment=this.environmentProbes.setArena(info);this.scene.environment=this.weaponScene.environment=this.environment.texture;this.scene.background=this.environmentProbes.sky;}
       this.buildWorld();
     }
   }

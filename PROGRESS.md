@@ -124,3 +124,8 @@ Completed the ten-point renderer audit with connected two-bone leg posing, alter
 Light-field optimisation preserves byte-identical results across all eight maps. Destruction rebuilding now checks a 0.65 ms soft deadline per 16 texels, at most 128 texels per frame, with a complete-texture swap. The ranked fixes, explicit costs and raw timings are in docs/RENDERER-AUDIT.md and docs/profile-release18.json / profile-release23.json. Final verification passes 142 automated regressions plus static release/geometry/assets checks. The browser URL policy blocked the final preview, so no new browser GPU/visual or iPhone FPS claim is made.
 
 Pushed checkpoints on main: release 19 2d83f69564a38b3a10e8fa377458f34e86fa53c7; release 20 8d300035b443109b4f9462c9550ba252c451407d; release 21 c71f2b4745f9db1d5c2e9bec8e6c88761ee6a0f5; release 22 0c1754442a4dc447d38b67ff977384883a83e3df. Release 23 follows after combined validation.
+
+
+## Release 24: coherent map weather and exterior shade
+
+The visible sky now shares the same generated HDR source as the map reflection probe, including sun direction and overcast weather. Broad cloud structure is extracted once from the original asset; its unrelated mountain horizon no longer appears over the harbour and every other map. A 512 × 256 HDR source replaces the 2048 × 1024 uploaded panorama. Exterior indirect occlusion now survives at player eye height; only actual roof texels restore sky access above roof level. No additional light, draw pass or fragment lookup. New field/cloud regressions and static checks run before checkpointing. Browser preview remains blocked; physical iPhone visual output is unverified.

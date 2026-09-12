@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {clamp} from './math.js?v=23';
+import {clamp} from './math.js?v=24';
 
 // Small ground-plan light field, baked once per map. This is an approximation
 // of indirect light, not a GI solver. R sky access, G warm bounce, B roof height,
@@ -61,7 +61,8 @@ export class LightingField {
     const z=clamp((point.z/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
     const x0=Math.floor(x),z0=Math.floor(z),fx=x-x0,fz=z-z0;
     const at=(xx,zz)=>{const i=(zz*f.resolution+xx)*4,roof=f.data[i+2]/255*16;
-      return point.y>roof+.45?1:f.data[i]/255;};
+      const t=roof>.03?clamp((point.y-roof+.2)/.65,0,1):0,above=t*t*(3-2*t);
+      return f.data[i]/255*(1-above)+above;};
     const a=at(x0,z0)*(1-fx)+at(Math.min(x0+1,f.resolution-1),z0)*fx;
     const b=at(x0,Math.min(z0+1,f.resolution-1))*(1-fx)+at(Math.min(x0+1,f.resolution-1),Math.min(z0+1,f.resolution-1))*fx;
     return a*(1-fz)+b*fz;
@@ -79,12 +80,13 @@ export class LightingField {
     shader.fragmentShader=shader.fragmentShader.replace('#include <aomap_fragment>',`#include <aomap_fragment>
       vec4 field=texture2D(uBreachField,clamp(vBreachLightPosition.xz/(2.0*uBreachFieldSize)+.5,0.0,1.0));
       float roofHeight=field.b*16.0;
-      float aboveRoof=smoothstep(roofHeight-.2,roofHeight+.45,vBreachLightPosition.y);
+      float hasRoof=step(.03,roofHeight);
+      float aboveRoof=hasRoof*smoothstep(roofHeight-.2,roofHeight+.45,vBreachLightPosition.y);
       float sky=mix(field.r,1.0,aboveRoof);
       float contact=mix(field.a,1.0,smoothstep(0.0,1.4,vBreachLightPosition.y));
       reflectedLight.indirectDiffuse*=mix(1.0,sky*contact,uBreachFieldEnabled);
       reflectedLight.indirectSpecular*=mix(1.0,mix(.55,1.0,sky),uBreachFieldEnabled);
-      reflectedLight.indirectDiffuse+=diffuseColor.rgb*(1.0-metalnessFactor)*vec3(1.0,.72,.42)*field.g*(1.0-aboveRoof)*uBreachFieldEnabled;
+      reflectedLight.indirectDiffuse+=diffuseColor.rgb*(1.0-metalnessFactor)*vec3(1.0,.72,.42)*field.g*hasRoof*(1.0-aboveRoof)*uBreachFieldEnabled;
     `);
   }
   // Keep the last complete field live until the replacement is ready. Explosions

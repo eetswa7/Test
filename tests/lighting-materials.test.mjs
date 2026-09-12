@@ -4,7 +4,7 @@ import * as THREE from '../dist/vendor/three.module.min.js';
 import {Arena,MAPS} from '../dist/js/maps.js';
 import {bakeLightField,LightingField} from '../dist/js/lighting-field.js';
 import {deriveSurfaceData,patchSurfaceDetail} from '../dist/js/material-detail.js';
-import {environmentRadiance,interiorRadiance,roomProbeSelected} from '../dist/js/environment-probes.js';
+import {environmentRadiance,interiorRadiance,roomProbeSelected,sampleCloud} from '../dist/js/environment-probes.js';
 
 test('every map bakes a bounded finite light field with room and exterior contrast',()=>{
  for(const info of MAPS){const a=new Arena(info.id),f=bakeLightField(a);assert.equal(f.data.byteLength,16384);assert(f.data.every(Number.isFinite));
@@ -58,4 +58,15 @@ test('room reflection probe is bounded and selection has doorway hysteresis',()=
  for(const v of r.pixels)assert(Number.isFinite(THREE.DataUtils.fromHalfFloat(v)));
  assert.equal(roomProbeSelected(false,.5),false);assert.equal(roomProbeSelected(true,.5),true);
  assert.equal(roomProbeSelected(false,.3),true);assert.equal(roomProbeSelected(true,.8),false);
+});
+
+
+test('exterior ambient occlusion survives at eye height and only real roofs restore open sky above them',()=>{
+ const arena={info:{size:10},blocks:[{x:0,y:3,z:0,w:2,h:6,d:10}],decor:[]};
+ const f=new LightingField();f.setArena(arena);assert(f.sample({x:1.5,y:1.6,z:0})<.95);assert(f.sample({x:8,y:1.6,z:0})>.99);f.dispose();
+});
+test('cloud sampling joins at the sky seam and fades at the pole',()=>{
+ const m={width:2,height:2,data:new Float32Array([.2,.9,.4,.8])};
+ assert.equal(sampleCloud(m,0,.4),sampleCloud(m,1,.4));assert.equal(sampleCloud(m,.3,1),0);
+ const sun=environmentRadiance(MAPS[0],64,32,m),grey=environmentRadiance(MAPS[1],64,32,m);assert.notDeepEqual(sun.pixels,grey.pixels);
 });
