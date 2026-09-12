@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {clamp} from './math.js?v=22';
+import {clamp} from './math.js?v=23';
 
 // Pack occlusion, roughness and exposed-metal variation in the map already read
 // for roughness. No separate AO/metallic samplers, no added full-screen passes.
@@ -26,6 +26,11 @@ export function detailMaps(canvas,hero=false){
   return {normal:n,roughness:r};
 }
 export function patchSurfaceDetail(shader){
+  // Normal-map specular AA reuses derivatives already evaluated by Three's
+  // geometry roughness. No extra texture tap, history buffer or screen pass.
+  const physical=THREE.ShaderChunk.lights_physical_fragment.replace('dFdx( nonPerturbedNormal )','dFdx( normal )').replace('dFdy( nonPerturbedNormal )','dFdy( normal )');
+  shader.fragmentShader=shader.fragmentShader.replace('#include <lights_physical_fragment>',physical);
+
   // Keep the authored material roughness as the centre, instead of making
   // every material shinier by multiplying it by a grey photograph.
   shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`float roughnessFactor=roughness;

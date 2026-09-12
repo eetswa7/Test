@@ -115,3 +115,12 @@ A small static room PMREM replaces blue outdoor reflections on the first-person 
 ## Release 22: aged surfaces, connected shadows and thin foliage
 
 World material shading adds restrained instance variation and a damp/dirt band at ground-level wall bases, reusing the existing world coordinates with no new texture samples. Shadow bias now scales with texel size; the cadence accumulator preserves fractional time, fixing High's 24 Hz budget previously slipping to 20 Hz at 60 FPS. Leaves receive a capped sky-transmission approximation in their existing PBR pass. Focused shader-composition and temporal-cadence checks run before checkpointing. GPU tuning still requires real device comparisons.
+
+
+## Release 23: connected animation, specular stability and final profile
+
+Completed the ten-point renderer audit with connected two-bone leg posing, alternating foot lift, forward knee bend, crouch continuity and perturbed-normal specular anti-aliasing using Three's existing derivative operations. Corrected the CPU fixture to match production cylinders. Compared release 18 and 23 across eight maps. All sampled world and default-weapon triangle counts are unchanged; world batches decrease on five maps and the default rifle remains 15,240 triangles in 10 batches.
+
+Light-field optimisation preserves byte-identical results across all eight maps. Destruction rebuilding now checks a 0.65 ms soft deadline per 16 texels, at most 128 texels per frame, with a complete-texture swap. The ranked fixes, explicit costs and raw timings are in docs/RENDERER-AUDIT.md and docs/profile-release18.json / profile-release23.json. Final verification passes 142 automated regressions plus static release/geometry/assets checks. The browser URL policy blocked the final preview, so no new browser GPU/visual or iPhone FPS claim is made.
+
+Pushed checkpoints on main: release 19 2d83f69564a38b3a10e8fa377458f34e86fa53c7; release 20 8d300035b443109b4f9462c9550ba252c451407d; release 21 c71f2b4745f9db1d5c2e9bec8e6c88761ee6a0f5; release 22 0c1754442a4dc447d38b67ff977384883a83e3df. Release 23 follows after combined validation.

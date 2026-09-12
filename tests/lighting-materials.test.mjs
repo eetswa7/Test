@@ -38,7 +38,7 @@ test('destruction spreads light-field work across frames and uploads only a comp
  const field=new LightingField();field.setArena(arena);const texture=field.texture.value,old=texture.image.data;
  roof.destroyed=true;field.invalidate(arena);
  for(let i=0;i<31;i++){field.update();assert.equal(texture.image.data,old);}
- field.update();assert.equal(field.texture.value,texture);assert.notEqual(texture.image.data,old);assert.equal(field.pending,null);assert.equal(field.field.data[4*(32*64+32)],255);field.dispose();
+ for(let i=0;i<256&&field.pending;i++)field.update();assert.equal(field.texture.value,texture);assert.notEqual(texture.image.data,old);assert.equal(field.pending,null);assert.equal(field.field.data[4*(32*64+32)],255);field.dispose();
 });
 
 

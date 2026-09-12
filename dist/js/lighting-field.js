@@ -1,21 +1,23 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {clamp} from './math.js?v=22';
+import {clamp} from './math.js?v=23';
 
 // Small ground-plan light field, baked once per map. This is an approximation
 // of indirect light, not a GI solver. R sky access, G warm bounce, B roof height,
 // A ground contact. Height-aware decoding keeps roofs and raised routes lit.
 export function bakeLightField(arena,resolution=64,options={}){
   const size=arena.info.size,data=options.data??new Uint8Array(resolution*resolution*4);
-  const blocks=arena.blocks.filter(b=>!b.ground&&!b.destroyed&&!b.invisible);
-  const roofs=blocks.filter(b=>b.roof),lamps=arena.decor.filter(p=>p.emissive>.5&&p.y>1&&p.surface==='white');
-  const start=options.startRow??0,end=Math.min(resolution,start+(options.rowCount??resolution));
-  for(let z=start;z<end;z++)for(let x=0;x<resolution;x++){
+  const {contacts,roofs,lamps}=options.context??lightingInputs(arena);
+  const start=options.startCell??(options.startRow??0)*resolution;
+  const end=Math.min(resolution*resolution,start+(options.cellCount??(options.rowCount??resolution)*resolution));
+  for(let cell=start;cell<end;cell++){
+    const z=Math.floor(cell/resolution),x=cell%resolution;
     const px=((x+.5)/resolution*2-1)*size,pz=((z+.5)/resolution*2-1)*size;
     const roof=roofs.find(b=>Math.abs(px-b.x)<b.w/2&&Math.abs(pz-b.z)<b.d/2);
     let contact=1,edge=0,bounce=0,portal=0;
-    for(const b of blocks){
-      if(b.roof||b.y-b.h/2>.3||b.h<.5)continue;
-      const dx=Math.max(0,Math.abs(px-b.x)-b.w/2),dz=Math.max(0,Math.abs(pz-b.z)-b.d/2),d=Math.hypot(dx,dz);
+    for(const b of contacts){
+      const dx=Math.max(0,Math.abs(px-b.x)-b.w/2),dz=Math.max(0,Math.abs(pz-b.z)-b.d/2);
+      if(dx>=3||dz>=3)continue;
+      const d=Math.sqrt(dx*dx+dz*dz);
       if(d<1.7)contact=Math.min(contact,.72+.28*clamp(d/1.7,0,1));
       if(d<3)edge=Math.max(edge,(1-d/3)*Math.min(.22,b.h*.04));
     }
@@ -38,6 +40,11 @@ export function bakeLightField(arena,resolution=64,options={}){
     data[i+2]=Math.round(255*(roof?Math.min(16,roof.y-roof.h/2)/16:0));data[i+3]=Math.round(255*contact);
   }
   return {data,resolution,size};
+}
+
+function lightingInputs(arena){
+ const blocks=arena.blocks.filter(b=>!b.ground&&!b.destroyed&&!b.invisible);
+ return {contacts:blocks.filter(b=>!b.roof&&b.y-b.h/2<=.3&&b.h>=.5),roofs:blocks.filter(b=>b.roof),lamps:arena.decor.filter(p=>p.emissive>.5&&p.y>1&&p.surface==='white')};
 }
 
 export class LightingField {
@@ -82,11 +89,14 @@ export class LightingField {
   }
   // Keep the last complete field live until the replacement is ready. Explosions
   // otherwise cause a full 64-row bake inside a single gameplay frame.
-  invalidate(arena){this.pending={arena,row:0,data:new Uint8Array(64*64*4)};}
+  // Check a 0.65 ms soft budget every 16 texels; never process over 128 texels.
+  invalidate(arena){this.pending={arena,cell:0,context:lightingInputs(arena),data:new Uint8Array(64*64*4)};}
   update(){
     const p=this.pending;if(!p)return;
-    bakeLightField(p.arena,64,{data:p.data,startRow:p.row,rowCount:2});p.row+=2;
-    if(p.row>=64){this.texture.value.image.data=p.data;this.texture.value.needsUpdate=true;this.field.data=p.data;this.pending=null;}
+    const deadline=performance.now()+.65,limit=Math.min(4096,p.cell+128);
+    do{bakeLightField(p.arena,64,{data:p.data,startCell:p.cell,cellCount:16,context:p.context});p.cell+=16;}
+    while(p.cell<limit&&performance.now()<deadline);
+    if(p.cell>=4096){this.texture.value.image.data=p.data;this.texture.value.needsUpdate=true;this.field.data=p.data;this.pending=null;}
   }
   dispose(){this.pending=null;this.texture.value?.dispose();}
 }
