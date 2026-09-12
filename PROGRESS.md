@@ -129,3 +129,8 @@ Pushed checkpoints on main: release 19 2d83f69564a38b3a10e8fa377458f34e86fa53c7;
 ## Release 24: coherent map weather and exterior shade
 
 The visible sky now shares the same generated HDR source as the map reflection probe, including sun direction and overcast weather. Broad cloud structure is extracted once from the original asset; its unrelated mountain horizon no longer appears over the harbour and every other map. A 512 × 256 HDR source replaces the 2048 × 1024 uploaded panorama. Exterior indirect occlusion now survives at player eye height; only actual roof texels restore sky access above roof level. No additional light, draw pass or fragment lookup. New field/cloud regressions and static checks run before checkpointing. Browser preview remains blocked; physical iPhone visual output is unverified.
+
+
+## Release 25: surface placement and believable dressing
+
+Removed duplicate room floor finishes and generic mechanical units from narrow Citadel gallery roofs. Random weeds now stay out of covered interiors and broad paved finishes. Thin ground-level decorative slabs become layered receiving planes instead of shadow-casting boxes; collision blocks, raised paths and stairs remain intact. This removes needless floor caster work and gives floor layers stable depth ordering. Map-by-map scene invariants and the existing gameplay/navigation suite verify the change before checkpointing.

@@ -1,4 +1,5 @@
-import {rng} from './math.js?v=24';
+import {prepareGroundSurfaces} from './surface-placement.js?v=25';
+import {rng} from './math.js?v=25';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -56,17 +57,18 @@ export function dressWorld(arena){
   for(let i=0;i<3;i++)add(b.x+b.w*.3,b.h+1.8-i*.23,b.z-.5,1.3-i*.2,.026,.026,'steel');
  }
  for(const roof of arena.blocks.filter(b=>b.roof)){
-  add(roof.x,.026,roof.z,roof.w-.6,.018,roof.d-.6,'concrete');
+  if(!roof.room)add(roof.x,.026,roof.z,roof.w-.6,.018,roof.d-.6,'concrete');
   for(const z of [roof.z-roof.d/2,roof.z+roof.d/2])add(roof.x,roof.y+.2,z,roof.w,.16,.13,'rust');
-  add(roof.x,roof.y+.39,roof.z,1.1,.48,.8,'steel',{mesh:'bevel'});
+  if(roof.room)add(roof.x,roof.y+.39,roof.z,1.1,.48,.8,'steel',{mesh:'bevel'});
  }
  // Small street infrastructure gives human scale without blocking the lanes.
  for(const [x,z]of [[-s+2,-7],[s-2,9],[-7,s-2],[8,-s+2]]){
   add(x,2.7,z,.11,5.4,.11,'steel',{mesh:'cylinder'});add(x+.55,5.36,z,1.1,.10,.12,'steel');add(x+1,5.29,z,.40,.12,.26,'dark',{mesh:'bevel'});add(x+1,5.22,z,.3,.025,.2,'white',{emissive:.5});
  }
+ const paved=arena.decor.filter(p=>p.y<.1&&p.h<.08&&['asphalt','concrete','tiles'].includes(p.surface)&&p.w>1&&p.d>1);
  // Low growth stays below the sightline and is kept away from objectives.
  for(let i=0;i<(id===1||id===4||id===6?70:220);i++){
-  const x=(random()-.5)*(s*2-3),z=(random()-.5)*(s*2-3);if(!free(x,z,.4))continue;
+  const x=(random()-.5)*(s*2-3),z=(random()-.5)*(s*2-3);if(!free(x,z,.4)||arena.indoors({x,y:.05,z})||paved.some(p=>Math.abs(x-p.x)<p.w/2-.1&&Math.abs(z-p.z)<p.d/2-.1))continue;
   const nearWall=arena.blocks.some(b=>!b.ground&&Math.abs(x-b.x)<b.w/2+2.4&&Math.abs(z-b.z)<b.d/2+2.4);
   if(!nearWall&&random()>.14)continue;
   const size=.18+random()*.38;plant(x,z,size,2);
@@ -149,4 +151,5 @@ export function dressWorld(arena){
  }
  // Light rubble, low planters and sandbags are chamfered to catch the sunlight.
  for(const b of arena.blocks){if(b.h>.7&&b.h<1.5&&!b.ground&&!b.stair&&!b.dock&&!b.overlook&&b.w>2){b.mesh='bevel';for(let i=0;i<Math.floor(b.w);i++)add(b.x-b.w/2+.6+i,b.y+b.h/2+.10,b.z,.82,.23,.54,'fabric',{mesh:'bevel',color:[.88,.8,.60]});}}
+ prepareGroundSurfaces(arena);
 }

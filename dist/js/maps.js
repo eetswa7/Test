@@ -1,5 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=24';
-import {dressWorld} from './world-detail.js?v=24';
+import {rng,rayBox,distance,clamp} from './math.js?v=25';
+import {dressWorld} from './world-detail.js?v=25';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -32,7 +32,7 @@ export class Arena {
    else this.box(xx,height/2,z,.4,height,d,surface);
   }
   for(const zz of [z-d/2,z+d/2]){this.box(x-w/4-.65,height/2,zz,w/2-1.3,height,.4,surface);this.box(x+w/4+.65,height/2,zz,w/2-1.3,height,.4,surface);this.box(x,height-.5,zz,2.6,1,.4,surface);}
-  if(roof)this.box(x,height+.15,z,w+.6,.3,d+.6,surface,{roof:true});
+  if(roof)this.box(x,height+.15,z,w+.6,.3,d+.6,surface,{roof:true,room:true});
   this.detail(x,.015,z,w-.4,.03,d-.4,'concrete');
   for(const xx of [x-w/2+.22,x+w/2-.22]){if(sideDoors)continue;this.detail(xx,2.25,z,.06,1.4,2,'glass');this.detail(xx,2.25,z,.07,.06,2.1,'dark');}
   this.detail(x,height-.25,z,.7,.08,1.5,'white',{emissive:.9});

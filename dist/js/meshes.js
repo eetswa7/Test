@@ -41,3 +41,6 @@ export function rockMesh(){
   for(const ids of [[0,2,1],[0,3,2]]){const [a,b,c]=ids.map(i=>p[i]),u=b.map((n,i)=>n-a[i]),w=c.map((n,i)=>n-a[i]),n=normalize([u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]]);tri(out,a,b,c,n);}
  }return new Float32Array(out);
 }
+
+// A horizontal receiving surface with consistent world-scale UVs.
+export function groundSurface(){return new Float32Array([-.5,0,.5,0,1,0,0,0,.5,0,.5,0,1,0,1,0,.5,0,-.5,0,1,0,1,1,-.5,0,.5,0,1,0,0,0,.5,0,-.5,0,1,0,1,1,-.5,0,-.5,0,1,0,0,1]);}
