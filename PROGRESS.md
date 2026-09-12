@@ -134,3 +134,11 @@ The visible sky now shares the same generated HDR source as the map reflection p
 ## Release 25: surface placement and believable dressing
 
 Removed duplicate room floor finishes and generic mechanical units from narrow Citadel gallery roofs. Random weeds now stay out of covered interiors and broad paved finishes. Thin ground-level decorative slabs become layered receiving planes instead of shadow-casting boxes; collision blocks, raised paths and stairs remain intact. This removes needless floor caster work and gives floor layers stable depth ordering. Map-by-map scene invariants and the existing gameplay/navigation suite verify the change before checkpointing.
+
+## Release 26: contained interior bulbs and continuous camera stride
+
+Room lights use soft interior bounds to prevent unshadowed bulbs illuminating exterior wall faces and roof tops. The shader reuses the light-field world position: three bounded bulbs, no extra texture sample, shadow cube or render pass. This is a room approximation; small props do not acquire point-light shadows. Bounds follow lamp selection at 5 Hz and clear when a roof is destroyed. Camera stride now integrates travel instead of multiplying elapsed time by changing speed, settles after stopping, freezes while paused and stays centred at full ADS.
+
+All-map room-boundary and motion regressions pass. An optional offline Mesa EGL gate compiles and links 11 material shader variants, including patched lighting, foliage, physical glass, weapon bevels, normal maps and ACES. This validates shader syntax/composition, not images, browser behaviour or iPhone GPU speed. Raw CPU/scene measurements are in docs/profile-release26.json; shader results are in docs/shaders-release26.json. Releases 24 and 25 are already pushed to main.
+
+Release 26 verification: 149/149 automated regressions and static validation passed (43 JavaScript modules). All 11 offline material shader variants compile and link on Mesa GLES.

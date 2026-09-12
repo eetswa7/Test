@@ -145,6 +145,7 @@ test('replaced authored colours refresh cached instance tints without rebuilding
 
 test('shadow texels stay stable through small movements and gun lighting follows the world',()=>{
  const r=fixture();r.arena={info:{sun:[.6,.7,.45]},indoors:()=>false};
+ r.lightingField=null; // This minimal arena exercises the no-baked-field fallback.
  Object.assign(r,{nearestLights:[null,null,null],lightDistances:[Infinity,Infinity,Infinity],interiorLights:[],lightPositions:[],weaponKeyLight:new THREE.DirectionalLight(),weaponFill:new THREE.HemisphereLight(),shadowClock:1});
  r.sun.shadow.mapSize.set(1024,1024);Object.assign(r.sun.shadow.camera,{left:-28,right:28,top:28,bottom:-28});r.sun.shadow.camera.updateProjectionMatrix();
  r.scene.add(r.sun,r.sun.target);r.weaponScene.environmentIntensity=.85;

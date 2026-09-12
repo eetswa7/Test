@@ -1,4 +1,4 @@
-import {clamp,lerp,angleDelta} from './math.js?v=25';
+import {clamp,lerp,angleDelta} from './math.js?v=26';
 
 // Rendering, HUD and input share the same optic definition. Never put an opaque
 // first-person scope model in front of the magnified world camera.
@@ -11,6 +11,16 @@ export function aimFov(horizontalDegrees,weapon,ads=0){
 export const verticalFov=(horizontal,aspect)=>2*Math.atan(Math.tan(horizontal/2)/aspect);
 export const scopeVisible=p=>!p.dead&&isScoped(p.weapon)&&p.ads>.62;
 export const sightHeight=w=>isScoped(w)?.188:w.optic===1||w.optic===2?.169:.119;
+
+// Integrate travelled distance, not elapsed time times changing speed. The small
+// amplitude settles smoothly on stops; fully aimed fire keeps the camera centred.
+export function cameraBob(state,speed,grounded,ads,dt,enabled=true){
+ dt=clamp(dt,0,.05);speed=Math.max(0,speed);
+ state.phase=((state.phase??0)+(grounded?speed:0)*dt*2.8)%(Math.PI*2);
+ const target=enabled&&grounded?Math.min(.023,speed*.006):0;
+ state.amplitude=lerp(state.amplitude??0,target,1-Math.exp(-dt*16));
+ return enabled?Math.sin(state.phase)*state.amplitude*(1-clamp(ads,0,1)):0;
+}
 
 export function weaponPose(p,time,motion=true,menu=false,out={}){
  if(menu){Object.assign(out,{x:.42,y:-.12,z:-1.05,yaw:.92,pitch:-.08,roll:-.1,scale:1.65});return out;}

@@ -1,24 +1,25 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=25';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=25';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=25';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=25';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=25';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=25';
-import {DecalSystem} from './decal-system.js?v=25';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=25';
-import {LightingField} from './lighting-field.js?v=25';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=25';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=25';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=25';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=25';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=26';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=26';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=26';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=26';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=26';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=26';
+import {DecalSystem} from './decal-system.js?v=26';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=26';
+import {LightingField} from './lighting-field.js?v=26';
+import {RoomLights} from './room-lights.js?v=26';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=26';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=26';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=26';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=26';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=25';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=25';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=25';
-import { loadImages } from './textures.js?v=25';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=25';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=25';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=25';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=26';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=26';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=26';
+import { loadImages } from './textures.js?v=26';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=26';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=26';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=26';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -74,7 +75,7 @@ export class Renderer {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.shadowMap.autoUpdate = false;
     this.scene = new THREE.Scene(); this.weaponScene = new THREE.Scene();
-    this.lightingField=new LightingField();this.sceneLOD=new SceneLOD();
+    this.lightingField=new LightingField();this.roomLights=new RoomLights();this.sceneLOD=new SceneLOD();
     this.camera = new THREE.PerspectiveCamera(55, 1, .055, 190);
     this.weaponCamera = new THREE.PerspectiveCamera(65, 1, .018, 10);
     this.world = new THREE.Group(); this.scene.add(this.world);
@@ -183,7 +184,7 @@ export class Renderer {
   }
 
   setArena(arena) {
-    this.arena = arena; this.cameraY = null; this.shadowClock = 1;
+    this.arena = arena; this.cameraY = null; this.cameraBobState = {}; this.shadowClock = 1;
     if(this.qualityController){this.qualityController.warmup=2;this.qualityController.slow=this.qualityController.fast=0;}
     for (const effect of this.effects) effect.life = 0;
     this.decalSystem?.clear();
@@ -278,8 +279,8 @@ export class Renderer {
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf)this.lightingField?.patch(shader);};
-    mat.customProgramCacheKey=()=>`${previousKey}/${category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-lightfield-v1`;
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}};
+    mat.customProgramCacheKey=()=>`${previousKey}/${category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-room-lightfield-v2`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -679,6 +680,7 @@ export class Renderer {
       this.weaponLampVisible=nearest[0]&&this.arena.visible?.(eye,nearest[0])!==false;
       for (let i = 0; i < this.interiorLights.length; i++) {
         const light = this.interiorLights[i], selected = nearest[i];
+        this.roomLights?.assign(i,this.arena,selected);
         light.intensity = selected && this.quality !== 'low' ? 17 : 0;
         if (selected) light.position.set(selected.x, selected.y, selected.z);
       }
@@ -747,7 +749,7 @@ export class Renderer {
       this.target.set(-4, 2, -8); fov = 55;
     } else {
       const eye = game.eye(p), speed = Math.hypot(p.vx, p.vz);
-      const bob = this.settings.motion !== false && p.grounded ? Math.sin(game.time * speed * 2.8) * Math.min(.023, speed * .006) * (1 - p.ads) : 0;
+      const bob = cameraBob(this.cameraBobState??(this.cameraBobState={}),speed,p.grounded,p.ads,game.paused?0:dt,this.settings.motion!==false);
       if (this.cameraY === null) this.cameraY = eye.y;
       this.cameraY = lerp(this.cameraY, eye.y, clamp(dt * 18, 0, 1));
       this.eye.x = eye.x; this.eye.y = lerp(this.cameraY, eye.y, p.ads) + bob - p.landKick -

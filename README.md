@@ -185,3 +185,8 @@ Settings now ends with BREACHLINE · VERSION 18. The label reads the boot releas
 ## Releases 19–23: renderer fidelity audit
 
 Ten targeted fixes cover doorway lighting, curved UVs, physical roughness, interior weapon reflections, physical bevel widths, surface ageing, shadow stability, leaf transmission, connected leg animation and specular anti-aliasing. See the [ranked renderer audit and profile comparison](docs/RENDERER-AUDIT.md). The complete offline build and Settings version advance together to 23. Final checks pass 142 regressions and static validation; the browser preview URL was blocked, so GPU visual output and iPhone performance remain unverified.
+
+
+## Releases 24–26: scene coherence
+
+Sky and reflections now share map weather and sunlight. Exterior indirect shading survives at player height. Removed duplicate floors, misplaced roof units and weeds through paved/covered surfaces. Thin ground finishes receive shadows without casting them. Interior bulbs respect soft room bounds; camera stride remains continuous through speed changes. No additional full-screen pass or shadow-casting light. Verification: 149 regressions, static validation and 11 offline GLES shader compile/link variants passed. The offline compiler does not validate browser images or iPhone frame rate.

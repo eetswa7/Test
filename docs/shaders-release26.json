@@ -1,0 +1,8 @@
+{
+  "scope": "Offline GLSL ES compile/link only; no rendered frames or iPhone validation",
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "version": "OpenGL ES 3.2 Mesa 25.2.8-0ubuntu0.24.04.2",
+  "variants": 11,
+  "passed": 11,
+  "failures": []
+}
