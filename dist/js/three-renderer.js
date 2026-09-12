@@ -1,23 +1,24 @@
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=20';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=20';
-import {positionSun,shadowDue} from './shadow-system.js?v=20';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=20';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=20';
-import {DecalSystem} from './decal-system.js?v=20';
-import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=20';
-import {LightingField} from './lighting-field.js?v=20';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=20';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=20';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=20';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=20';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=21';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=21';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=21';
+import {positionSun,shadowDue} from './shadow-system.js?v=21';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=21';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=21';
+import {DecalSystem} from './decal-system.js?v=21';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected} from './environment-probes.js?v=21';
+import {LightingField} from './lighting-field.js?v=21';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=21';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=21';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=21';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=21';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=20';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=20';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=20';
-import { loadImages } from './textures.js?v=20';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=20';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=20';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=20';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=21';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=21';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=21';
+import { loadImages } from './textures.js?v=21';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=21';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=21';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=21';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -179,7 +180,7 @@ export class Renderer {
     this.scene.background = this.horizon; this.scene.backgroundIntensity = .85;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
     this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
-    this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.lightingField?.texture.value]);
+    this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.environmentProbes?.interior?.texture,this.lightingField?.texture.value]);
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
@@ -221,7 +222,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -269,8 +270,8 @@ export class Renderer {
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf)this.lightingField?.patch(shader);};
-    mat.customProgramCacheKey=()=>`${previousKey}/packed-orm-lightfield-v1`;
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf)this.lightingField?.patch(shader);};
+    mat.customProgramCacheKey=()=>`${previousKey}/${category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-lightfield-v1`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -673,6 +674,12 @@ export class Renderer {
       }
     }
     const inside = this.arena.indoors(eye), sky=this.lightingField?.sample(eye)??(inside?.38:1);
+    if(this.environmentProbes?.interior){
+      this.weaponRoomProbe=roomProbeSelected(this.weaponRoomProbe,sky);
+      this.weaponScene.environment=this.weaponRoomProbe?this.environmentProbes.interior.texture:this.environment.texture;
+    }
+    // The hemisphere also stays upright in world space when the player pitches.
+    this.weaponFill.position.set(0,1,0).transformDirection(this.camera.matrixWorldInverse);
     const lamp=this.nearestLights[0],local=this.weaponLocalLight;
     if(local){
       if(lamp)local.position.set(lamp.x,lamp.y,lamp.z).applyMatrix4(this.camera.matrixWorldInverse);

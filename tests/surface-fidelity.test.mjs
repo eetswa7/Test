@@ -22,3 +22,12 @@ test('bevel face UV metrics remain constant across its rounded corners',()=>{
  const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};m.onBeforeCompile(shader);
  assert(shader.vertexShader.includes('attribute vec3 breachUvU'));assert(shader.fragmentShader.includes('roughness+(texelRoughness.g-.84)'));
 });
+
+
+test('hard weapon bevels keep a separate shader variant from soft gloves and cylindrical parts',()=>{
+ const r=fixture(),base={x:0,y:0,z:0,w:.08,h:.09,d:.4,surface:'dark',mesh:'bevel',finishTile:0};
+ const hard=r.makeMaterial(base,'weapon'),soft=r.makeMaterial({...base,finishTile:2,tile:9},'weapon');
+ const cylinder=r.makeMaterial({...base,mesh:'cylinder'},'weapon');
+ const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};hard.onBeforeCompile(shader);
+ assert(shader.vertexShader.includes('breachRadius=min(.0025'));assert.notEqual(hard,cylinder);assert.notEqual(hard,soft);
+});

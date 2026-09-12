@@ -19,15 +19,19 @@ export function environmentRadiance(info,width=512,height=256){
   }return {pixels,width,height};
 }
 export class EnvironmentProbes {
-  constructor(renderer){this.generator=new THREE.PMREMGenerator(renderer);this.target=null;}
+  constructor(renderer){this.generator=new THREE.PMREMGenerator(renderer);this.target=null;this.interior=null;}
   setArena(info){
     const {pixels,width,height}=environmentRadiance(info);
     const texture=new THREE.DataTexture(pixels,width,height,THREE.RGBAFormat,THREE.HalfFloatType);
     texture.mapping=THREE.EquirectangularReflectionMapping;texture.colorSpace=THREE.LinearSRGBColorSpace;texture.needsUpdate=true;
     const target=this.generator.fromEquirectangular(texture);texture.dispose();this.target?.dispose();this.target=target;
+    const room=interiorRadiance();
+    const source=new THREE.DataTexture(room.pixels,room.width,room.height,THREE.RGBAFormat,THREE.HalfFloatType);
+    source.mapping=THREE.EquirectangularReflectionMapping;source.needsUpdate=true;
+    this.interior?.dispose();this.interior=this.generator.fromEquirectangular(source);source.dispose();
     return target;
   }
-  dispose(){this.target?.dispose();this.generator.dispose();}
+  dispose(){this.interior?.dispose();this.target?.dispose();this.generator.dispose();}
 }
 
 export function orientWeaponEnvironment(scene,camera){
@@ -36,3 +40,18 @@ export function orientWeaponEnvironment(scene,camera){
   scene.environmentRotation.setFromRotationMatrix(camera.matrixWorld,'XYZ');
   scene.environmentRotation.x*=-1;scene.environmentRotation.y*=-1;scene.environmentRotation.z*=-1;
 }
+
+// Shared soft ceiling / wall / floor probe. No combat-time scene capture and
+// no second fragment sampler. One 64 px-face PMREM for interior hero lighting.
+export function interiorRadiance(width=256,height=128){
+ const pixels=new Uint16Array(width*height*4);
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+  const dy=Math.sin(((y+.5)/height-.5)*Math.PI),a=((x+.5)/width-.5)*Math.PI*2;
+  const panel=Math.pow(Math.max(0,dy),12)*Math.pow(Math.max(0,Math.cos(a*2)),10)*3.2;
+  const base=dy<0?.065:.18+dy*.15;
+  const i=(y*width+x)*4;
+  for(let c=0;c<3;c++)pixels[i+c]=THREE.DataUtils.toHalfFloat(base*[1,.94,.84][c]+panel*[1,.82,.62][c]);
+  pixels[i+3]=THREE.DataUtils.toHalfFloat(1);
+ }return {pixels,width,height};
+}
+export function roomProbeSelected(wasInside,sky){return wasInside?sky<.62:sky<.46;}

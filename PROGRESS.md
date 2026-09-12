@@ -105,3 +105,8 @@ Renderer audit starts from release 18. The first fix replaces uniform roof shadi
 ## Release 20: continuous texture mapping and calibrated roughness
 
 Fixed cylinder UVs that repeated the entire tile on every segment, sphere UVs collapsed to one texel, and discontinuous tube mapping. Static per-face UV metrics replace bevel-normal axis switching and remove the oversized minimum repeat on tiny weapon parts. No additional fragment texture samples or draw calls. Roughness variation is centred on authored values; painted blue metal, rust and plaster retain dielectric responses. Regression checks cover circumference continuity, rounded-face metrics and shader composition.
+
+
+## Release 21: interior hero reflections and physical bevels
+
+A small static room PMREM replaces blue outdoor reflections on the first-person weapon indoors. Selection has doorway hysteresis and uses the existing environment sampler, with no live captures; this is a generic room approximation, not local geometry reflection. First-person hemisphere direction now stays upright in world space. Hard weapon parts retain a maximum 2.5 mm physical bevel under non-uniform scaling, preserving their outer bounds and existing geometry count. Soft gloves retain their rounded silhouette. Focused lighting, surface and weapon regressions run before this checkpoint.
