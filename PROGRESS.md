@@ -100,3 +100,8 @@ Settings now ends with BREACHLINE · VERSION 18. The label reads the boot releas
 ## Release 19: doorway daylight and weapon sun occlusion
 
 Renderer audit starts from release 18. The first fix replaces uniform roof shading with visibility-tested doorway daylight gradients in the existing 16 KiB field. First-person indirect illumination samples that same field continuously; sun visibility checks at 5 Hz prevent the gun keeping a sun highlight behind solid cover. No extra GPU light, texture lookup or render pass. Focused lighting/renderer regressions and static validation run before checkpointing. GPU appearance and iPhone timings remain unverified.
+
+
+## Release 20: continuous texture mapping and calibrated roughness
+
+Fixed cylinder UVs that repeated the entire tile on every segment, sphere UVs collapsed to one texel, and discontinuous tube mapping. Static per-face UV metrics replace bevel-normal axis switching and remove the oversized minimum repeat on tiny weapon parts. No additional fragment texture samples or draw calls. Roughness variation is centred on authored values; painted blue metal, rust and plaster retain dielectric responses. Regression checks cover circumference continuity, rounded-face metrics and shader composition.

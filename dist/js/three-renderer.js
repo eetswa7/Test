@@ -1,22 +1,23 @@
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=19';
-import {positionSun,shadowDue} from './shadow-system.js?v=19';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=19';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=19';
-import {DecalSystem} from './decal-system.js?v=19';
-import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=19';
-import {LightingField} from './lighting-field.js?v=19';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=19';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=19';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=19';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=19';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=20';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=20';
+import {positionSun,shadowDue} from './shadow-system.js?v=20';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=20';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=20';
+import {DecalSystem} from './decal-system.js?v=20';
+import {EnvironmentProbes,orientWeaponEnvironment} from './environment-probes.js?v=20';
+import {LightingField} from './lighting-field.js?v=20';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=20';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=20';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=20';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=20';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=19';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=19';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=19';
-import { loadImages } from './textures.js?v=19';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=19';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=19';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=19';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=20';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=20';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=20';
+import { loadImages } from './textures.js?v=20';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=20';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=20';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=20';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -97,6 +98,7 @@ export class Renderer {
       bevelWorld: bufferGeometry(roundedBox(.08, 3)), bevelActor: bufferGeometry(roundedBox(.1, 2)),
       tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh())
     };
+    for(const [kind,g] of Object.entries(this.geometry))installMetricUV(g,kind);
     // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.
     const leafUV = this.geometry.leaf.getAttribute('uv');
     for (let i = 0; i < leafUV.count; i++) leafUV.setY(i, 1 - leafUV.getY(i));
@@ -238,23 +240,7 @@ export class Renderer {
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
     // Per-instance dimensions give architecture a consistent material scale.
     if (!leaf && maps && (category === 'world' || finish)) {
-      mat.onBeforeCompile = shader => {
-        shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
-          #ifdef USE_INSTANCING
-          vec3 dims=vec3(length(instanceMatrix[0].xyz),length(instanceMatrix[1].xyz),length(instanceMatrix[2].xyz));
-          vec3 axis=abs(normal); vec2 repeats=axis.y>.7?dims.xz:(axis.x>.7?dims.zy:dims.xy);
-          repeats=max(vec2(${category === 'weapon' ? '.2' : '.18'}),repeats*${category === 'weapon' ? '18.0' : '.7'});
-          #ifdef USE_MAP
-          vMapUv*=repeats;
-          #endif
-          #ifdef USE_NORMALMAP
-          vNormalMapUv*=repeats;
-          #endif
-          #ifdef USE_ROUGHNESSMAP
-          vRoughnessMapUv*=repeats;
-          #endif
-          #endif`);
-      };
+      mat.onBeforeCompile = shader => patchMetricUV(shader,category==='weapon'?18:.7);
       const patchUV=mat.onBeforeCompile;
       mat.onBeforeCompile=shader=>{
         patchUV(shader);
@@ -274,7 +260,7 @@ export class Renderer {
           `);
         }
       };
-      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-finish-uv-v2' : 'world-patina-uv-v3';
+      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-metric-uv-v3' : 'world-metric-uv-v4';
     }
     if (leaf) {
       this.patchWind(mat);

@@ -22,6 +22,14 @@ export function tube(sides=24,inner=.36){
    if(sign>0){tri(out,p,s,t,na,na,nb);tri(out,p,t,q,na,nb,nb);}else{tri(out,p,q,t,na,nb,nb);tri(out,p,t,s,na,nb,na);}
   }
   for(const y of [-.5,.5]){const p=at(a,.5,y),q=at(b,.5,y),s=at(a,inner,y),t=at(b,inner,y),n=[0,y*2,0];if(y>0){tri(out,p,s,t,n);tri(out,p,t,q,n);}else{tri(out,p,q,t,n);tri(out,p,t,s,n);}}
+ }
+ // Continuous circumference UVs, including the inner barrel. Caps are planar.
+ for(let i=0;i<out.length;i+=24){
+  const us=[];for(let j=0;j<3;j++){const k=i+j*8;
+   if(Math.abs(out[k+4])>.9){out[k+6]=out[k]+.5;out[k+7]=out[k+2]+.5;}
+   else{out[k+6]=Math.atan2(out[k+2],out[k])/(2*Math.PI)+.5;out[k+7]=out[k+1]+.5;us.push(out[k+6]);}
+  }
+  if(us.length&&Math.max(...us)-Math.min(...us)>.5)for(let j=0;j<3;j++){const k=i+j*8+6;if(out[k]<.5)out[k]+=1;}
  }return new Float32Array(out);
 }
 export function leafCard(){return new Float32Array([-.5,-.5,0,0,0,1,0,1,.5,-.5,0,0,0,1,1,1,.5,.5,0,0,0,1,1,0,-.5,-.5,0,0,0,1,0,1,.5,.5,0,0,0,1,1,0,-.5,.5,0,0,0,1,0,0]);}

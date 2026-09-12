@@ -1,3 +1,4 @@
+import {installMetricUV} from '../dist/js/surface-uv.js';
 import * as THREE from '../dist/vendor/three.module.min.js';
 import {Renderer,isFriendly,neutraliseFinish} from '../dist/js/three-renderer.js';
 import {Arena,MAPS} from '../dist/js/maps.js';
@@ -14,7 +15,7 @@ export function fixture(){
  r.rendered=[];r.renderer={shadowMap:{},info:{reset(){},render:{calls:0}},clearDepth(){},render(scene){r.rendered.push(scene);},setRenderTarget(){},clear(){}};
  for(const [key,make]of Object.entries({cube:makeCube,cylinder:makeCylinder,sphere:makeSphere,bevel:roundedBox,bevelWorld:()=>roundedBox(.08,3),bevelActor:()=>roundedBox(.1,2),tube,leaf:leafCard,rock:rockMesh})){
   const g=new THREE.BufferGeometry(),b=new THREE.InterleavedBuffer(make(),8);
-  g.setAttribute('position',new THREE.InterleavedBufferAttribute(b,3,0));g.setAttribute('normal',new THREE.InterleavedBufferAttribute(b,3,3));g.setAttribute('uv',new THREE.InterleavedBufferAttribute(b,2,6));r.geometry[key]=g;
+  g.setAttribute('position',new THREE.InterleavedBufferAttribute(b,3,0));g.setAttribute('normal',new THREE.InterleavedBufferAttribute(b,3,3));g.setAttribute('uv',new THREE.InterleavedBufferAttribute(b,2,6));r.geometry[key]=installMetricUV(g,key);
  }
  return r;
 }

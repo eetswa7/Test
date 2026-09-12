@@ -1,5 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=19';
-import {dressWorld} from './world-detail.js?v=19';
+import {rng,rayBox,distance,clamp} from './math.js?v=20';
+import {dressWorld} from './world-detail.js?v=20';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -10,7 +10,7 @@ export const MAPS=[
  {id:6,name:'SWITCHYARD',location:'Rail freight interchange',size:38,weather:'overcast',tag:'RAIL TERMINAL',description:'Offset freight cars, a four-door depot and raised signal platform.',sky:[.38,.49,.58],fog:[.5,.56,.59],sun:[-.58,.75,.3]},
  {id:7,name:'CANOPY',location:'Forest research outpost',size:42,weather:'sun',tag:'FOREST BASE',description:'Interconnected cabins, a sheltered courtyard and an observation deck.',sky:[.4,.57,.66],fog:[.5,.62,.58],sun:[.55,.82,-.35]}
 ];
-export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.76,metal:.45,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.8,metal:.1,pattern:1},blue:{color:[.12,.29,.37],rough:.52,metal:.6,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
+export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.88,metal:.08,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.88,metal:0,pattern:1},blue:{color:[.12,.29,.37],rough:.66,metal:.05,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
 const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
 for(const [name,tile]of Object.entries(surfaceTexture))SURFACES[name].tile=tile;
 Object.assign(SURFACES,{
