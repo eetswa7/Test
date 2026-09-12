@@ -110,3 +110,8 @@ Fixed cylinder UVs that repeated the entire tile on every segment, sphere UVs co
 ## Release 21: interior hero reflections and physical bevels
 
 A small static room PMREM replaces blue outdoor reflections on the first-person weapon indoors. Selection has doorway hysteresis and uses the existing environment sampler, with no live captures; this is a generic room approximation, not local geometry reflection. First-person hemisphere direction now stays upright in world space. Hard weapon parts retain a maximum 2.5 mm physical bevel under non-uniform scaling, preserving their outer bounds and existing geometry count. Soft gloves retain their rounded silhouette. Focused lighting, surface and weapon regressions run before this checkpoint.
+
+
+## Release 22: aged surfaces, connected shadows and thin foliage
+
+World material shading adds restrained instance variation and a damp/dirt band at ground-level wall bases, reusing the existing world coordinates with no new texture samples. Shadow bias now scales with texel size; the cadence accumulator preserves fractional time, fixing High's 24 Hz budget previously slipping to 20 Hz at 60 FPS. Leaves receive a capped sky-transmission approximation in their existing PBR pass. Focused shader-composition and temporal-cadence checks run before checkpointing. GPU tuning still requires real device comparisons.

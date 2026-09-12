@@ -1,24 +1,24 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=21';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=21';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=21';
-import {positionSun,shadowDue} from './shadow-system.js?v=21';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=21';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=21';
-import {DecalSystem} from './decal-system.js?v=21';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected} from './environment-probes.js?v=21';
-import {LightingField} from './lighting-field.js?v=21';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=21';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=21';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=21';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=21';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=22';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=22';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=22';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=22';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=22';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=22';
+import {DecalSystem} from './decal-system.js?v=22';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected} from './environment-probes.js?v=22';
+import {LightingField} from './lighting-field.js?v=22';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=22';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=22';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=22';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=22';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=21';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=21';
-import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=21';
-import { loadImages } from './textures.js?v=21';
-import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=21';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=21';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=21';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=22';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=22';
+import { roundedBox, tube, leafCard, rockMesh } from './meshes.js?v=22';
+import { loadImages } from './textures.js?v=22';
+import { aimFov, verticalFov, scopeVisible, weaponPose } from './aim.js?v=22';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=22';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=22';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -109,7 +109,7 @@ export class Renderer {
     this.localMatrix = new THREE.Matrix4(); this.rawMatrix = new Float32Array(16);
     this.color = new THREE.Color(); this.target = new THREE.Vector3(); this.projected = new THREE.Vector4();
     this.worldVP = new THREE.Matrix4(); this.eye = { x: 0, y: 2, z: 0 }; this.cameraY = null;
-    this.windTime = { value: 0 }; this.weaponKey = ''; this.weaponParts = []; this.weaponPoseState = {};
+    this.windTime = { value: 0 };this.leafSun={value:new THREE.Vector3()}; this.weaponKey = ''; this.weaponParts = []; this.weaponPoseState = {};
     this.frustum = new THREE.Frustum(); this.actorBounds = new THREE.Sphere(new THREE.Vector3(), 1.5);
     this.renderScale = 1; this.frameAverage = 16.7; this.slowTime = 0; this.fastTime = 0;
     this.frames = 0; this.fps = 60; this.lastFPS = 0; this.drawCalls = 0; this.shadowClock = 1;
@@ -246,18 +246,22 @@ export class Renderer {
       mat.onBeforeCompile=shader=>{
         patchUV(shader);
         if(category==='world'){
-          shader.vertexShader='varying vec3 vBreachSurface;\n'+shader.vertexShader;
+          shader.vertexShader='varying vec3 vBreachSurface; varying vec2 vBreachAge;\n'+shader.vertexShader;
           shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
             #ifdef USE_INSTANCING
             vBreachSurface=(modelMatrix*instanceMatrix*vec4(position,1.0)).xyz;
+            vBreachAge=vec2(fract(sin(dot(instanceMatrix[3].xz,vec2(12.9898,78.233)))*43758.5453),1.0-abs(normal.y));
             #else
-            vBreachSurface=(modelMatrix*vec4(position,1.0)).xyz;
+            vBreachSurface=(modelMatrix*vec4(position,1.0)).xyz;vBreachAge=vec2(.5,1.0-abs(normal.y));
             #endif`);
-          shader.fragmentShader='varying vec3 vBreachSurface;\n'+shader.fragmentShader;
+          shader.fragmentShader='varying vec3 vBreachSurface; varying vec2 vBreachAge;\n'+shader.fragmentShader;
           shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
             // Low-frequency mottling breaks repeated tiles without another texture read.
             float patina=sin(vBreachSurface.x*.61+sin(vBreachSurface.z*.47))*sin(vBreachSurface.z*.39+vBreachSurface.y*.72);
-            diffuseColor.rgb*=.965+patina*.035;
+            float breachDirt=(1.0-smoothstep(.05,.85,vBreachSurface.y))*(.10+vBreachAge.x*.14)*vBreachAge.y;
+            diffuseColor.rgb*=(.94+patina*.055+vBreachAge.x*.06)*(1.0-breachDirt);
+            diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.88,.84,.75),breachDirt);
+
           `);
         }
       };
@@ -265,6 +269,16 @@ export class Renderer {
     }
     if (leaf) {
       this.patchWind(mat);
+      const wind=mat.onBeforeCompile;
+      mat.onBeforeCompile=shader=>{wind(shader);shader.uniforms.uBreachLeafSun=this.leafSun??{value:new THREE.Vector3(0,1,0)};
+        shader.fragmentShader='uniform vec3 uBreachLeafSun;\n'+shader.fragmentShader;
+        shader.fragmentShader=shader.fragmentShader.replace('#include <aomap_fragment>',`#include <aomap_fragment>
+          // Thin-leaf sky transmission, deliberately capped to avoid luminous cards.
+          float leafBack=max(0.0,dot(-normal,uBreachLeafSun));
+          reflectedLight.indirectDiffuse+=diffuseColor.rgb*vec3(.045,.065,.025)*leafBack;
+        `);
+      };
+      mat.customProgramCacheKey=()=>'foliage-wind-thin-leaf-v2';
       const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking,
         map: this.leafMaps[p.leaf], alphaTest: .58, side: THREE.DoubleSide });
       this.patchWind(depth); this.depthMaterials.set(key, depth);
@@ -443,6 +457,7 @@ export class Renderer {
     }
     this.scene.environmentIntensity = this.quality === 'low' ? .48 : .58;
     const half = q.shadowHalf;
+    const bias=shadowBias(q.shadow,q.shadowHalf);this.sun.shadow.bias=bias.bias;this.sun.shadow.normalBias=bias.normalBias;
     const anisotropy=Math.min(q.anisotropy,this.renderer.capabilities?.getMaxAnisotropy?.()??4);
     for(const t of this.textures??[])if(t.wrapS===THREE.RepeatWrapping&&t.anisotropy!==anisotropy){t.anisotropy=anisotropy;t.needsUpdate=true;}
     Object.assign(this.sun.shadow.camera, { left: -half, right: half, top: half, bottom: -half });
@@ -653,6 +668,7 @@ export class Renderer {
   updateLighting(dt) {
     const eye = this.eye, sun = this.arena.info.sun;
     positionSun(this.sun,eye,sun);
+    this.leafSun?.value.set(...sun).transformDirection(this.camera.matrixWorldInverse);
     // Three unshadowed bulbs at most, selected from authored interior fixtures at 5 Hz.
     this.lightClock = (this.lightClock ?? 0) - dt;
     if (this.lightClock <= 0) {

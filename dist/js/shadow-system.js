@@ -8,4 +8,8 @@ export function positionSun(light,eye,sun){
   const cx=rx*u+ux*v+dx*depth,cy=uy*v+dy*depth,cz=rz*u+uz*v+dz*depth;
   light.position.set(cx+sx,cy+sy,cz+sz);light.target.position.set(cx,cy,cz);
 }
-export function shadowDue(state,dt,hz){state.shadowClock+=dt;if(!hz||state.shadowClock<1/hz)return false;state.shadowClock=0;return true;}
+export function shadowDue(state,dt,hz){state.shadowClock+=dt;if(!hz||state.shadowClock<1/hz)return false;state.shadowClock%=1/hz;return true;}
+
+// Bias scales with the near-player texel footprint instead of a fixed 35 mm
+// normal offset plus a large depth offset that detached shadows from objects.
+export function shadowBias(resolution,half){return {bias:-.00008,normalBias:resolution?Math.max(.006,2*half/resolution*.4):.006};}
