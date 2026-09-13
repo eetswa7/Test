@@ -142,3 +142,11 @@ Room lights use soft interior bounds to prevent unshadowed bulbs illuminating ex
 All-map room-boundary and motion regressions pass. An optional offline Mesa EGL gate compiles and links 11 material shader variants, including patched lighting, foliage, physical glass, weapon bevels, normal maps and ACES. This validates shader syntax/composition, not images, browser behaviour or iPhone GPU speed. Raw CPU/scene measurements are in docs/profile-release26.json; shader results are in docs/shaders-release26.json. Releases 24 and 25 are already pushed to main.
 
 Release 26 verification: 149/149 automated regressions and static validation passed (43 JavaScript modules). All 11 offline material shader variants compile and link on Mesa GLES.
+
+## Release 27: water response, visible contacts and floor batching
+
+Breakwater's flat glass slab and rigid white foam strips become one opaque PBR water plane with water's 1.333 IOR, restrained crossed ripple normals and pixel-footprint filtering at distance. It uses the existing PMREM; no reflection capture, transparency target, extra texture or wave geometry. Twelve offline material shader variants now compile and link.
+
+Spatially indexed visual floor heights keep contact shadows and ground bullet marks above decorative finishes without altering collision heights. Small floor planes batch across spatial chunks; architecture retains its culling chunks. Inspection also caught an overly broad release 25 conversion: shallow steel rail heads and wooden sleepers now retain their 3D silhouettes. New checks cover all-map finish heights, rotated strips, contact/impact placement, water material cost and Switchyard rails. Full regression and static gates run before pushing.
+
+Release 27 verification: 153/153 regressions, static validation (44 modules) and 12/12 offline GLSL ES compile/link variants passed. CPU and scene counts are recorded in docs/profile-release27.json.

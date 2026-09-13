@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=26';
-import {rng} from './math.js?v=26';
+import {prepareGroundSurfaces} from './surface-placement.js?v=27';
+import {rng} from './math.js?v=27';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -90,8 +90,7 @@ export function dressWorld(arena){
  if(id===4){
   // Water, a moored repair vessel and shore cranes establish a recognisable harbour.
   // These distant shapes remain outside the playable collision boundary.
-  add(s+53,-1.25,0,106,.08,230,'glass',{color:[.075,.22,.28],rough:.24,metal:.1});
-  for(let i=0;i<16;i++)add(s+12+i*4,-1.18,(i%3-1)*23,7+i*.5,.016,.10,'white',{color:[.25,.43,.47]});
+  add(s+53,-1.21,0,106,.01,230,'water',{mesh:'surface'});
   add(s+14,.65,3,12,4.4,39,'blue',{mesh:'bevel',color:[.22,.31,.34]});
   add(s+14,2.9,3,11.5,.18,37,'steel');
   add(s+14,4.8,-10,9,3.6,9,'white',{mesh:'bevel'});

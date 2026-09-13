@@ -22,10 +22,10 @@ export class DecalSystem {
     material.customProgramCacheKey=()=> 'bullet-crater-v1';
     this.mesh=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1),material,capacity);this.mesh.count=0;this.mesh.frustumCulled=false;this.mesh.renderOrder=2;this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(this.mesh);
   }
-  add(position,normal,metal=false){
+  add(position,normal,metal=false,groundY=position.y){
     const e=this.entries[this.cursor++%this.entries.length];e.life=18;
     this.normal.set(normal.x,normal.y,normal.z).normalize();if(this.normal.lengthSq()<.5)this.normal.set(0,1,0);
-    this.position.set(position.x,position.y,position.z).addScaledVector(this.normal,.003);
+    this.position.set(position.x,this.normal.y>.9?Math.max(position.y,groundY):position.y,position.z).addScaledVector(this.normal,.003);
     this.rotation.setFromUnitVectors(this.forward,this.normal);this.scale.setScalar(metal?.06:.095);
     e.matrix.compose(this.position,this.rotation,this.scale);this.dirty=true;
   }

@@ -1,5 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=26';
-import {dressWorld} from './world-detail.js?v=26';
+import {rng,rayBox,distance,clamp} from './math.js?v=27';
+import {dressWorld} from './world-detail.js?v=27';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -14,6 +14,7 @@ export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1
 const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
 for(const [name,tile]of Object.entries(surfaceTexture))SURFACES[name].tile=tile;
 Object.assign(SURFACES,{
+ water:{color:[.075,.22,.28],rough:.28,metal:0,tile:-1},
  plaster:{color:[.94,.92,.84],rough:.94,metal:0,tile:1},limestone:{color:[.95,.9,.8],rough:.95,metal:0,tile:2},
  asphalt:{color:[.82,.87,.89],rough:.92,metal:0,tile:4},dirt:{color:[.95,.89,.77],rough:1,metal:0,tile:5},gravel:{color:[.9,.9,.85],rough:1,metal:0,tile:7},
  fabric:{color:[.8,.82,.71],rough:.98,metal:0,tile:9},rubber:{color:[.035,.044,.039],rough:.85,metal:0,tile:-1},skin:{color:[.41,.28,.19],rough:.82,metal:0,tile:-1},

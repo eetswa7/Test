@@ -1,25 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=26';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=26';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=26';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=26';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=26';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=26';
-import {DecalSystem} from './decal-system.js?v=26';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=26';
-import {LightingField} from './lighting-field.js?v=26';
-import {RoomLights} from './room-lights.js?v=26';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=26';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=26';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=26';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=26';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=27';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=27';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=27';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=27';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=27';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=27';
+import {DecalSystem} from './decal-system.js?v=27';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=27';
+import {LightingField} from './lighting-field.js?v=27';
+import {RoomLights} from './room-lights.js?v=27';
+import {waterMaterial,patchWater} from './water-material.js?v=27';
+import {visualGroundHeight} from './surface-placement.js?v=27';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=27';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=27';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=27';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=27';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=26';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=26';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=26';
-import { loadImages } from './textures.js?v=26';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=26';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=26';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=26';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=27';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=27';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=27';
+import { loadImages } from './textures.js?v=27';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=27';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=27';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=27';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -216,13 +218,13 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
     const key = this.materialKey(p, category);
     if (this.materials.has(key)) return this.materials.get(key);
-    const m = this.partMaterial(p), leaf = p.leaf !== undefined, tile = Math.round(m.pattern - 1);
+    const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
     const options = { dithering: true, color: 0xffffff, roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
@@ -232,7 +234,7 @@ export class Renderer {
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
-    const mat = p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
+    const mat = water ? waterMaterial(options) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
     // Per-instance dimensions give architecture a consistent material scale.
     if (!leaf && maps && (category === 'world' || finish)) {
@@ -279,8 +281,8 @@ export class Renderer {
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps)patchSurfaceDetail(shader);if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}};
-    mat.customProgramCacheKey=()=>`${previousKey}/${category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-room-lightfield-v2`;
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader);if(water)patchWater(shader,this.windTime);else if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}};
+    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v1':category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-room-lightfield-v2`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -319,7 +321,9 @@ export class Renderer {
     for (const list of [this.arena.blocks, this.arena.decor, this.arena.foliage ?? []]) for (const p of list) {
       if (p.destroyed || p.invisible) continue;
       const mesh = p.mesh ?? 'cube', materialKey = this.materialKey(p, 'world');
-      const chunk = p.ground ? 'ground' : `${Math.floor(p.x / 32)}/${Math.floor(p.z / 32)}`;
+      // Two-triangle floor finishes are cheap to submit together; retain spatial
+      // chunks for 3D architecture where frustum culling saves substantial work.
+      const chunk = p.ground ? 'ground' : mesh==='surface'?'surface':`${Math.floor(p.x / 32)}/${Math.floor(p.z / 32)}`;
       const key = `${chunk}/${mesh}/${materialKey}`;
       if (!bins.has(key)) bins.set(key, []); bins.get(key).push(p);
     }
@@ -347,7 +351,7 @@ export class Renderer {
     if(!this.contactShadows)return; // CPU-only renderer validation omits texture construction.
     const s=this.arena.info.size,parts=this.arena.blocks.filter(p=>!p.ground&&!p.destroyed&&!p.invisible&&p.h>.5&&p.w>.5&&p.d>.5&&Math.abs(p.y-p.h*.5)<.08&&Math.abs(p.x)<s-2&&Math.abs(p.z)<s-2);
     const mesh=new THREE.InstancedMesh(this.contactShadows.geometry,this.contactShadows.material,Math.max(1,parts.length));
-    for(let i=0;i<parts.length;i++){const p=parts[i];compose(this.rawMatrix,p.x,.022,p.z,p.w+1.1,p.d+1.1,1,0,-Math.PI/2,0);this.matrix.fromArray(this.rawMatrix);mesh.setMatrixAt(i,this.matrix);}
+    for(let i=0;i<parts.length;i++){const p=parts[i];compose(this.rawMatrix,p.x,visualGroundHeight(this.arena,p.x,p.z)+.006,p.z,p.w+1.1,p.d+1.1,1,0,-Math.PI/2,0);this.matrix.fromArray(this.rawMatrix);mesh.setMatrixAt(i,this.matrix);}
     mesh.count=parts.length;mesh.userData.parts=parts;mesh.renderOrder=1;mesh.computeBoundingSphere();mesh.instanceMatrix.needsUpdate=true;this.scene.add(mesh);this.staticContacts=mesh;
   }
 
@@ -494,7 +498,7 @@ export class Renderer {
     const shadowTexture = new THREE.CanvasTexture(shadowCanvas); this.textures.push(shadowTexture);
     this.contactShadows = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1),
       new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false,
-        polygonOffset: true, polygonOffsetFactor: -1, toneMapped: false }), 64);
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits:-4, toneMapped: false }), 64);
     this.contactShadows.count = 0;
     this.contactShadows.frustumCulled = false; this.contactShadows.renderOrder = 1; this.scene.add(this.contactShadows);
   }
@@ -539,7 +543,7 @@ export class Renderer {
           steel ? [2, 1.2, .3] : [.38, .32, .25], .025, .15 + Math.random() * .18,
           (Math.random() - .5) * 2.5, Math.random() * 2.2, (Math.random() - .5) * 2.5);
         this.particle(p, 0, [.42, .39, .33], .11, .6, 0, .28, 0);
-        const n=event.normal??{x:0,y:1,z:0};this.decalSystem?.add(p,n,steel);
+        const n=event.normal??{x:0,y:1,z:0};this.decalSystem?.add(p,n,steel,n.y>.9?visualGroundHeight(this.arena,p.x,p.z,p.y):p.y);
       } else if (event.type === 'blood') {
         for (let i = 0; i < Math.min(6, event.value ?? 4); i++) this.particle(p, 1, [.27, .025, .016], .035, .28,
           (Math.random() - .5) * 1.5, Math.random(), (Math.random() - .5) * 1.5);
@@ -564,7 +568,7 @@ export class Renderer {
     this.decalSystem?.update(dt);
     let count = 0, shadowCount = 0;
     for (const a of game.actors) if (!a.dead && a.grounded && shadowCount < 64) {
-      compose(this.rawMatrix, a.x, a.y + .025, a.z, 1.15, .82, 1, 0, -Math.PI / 2, 0); this.matrix.fromArray(this.rawMatrix);
+      compose(this.rawMatrix, a.x, visualGroundHeight(this.arena,a.x,a.z,a.y)+.006, a.z, 1.15, .82, 1, 0, -Math.PI / 2, 0); this.matrix.fromArray(this.rawMatrix);
       this.contactShadows.setMatrixAt(shadowCount++, this.matrix);
     }
     this.contactShadows.count = shadowCount;

@@ -14,6 +14,7 @@ function shaderVariant(m,name){
  const lib=m.isMeshPhysicalMaterial?T.ShaderLib.physical:T.ShaderLib.standard,s={uniforms:{},vertexShader:lib.vertexShader,fragmentShader:lib.fragmentShader};m.onBeforeCompile(s);
  const defs=['USE_INSTANCING','USE_INSTANCING_COLOR','USE_COLOR','DITHERING','USE_ENVMAP','ENVMAP_TYPE_CUBE_UV','TONE_MAPPING'];
  if(!weapon)defs.push('USE_SHADOWMAP','SHADOWMAP_TYPE_PCF_SOFT','USE_FOG');if(m.alphaToCoverage)defs.push('ALPHA_TO_COVERAGE');
+ if(m.isMeshPhysicalMaterial)defs.push('PHYSICAL');
  if(m.map)defs.push('USE_MAP');if(m.normalMap)defs.push('USE_NORMALMAP','USE_NORMALMAP_TANGENTSPACE');if(m.roughnessMap)defs.push('USE_ROUGHNESSMAP');if(m.alphaTest)defs.push('USE_ALPHATEST');if(m.side===T.DoubleSide)defs.push('DOUBLE_SIDED');if(m.clearcoat)defs.push('USE_CLEARCOAT','IOR','PHYSICAL');
  const common='#version 300 es\nprecision highp float;precision highp int;precision highp sampler2D;precision highp samplerCube;\n'+defs.map(d=>'#define '+d).join('\n')+'\n#define HIGH_PRECISION\n#define MAP_UV uv\n#define NORMALMAP_UV uv\n#define ROUGHNESSMAP_UV uv\n#define CUBEUV_TEXEL_WIDTH 0.001488095\n#define CUBEUV_TEXEL_HEIGHT 0.001953125\n#define CUBEUV_MAX_MIP 7.0\n';
  const uniforms='uniform mat4 modelMatrix,modelViewMatrix,projectionMatrix,viewMatrix;uniform mat3 normalMatrix;uniform vec3 cameraPosition;uniform bool isOrthographic;\n';
