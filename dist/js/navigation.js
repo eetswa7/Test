@@ -1,4 +1,4 @@
-import {distance} from './math.js?v=29';
+import {distance} from './math.js?v=30';
 // A small layered navigation grid includes room floors and reachable stairs/terraces.
 // Connectivity is baked once per match; A* runs at most once per bot per second.
 export class Navigation {
@@ -28,7 +28,13 @@ export class Navigation {
   }
   return Math.abs(y-to.y)<.12;
  }
- nearest(p){let best=-1,cost=Infinity,ix=Math.floor((p.x+this.size)/this.step),iz=Math.floor((p.z+this.size)/this.step);for(let r=0;r<=5;r++){for(let z=Math.max(0,iz-r);z<=Math.min(this.n-1,iz+r);z++)for(let x=Math.max(0,ix-r);x<=Math.min(this.n-1,ix+r);x++)for(const id of this.cells[z*this.n+x]){const n=this.nodes[id],d=distance(p,n)+Math.abs(n.y-p.y)*3;if(d<cost){cost=d;best=id;}}if(best>=0)break;}return best;}
+ nearest(p){let best=-1,cost=Infinity,ix=Math.floor((p.x+this.size)/this.step),iz=Math.floor((p.z+this.size)/this.step);for(let r=0;r<=5;r++){
+  for(let z=Math.max(0,iz-r);z<=Math.min(this.n-1,iz+r);z++)for(let x=Math.max(0,ix-r);x<=Math.min(this.n-1,ix+r);x++)for(const id of this.cells[z*this.n+x]){const n=this.nodes[id],d=distance(p,n)+Math.abs(n.y-p.y)*3;if(d<cost){cost=d;best=id;}}
+  // An occupied cell may offer only a roof node even while clear ground is one
+  // cell away. Keep expanding until the best height-aware candidate is closer
+  // than every unseen cell's horizontal lower bound.
+  if(best>=0&&cost<(r+.5)*this.step)break;
+ }return best;}
  path(from,to){
   const start=this.nearest(from),goal=this.nearest(to);if(start<0||goal<0)return[];
   this.g.fill(Infinity);this.previous.fill(-1);this.closed.fill(0);this.g[start]=0;

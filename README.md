@@ -50,6 +50,7 @@ Seven fully simulated player-versus-bot modes:
 | Gun Game | One elimination advances the weapon, 16 stages ending with a blade kill |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
+| Capture the Flag | Steal the enemy flag, carry it home while your flag is safe, return dropped allied flags; first to three captures |
 
 Ten battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** and **Iron Quarry**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 

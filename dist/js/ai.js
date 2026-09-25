@@ -1,4 +1,4 @@
-import {distance,direction,angleDelta,clamp} from './math.js?v=29';
+import {distance,direction,angleDelta,clamp} from './math.js?v=30';
 export const ROLES=[{name:'Rifleman',weapon:0,range:19},{name:'Rusher',weapon:3,range:9},{name:'Shotgunner',weapon:5,range:7},{name:'Marksman',weapon:8,range:37},{name:'Heavy',weapon:9,range:28},{name:'Elite',weapon:1,range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
 function nearestTag(bot,rules){
@@ -16,6 +16,17 @@ function hardpointGoal(bot,rules){
  const angle=bot.id*2.399963;
  return {x:p.x+Math.cos(angle)*2.9,y:p.y,z:p.z+Math.sin(angle)*2.9};
 }
+function flagGoal(bot,rules,actors){
+ const own=rules.flags.find(f=>f.team===bot.team),enemy=rules.flags.find(f=>f.team!==bot.team);if(!own||!enemy)return null;
+ if(own.carrier!==null){const carrier=actors.find(a=>a.id===own.carrier&&!a.dead);if(carrier)return{x:carrier.x,y:carrier.y,z:carrier.z};}
+ if(!own.atBase&&own.carrier===null)return{x:own.x,y:own.y,z:own.z};
+ if(enemy.carrier!==null){
+  if(enemy.carrier===bot.id)return{x:own.homeX,y:own.homeY,z:own.homeZ};
+  const carrier=actors.find(a=>a.id===enemy.carrier&&!a.dead);
+  if(carrier?.team===bot.team)return{x:own.homeX,y:own.homeY,z:own.homeZ};
+ }
+ return{x:enemy.x,y:enemy.y,z:enemy.z};
+}
 export function updateBot(bot,dt,e){
  let thought=false;bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.grenadeCooldown=Math.max(0,bot.grenadeCooldown-dt);bot.interacting=false;
  if(bot.aiClock<=0){thought=true;
@@ -28,6 +39,7 @@ export function updateBot(bot,dt,e){
    bot.target=target.id;bot.lastKnown={x:target.x,y:target.y,z:target.z};bot.memory=6;bot.state='engage';
   }else{bot.target=null;if(bot.memory>0&&bot.lastKnown){bot.state='investigate';bot.goal=bot.lastKnown;}else bot.state='patrol';}
   const pickup=e.rules.mode.id==='confirmed'?nearestTag(bot,e.rules):null;
+  const ctfGoal=e.rules.mode.id==='ctf'?flagGoal(bot,e.rules,e.actors):null;
   let danger=null;for(const g of e.grenades)if(g.kind==='frag'&&g.fuse<1.8&&distance(bot,g)<7){danger=g;break;}
   if(danger){const n=Math.max(.1,distance(bot,danger));bot.goal={x:bot.x+(bot.x-danger.x)/n*9,y:bot.y,z:bot.z+(bot.z-danger.z)/n*9};bot.state='evade';}
   else if(bot.weapon.reloadLeft>0||bot.health<28&&target){
@@ -36,6 +48,8 @@ export function updateBot(bot,dt,e){
    bot.goal=cover??{x:bot.x-Math.sin(bot.yaw)*7,y:bot.y,z:bot.z+Math.cos(bot.yaw)*7};
   }else if(e.rules.mode.id==='hardpoint'){
    bot.goal=hardpointGoal(bot,e.rules);bot.state='objective';
+  }else if(ctfGoal){
+   bot.goal=ctfGoal;bot.state='objective';
   }else if(pickup&&(!target||distance(bot,pickup)<Math.max(5,Math.min(12,distance(bot,target)*.7)))){
    bot.goal=pickup;bot.state='collect';
   }else if(target){

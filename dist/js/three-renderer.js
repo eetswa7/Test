@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=29';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=29';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=29';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=29';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=29';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=29';
-import {DecalSystem} from './decal-system.js?v=29';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=29';
-import {LightingField} from './lighting-field.js?v=29';
-import {RoomLights} from './room-lights.js?v=29';
-import {waterMaterial,patchWater} from './water-material.js?v=29';
-import {visualGroundHeight} from './surface-placement.js?v=29';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=29';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=29';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=29';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=29';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=30';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=30';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=30';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=30';
+import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=30';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=30';
+import {DecalSystem} from './decal-system.js?v=30';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=30';
+import {LightingField} from './lighting-field.js?v=30';
+import {RoomLights} from './room-lights.js?v=30';
+import {waterMaterial,patchWater} from './water-material.js?v=30';
+import {visualGroundHeight} from './surface-placement.js?v=30';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=30';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=30';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=30';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=30';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=29';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=29';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=29';
-import { loadImages } from './textures.js?v=29';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=29';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=29';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=29';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=30';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=30';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=30';
+import { loadImages } from './textures.js?v=30';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=30';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=30';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=30';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -661,6 +661,21 @@ export class Renderer {
         { mesh: 'bevel', tile: -1, emissive: .35 }));
       q.y = tag.y + .55 + Math.sin(game.time * 3 + tag.id) * .07; q.yaw = game.time;
       this.addDynamic(this.actorBatches, this.scene, q, 'actor', null, color);
+    }
+    if(id==='ctf')for(const flag of rules.flags){
+      const carrier=flag.carrier===null?null:game.actors.find(a=>a.id===flag.carrier&&!a.dead);
+      const x=carrier?carrier.x+Math.cos(carrier.yaw)*.28:flag.x,z=carrier?carrier.z+Math.sin(carrier.yaw)*.28:flag.z,y=carrier?carrier.y+.65:flag.y,yaw=carrier?.yaw??0;
+      const parts=flag.renderParts??(flag.renderParts=[
+        part(x,y+.88,z,.075,1.76,.075,'steel',{mesh:'cylinder',tile:-1}),
+        part(x+.31,y+1.43,z,.68,.43,.045,'fabric',{tile:-1,emissive:.12}),
+        part(x+.31,y+1.43,z,.10,.43,.06,'white',{tile:-1}),
+        part(x+.31,y+1.25,z,.43,.055,.065,'dark',{tile:-1})
+      ]);
+      parts[0].x=x;parts[0].y=y+.88;parts[0].z=z;
+      const flap=yaw+Math.sin(game.time*4+flag.team*2)*.13;
+      for(const q of parts.slice(1)){q.x=x+.31*Math.cos(yaw);q.y=y+(q===parts[3]?1.25:1.43);q.z=z+.31*Math.sin(yaw);q.yaw=flap;}
+      const color=flag.team===player.team?FRIEND:ENEMY;
+      for(let i=0;i<parts.length;i++)this.addDynamic(this.actorBatches,this.scene,parts[i],'actor',null,i===1?color:undefined);
     }
   }
 

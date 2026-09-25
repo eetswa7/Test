@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../dist/vendor/three.module.min.js';
 import {Renderer,isFriendly,neutraliseFinish} from '../dist/js/three-renderer.js';
 import {Arena,MAPS} from '../dist/js/maps.js';
+import {Game} from '../dist/js/engine.js';
 import {Weapon} from '../dist/js/weapons.js';
 import {makeCube,makeCylinder,makeSphere,part} from '../dist/js/geometry.js';
 import {roundedBox,tube,leafCard,rockMesh} from '../dist/js/meshes.js';
@@ -59,6 +60,16 @@ test('instance identity is player-relative in team modes and free for all',()=>{
  r.addDynamic(r.actorBatches,r.scene,p,'actor',matrix,[.1,.72,.91]);r.uploadDynamic(r.actorBatches);
  const first=[...r.actorBatches.values()][0],color=new THREE.Color();first.mesh.getColorAt(0,color);assert(color.b>color.r);
  r.resetDynamic(r.actorBatches);r.addDynamic(r.actorBatches,r.scene,p,'actor',matrix,[.94,.16,.11]);r.uploadDynamic(r.actorBatches);first.mesh.getColorAt(0,color);assert(color.r>color.b);
+});
+
+test('CTF flags animate in the Three scene and keep team-relative cloth colours',()=>{
+ const r=fixture(),game=new Game({mode:'ctf'},{seed:592}),carrier=game.actors.find(a=>a.team===1);
+ game.player.x=0;game.player.y=0;game.player.z=0;carrier.x=3;carrier.y=0;carrier.z=-4;carrier.yaw=0;
+ const blue=game.rules.flags.find(f=>f.team===0),red=game.rules.flags.find(f=>f.team===1);red.carrier=carrier.id;red.atBase=false;
+ r.arena=game.arena;r.updateActors(game);r.uploadDynamic(r.actorBatches);
+ assert.equal(blue.renderParts.length,4);assert.equal(red.renderParts.length,4);
+ const banner=red.renderParts[1],binding=r.partData.get(banner).bindings.actor;assert(binding.color.r>binding.color.b,'enemy cloth uses the warm team colour');
+ const x=banner.x;carrier.x+=3;game.time+=.1;r.updateActors(game);assert(banner.x>x+2.9,'carried flag follows the operator');
 });
 
 test('dynamic Three batches grow without dropping transforms or colours',()=>{

@@ -1,5 +1,5 @@
-import {GUN_ORDER} from './weapons.js?v=29';
-import {distance} from './math.js?v=29';
+import {GUN_ORDER} from './weapons.js?v=30';
+import {distance} from './math.js?v=30';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
@@ -8,12 +8,14 @@ export const MODES = [
  {id:'domination',name:'DOMINATION',short:'DOM',description:'Capture A, B and C. Hold them to reach 150 points.',limit:150,time:480,teams:true},
  {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} weapons. One elimination per tier. Finish with the blade.`,limit:GUN_ORDER.length,time:480,teams:false},
  {id:'hardpoint',name:'HARDPOINT',short:'HARD',description:'Hold the rotating zone. Contested zones score nothing. First to 150.',limit:150,time:480,teams:true},
- {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true}
+ {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true},
+ {id:'ctf',name:'CAPTURE THE FLAG',short:'CTF',description:'Steal the enemy flag, carry it home, and keep your own flag safe. First to 3 captures.',limit:3,time:480,teams:true}
 ];
 
 export const HARDPOINT_SECONDS = 45;
 export const TAG_LIFETIME = 30;
 export const MAX_TAGS = 32;
+export const FLAG_RETURN_SECONDS = 25;
 
 export class MatchRules {
  constructor(mode,arena) {
@@ -26,10 +28,22 @@ export class MatchRules {
   this.activePoint=this.points.length>1?1:0;this.rotationRemaining=HARDPOINT_SECONDS;
   // A tag belongs to the fallen actor's team; collecting your own team's tag denies it.
   this.tags=[];this.nextTagId=1;
+  this.flags=mode==='ctf'?arena.spawns.reduce((out,spawn)=>{
+   const group=arena.spawns.filter(p=>p.team===spawn.team).slice(0,4);
+   if(out.some(flag=>flag.team===spawn.team)||!group.length)return out;
+   const x=group.reduce((n,p)=>n+p.x,0)/group.length,z=group.reduce((n,p)=>n+p.z,0)/group.length;
+   out.push({team:spawn.team,x,y:arena.floorAt({x,y:0,z}),z,homeX:x,homeY:arena.floorAt({x,y:0,z}),homeZ:z,carrier:null,atBase:true,age:0});return out;
+  },[]):[];
  }
  get attackingTeam(){return Math.floor((this.round-1)/3)%2;}
  get respawns(){return this.mode.id!=='sabotage';}
  enemies(a,b){return a.id!==b.id&&(!this.mode.teams||a.team!==b.team);}
+ onDeath(victim,engine){
+  if(this.mode.id!=='ctf')return;
+  const flag=this.flags.find(f=>f.carrier===victim.id);if(!flag)return;
+  flag.carrier=null;flag.x=victim.x;flag.y=engine.arena.floorAt(victim,victim.y+.08);flag.z=victim.z;flag.atBase=false;flag.age=0;
+  engine.emit('capture',{text:`${flag.team===0?'BLUE':'RED'} FLAG DROPPED`,source:victim.team,position:{x:flag.x,y:flag.y,z:flag.z}});
+ }
  onKill(killer,victim,engine) {
   if(this.mode.id==='tdm') {
    this.scores[killer.team]++;
@@ -110,6 +124,37 @@ export class MatchRules {
    if(this.scores[collector.team]>=this.mode.limit){this.finish(collector.team);return;}
   }
  }
+ updateFlags(dt,engine){
+  for(const flag of this.flags)if(flag.carrier!==null){
+   const carrier=engine.actors.find(a=>a.id===flag.carrier&&!a.dead);
+   if(carrier){flag.x=carrier.x;flag.y=carrier.y;flag.z=carrier.z;}
+  }
+  for(const flag of this.flags)if(!flag.atBase&&flag.carrier===null){
+   flag.age+=dt;if(flag.age>=FLAG_RETURN_SECONDS){flag.x=flag.homeX;flag.y=flag.homeY;flag.z=flag.homeZ;flag.age=0;flag.atBase=true;engine.emit('capture',{text:`${flag.team===0?'BLUE':'RED'} FLAG RETURNED`,source:flag.team,position:{x:flag.x,y:flag.y,z:flag.z}});}
+  }
+  const near=(actor,flag,radius=1.65)=>!actor.dead&&Math.abs(actor.y-flag.y)<2.2&&distance(actor,flag)<radius&&engine.arena.visible(engine.eye(actor),{x:flag.x,y:flag.y+.45,z:flag.z});
+  for(const actor of engine.actors){if(actor.dead)continue;
+   const own=this.flags.find(f=>f.team===actor.team),enemy=this.flags.find(f=>f.team!==actor.team);if(!own||!enemy)continue;
+   if(!own.atBase&&own.carrier===null&&near(actor,own,1.8)){
+    own.x=own.homeX;own.y=own.homeY;own.z=own.homeZ;own.atBase=true;own.age=0;
+    engine.emit('capture',{text:'FLAG RETURNED',source:actor.team,actor:actor.id,position:{x:own.x,y:own.y,z:own.z}});
+   }
+   const carried=this.flags.find(f=>f.carrier===actor.id);
+   if(carried){
+    if(own.atBase&&distance(actor,own)<2.2&&Math.abs(actor.y-own.y)<2.5){
+     this.scores[actor.team]++;actor.captures=(actor.captures??0)+1;
+     engine.emit('capture',{text:`${actor.team===0?'BLUE':'RED'} FLAG CAPTURED`,source:actor.team,actor:actor.id,position:{x:own.x,y:own.y,z:own.z}});
+     carried.x=carried.homeX;carried.y=carried.homeY;carried.z=carried.homeZ;carried.carrier=null;carried.atBase=true;carried.age=0;
+     if(this.scores[actor.team]>=this.mode.limit){this.finish(actor.team);return;}
+    }
+    continue;
+   }
+   if(enemy.carrier===null&&near(actor,enemy)){
+    enemy.carrier=actor.id;enemy.atBase=false;enemy.age=0;
+    engine.emit('capture',{text:`${enemy.team===0?'BLUE':'RED'} FLAG TAKEN`,source:actor.team,actor:actor.id,position:{x:enemy.x,y:enemy.y,z:enemy.z}});
+   }
+  }
+ }
  update(dt,engine) {
   if(this.phase==='finished')return;
   if(this.phase==='roundBreak') {
@@ -119,6 +164,7 @@ export class MatchRules {
   }
   const elapsed=Math.min(dt,this.time);
   this.time=Math.max(0,this.time-dt);
+  if(this.mode.id==='ctf')this.updateFlags(elapsed,engine);
   if(this.mode.id==='hardpoint')this.updateHardpoint(elapsed,engine);
   if(this.mode.id==='confirmed')this.updateTags(elapsed,engine);
   if(this.phase==='finished')return;

@@ -1,15 +1,15 @@
-import {Arena,MAPS} from './maps.js?v=29';
-import {Navigation} from './navigation.js?v=29';
-import {SpawnDirector} from './spawns.js?v=29';
-import {MatchRules} from './modes.js?v=29';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=29';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=29';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=29';
+import {Arena,MAPS} from './maps.js?v=30';
+import {Navigation} from './navigation.js?v=30';
+import {SpawnDirector} from './spawns.js?v=30';
+import {MatchRules} from './modes.js?v=30';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=30';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=30';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=30';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
 export class Actor {
- constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??(role===0&&id%2?13:role===1&&id%2===0?14:ROLES[role].weapon),loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
+ constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??(role===0&&id%2?13:role===1&&id%2===0?14:ROLES[role].weapon),loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.captures=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
  get weapon(){return this.weapons[this.slot];}
  get dead(){return this.health<=0;}
  get height(){return this.crouched?1.12:1.78;}
@@ -121,7 +121,7 @@ export class Game {
   victim.health-=amount;victim.lastDamage=this.time;
   if(victim.id===0){this.damageYaw=killer?Math.atan2(killer.x-victim.x,-(killer.z-victim.z)):victim.yaw;this.emit('hurt',{value:amount,angle:this.damageYaw});}
   if(victim.health>0)return;
-  victim.health=0;this.spawner.noteDeath(victim,this.time);victim.deaths++;victim.streak=0;victim.respawnLeft=3;victim.interacting=false;
+  victim.health=0;this.spawner.noteDeath(victim,this.time);victim.deaths++;victim.streak=0;victim.respawnLeft=3;victim.interacting=false;this.rules.onDeath(victim,this);
   if(victim.id===0)this.lastKiller=killer?.name??'FALL';
   if(killer&&killer.id!==victim.id){killer.kills++;killer.streak++;killer.bestStreak=Math.max(killer.bestStreak,killer.streak);
    if(killer.id===0){this.weaponKills[killer.weapon.def.id]=(this.weaponKills[killer.weapon.def.id]??0)+1;if(headshot)this.headshots++;}

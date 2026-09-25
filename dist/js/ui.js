@@ -1,9 +1,9 @@
-import {MODES} from './modes.js?v=29';
-import {MAPS} from './maps.js?v=29';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=29';
-import {clamp,distance} from './math.js?v=29';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=29';
-import {identityFor,canIdentify} from './combat-identity.js?v=29';
+import {MODES} from './modes.js?v=30';
+import {MAPS} from './maps.js?v=30';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=30';
+import {clamp,distance} from './math.js?v=30';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=30';
+import {identityFor,canIdentify} from './combat-identity.js?v=30';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -50,7 +50,7 @@ export class Interface {
  menu(){this.app.input.mode=null;show('hud',false);show('touch-layer',false);show('pause-button',false);show('modal',false);show('rotation-hint',false);show('menu',true);document.body.classList.remove('playing');this.refreshCareer();}
  modal(title,caption,body,buttons){$('modal-title').textContent=title;$('modal-caption').textContent=caption;$('modal-content').innerHTML=body;$('modal-actions').replaceChildren();for(const [label,fn,primary]of buttons){const b=document.createElement('button');b.textContent=label;b.className=primary?'primary-button':'secondary-button';b.onclick=fn;$('modal-actions').append(b);}show('modal',true);$('modal-actions').firstElementChild?.focus();}
  closeModal(){show('modal',false);}
- scoreboard(){const g=this.app.game,actors=g.actors.slice().sort((a,b)=>b.kills-a.kills);return `<table><thead><tr><th>OPERATOR</th><th>TEAM</th><th>K</th><th>D</th></tr></thead><tbody>${actors.map(a=>`<tr class="${identityFor(a,g.player,g.rules).key}"><td>${a.name}</td><td>${identityFor(a,g.player,g.rules).label}</td><td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</tbody></table>`;}
+ scoreboard(){const g=this.app.game,actors=g.actors.slice().sort((a,b)=>b.kills-a.kills),captures=g.rules.mode.id==='ctf';return `<table><thead><tr><th>OPERATOR</th><th>TEAM</th>${captures?'<th>CAP</th>':''}<th>K</th><th>D</th></tr></thead><tbody>${actors.map(a=>`<tr class="${identityFor(a,g.player,g.rules).key}"><td>${a.name}</td><td>${identityFor(a,g.player,g.rules).label}</td>${captures?`<td>${a.captures??0}</td>`:''}<td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</tbody></table>`;}
  pause(){this.modal('MATCH PAUSED',this.app.game.rules.mode.name,this.scoreboard(),[['RESUME',()=>this.app.resume(),true],['RESTART',()=>this.app.start()],['MAIN MENU',()=>this.app.toMenu()]]);}
  results(){const g=this.app.game,r=g.result();if(!g.saved){this.store.finish(r);g.saved=true;}this.refreshCareer();this.modal(r.draw?'DRAW':r.win?'VICTORY':'DEFEAT',g.rules.mode.name,`<div class="result-overview"><div><strong>${r.kills}</strong><span>ELIMINATIONS</span></div><div><strong>${r.deaths}</strong><span>DEATHS</span></div><div><strong>${r.accuracy}%</strong><span>ACCURACY</span></div><div><strong>${r.headshots}</strong><span>HEADSHOTS</span></div></div>${this.scoreboard()}<div class="result-xp">+ ${r.xp} XP</div>`,[['PLAY AGAIN',()=>this.app.start(),true],['MAIN MENU',()=>this.app.toMenu()]]);}
  editLayout(){this.app.input.reset();show('menu',false);show('touch-layer',true);show('edit-bar',true);this.app.input.editing=true;$('touch-layer').classList.add('editing');this.app.input.layout();this.app.orientation();}
@@ -81,6 +81,7 @@ export class Interface {
   if(r.mode.teams){$('score-blue').textContent=r.scores[0];$('score-red').textContent=r.scores[1];}else{$('score-blue').textContent=r.mode.id==='gun'?p.gunStage:p.kills;$('score-red').textContent=Math.max(...g.actors.slice(1).map(a=>r.mode.id==='gun'?a.gunStage:a.kills));}
   if(r.mode.id==='domination')$('objective').textContent=r.points.map(q=>`${q.name} ${q.contested?'CONTESTED':q.owner===p.team?'ALLIES':q.owner>=0?'ENEMIES':q.progress>0?'CAPTURING':'NEUTRAL'}`).join('   ');
   else if(r.mode.id==='hardpoint'){const q=r.points[r.activePoint];$('objective').textContent=`HOLD ${q.name} · ${q.contested?'CONTESTED':q.owner===p.team?'ALLIED CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
+  else if(r.mode.id==='ctf'){const own=r.flags.find(f=>f.team===p.team),enemy=r.flags.find(f=>f.team!==p.team),status=f=>f.carrier===p.id?'YOU':f.carrier!==null?'CARRIED':f.atBase?'HOME':'DROPPED';$('objective').textContent=`ENEMY ${status(enemy)} · OWN ${status(own)} · ${r.scores[p.team]}/${r.mode.limit}`;}
   else if(r.mode.id==='confirmed')$('objective').textContent='COLLECT ENEMY TAGS · DENY ALLIED TAGS';
   else if(r.mode.id==='sabotage')$('objective').textContent=r.phase==='roundBreak'?r.message:r.planted?(r.attackingTeam===p.team?'DEFEND THE CHARGE':'DEFUSE THE CHARGE'):`ROUND ${r.round} · ${r.attackingTeam===p.team?'PLANT AT A OR C':'DEFEND A AND C'}`;
   else $('objective').textContent=r.mode.id==='gun'?`TIER ${Math.min(GUN_ORDER.length,p.gunStage+1)} / ${GUN_ORDER.length}`:`FIRST TO ${r.mode.limit}`;
@@ -108,6 +109,7 @@ export class Interface {
   const target=$('target-identity');target.classList.toggle('hidden',!centred);if(centred){target.dataset.relation=centred.identity.key;target.textContent=centred.el.textContent;}
  }
  radar(){const g=this.app.game,c=$('radar').getContext('2d'),w=160,s=2.3;c.clearRect(0,0,w,w);c.save();c.translate(w/2,w/2);c.rotate(-g.player.yaw);c.fillStyle='#233b3022';c.fillRect(-80,-80,160,160);for(const b of g.arena.blocks){if(b.ground||b.roof||b.destroyed)continue;c.fillStyle='#a1bba455';c.fillRect((b.x-g.player.x-b.w/2)*s,(b.z-g.player.z-b.d/2)*s,b.w*s,b.d*s);}for(let i=0;i<g.rules.points.length;i++){const p=g.rules.points[i],mode=g.rules.mode.id;if(!['domination','sabotage','hardpoint'].includes(mode)||mode==='hardpoint'&&i!==g.rules.activePoint)continue;c.fillStyle=p.owner===g.player.team?'#70e5f5':p.owner>=0?'#ff786e':'#e2e8b2';c.font='12px Arial';c.fillText(p.name,(p.x-g.player.x)*s,(p.z-g.player.z)*s);}
+  for(const flag of g.rules.flags??[]){const x=(flag.x-g.player.x)*s,z=(flag.z-g.player.z)*s;c.fillStyle=flag.team===g.player.team?'#70e5f5':'#ff786e';c.beginPath();c.moveTo(x,z-5);c.lineTo(x+4,z);c.lineTo(x,z+5);c.lineTo(x-4,z);c.closePath();c.fill();c.fillStyle='#102019';c.font='bold 7px Arial';c.fillText(flag.team===0?'B':'R',x-2,z+2);}
   for(const tag of g.rules.tags??[]){c.fillStyle=tag.team===g.player.team?'#70e5f5':'#ff786e';c.fillRect((tag.x-g.player.x)*s-2,(tag.z-g.player.z)*s-3,4,6);}
   for(const a of g.actors){if(a.dead||a.id===0)continue;const friendly=g.rules.mode.teams&&a.team===g.player.team;if(!friendly&&g.time-a.lastShot>1.8)continue;c.fillStyle=friendly?'#70e5f5':'#ff786e';c.beginPath();c.arc((a.x-g.player.x)*s,(a.z-g.player.z)*s,3,0,Math.PI*2);c.fill();}c.restore();c.fillStyle='#ddff7b';c.beginPath();c.moveTo(80,72);c.lineTo(75,86);c.lineTo(80,82);c.lineTo(85,86);c.closePath();c.fill();}
 }

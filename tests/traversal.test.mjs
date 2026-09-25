@@ -16,6 +16,12 @@ test('navigation sweep rejects walls between free endpoints',()=>{
  const nav=new Navigation(a);assert(!a.collides({x:-.6,y:0,z:0}));assert(!a.collides({x:.6,y:0,z:0}));
  assert(!nav.walkable({x:-.6,y:0,z:0},{x:.6,y:0,z:0}));
 });
+test('navigation chooses a nearby ground approach instead of an obstructed room roof',()=>{
+ const arena=new Arena(2),nav=new Navigation(arena),approach={x:-11.625,y:0,z:-17.01};
+ const nearest=nav.nodes[nav.nearest(approach)];assert.equal(nearest.y,0);
+ const home={x:28.75,y:0,z:28.75},path=nav.path(approach,home),end=path.at(-1);
+ assert(end&&Math.hypot(end.x-home.x,end.z-home.z)<1.9);
+});
 test('a buffered jump fires on landing and releasing movement stops promptly',()=>{
  const g=new Game({}, {seed:119});g.actors=[g.player];g.arena.blocks=[];const p=g.player;p.reset({x:0,y:.02,z:0},0);p.grounded=false;p.vy=-2;
  g.update(1/60,{...emptyInput(),jump:true});assert(p.grounded);g.update(1/60);assert(p.vy>0&&!p.grounded);
