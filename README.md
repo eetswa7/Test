@@ -26,7 +26,7 @@ This is the **HTML / web-app implementation requested in the follow-up**, not a 
 | Aim down sights | AIM, tap or hold; drag to track | Right mouse |
 | Reload | Reload | R |
 | Sprint | Push stick fully forward (automatic) | Left Shift |
-| Crouch / jump | Tap JUMP / hold JUMP to crouch | C / Space |
+| Slide / crouch / jump | Tap JUMP; hold while moving fast to slide, or hold still to crouch | C while sprinting to slide / crouch · Space jump |
 | Switch primary / sidearm | Swap | Q |
 | Equipment | Grenade | G |
 | Plant / defuse | Hold Interact near site | Hold E |
@@ -51,13 +51,13 @@ Seven fully simulated player-versus-bot modes:
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 
-The original six maps: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater** and **Citadel**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Eight battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard** and **Canopy**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
-The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, a marksman rifle, an LMG, two pistols and a field blade. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
+The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, two marksman rifles, an LMG, two pistols and a field blade. The Mako 7 adds a deliberate semi-automatic long-range option. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
 Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
 
-Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat and grenade reactions. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
+Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
 
 ## Rendering and performance
 

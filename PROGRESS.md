@@ -150,3 +150,10 @@ Breakwater's flat glass slab and rigid white foam strips become one opaque PBR w
 Spatially indexed visual floor heights keep contact shadows and ground bullet marks above decorative finishes without altering collision heights. Small floor planes batch across spatial chunks; architecture retains its culling chunks. Inspection also caught an overly broad release 25 conversion: shallow steel rail heads and wooden sleepers now retain their 3D silhouettes. New checks cover all-map finish heights, rotated strips, contact/impact placement, water material cost and Switchyard rails. Full regression and static gates run before pushing.
 
 Release 27 verification: 153/153 regressions, static validation (44 modules) and 12/12 offline GLSL ES compile/link variants passed. CPU and scene counts are recorded in docs/profile-release27.json.
+
+
+## Release 28: momentum movement, tactical bots and Mako 7
+
+Sprint plus crouch starts a short directional slide with preserved momentum, lowered stance and a 1.25-second recovery window. Touch, keyboard and controller instructions describe the new input. Bots can lob their carried frag at a visible enemy from medium range, with a bounded cooldown. The Mako 7 adds a semi-automatic long-range marksman rifle with its own model, handling, weapon progression and Gun Game tier. The release script now sources its offline texture list from the renderer's texture manifest, preventing a release from silently omitting atlas URLs.
+
+Validation: 156/156 automated tests and JavaScript syntax checks passed, including movement cooldown, bot grenade and 16-weapon model/save/attachment checks. The offline shell retains all four authored texture URLs. The packaged-asset checker cannot complete in this local workspace because the image blobs are not available here; the existing remote assets are unchanged. Slide feel and performance still need a physical iPhone check.

@@ -1,4 +1,4 @@
-import {distance,direction,angleDelta,clamp} from './math.js?v=27';
+import {distance,direction,angleDelta,clamp} from './math.js?v=28';
 export const ROLES=[{name:'Rifleman',weapon:0,range:19},{name:'Rusher',weapon:3,range:9},{name:'Shotgunner',weapon:5,range:7},{name:'Marksman',weapon:8,range:37},{name:'Heavy',weapon:9,range:28},{name:'Elite',weapon:1,range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
 function nearestTag(bot,rules){
@@ -17,7 +17,7 @@ function hardpointGoal(bot,rules){
  return {x:p.x+Math.cos(angle)*2.9,y:p.y,z:p.z+Math.sin(angle)*2.9};
 }
 export function updateBot(bot,dt,e){
- let thought=false;bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.interacting=false;
+ let thought=false;bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.grenadeCooldown=Math.max(0,bot.grenadeCooldown-dt);bot.interacting=false;
  if(bot.aiClock<=0){thought=true;
   const interval=distance(bot,e.player)>45?.24:.12;bot.aiClock=interval+(bot.id%3)*.011;
   let target=null,best=75;
@@ -51,6 +51,10 @@ export function updateBot(bot,dt,e){
   if(bot.goal&&bot.pathClock<=0&&e.pathBudget>0){e.pathBudget--;bot.path=e.nav.path(bot,bot.goal);bot.pathIndex=0;bot.pathClock=.85+e.random()*.55;}
  }
  const target=bot.target===null?null:e.actors.find(a=>a.id===bot.target&&!a.dead);
+ if(target&&bot.grenades>0&&bot.grenadeCooldown<=0&&bot.equipment==='frag'&&e.rules.mode.id!=='gun'&&bot.state!=='evade'){
+  const d=distance(bot,target),nearby=e.actors.filter(a=>!a.dead&&e.rules.enemies(bot,a)&&distance(a,target)<4).length;
+  if(d>5.5&&d<15&&nearby>0&&e.canSee(bot,target)&&e.random()<dt*(nearby>1?.42:.12)){e.throwGrenade(bot);bot.grenadeCooldown=5.5+e.random()*2.5;}
+ }
  let moving=false;
  if(bot.pathIndex<bot.path.length){
   // Look ahead only along swept-clear ground, never through a diagonal wall.

@@ -1,4 +1,4 @@
-import {clamp,lerp} from './math.js?v=27';
+import {clamp,lerp} from './math.js?v=28';
 // All distances are metres. Rates and timings drive the simulation, models and audio.
 const specs=[
  ['Kestrel AR','RIFLE',29,700,30,2.2,.019,.016,42,.19,1,true,1],
@@ -15,11 +15,12 @@ const specs=[
  ['Dire 50','PISTOL',59,167,7,1.65,.061,.035,32,.15,1,false,2],
  ['Field blade','MELEE',125,92,1,0,0,0,2.2,.1,1,false,1],
  ['Harrow B3','RIFLE',30,840,27,2.3,.018,.018,48,.21,1,false,1],
- ['Marten 45','SMG',34,540,24,1.95,.024,.025,26,.15,1,true,1]
+ ['Marten 45','SMG',34,540,24,1.95,.024,.025,26,.15,1,true,1],
+ ['Mako 7','MARKSMAN',46,390,20,2.35,.031,.032,64,.24,1,false,4]
 ];
 export const WEAPONS=specs.map((s,id)=>{const[name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock]=s;return{id,name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock,burst:id===13?3:0,interval:60/rpm};});
 export const PRIMARY_IDS=WEAPONS.filter(w=>!['PISTOL','MELEE'].includes(w.kind)).map(w=>w.id);
-export const GUN_ORDER=[0,1,2,13,3,4,14,5,6,9,8,7,10,11,12];
+export const GUN_ORDER=[0,1,2,13,3,4,14,5,6,9,15,8,7,10,11,12];
 export const ATTACHMENTS={optic:['Iron sights','Reflex','Prism sight','4× optic'],barrel:['Standard barrel','Suppressor','Compensator'],handling:['Standard grip','Foregrip','Laser','Light stock','Extended magazine']};
 export const defaultLoadout=()=>({primary:0,secondary:10,optic:1,barrel:0,handling:0,equipment:'frag'});
 export function sanitizeLoadout(v={}){if(!v||typeof v!=='object')v={};const d=defaultLoadout();for(const k of ['primary','secondary','optic','barrel','handling'])if(Number.isFinite(v[k]))d[k]=Math.round(v[k]);d.primary=PRIMARY_IDS.includes(d.primary)?d.primary:clamp(d.primary,0,9);d.secondary=clamp(d.secondary,10,11);d.optic=clamp(d.optic,0,3);d.barrel=clamp(d.barrel,0,2);d.handling=clamp(d.handling,0,4);d.equipment=['frag','smoke','flash'].includes(v.equipment)?v.equipment:'frag';return d;}

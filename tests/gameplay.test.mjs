@@ -12,7 +12,7 @@ function duel(mode='tdm'){
 }
 function advance(g,seconds,input=emptyInput()){for(let t=0;t<seconds;t+=1/60)g.update(1/60,input);}
 
-test('arsenal contains every requested category with unique timing and names',()=>{assert.equal(WEAPONS.length,15);assert.equal(new Set(WEAPONS.map(w=>w.name)).size,15);for(const kind of ['RIFLE','SMG','SHOTGUN','SNIPER','MARKSMAN','LMG','PISTOL','MELEE'])assert(WEAPONS.some(w=>w.kind===kind));assert.equal(GUN_ORDER.at(-1),12);});
+test('arsenal contains every requested category with unique timing and names',()=>{assert.equal(WEAPONS.length,16);assert.equal(new Set(WEAPONS.map(w=>w.name)).size,16);for(const kind of ['RIFLE','SMG','SHOTGUN','SNIPER','MARKSMAN','LMG','PISTOL','MELEE'])assert(WEAPONS.some(w=>w.kind===kind));assert.equal(GUN_ORDER.at(-1),12);assert(GUN_ORDER.includes(15));});
 test('ray intersection handles parallel, inside, missed and range-limited rays',()=>{const b={x:0,y:1,z:-4,w:2,h:2,d:2};assert.equal(rayBox({x:0,y:1,z:0},direction(0),b),3);assert.equal(rayBox({x:0,y:1,z:-4},direction(0),b),0);assert.equal(rayBox({x:4,y:1,z:0},direction(0),b),null);assert.equal(rayBox({x:0,y:1,z:0},direction(0),b,2),null);});
 test('shots consume ammunition, obey fire rate and cause actual damage',()=>{const{g,p,t}=duel();assert(g.shoot(p));assert.equal(p.weapon.ammo,29);assert(t.health<100);assert(!g.shoot(p));assert.equal(p.weapon.ammo,29);assert(p.pitch>-.06);});
 test('headshots deal more damage than body and limbs',()=>{const w=new Weapon(0);assert(w.damage(5,'head')>w.damage(5,'body'));assert(w.damage(5,'body')>w.damage(5,'leg'));assert(w.damage(90)<w.damage(5));});

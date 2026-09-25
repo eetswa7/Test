@@ -22,3 +22,11 @@ test('a buffered jump fires on landing and releasing movement stops promptly',()
  p.reset({x:0,y:0,z:0},0);for(let i=0;i<30;i++)g.update(1/60,{...emptyInput(),mz:1});const z=p.z;
  for(let i=0;i<15;i++)g.update(1/60);assert(Math.abs(p.vz)<.01);assert(Math.abs(p.z-z)<.15);
 });
+test('sprint crouch starts a bounded tactical slide with a cooldown',()=>{
+ const g=new Game({}, {seed:120});g.actors=[g.player];g.arena.blocks=[{x:0,y:-.2,z:0,w:200,h:.4,d:200,ground:true,surface:'concrete'}];const p=g.player;p.reset({x:0,y:0,z:0},0);
+ const sprint={...emptyInput(),mz:1,sprint:true};for(let i=0;i<12;i++)g.update(1/60,sprint);const start=p.z;
+ g.update(1/60,{...sprint,crouch:true});assert(p.sliding);assert(p.crouched);assert(g.events.some(e=>e.type==='slide'));
+ const slideZ=p.z;for(let i=0;i<18;i++)g.update(1/60);assert(p.z<slideZ);assert(p.z<start-1.2);assert(!p.sprinting);
+ for(let i=0;i<48;i++)g.update(1/60);assert(!p.sliding);assert(p.crouched);assert(p.slideCooldown>0);
+ g.update(1/60,{...sprint,crouch:true});assert(!p.sliding);assert(p.slideCooldown>0);
+});

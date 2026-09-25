@@ -20,6 +20,10 @@ test('combat labels respect walls, smoke, death and flash blindness',()=>{
 
 const swSource=await readFile(new URL('../dist/sw.js',import.meta.url),'utf8');
 const RELEASE=swSource.match(/const RELEASE='(\d+)'/)[1];
+test('offline shell retains every authored texture in each release',()=>{
+ const shell=swSource.match(/const SHELL=\[([^\]]+)\]/)[1];
+ for(const texture of ['surfaces-atlas.webp','foliage-atlas.webp','horizon.webp','weapon-finishes.webp'])assert(shell.includes(`./assets/${texture}`),`missing ${texture}`);
+});
 function worker(fetcher=async request=>({ok:true,redirected:false,url:String(request)})){
  const handlers={},state={matches:0,puts:0,activated:false,deleted:[]};
  const cache={match:async()=>{state.matches++;return 'cached release';},put:async()=>{state.puts++;}};

@@ -6,7 +6,7 @@ import {Navigation} from '../dist/js/navigation.js';
 import {SpawnDirector} from '../dist/js/spawns.js';
 
 const near=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
-test('all six maps have broad connected ground spawn pools with two clear exits',()=>{
+test('all maps have broad connected ground spawn pools with two clear exits',()=>{
  for(const map of MAPS){
   const arena=new Arena(map.id),nav=new Navigation(arena),director=new SpawnDirector(arena,nav);
   assert(director.candidates.length>=60&&director.candidates.length<=144,`${map.name}: insufficient spawn coverage`);

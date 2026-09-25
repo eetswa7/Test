@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Game} from '../dist/js/engine.js';
+import {updateBot} from '../dist/js/ai.js';
+
+test('visible enemies can trigger a tactical bot frag with bounded cooldown',()=>{
+ const game=new Game({mode:'tdm'},{seed:208}),bot=game.actors[1],target=game.actors[4];
+ game.arena.blocks=[{x:0,y:-.2,z:0,w:200,h:.4,d:200,ground:true,surface:'concrete'}];
+ for(const actor of game.actors)actor.health=0;
+ bot.reset({x:0,y:0,z:0},0);target.reset({x:0,y:0,z:-9},Math.PI);
+ bot.spawnProtection=target.spawnProtection=0;bot.target=target.id;bot.state='engage';bot.aiClock=1;bot.pathClock=1;bot.path=[];bot.reaction=2;bot.grenadeCooldown=0;bot.equipment='frag';bot.grenades=2;
+ game.pathBudget=0;game.random=()=>0;updateBot(bot,1/30,game);
+ assert.equal(game.grenades.length,1);assert.equal(game.grenades[0].owner,bot.id);assert.equal(game.grenades[0].kind,'frag');
+ assert.equal(bot.grenades,1);assert(bot.grenadeCooldown>5);
+});

@@ -18,7 +18,8 @@ const PROFILES=[
  {barrel:-.251,grip:.053,support:.03,width:.086,mag:.053},
  {barrel:-.312,grip:.035,support:0,width:.046},
  {barrel:-.592,grip:.10,support:-.27,width:.092,mag:.0,stock:.285},
- {barrel:-.365,grip:.08,support:-.19,width:.10,mag:.025,stock:.225}
+ {barrel:-.365,grip:.08,support:-.19,width:.10,mag:.025,stock:.225},
+ {barrel:-.723,grip:.116,support:-.349,width:.102,mag:-.015,stock:.322}
 ];
 
 function builder(w){
@@ -162,12 +163,19 @@ function marten(b){
  rail(.095,-.248,.10);barrel(-.272,undefined,.028);grip(.08,POLY);magazine(.025,.255,.06,.083,METAL,.015);stock(.225,METAL,'skeleton');controls(.10);
  box(0,-.075,-.185,.047,.094,.079,POLY);for(const side of [-1,1])box(side*.053,.026,-.042,.005,.024,.092,RUBBER);
 }
-const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten];
+function mako(b){
+ const {box,receiver,barrel,grip,magazine,stock,rail,vents,controls,cyl}=b;
+ receiver(-.04,.315,.101,finish(C.steel,.86,.31));box(0,.036,-.345,.094,.105,.283,TAN);vents(.047,-.256,5,.036,.026);
+ rail(.096,-.265,.098,.074);barrel(-.56,-.723,.031);cyl(0,.073,-.574,.027,.057,METAL);
+ grip(.116,POLY,-.13,.17);magazine(-.015,.19,.075,.108,finish(C.steel,.8,.4),.02);stock(.322,TAN,'skeleton');controls(.101);
+ box(0,.083,.177,.07,.033,.145,POLY);box(.055,.026,.063,.009,.043,.055,EDGE);box(-.052,.027,.03,.008,.04,.042,RUBBER);
+}
+const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten,mako];
 
 function addOptic(b,w){
  const {box,tube,cyl}=b,id=w.def.id;
  if(id===12)return;
- const short=id>=10,y=id>=10?.03:.06;
+ const short=id===10||id===11,y=short?.03:.06;
  if(w.optic===3||id===7){
   for(const z of [-.074,.067]){box(0,.116,z,.046,.047,.031,METAL);tube(0,.188,z,.079,.026,METAL);}
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);

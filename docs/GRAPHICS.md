@@ -2,7 +2,7 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
-The target is sustained 60 FPS on modern iPhones. It is a target, not a measured guarantee. Releases 15–17 improve illumination, surface response and stability while retaining the existing eight maps, fourteen firearms plus blade, seven modes, touch/controller input and progression.
+The target is sustained 60 FPS on modern iPhones. It is a target, not a measured guarantee. Releases 15–17 improve illumination, surface response and stability while retaining the existing eight maps, fifteen firearms plus blade, seven modes, touch/controller input and progression.
 
 ## Systems and budgets
 
