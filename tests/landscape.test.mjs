@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Arena,MAPS} from '../dist/js/maps.js';
-import {ridgeMesh} from '../dist/js/meshes.js';
+import {ridgeMesh,ridgeTint} from '../dist/js/meshes.js';
 import {CompatibilityRenderer} from '../dist/js/compatibility-renderer.js';
 import {identity} from '../dist/js/math.js';
 import {fixture} from './renderer-fixture.mjs';
@@ -36,4 +36,24 @@ test('both renderers use a single non-shadowing landscape outside collision',()=
  fallback.arena=arena;fallback.matrix=identity();fallback.meshes={ridge:ridgeMesh(arena.info.size,arena.info.id)};
  const faces=fallback.box(arena.decor.find(p=>p.mesh==='ridge'));
  assert.equal(faces.length,64*3*2);assert(faces.every(p=>p.landscape));
+});
+
+test('ridge elevation adds pale snow caps and stable rock shading in both renderers',()=>{
+ const snowBase=ridgeTint(0,8),snowPeak=ridgeTint(20,8),rockBase=ridgeTint(0,3),rockPeak=ridgeTint(20,3);
+ assert(snowPeak.every((v,i)=>v>snowBase[i]));
+ assert(rockPeak.every((v,i)=>v>rockBase[i]));
+ for(const map of MAPS.filter(m=>m.id!==4))for(const y of [-10,0,8,20,30]){
+  const color=ridgeTint(y,map.id);assert(color.every(v=>Number.isFinite(v)&&v>=0&&v<=1));
+ }
+ const renderer=fixture(),arena=new Arena(8);renderer.arena=arena;renderer.buildWorld();
+ const ridge=renderer.worldBatches.find(b=>b.userData.parts[0].mesh==='ridge');
+ const colors=ridge.geometry.getAttribute('color'),positions=ridge.geometry.getAttribute('position');
+ assert.equal(colors.count,positions.count);assert.equal(ridge.material.vertexColors,true);
+ assert(colors.array.every(v=>Number.isFinite(v)&&v>=0&&v<=1));
+ const low=[],high=[];for(let i=0;i<positions.count;i++)(positions.getY(i)<2?low:positions.getY(i)>16?high:[]).push(colors.getX(i));
+ assert(low.length&&high.length);assert(Math.max(...low)<Math.min(...high));
+ const fallback=Object.create(CompatibilityRenderer.prototype);
+ fallback.arena=arena;fallback.matrix=identity();fallback.meshes={ridge:ridgeMesh(arena.info.size,arena.info.id)};
+ const faces=fallback.box(arena.decor.find(p=>p.mesh==='ridge'));
+ assert(new Set(faces.map(f=>f.color.map(Math.round).join(','))).size>20);
 });

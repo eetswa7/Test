@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=34';
-import {rng} from './math.js?v=34';
+import {prepareGroundSurfaces} from './surface-placement.js?v=35';
+import {rng} from './math.js?v=35';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -84,8 +84,7 @@ export function dressWorld(arena){
  // triangles than the old thirty separate rock spheres. Trees sit at its foot.
  if(id!==4){
   const surface=id===2?'limestone':id===8?'snow':'rock';
-  const color=id===2?[.88,.78,.61]:id===8?[.72,.82,.88]:id===9?[.7,.51,.38]:[.65,.71,.65];
-  add(0,0,0,1,1,1,surface,{mesh:'ridge',color,landscape:true});
+  add(0,0,0,1,1,1,surface,{mesh:'ridge',color:[1,1,1],landscape:true});
   for(let i=0;i<30;i++){
    const angle=i/30*Math.PI*2,radius=s+6+random()*2,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
    if(id!==1&&i%2===0){if(id===3||id===5||id===7||id===8||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}

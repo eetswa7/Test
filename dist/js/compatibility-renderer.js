@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=34';
-import {identityFor} from './combat-identity.js?v=34';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=34';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=34';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh} from './meshes.js?v=34';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=34';
-import {loadImages} from './textures.js?v=34';
-import {weatherParticles} from './particles.js?v=34';
+import {animateWeaponParts} from './weapon-models.js?v=35';
+import {identityFor} from './combat-identity.js?v=35';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=35';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=35';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint} from './meshes.js?v=35';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=35';
+import {loadImages} from './textures.js?v=35';
+import {weatherParticles} from './particles.js?v=35';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -39,7 +39,7 @@ export class CompatibilityRenderer {
    const light=.38+Math.max(0,n.x*sun[0]+n.y*sun[1]+n.z*sun[2])*.67+(mat.emissive||0)*.25;
    const tile=mat.pattern>0?mat.pattern-1:-1,scale=parent?9:.42;
    const u=uvs??points.map(q=>Math.abs(n.y)>.65?[q.x*scale,q.z*scale]:Math.abs(n.x)>Math.abs(n.z)?[q.z*scale,q.y*scale]:[q.x*scale,q.y*scale]);
-   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));polygons.push({centre,radius,points,normal:n,color:mat.color.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,landscape:p.landscape,tile,leaf:p.leaf,uvs:u,shade:light});
+   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));const base=p.mesh==='ridge'?ridgeTint(centre.y,this.arena.info.id):mat.color;polygons.push({centre,radius,points,normal:n,color:base.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,landscape:p.landscape,tile,leaf:p.leaf,uvs:u,shade:light});
   };
   // Large architectural surfaces remain quads; visible curved details use shared meshes.
   const mesh=this.meshes[p.mesh];

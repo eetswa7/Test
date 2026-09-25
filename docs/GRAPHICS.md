@@ -2,6 +2,10 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 35: elevation colour on distant terrain
+
+The continuous ridge now shades from dark foothills to pale crests using a static vertex colour attribute. Frostline gains a gradual snow cap above the stone shoulder; Dustline and Iron Quarry use distinct sandstone and warm quarry palettes. The Canvas fallback samples the same height palette per triangle. This adds about 13.5 KiB of uncompressed vertex colour data for each of nine ridge meshes, and no triangles, batches, shadow casters, texture requests, or post-process passes. The texture remains visible under the tint. The same scene profile reports 1,302 total world batches across ten maps; it does not measure fragment load, shader compilation, GPU time, or iPhone frame rate.
+
 ## Release 34: continuous terrain skyline
 
 Nine maps now use one authored, map-sized ridgeline in place of thirty distant rock spheres per map. The ridge has a broad shoulder, irregular crest, rock or snow texture, and climate-specific tint. Trees sit in front of it near the arena edge; Breakwater keeps its harbour skyline. Both renderers use the same finite 384-triangle mesh, and the ridge casts no sun shadow because it sits beyond the playable area.

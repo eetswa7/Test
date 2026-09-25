@@ -70,3 +70,17 @@ export function ridgeMesh(size,id,segments=64){
  }
  return new Float32Array(out);
 }
+
+// Height bands are evaluated on the static ridge vertices. Colours are sRGB
+// values so the WebGL attribute and software fallback can share one palette.
+export function ridgeTint(height,id){
+ const smooth=(a,b)=>{const t=Math.max(0,Math.min(1,(height-a)/(b-a)));return t*t*(3-2*t);};
+ const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+ if(id===8){
+  const stone=mix([.40,.48,.53],[.62,.70,.73],smooth(-2,8));
+  return mix(stone,[.92,.96,.98],smooth(8,16));
+ }
+ if(id===2)return mix([.51,.40,.28],[.86,.71,.50],smooth(-2,13));
+ if(id===9)return mix([.45,.34,.29],[.78,.59,.44],smooth(-2,14));
+ return mix([.39,.46,.43],[.76,.79,.72],smooth(-2,17));
+}

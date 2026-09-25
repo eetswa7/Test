@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=34';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=34';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=34';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=34';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=34';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=34';
-import {DecalSystem} from './decal-system.js?v=34';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=34';
-import {LightingField} from './lighting-field.js?v=34';
-import {RoomLights} from './room-lights.js?v=34';
-import {waterMaterial,patchWater} from './water-material.js?v=34';
-import {visualGroundHeight} from './surface-placement.js?v=34';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=34';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=34';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=34';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=34';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=35';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=35';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=35';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=35';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=35';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=35';
+import {DecalSystem} from './decal-system.js?v=35';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=35';
+import {LightingField} from './lighting-field.js?v=35';
+import {RoomLights} from './room-lights.js?v=35';
+import {waterMaterial,patchWater} from './water-material.js?v=35';
+import {visualGroundHeight} from './surface-placement.js?v=35';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=35';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=35';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=35';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=35';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=34';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=34';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh } from './meshes.js?v=34';
-import { loadImages } from './textures.js?v=34';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=34';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=34';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=34';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=35';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=35';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint } from './meshes.js?v=35';
+import { loadImages } from './textures.js?v=35';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=35';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=35';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=35';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -218,7 +218,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.mesh==='ridge'?'ridge':'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -227,7 +227,7 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { dithering: true, color: 0xffffff, roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
+    const options = { dithering: true, color: 0xffffff, vertexColors:p.mesh==='ridge', roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
@@ -316,7 +316,16 @@ export class Renderer {
     for (const batch of this.worldBatches) { this.world.remove(batch); batch.dispose(); }
     this.worldBatches.length = 0;
     this.geometry.ridge?.dispose();
-    if(this.arena.info.id!==4)this.geometry.ridge=installMetricUV(bufferGeometry(ridgeMesh(this.arena.info.size,this.arena.info.id)),'ridge');
+    if(this.arena.info.id!==4){
+      const id=this.arena.info.id,vertices=ridgeMesh(this.arena.info.size,id),geometry=bufferGeometry(vertices);
+      const colors=new Float32Array(vertices.length/8*3),color=new THREE.Color();
+      for(let i=0;i<vertices.length;i+=8){
+        color.setRGB(...ridgeTint(vertices[i+1],id),THREE.SRGBColorSpace);
+        colors.set(color.toArray(),i/8*3);
+      }
+      geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));
+      this.geometry.ridge=installMetricUV(geometry,'ridge');
+    }
     else delete this.geometry.ridge;
     for(const p of this.arena.decor)p.renderMicroDetail=!p.ground&&!p.emissive&&p.surface!=='glass'&&detailThickness(p)<.13;
     for(const p of this.arena.blocks)p.renderMicroDetail=false;

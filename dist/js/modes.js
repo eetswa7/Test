@@ -1,5 +1,5 @@
-import {GUN_ORDER} from './weapons.js?v=34';
-import {distance} from './math.js?v=34';
+import {GUN_ORDER} from './weapons.js?v=35';
+import {distance} from './math.js?v=35';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
