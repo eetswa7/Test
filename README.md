@@ -58,7 +58,7 @@ The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action
 
 Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
 
-Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
+Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. They reposition when a teammate blocks their firing lane. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
 
 ## Rendering and performance
 

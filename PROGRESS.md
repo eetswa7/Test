@@ -179,3 +179,9 @@ Release 31 verification: 165/165 automated regressions and JavaScript syntax che
 Frostline and Iron Quarry now use distinct synthesized snow-crunch and stone-grit step profiles for player and NPC movement. Indoor routes on both maps keep the harder enclosed-room sound; the other map profiles are unchanged. A focused routing regression checks alpine snow, quarry grit, indoor hard surfaces and forest soft ground.
 
 The routing regression also exposed Canopy's existing `FOREST BASE` tag mismatch, which sent its outdoor footsteps to the gravel profile. Forest routes now select the soft-ground sample. Release 32 verification: 166/166 automated tests and JavaScript syntax checks passed after advancing the offline shell. The packaged static checker still requires the missing local icon image to run.
+
+## Release 33: coordinated NPC firing lanes
+
+Team bots now check the space between their muzzle and a visible enemy for allied operators. If a teammate blocks that lane, the bot takes a short side route and holds fire until the lane opens, conserving ammunition and avoiding repeated fire into a teammate. Free For All has no allied firing restriction. A focused regression covers the blocked lane, flank goal and resumed fire after the ally moves; full match simulations across all maps and modes follow before publication.
+
+Release 33 verification: 167/167 automated tests passed, including all-map objective bot matches; JavaScript syntax checks passed. The local packaged-asset checker remains blocked by its missing icon image.

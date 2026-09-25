@@ -13,3 +13,15 @@ test('visible enemies can trigger a tactical bot frag with bounded cooldown',()=
  assert.equal(game.grenades.length,1);assert.equal(game.grenades[0].owner,bot.id);assert.equal(game.grenades[0].kind,'frag');
  assert.equal(bot.grenades,1);assert(bot.grenadeCooldown>5);
 });
+
+test('bots flank instead of firing through an allied operator',()=>{
+ const game=new Game({mode:'tdm'},{seed:910}),bot=game.actors[1],ally=game.actors[2],enemy=game.actors[4];
+ game.arena.blocks=[{x:0,y:-.2,z:0,w:200,h:.4,d:200,ground:true,surface:'concrete'}];
+ for(const actor of game.actors)actor.health=0;
+ bot.reset({x:0,y:0,z:0},0);ally.reset({x:0,y:0,z:-3.5},0);enemy.reset({x:0,y:0,z:-8},0);
+ bot.spawnProtection=ally.spawnProtection=enemy.spawnProtection=0;bot.grenades=0;bot.reaction=0;bot.aiClock=0;game.pathBudget=0;
+ const ammo=bot.weapon.ammo;updateBot(bot,1/30,game);
+ assert.equal(bot.state,'flank');assert(Math.abs(bot.goal.x)>1.8);assert.equal(bot.weapon.ammo,ammo);
+ ally.x=3;bot.aiClock=0;bot.reaction=0;updateBot(bot,1/30,game);
+ assert.equal(bot.weapon.ammo,ammo-1);
+});
