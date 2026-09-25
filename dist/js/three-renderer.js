@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=37';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=37';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=37';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=37';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=37';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=37';
-import {DecalSystem} from './decal-system.js?v=37';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=37';
-import {LightingField} from './lighting-field.js?v=37';
-import {RoomLights} from './room-lights.js?v=37';
-import {waterMaterial,patchWater} from './water-material.js?v=37';
-import {visualGroundHeight} from './surface-placement.js?v=37';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=37';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=37';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=37';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=37';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=38';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=38';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=38';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=38';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=38';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=38';
+import {DecalSystem} from './decal-system.js?v=38';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=38';
+import {LightingField} from './lighting-field.js?v=38';
+import {RoomLights} from './room-lights.js?v=38';
+import {waterMaterial,patchWater} from './water-material.js?v=38';
+import {visualGroundHeight} from './surface-placement.js?v=38';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=38';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=38';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=38';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=38';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=37';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=37';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint } from './meshes.js?v=37';
-import { loadImages } from './textures.js?v=37';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=37';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=37';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=37';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=38';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=38';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=38';
+import { loadImages } from './textures.js?v=38';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=38';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=38';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=38';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -101,12 +101,15 @@ export class Renderer {
       sphere: bufferGeometry(makeSphere()), bevel: bufferGeometry(roundedBox(.1, 4)),
       bevelWorld: bufferGeometry(roundedBox(.08, 3)), bevelActor: bufferGeometry(roundedBox(.1, 2)),
       tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh()),
-      conifer:bufferGeometry(coniferMesh())
+      conifer:bufferGeometry(coniferMesh()),strata:bufferGeometry(strataRockMesh())
     };
     for(const [kind,g] of Object.entries(this.geometry))installMetricUV(g,kind);
     const crown=this.geometry.conifer.getAttribute('position'),crownColors=new Float32Array(crown.count*3),crownColor=new THREE.Color();
     for(let i=0;i<crown.count;i++){crownColor.setRGB(...coniferTint(crown.getY(i)),THREE.SRGBColorSpace);crownColors.set(crownColor.toArray(),i*3);}
     this.geometry.conifer.setAttribute('color',new THREE.BufferAttribute(crownColors,3));
+    const strata=this.geometry.strata.getAttribute('position'),strataColors=new Float32Array(strata.count*3),strataColor=new THREE.Color();
+    for(let i=0;i<strata.count;i++){strataColor.setRGB(...strataTint(strata.getY(i)),THREE.SRGBColorSpace);strataColors.set(strataColor.toArray(),i*3);}
+    this.geometry.strata.setAttribute('color',new THREE.BufferAttribute(strataColors,3));
     // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.
     const leafUV = this.geometry.leaf.getAttribute('uv');
     for (let i = 0; i < leafUV.count; i++) leafUV.setY(i, 1 - leafUV.getY(i));
@@ -222,7 +225,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.mesh==='ridge'||p.mesh==='conifer'?p.mesh:'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -231,7 +234,7 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { dithering: true, color: 0xffffff, vertexColors:p.mesh==='ridge'||p.mesh==='conifer', roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
+    const options = { dithering: true, color: 0xffffff, vertexColors:['ridge','conifer','strata'].includes(p.mesh), roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
@@ -351,7 +354,7 @@ export class Renderer {
         batch.setColorAt(i, this.instanceColor(parts[i], 'world')); }
       batch.instanceMatrix.needsUpdate = true; if (batch.instanceColor) batch.instanceColor.needsUpdate = true;
       // Tiny decorative strips do not warrant another shadow-caster draw call.
-      batch.castShadow = !p.ground && p.mesh!=='surface' && p.mesh!=='ridge' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = p.mesh!=='ridge';
+      batch.castShadow = !p.ground && p.mesh!=='surface' && p.mesh!=='ridge' && p.mesh!=='strata' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = p.mesh!=='ridge'&&p.mesh!=='strata';
       batch.userData.leaf = leaf; batch.userData.parts = parts; batch.userData.fullCount = parts.length;
       batch.userData.hasMicroDetail=parts.some(q=>q.renderMicroDetail);
       batch.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};

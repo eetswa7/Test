@@ -2,6 +2,12 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 38: layered desert outcrops
+
+Dustline and Iron Quarry now place 24 irregular, stratified stone outcrops beyond each playable boundary, in front of the continuous ridge. Their seven stepped rings form a 130-triangle shared mesh with static height-based vertex colour. The existing limestone and rock atlas tiles provide material detail. The outcrops do not affect navigation or collision, cast no sun shadow and add no texture or pass. The Canvas fallback draws half as many formations using a 65-triangle variant.
+
+At the same seeded High settings, [release 36](profile-release36.json) totals 1,310 world batches and 176,030 frustum-visible world triangles across ten maps; [release 38](profile-release38.json) totals 1,334 and 179,930. Shadow-caster triangles stay at 151,435. This is a scene-count cost, not a GPU or iPhone measurement. The richer outline and rock strata are steps towards the supplied outdoor references; the game's procedural architecture, vegetation and weapon models still lack the production assets needed for that level of realism. A renderer backend switch alone would not supply those assets.
+
 ## Release 37: snow-dusted canopy
 
 Frostline's new conifers now graduate from dark evergreen lower boughs to restrained snow on the upper tips. A shared sRGB height ramp drives a static 1.6 KiB vertex colour attribute on the 45-triangle bough geometry and matching Canvas face tint. This introduces no texture, geometry, additional batch or alpha pass compared with release 36; the total world and shadow scene counts remain the release 36 profile. The new material variant is confined to conifers.

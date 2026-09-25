@@ -58,7 +58,7 @@ The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action
 
 Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
 
-Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. They reposition when a teammate blocks their firing lane. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
+Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. They seek cover after a nearby miss and reposition when a teammate blocks their firing lane. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
 
 ## Rendering and performance
 
@@ -68,7 +68,7 @@ Rendering targets 60 frames per second during combat, 30 in the menu and 10 whil
 
 These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. The browser environment used for this build did not provide a WebGL2 context. The high-quality shader path, actual iPhone GPU and thermal behaviour, safe-area values from physical devices, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
 
-Visuals use original procedural 3D geometry with rounded weapon parts, hollow optics, detailed hand and character models, authored map dressing, continuous biome-tinted distant terrain and four original generated texture atlases/environment images. Asset prompts are included in `dist/assets/asset-prompts.json`; no reference-game assets are shipped. Audio is original synthesis. They are replaceable through the geometry, material and audio modules. This release does not include photoreal production character assets, motion-captured animation, native iOS haptics or online network multiplayer. Vibration is optional and only runs where the browser implements it.
+Visuals use original procedural 3D geometry with rounded weapon parts, hollow optics, detailed hand and character models, authored map dressing, continuous biome-tinted distant terrain, layered desert outcrops and four original generated texture atlases/environment images. Asset prompts are included in `dist/assets/asset-prompts.json`; no reference-game assets are shipped. Audio is original synthesis. They are replaceable through the geometry, material and audio modules. This release does not include photoreal production character assets, motion-captured animation, native iOS haptics or online network multiplayer. Vibration is optional and only runs where the browser implements it.
 
 ## Architecture
 

@@ -1,10 +1,10 @@
-import {Arena,MAPS} from './maps.js?v=37';
-import {Navigation} from './navigation.js?v=37';
-import {SpawnDirector} from './spawns.js?v=37';
-import {MatchRules} from './modes.js?v=37';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=37';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=37';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=37';
+import {Arena,MAPS} from './maps.js?v=38';
+import {Navigation} from './navigation.js?v=38';
+import {SpawnDirector} from './spawns.js?v=38';
+import {MatchRules} from './modes.js?v=38';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=38';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=38';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=38';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -13,7 +13,7 @@ export class Actor {
  get weapon(){return this.weapons[this.slot];}
  get dead(){return this.health<=0;}
  get height(){return this.crouched?1.12:1.78;}
- reset(p,yaw){this.x=p.x;this.y=p.y;this.z=p.z;this.vx=this.vz=this.vy=0;this.yaw=yaw;this.pitch=0;this.health=100;this.crouched=false;this.grounded=true;this.sprinting=false;this.sliding=false;this.slideLeft=0;this.slideCooldown=0;this.slideX=0;this.slideZ=0;this.ads=0;this.grenades=2;this.grenadeCooldown=0;this.spawnProtection=1.5;this.respawnLeft=0;this.switchLeft=0;this.slot=0;this.lastDamage=-100;this.lastShot=-100;this.flashed=0;this.stepClock=0;this.knifeCooldown=0;this.interacting=false;this.interactProgress=0;this.state='patrol';this.aiClock=this.id*.019;this.pathClock=0;this.target=null;this.lastKnown=null;this.memory=0;this.reaction=0;this.burst=0;this.burstPause=0;this.path=[];this.pathIndex=0;this.goal=null;this.stuckTime=0;this.jumpBuffer=0;this.coyote=0;this.recoilPitch=0;this.visualKick=0;this.landKick=0;for(const w of this.weapons)w.reset();}
+ reset(p,yaw){this.x=p.x;this.y=p.y;this.z=p.z;this.vx=this.vz=this.vy=0;this.yaw=yaw;this.pitch=0;this.health=100;this.crouched=false;this.grounded=true;this.sprinting=false;this.sliding=false;this.slideLeft=0;this.slideCooldown=0;this.slideX=0;this.slideZ=0;this.ads=0;this.grenades=2;this.grenadeCooldown=0;this.spawnProtection=1.5;this.respawnLeft=0;this.switchLeft=0;this.slot=0;this.lastDamage=-100;this.lastShot=-100;this.flashed=0;this.suppression=0;this.stepClock=0;this.knifeCooldown=0;this.interacting=false;this.interactProgress=0;this.state='patrol';this.aiClock=this.id*.019;this.pathClock=0;this.target=null;this.lastKnown=null;this.memory=0;this.reaction=0;this.burst=0;this.burstPause=0;this.path=[];this.pathIndex=0;this.goal=null;this.stuckTime=0;this.jumpBuffer=0;this.coyote=0;this.recoilPitch=0;this.visualKick=0;this.landKick=0;for(const w of this.weapons)w.reset();}
 }
 
 export class Game {
@@ -97,6 +97,12 @@ export class Game {
     for(const b of boxes){const n=rayBox(origin,dir,b,t);if(n!==null&&n<t){t=n;hit=target;part=b.part;}}
    }
    const impact={x:origin.x+dir.x*t,y:origin.y+dir.y*t,z:origin.z+dir.z*t};
+   if(i===0)for(const other of this.actors){
+    if(other.id===0||other.dead||other===hit||other.spawnProtection>0||!this.rules.enemies(a,other))continue;
+    if(distance(a,other)>35)continue;
+    const eye=this.eye(other),along=(eye.x-origin.x)*dir.x+(eye.y-origin.y)*dir.y+(eye.z-origin.z)*dir.z;
+    if(along>0&&along<t-.4&&pointSegment(eye,origin,impact)<1.45)other.suppression=2;
+   }
    if(hit){if(this.rules.enemies(a,hit)){this.damage(hit,w.damage(t,part),a,part==='head');anyHit=true;head=head||part==='head';this.emit('blood',{position:impact,value:part==='head'?8:5});}}
    else if(wall.block){
     const b=wall.block;this.emit('impact',{position:impact,surface:b.surface,normal:this.impactNormal(impact,b),value:d.kind==='SHOTGUN'?2:4});

@@ -110,3 +110,31 @@ export function coniferTint(height){
  const snow=t*t*(3-2*t)*.7;
  return [.31,.44,.36].map((v,i)=>v+([.79,.87,.87][i]-v)*snow);
 }
+
+// Angular, stepped stone outcrops. Each ring changes radius at bedding planes
+// while a periodic silhouette varies the edge without separate rock objects.
+export function strataRockMesh(sides=10){
+ const out=[],levels=[[-.5,.75],[-.36,.96],[-.20,.88],[-.10,.98],[.08,.81],[.32,.72],[.48,.48]],turn=Math.PI*2;
+ const point=(i,j)=>{
+  const [y,r]=levels[j],a=i/sides*turn,variation=1+.075*Math.sin(a*3+1.3)+.06*Math.sin(a*7-.6);
+  return [Math.cos(a)*r*variation,y,Math.sin(a)*r*variation];
+ };
+ const face=(a,b,c,uvs)=>{
+  const u=b.map((v,i)=>v-a[i]),v=c.map((q,i)=>q-a[i]);
+  const n=normalize([u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]);
+  tri(out,a,b,c,n,n,n,uvs);
+ };
+ for(let j=0;j<levels.length-1;j++)for(let i=0;i<sides;i++){
+  const a=point(i,j),b=point(i+1,j),c=point(i+1,j+1),d=point(i,j+1);
+  const u=i/sides*3,v=(i+1)/sides*3;
+  face(a,c,b,[[u,levels[j][0]],[v,levels[j+1][0]],[v,levels[j][0]]]);
+  face(a,d,c,[[u,levels[j][0]],[u,levels[j+1][0]],[v,levels[j+1][0]]]);
+ }
+ for(let i=0;i<sides;i++)face([0,.48,0],point(i+1,levels.length-1),point(i,levels.length-1),[[.5,.5],[1,1],[0,1]]);
+ return new Float32Array(out);
+}
+export function strataTint(height){
+ const t=Math.max(0,Math.min(1,(height+.5)/.98));
+ const layer=Math.sin(height*25)*.055+Math.sin(height*51)*.025;
+ return [.70,.73,.72].map((v,i)=>Math.max(.55,Math.min(1,v+t*[.27,.24,.20][i]+layer)));
+}

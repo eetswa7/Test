@@ -1,4 +1,4 @@
-import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=37';
+import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=38';
 export const ROLES=[{name:'Rifleman',weapon:0,range:19},{name:'Rusher',weapon:3,range:9},{name:'Shotgunner',weapon:5,range:7},{name:'Marksman',weapon:8,range:37},{name:'Heavy',weapon:9,range:28},{name:'Elite',weapon:1,range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
 function nearestTag(bot,rules){
@@ -40,7 +40,7 @@ function teammateInFireLane(bot,target,e){
  return false;
 }
 export function updateBot(bot,dt,e){
- let thought=false;bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.grenadeCooldown=Math.max(0,bot.grenadeCooldown-dt);bot.interacting=false;
+ let thought=false;bot.aiClock-=dt;bot.pathClock-=dt;bot.memory=Math.max(0,bot.memory-dt);bot.suppression=Math.max(0,bot.suppression-dt);bot.reaction=Math.max(0,bot.reaction-dt);bot.burstPause=Math.max(0,bot.burstPause-dt);bot.grenadeCooldown=Math.max(0,bot.grenadeCooldown-dt);bot.interacting=false;
  if(bot.aiClock<=0){thought=true;
   const interval=distance(bot,e.player)>45?.24:.12;bot.aiClock=interval+(bot.id%3)*.011;
   let target=null,best=75;
@@ -54,7 +54,7 @@ export function updateBot(bot,dt,e){
   const ctfGoal=e.rules.mode.id==='ctf'?flagGoal(bot,e.rules,e.actors):null;
   let danger=null;for(const g of e.grenades)if(g.kind==='frag'&&g.fuse<1.8&&distance(bot,g)<7){danger=g;break;}
   if(danger){const n=Math.max(.1,distance(bot,danger));bot.goal={x:bot.x+(bot.x-danger.x)/n*9,y:bot.y,z:bot.z+(bot.z-danger.z)/n*9};bot.state='evade';}
-  else if(bot.weapon.reloadLeft>0||bot.health<28&&target){
+  else if(bot.weapon.reloadLeft>0||target&&(bot.health<28||bot.suppression>0&&['tdm','ffa','gun'].includes(e.rules.mode.id)&&distance(bot,target)>3)){
    bot.state=bot.weapon.reloadLeft>0?'reload':'retreat';let cover=null,cost=Infinity;
    for(const p of e.arena.cover){const d=distance(bot,p);if(d<cost&&d<13&&!e.arena.collides(p,.35,1.7)&&(!target||!e.arena.visible({...p,y:p.y+1.3},e.eye(target)))){cover=p;cost=d;}}
    bot.goal=cover??{x:bot.x-Math.sin(bot.yaw)*7,y:bot.y,z:bot.z+Math.cos(bot.yaw)*7};

@@ -207,3 +207,11 @@ Release 36 verification: 171/171 automated tests and JavaScript syntax checks pa
 Frostline crowns now use a gradual evergreen-to-snow vertex tint on their upper boughs. Canvas fallback shades from the same source palette. The static colour attribute adds about 1.6 KiB for the shared mesh, without another texture, polygon or batch. The scene counts remain as profiled for release 36. A physical iPhone visual and frame check remains outstanding.
 
 Release 37 verification: 172/172 automated tests and JavaScript syntax checks passed. A specific renderer regression checks finite vertex colours, a distinct conifer material and equivalent Canvas shading.
+
+## Release 38: stratified outcrops and NPC near-miss response
+
+Dustline and Iron Quarry gain 24 layered, atlas-textured outcrops per map beyond the playable boundary. The single shared 130-triangle stone mesh has a static colour ramp; the Canvas fallback uses 12 formations at 65 triangles apiece. The new scenery is visual only, does not affect bot navigation and casts no shadow. A seeded ten-map profile changes world batches from 1,310 to 1,334 and frustum-visible triangles from 176,030 to 179,930; shadow triangles remain 151,435.
+
+Enemy bots now react to a bullet passing close by, moving toward cover for a short period even if it misses in elimination modes. Objective modes retain their objective priority. A wall ending the shot before the bot prevents the effect, and the player is not suppressed by this NPC tactic. The additional check is bounded to the first pellet and at most seven other actors per shot.
+
+Release 38 verification: 175/175 automated tests pass, including full bot matches on every map and objective mode. The packaged checker validates 44 JavaScript modules, geometry winding, the actual local texture assets and Home Screen manifest. JavaScript syntax checks pass. Native iPhone GPU frame time and final appearance remain unmeasured.

@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=37';
-import {identityFor} from './combat-identity.js?v=37';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=37';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=37';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint} from './meshes.js?v=37';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=37';
-import {loadImages} from './textures.js?v=37';
-import {weatherParticles} from './particles.js?v=37';
+import {animateWeaponParts} from './weapon-models.js?v=38';
+import {identityFor} from './combat-identity.js?v=38';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=38';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=38';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=38';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=38';
+import {loadImages} from './textures.js?v=38';
+import {weatherParticles} from './particles.js?v=38';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -19,7 +19,7 @@ export class CompatibilityRenderer {
   this.canvas=canvas;this.settings=settings;this.ctx=canvas.getContext('2d',{alpha:false});if(!this.ctx)throw new Error('The browser could not create a drawing surface.');
   this.compatibility=true;this.quality='compatibility';this.fps=30;this.renderScale=.8;this.lost=false;this.drawCalls=0;this.frameAverage=16.7;this.lastRender=0;this.frames=0;this.fpsAge=0;
   this.matrix=identity();this.parent=identity();this.combined=identity();this.view=identity();this.weaponView=identity();this.eye={x:0,y:2,z:0};this.target={x:0,y:2,z:-1};this.weaponKey='';this.weaponParts=[];this.world=[];this.textures=[];this.leaves=[];this.patterns=[];
-  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard(),conifer:coniferMesh()};
+  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard(),conifer:coniferMesh(),strata:strataRockMesh(5)};
   this.ready=loadImages().then(images=>{this.images=images;this.extract(images.surfaces,4,this.textures);this.extract(images.leaves,2,this.leaves,true);this.patterns=this.textures.map(t=>this.ctx.createPattern(t,'repeat'));});
  }
  chooseQuality(){return 'compatibility';}
@@ -43,14 +43,15 @@ export class CompatibilityRenderer {
   };
   // Large architectural surfaces remain quads; visible curved details use shared meshes.
   const mesh=this.meshes[p.mesh];
-  if(mesh){for(let i=0;i<mesh.length;i+=24){const points=[0,8,16].map(o=>transform([mesh[i+o],mesh[i+o+1],mesh[i+o+2]])),n=normal([(mesh[i+3]+mesh[i+11]+mesh[i+19])/3,(mesh[i+4]+mesh[i+12]+mesh[i+20])/3,(mesh[i+5]+mesh[i+13]+mesh[i+21])/3]);push(points,n,leaf?[0,8,16].map(o=>[mesh[i+o+6],mesh[i+o+7]]):null,p.mesh==='conifer'?coniferTint((mesh[i+1]+mesh[i+9]+mesh[i+17])/3):null);}}
+  if(mesh){for(let i=0;i<mesh.length;i+=24){const points=[0,8,16].map(o=>transform([mesh[i+o],mesh[i+o+1],mesh[i+o+2]])),n=normal([(mesh[i+3]+mesh[i+11]+mesh[i+19])/3,(mesh[i+4]+mesh[i+12]+mesh[i+20])/3,(mesh[i+5]+mesh[i+13]+mesh[i+21])/3]);const height=(mesh[i+1]+mesh[i+9]+mesh[i+17])/3,tint=p.mesh==='conifer'?coniferTint(height):p.mesh==='strata'?strataTint(height).map((v,j)=>v*mat.color[j]):null;push(points,n,leaf?[0,8,16].map(o=>[mesh[i+o+6],mesh[i+o+7]]):null,tint);}}
   else{const points=corners.map(transform);for(let i=0;i<faces.length;i++)push(faces[i].map(i=>points[i]),normal(normals[i]));}
   return polygons;
  }
  buildWorld(){
-  this.world=[];
+  this.world=[];let distantStones=0;
   for(const p of [...this.arena.blocks,...this.arena.decor]){
    if(p.destroyed||p.invisible)continue;
+   if(p.mesh==='strata'&&distantStones++%2)continue;
    if(p.ground){const size=8;for(let x=-p.w/2;x<p.w/2;x+=size)for(let z=-p.d/2;z<p.d/2;z+=size)this.world.push(...this.box({...p,x:p.x+x+size/2,z:p.z+z+size/2,w:size,d:size}).filter(q=>q.normal.y>.5));}
    else if(Math.max(p.w,p.h,p.d)>.35)this.world.push(...this.box(p));
   }

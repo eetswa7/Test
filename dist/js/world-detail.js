@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=37';
-import {rng} from './math.js?v=37';
+import {prepareGroundSurfaces} from './surface-placement.js?v=38';
+import {rng} from './math.js?v=38';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -94,6 +94,17 @@ export function dressWorld(arena){
    const angle=i/30*Math.PI*2,radius=s+6+random()*2,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
    if(id!==1&&i%2===0){if(id===8)conifer(x,z,7+random()*4);else if(id===3||id===5||id===7||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
    if(i%2)plant(x,z,3+random()*2,0);
+  }
+ }
+ if(id===2||id===9){
+  // Sandstone and quarry scree sit beyond the collision wall, in front of the
+  // continuous ridge. These share one instanced mesh and the existing rock tile.
+  for(let i=0;i<24;i++){
+   const angle=(i+random()*.28)/24*Math.PI*2,radius=s+13+random()*10;
+   const x=Math.sin(angle)*radius,z=Math.cos(angle)*radius,span=4+random()*5.5,height=2.8+random()*4.2;
+   add(x,height*.36-.45,z,span,height,span*(.75+random()*.4),id===2?'limestone':'rock',{
+    mesh:'strata',landscape:true,yaw:angle+random()*.5,color:id===2?[.86,.72,.54]:[.77,.55,.39]
+   });
   }
  }
  if(id===4){

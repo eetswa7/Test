@@ -1,4 +1,4 @@
-import {WEAPONS} from './weapons.js?v=37';
+import {WEAPONS} from './weapons.js?v=38';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
