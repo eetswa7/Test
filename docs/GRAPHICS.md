@@ -2,6 +2,14 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 34: continuous terrain skyline
+
+Nine maps now use one authored, map-sized ridgeline in place of thirty distant rock spheres per map. The ridge has a broad shoulder, irregular crest, rock or snow texture, and climate-specific tint. Trees sit in front of it near the arena edge; Breakwater keeps its harbour skyline. Both renderers use the same finite 384-triangle mesh, and the ridge casts no sun shadow because it sits beyond the playable area.
+
+Repeatable CPU/scene snapshots at High, 844 × 390: [release 33](profile-release33.json) and [release 34](profile-release34.json). Summed across ten seeded map viewpoints, world batches fall from 1,544 to 1,302 (15.7%), frustum-visible world triangles from 189,156 to 175,874 (7.0%), and shadow-caster triangles from 203,704 to 151,120 (25.8%). Some viewpoints submit more visible triangles because the continuous ridge fills gaps left by individual boulders. These counts do not measure fill rate, GPU time, visual fidelity or sustained iPhone FPS.
+
+WebGPU is available in Safari 26 and later, but the current renderer's custom `onBeforeCompile` lighting, surface, leaf and particle shaders require a TSL port for Three's WebGPU path. [WebKit's Safari 26 overview](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/) and [Three's migration guide](https://threejs.org/manual/pages/webgpurenderer) describe these capabilities and constraints. A backend switch needs matched iPhone captures and frame timings to establish a quality and performance gain. The current WebGL2 renderer retains its adaptive resolution and Canvas fallback.
+
 The target is sustained 60 FPS on modern iPhones. It is a target, not a measured guarantee. Releases 15–17 improve illumination, surface response and stability while retaining the existing eight maps, fifteen firearms plus blade, seven modes, touch/controller input and progression.
 
 ## Systems and budgets

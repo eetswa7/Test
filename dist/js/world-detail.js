@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=33';
-import {rng} from './math.js?v=33';
+import {prepareGroundSurfaces} from './surface-placement.js?v=34';
+import {rng} from './math.js?v=34';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -80,12 +80,17 @@ export function dressWorld(arena){
   if(id===3||id===5||id===7||id===8||id===9)tree(x,z,5+random()*2);else palm(x,z,5.5+random()*2.5);
   plant(x+.8,z,.65,3);
  }
- // Continuous surrounding hills and foliage replace the old rectangular skyline.
- for(let i=0;i<(id===4?0:30);i++){
-  const angle=i/30*Math.PI*2,radius=s+17+random()*16,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
-  const h=5+random()*13;add(x,h*.22-2,z,12+random()*12,h,13+random()*10,id===2?'limestone':'rock',{mesh:'rock',yaw:random()*6.28,color:id===2?[.92,.83,.65]:[.7,.76,.69]});
-  if(id!==1&&i%2===0){if(id===3||id===5||id===7||id===8||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
-  if(i%2)plant(x,z,3+random()*2,0);
+ // A low-poly textured ridgeline has a continuous silhouette and fewer
+ // triangles than the old thirty separate rock spheres. Trees sit at its foot.
+ if(id!==4){
+  const surface=id===2?'limestone':id===8?'snow':'rock';
+  const color=id===2?[.88,.78,.61]:id===8?[.72,.82,.88]:id===9?[.7,.51,.38]:[.65,.71,.65];
+  add(0,0,0,1,1,1,surface,{mesh:'ridge',color,landscape:true});
+  for(let i=0;i<30;i++){
+   const angle=i/30*Math.PI*2,radius=s+6+random()*2,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
+   if(id!==1&&i%2===0){if(id===3||id===5||id===7||id===8||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
+   if(i%2)plant(x,z,3+random()*2,0);
+  }
  }
  if(id===4){
   // Water, a moored repair vessel and shore cranes establish a recognisable harbour.

@@ -44,3 +44,29 @@ export function rockMesh(){
 
 // A horizontal receiving surface with consistent world-scale UVs.
 export function groundSurface(){return new Float32Array([-.5,0,.5,0,1,0,0,0,.5,0,.5,0,1,0,1,0,.5,0,-.5,0,1,0,1,1,-.5,0,.5,0,1,0,0,0,.5,0,-.5,0,1,0,1,1,-.5,0,-.5,0,1,0,0,1]);}
+
+// One continuous textured ridge surrounds the arena. Periodic waves join at
+// the seam, and broad shoulders keep the distant silhouette from looking like
+// a row of separate boulders. The mesh is built once when a map loads.
+export function ridgeMesh(size,id,segments=64){
+ const out=[],rings=[[],[],[],[]],turn=Math.PI*2;
+ for(let i=0;i<=segments;i++){
+  const a=i/segments*turn;
+  const crest=(id===8?18:id===3||id===5?14:id===9?12:id===2?10:11)
+    +2.8*Math.sin(a*3+id*.7)+1.7*Math.sin(a*7-id*.37)+.9*Math.sin(a*13+id);
+  const crestR=size+27+3.5*Math.sin(a*5+id*.4)+2*Math.sin(a*11-id*.6);
+  const points=[[size+10,-2.2],[size+18,crest*.27-1.5],[crestR,crest],[crestR+28,-4]];
+  for(let j=0;j<rings.length;j++){const [r,y]=points[j];rings[j].push([Math.sin(a)*r,y,Math.cos(a)*r]);}
+ }
+ const vertex=(a,b,c,uvs)=>{
+  const ab=b.map((v,i)=>v-a[i]),ac=c.map((v,i)=>v-a[i]),n=normalize([ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]]);
+  tri(out,a,b,c,n,n,n,uvs);
+ };
+ const heights=[0,.85,2.3,3.4];
+ for(let j=0;j<3;j++)for(let i=0;i<segments;i++){
+  const u=i/segments*16,v=(i+1)/segments*16,a=rings[j][i],b=rings[j+1][i],c=rings[j+1][i+1],d=rings[j][i+1];
+  vertex(a,b,c,[[u,heights[j]],[u,heights[j+1]],[v,heights[j+1]]]);
+  vertex(a,c,d,[[u,heights[j]],[v,heights[j+1]],[v,heights[j]]]);
+ }
+ return new Float32Array(out);
+}

@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=33';
-import {identityFor} from './combat-identity.js?v=33';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=33';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=33';
-import {roundedBox,tube,leafCard,rockMesh} from './meshes.js?v=33';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=33';
-import {loadImages} from './textures.js?v=33';
-import {weatherParticles} from './particles.js?v=33';
+import {animateWeaponParts} from './weapon-models.js?v=34';
+import {identityFor} from './combat-identity.js?v=34';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=34';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=34';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh} from './meshes.js?v=34';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=34';
+import {loadImages} from './textures.js?v=34';
+import {weatherParticles} from './particles.js?v=34';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -29,7 +29,7 @@ export class CompatibilityRenderer {
    if(alpha){const data=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<data.data.length;i+=4)data.data[i+3]=data.data[i+3]<148?0:255;ctx.putImageData(data,0,0);}out.push(c);
   }
  }
- setArena(arena){this.arena=arena;this.buildWorld();}
+ setArena(arena){this.arena=arena;this.meshes.ridge=arena.info.id===4?null:ridgeMesh(arena.info.size,arena.info.id);this.buildWorld();}
  box(p,parent=null){
   compose(this.matrix,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);let m=this.matrix;if(parent){multiply(this.combined,parent,this.matrix);m=this.combined;}
   const transform=c=>({x:m[0]*c[0]+m[4]*c[1]+m[8]*c[2]+m[12],y:m[1]*c[0]+m[5]*c[1]+m[9]*c[2]+m[13],z:m[2]*c[0]+m[6]*c[1]+m[10]*c[2]+m[14]});
@@ -39,7 +39,7 @@ export class CompatibilityRenderer {
    const light=.38+Math.max(0,n.x*sun[0]+n.y*sun[1]+n.z*sun[2])*.67+(mat.emissive||0)*.25;
    const tile=mat.pattern>0?mat.pattern-1:-1,scale=parent?9:.42;
    const u=uvs??points.map(q=>Math.abs(n.y)>.65?[q.x*scale,q.z*scale]:Math.abs(n.x)>Math.abs(n.z)?[q.z*scale,q.y*scale]:[q.x*scale,q.y*scale]);
-   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));polygons.push({centre,radius,points,normal:n,color:mat.color.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,tile,leaf:p.leaf,uvs:u,shade:light});
+   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));polygons.push({centre,radius,points,normal:n,color:mat.color.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,landscape:p.landscape,tile,leaf:p.leaf,uvs:u,shade:light});
   };
   // Large architectural surfaces remain quads; visible curved details use shared meshes.
   const mesh=this.meshes[p.mesh];
@@ -68,7 +68,7 @@ export class CompatibilityRenderer {
  paint(polygons,view=this.view,weapon=false){
   const c=this.ctx,w=this.canvas.width,h=this.canvas.height,scale=h/(2*Math.tan(this.fov/2)),draw=[];
   for(const poly of polygons){
-   const first=poly.points[0];if(!weapon&&!poly.ground&&Math.hypot(first.x-this.eye.x,first.z-this.eye.z)>65)continue;const eye=weapon?{x:0,y:0,z:0}:this.eye,dot=poly.normal.x*(eye.x-first.x)+poly.normal.y*(eye.y-first.y)+poly.normal.z*(eye.z-first.z);
+   const first=poly.points[0];if(!weapon&&!poly.ground&&!poly.landscape&&Math.hypot(first.x-this.eye.x,first.z-this.eye.z)>65)continue;const eye=weapon?{x:0,y:0,z:0}:this.eye,dot=poly.normal.x*(eye.x-first.x)+poly.normal.y*(eye.y-first.y)+poly.normal.z*(eye.z-first.z);
    if(poly.leaf===undefined&&dot<-.001)continue;
    const q=poly.centre,r=poly.radius,cx=view[0]*q.x+view[4]*q.y+view[8]*q.z+view[12],cy=view[1]*q.x+view[5]*q.y+view[9]*q.z+view[13],cz=-(view[2]*q.x+view[6]*q.y+view[10]*q.z+view[14]),tan=Math.tan(this.fov/2);if(cz+r<.06||Math.abs(cx)>(cz+r)*tan*w/h+r||Math.abs(cy)>(cz+r)*tan+r)continue;
    let points=poly.points.map((p,i)=>({x:view[0]*p.x+view[4]*p.y+view[8]*p.z+view[12],y:view[1]*p.x+view[5]*p.y+view[9]*p.z+view[13],z:-(view[2]*p.x+view[6]*p.y+view[10]*p.z+view[14]),u:poly.uvs[i][0],v:poly.uvs[i][1]}));

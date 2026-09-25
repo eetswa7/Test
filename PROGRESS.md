@@ -185,3 +185,9 @@ The routing regression also exposed Canopy's existing `FOREST BASE` tag mismatch
 Team bots now check the space between their muzzle and a visible enemy for allied operators. If a teammate blocks that lane, the bot takes a short side route and holds fire until the lane opens, conserving ammunition and avoiding repeated fire into a teammate. Free For All has no allied firing restriction. A focused regression covers the blocked lane, flank goal and resumed fire after the ally moves; full match simulations across all maps and modes follow before publication.
 
 Release 33 verification: 167/167 automated tests passed, including all-map objective bot matches; JavaScript syntax checks passed. The local packaged-asset checker remains blocked by its missing icon image.
+
+## Release 34: continuous distant terrain
+
+The distant skyline now uses one textured, irregular 384-triangle terrain ring in nine maps, with trees placed at its foot. Breakwater retains its harbour. Both renderers share the geometry; the ring stays outside gameplay collision and is excluded from shadow casting. This creates a continuous landscape without adding a render pass, texture or runtime terrain update.
+
+Seeded High-quality scene profiles across all ten maps show 1,544 → 1,302 world batches, 189,156 → 175,874 frustum-visible world triangles and 203,704 → 151,120 shadow-caster triangles. These are container scene counts, not iPhone GPU/frame measurements. Raw profiles are in `docs/profile-release33.json` and `docs/profile-release34.json`. Release 34 verification: 169/169 automated tests and JavaScript syntax checks passed, including geometry seams, winding, complete map construction and Canvas fallback geometry. The packaged checker remains blocked by the missing local icon image.

@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=33';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=33';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=33';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=33';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=33';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=33';
-import {DecalSystem} from './decal-system.js?v=33';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=33';
-import {LightingField} from './lighting-field.js?v=33';
-import {RoomLights} from './room-lights.js?v=33';
-import {waterMaterial,patchWater} from './water-material.js?v=33';
-import {visualGroundHeight} from './surface-placement.js?v=33';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=33';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=33';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=33';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=33';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=34';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=34';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=34';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=34';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=34';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=34';
+import {DecalSystem} from './decal-system.js?v=34';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=34';
+import {LightingField} from './lighting-field.js?v=34';
+import {RoomLights} from './room-lights.js?v=34';
+import {waterMaterial,patchWater} from './water-material.js?v=34';
+import {visualGroundHeight} from './surface-placement.js?v=34';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=34';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=34';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=34';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=34';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=33';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=33';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=33';
-import { loadImages } from './textures.js?v=33';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=33';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=33';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=33';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=34';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=34';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh } from './meshes.js?v=34';
+import { loadImages } from './textures.js?v=34';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=34';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=34';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=34';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -315,6 +315,9 @@ export class Renderer {
   buildWorld() {
     for (const batch of this.worldBatches) { this.world.remove(batch); batch.dispose(); }
     this.worldBatches.length = 0;
+    this.geometry.ridge?.dispose();
+    if(this.arena.info.id!==4)this.geometry.ridge=installMetricUV(bufferGeometry(ridgeMesh(this.arena.info.size,this.arena.info.id)),'ridge');
+    else delete this.geometry.ridge;
     for(const p of this.arena.decor)p.renderMicroDetail=!p.ground&&!p.emissive&&p.surface!=='glass'&&detailThickness(p)<.13;
     for(const p of this.arena.blocks)p.renderMicroDetail=false;
     const bins = new Map();
@@ -335,7 +338,7 @@ export class Renderer {
         batch.setColorAt(i, this.instanceColor(parts[i], 'world')); }
       batch.instanceMatrix.needsUpdate = true; if (batch.instanceColor) batch.instanceColor.needsUpdate = true;
       // Tiny decorative strips do not warrant another shadow-caster draw call.
-      batch.castShadow = !p.ground && p.mesh!=='surface' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = true;
+      batch.castShadow = !p.ground && p.mesh!=='surface' && p.mesh!=='ridge' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = p.mesh!=='ridge';
       batch.userData.leaf = leaf; batch.userData.parts = parts; batch.userData.fullCount = parts.length;
       batch.userData.hasMicroDetail=parts.some(q=>q.renderMicroDetail);
       batch.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};
