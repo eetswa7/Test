@@ -215,3 +215,9 @@ Dustline and Iron Quarry gain 24 layered, atlas-textured outcrops per map beyond
 Enemy bots now react to a bullet passing close by, moving toward cover for a short period even if it misses in elimination modes. Objective modes retain their objective priority. A wall ending the shot before the bot prevents the effect, and the player is not suppressed by this NPC tactic. The additional check is bounded to the first pellet and at most seven other actors per shot.
 
 Release 38 verification: 175/175 automated tests pass, including full bot matches on every map and objective mode. The packaged checker validates 44 JavaScript modules, geometry winding, the actual local texture assets and Home Screen manifest. JavaScript syntax checks pass. Native iPhone GPU frame time and final appearance remain unmeasured.
+
+## Release 39: arid grass and moving shore wash
+
+Dustline and Iron Quarry now have up to 55 more dry-grass clumps each beside the outer routes. The existing foliage atlas, batching and adaptive quality control handle the added cards. A separate seed ensures existing scenery stays put. Breakwater's water gains a third wave direction and intermittent shore wash in the existing opaque water material, without a geometry strip or extra pass. The seeded ten-map profile shows unchanged 1,334 world batches and 660 more visible/shadow triangles from the added grass. GPU time and alpha overdraw remain unmeasured.
+
+Release 39 verification: 176/176 automated tests, JavaScript syntax checks and the complete packaged-asset checker pass. The water shader composition and bounded perimeter grass placement have focused regressions.

@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=38';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=38';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=38';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=38';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=38';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=38';
-import {DecalSystem} from './decal-system.js?v=38';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=38';
-import {LightingField} from './lighting-field.js?v=38';
-import {RoomLights} from './room-lights.js?v=38';
-import {waterMaterial,patchWater} from './water-material.js?v=38';
-import {visualGroundHeight} from './surface-placement.js?v=38';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=38';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=38';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=38';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=38';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=39';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=39';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=39';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=39';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=39';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=39';
+import {DecalSystem} from './decal-system.js?v=39';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=39';
+import {LightingField} from './lighting-field.js?v=39';
+import {RoomLights} from './room-lights.js?v=39';
+import {waterMaterial,patchWater} from './water-material.js?v=39';
+import {visualGroundHeight} from './surface-placement.js?v=39';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=39';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=39';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=39';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=39';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=38';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=38';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=38';
-import { loadImages } from './textures.js?v=38';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=38';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=38';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=38';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=39';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=39';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=39';
+import { loadImages } from './textures.js?v=39';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=39';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=39';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=39';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -288,8 +288,8 @@ export class Renderer {
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader);if(water)patchWater(shader,this.windTime);else if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}};
-    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v1':category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-room-lightfield-v2`;
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}};
+    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v2':category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-room-lightfield-v2`;
     this.materials.set(key, mat); return mat;
   }
 

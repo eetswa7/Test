@@ -1,12 +1,12 @@
-import {Game,emptyInput} from './engine.js?v=38';
-import {Renderer} from './three-renderer.js?v=38';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=38';
-import {TouchInput} from './input.js?v=38';
-import {AudioSystem} from './audio.js?v=38';
-import {SaveStore} from './save.js?v=38';
-import {Interface,$} from './ui.js?v=38';
-import {Weapon} from './weapons.js?v=38';
-import {opticMagnification} from './aim.js?v=38';
+import {Game,emptyInput} from './engine.js?v=39';
+import {Renderer} from './three-renderer.js?v=39';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=39';
+import {TouchInput} from './input.js?v=39';
+import {AudioSystem} from './audio.js?v=39';
+import {SaveStore} from './save.js?v=39';
+import {Interface,$} from './ui.js?v=39';
+import {Weapon} from './weapons.js?v=39';
+import {opticMagnification} from './aim.js?v=39';
 
 class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;

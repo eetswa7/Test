@@ -47,3 +47,12 @@ test('new scenery remains finite and bounded for mobile rendering',()=>{
   for(const b of [...arena.blocks,...arena.decor,...arena.foliage])for(const key of ['x','y','z','w','h','d'])assert(Number.isFinite(b[key])&&(key.length!==1||!['w','h','d'].includes(key)||b[key]>0),`${m.name} invalid ${key}`);
  }
 });
+
+test('arid maps have bounded perimeter grass cover',()=>{
+ for(const id of [2,9]){
+  const arena=new Arena(id),grass=arena.foliage.filter(p=>p.leaf===2);
+  assert(grass.length>200&&grass.length<800);
+  assert(grass.some(p=>Math.max(Math.abs(p.x),Math.abs(p.z))>arena.info.size*.7));
+  assert(grass.every(p=>p.mesh==='leaf'&&p.h>0&&p.h<2));
+ }
+});

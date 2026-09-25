@@ -23,6 +23,11 @@ test('Breakwater water is a single opaque dielectric plane without rigid foam st
  assert.equal(b.castShadow,false);assert.equal(b.material.transparent,false);assert.equal(b.material.transmission,0);
  assert.equal(b.material.ior,1.333);assert.equal(b.material.metalness,0);assert(b.material.roughness>=.25);
  assert(!arena.decor.some(p=>p.surface==='white'&&p.y===-1.18));
+ const shader={uniforms:{},vertexShader:THREE.ShaderLib.physical.vertexShader,fragmentShader:THREE.ShaderLib.physical.fragmentShader};
+ b.material.onBeforeCompile(shader);
+ assert.equal(shader.uniforms.uBreachWaterShore.value,arena.info.size);
+ assert(shader.fragmentShader.includes('float chop=')&&shader.fragmentShader.includes('float coast='));
+ assert.equal(shader.fragmentShader.match(/#include <normal_fragment_maps>/g)?.length,1);
 });
 test('visual ground queries follow overlapping and rotated finishes without changing collision floors',()=>{
  const arena={decor:[{x:0,y:.02,z:0,w:8,h:.02,d:8,surface:'concrete'},

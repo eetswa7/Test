@@ -2,6 +2,12 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 39: grounded vegetation and harbour water
+
+Dustline and Iron Quarry gain at most 55 additional grass clumps each in their outer playable lanes. These use the existing transparent grass atlas, three cards per clump, spatial leaf batches and quality-tier density controls. Their own deterministic random stream preserves all previously authored tree and outcrop positions. Breakwater's water adds a third small ripple direction and a restrained, intermittent shoreline wash in the existing opaque physical material. The wash uses world position and one additional cosine, with no extra geometry, texture or pass. The Canvas fallback retains its simple water shading.
+
+Seeded High profiles: [release 38](profile-release38.json) has 1,334 world batches, 179,930 visible world triangles and 151,435 shadow-caster triangles; [release 39](profile-release39.json) has 1,334, 180,590 and 152,095. The 660 additional visible and caster triangles correspond to the grass cards; world batch count is unchanged. This profile does not measure the water fragment cost, alpha overdraw or actual iPhone frames.
+
 ## Release 38: layered desert outcrops
 
 Dustline and Iron Quarry now place 24 irregular, stratified stone outcrops beyond each playable boundary, in front of the continuous ridge. Their seven stepped rings form a 130-triangle shared mesh with static height-based vertex colour. The existing limestone and rock atlas tiles provide material detail. The outcrops do not affect navigation or collision, cast no sun shadow and add no texture or pass. The Canvas fallback draws half as many formations using a 65-triangle variant.

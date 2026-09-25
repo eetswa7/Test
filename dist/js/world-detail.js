@@ -1,13 +1,13 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=38';
-import {rng} from './math.js?v=38';
+import {prepareGroundSurfaces} from './surface-placement.js?v=39';
+import {rng} from './math.js?v=39';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
 export function dressWorld(arena){
  const random=rng(46190+arena.info.id*113),id=arena.info.id,s=arena.info.size;
  arena.foliage=[];const add=(...args)=>arena.detail(...args);
- const card=(x,y,z,w,h,leaf,yaw=0,pitch=0,roll=0)=>arena.foliage.push({x,y,z,w,h,d:1,surface:'green',mesh:'leaf',leaf,yaw,pitch,roll,color:[.9,.95,.8]});
- const plant=(x,z,size=1,kind=0,y=0)=>{for(let i=0;i<3;i++)card(x,y+size*.48,z,size*(kind===2?1:1.2),size,kind,i*Math.PI/3+random()*.3);};
+ const card=(x,y,z,w,h,leaf,yaw=0,pitch=0,roll=0,color=[.9,.95,.8])=>arena.foliage.push({x,y,z,w,h,d:1,surface:'green',mesh:'leaf',leaf,yaw,pitch,roll,color});
+ const plant=(x,z,size=1,kind=0,y=0,color,variation=random)=>{for(let i=0;i<3;i++)card(x,y+size*.48,z,size*(kind===2?1:1.2),size,kind,i*Math.PI/3+variation()*.3,0,0,color);};
  const palm=(x,z,h=7)=>{
   const bend=(random()-.5)*.8;
   for(let j=0;j<5;j++)add(x+bend*j*.2,h*(j+.5)/5,z,.29-j*.025,h/5+.12,.29-j*.025,'bark',{mesh:'cylinder',roll:-bend*.07});
@@ -77,6 +77,18 @@ export function dressWorld(arena){
   if(!nearWall&&random()>.14)continue;
   const size=.18+random()*.38;plant(x,z,size,2);
   if(random()>.6)add(x+.3,.09,z-.1,.25+random()*.35,.18,.28,'rock',{mesh:'rock',yaw:random()*6.28});
+ }
+ if(id===2||id===9){
+  // Atlas grass clusters thicken the dusty perimeter without hiding routes.
+  // Existing foliage batching and tier-dependent instance counts bound the cost.
+  const grassRandom=rng(90071+id*733);let planted=0;
+  for(let i=0;i<190&&planted<55;i++){
+   const x=(grassRandom()-.5)*(s*2-6),z=(grassRandom()-.5)*(s*2-6);
+   if(Math.max(Math.abs(x),Math.abs(z))<s*.52||!free(x,z,.45)||arena.indoors({x,y:.05,z}))continue;
+   if(paved.some(p=>Math.abs(x-p.x)<p.w/2+.25&&Math.abs(z-p.z)<p.d/2+.25))continue;
+   const size=.4+grassRandom()*.45,tint=id===2?[.95,.88,.69]:[.86,.82,.68];
+   plant(x,z,size,2,0,tint,grassRandom);planted++;
+  }
  }
  const treeSpots=[[-s+3,-s*.45],[-s*.4,-s+3],[s*.42,s-3],[s-3,s*.4],[-s+3,s*.55],[s-3,-s*.6]];
  if(id!==1&&id!==4&&id!==6)for(const [x,z]of treeSpots)if(free(x,z,.65)){
