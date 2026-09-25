@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=36';
-import {rng} from './math.js?v=36';
+import {prepareGroundSurfaces} from './surface-placement.js?v=37';
+import {rng} from './math.js?v=37';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -22,7 +22,7 @@ export function dressWorld(arena){
  };
  const conifer=(x,z,h=7)=>{
   add(x,h*.38,z,.24,h*.76,.24,'bark',{mesh:'cylinder'});
-  add(x,h*.57,z,h*.65,h*.86,h*.65,'green',{mesh:'conifer',color:[.30,.43,.35],rough:1});
+  add(x,h*.57,z,h*.65,h*.86,h*.65,'green',{mesh:'conifer',color:[1,1,1],rough:1});
  };
  const free=(x,z,margin=1)=>!arena.collides({x,y:.02,z},margin,2)&&arena.spawns.every(p=>Math.hypot(p.x-x,p.z-z)>3.2)&&arena.objectives.every(p=>Math.hypot(p.x-x,p.z-z)>4.2);
  // Break up the ground with roads, shoulders and shallow drainage strips.

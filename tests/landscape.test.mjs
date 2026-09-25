@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Arena,MAPS} from '../dist/js/maps.js';
-import {ridgeMesh,ridgeTint,coniferMesh} from '../dist/js/meshes.js';
+import {ridgeMesh,ridgeTint,coniferMesh,coniferTint} from '../dist/js/meshes.js';
 import {CompatibilityRenderer} from '../dist/js/compatibility-renderer.js';
 import {identity} from '../dist/js/math.js';
 import {fixture} from './renderer-fixture.mjs';
@@ -73,4 +73,20 @@ test('Frostline conifers have outward boughs and replace alpha-card canopy',()=>
  const fallback=Object.create(CompatibilityRenderer.prototype);
  fallback.arena=arena;fallback.matrix=identity();fallback.meshes={conifer:mesh};
  assert.equal(fallback.box(conifers[0]).length,45);
+});
+
+test('snow-dusted conifers share a finite colour ramp in WebGL and Canvas',()=>{
+ const low=coniferTint(-.43),high=coniferTint(.5);
+ assert(high.every((v,i)=>v>low[i]&&v<=1));
+ const arena=new Arena(8),renderer=fixture();renderer.arena=arena;renderer.buildWorld();
+ const crown=renderer.worldBatches.find(b=>b.userData.parts[0].mesh==='conifer');
+ const color=crown.geometry.getAttribute('color'),position=crown.geometry.getAttribute('position');
+ assert.equal(color.count,position.count);assert.equal(crown.material.vertexColors,true);
+ assert(color.array.every(v=>Number.isFinite(v)&&v>=0&&v<=1));
+ const fallback=Object.create(CompatibilityRenderer.prototype);
+ fallback.arena=arena;fallback.matrix=identity();fallback.meshes={conifer:coniferMesh()};
+ const faces=fallback.box(arena.decor.find(p=>p.mesh==='conifer'));
+ const top=faces.filter(f=>f.centre.y>arena.decor.find(p=>p.mesh==='conifer').y+1);
+ const bottom=faces.filter(f=>f.centre.y<arena.decor.find(p=>p.mesh==='conifer').y-1);
+ assert(top.length&&bottom.length);assert(top.some(f=>f.color[0]>bottom[0].color[0]));
 });

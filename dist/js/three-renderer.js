@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=36';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=36';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=36';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=36';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=36';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=36';
-import {DecalSystem} from './decal-system.js?v=36';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=36';
-import {LightingField} from './lighting-field.js?v=36';
-import {RoomLights} from './room-lights.js?v=36';
-import {waterMaterial,patchWater} from './water-material.js?v=36';
-import {visualGroundHeight} from './surface-placement.js?v=36';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=36';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=36';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=36';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=36';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=37';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=37';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=37';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=37';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=37';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=37';
+import {DecalSystem} from './decal-system.js?v=37';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=37';
+import {LightingField} from './lighting-field.js?v=37';
+import {RoomLights} from './room-lights.js?v=37';
+import {waterMaterial,patchWater} from './water-material.js?v=37';
+import {visualGroundHeight} from './surface-placement.js?v=37';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=37';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=37';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=37';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=37';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=36';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=36';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh } from './meshes.js?v=36';
-import { loadImages } from './textures.js?v=36';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=36';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=36';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=36';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=37';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=37';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint } from './meshes.js?v=37';
+import { loadImages } from './textures.js?v=37';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=37';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=37';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=37';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -104,6 +104,9 @@ export class Renderer {
       conifer:bufferGeometry(coniferMesh())
     };
     for(const [kind,g] of Object.entries(this.geometry))installMetricUV(g,kind);
+    const crown=this.geometry.conifer.getAttribute('position'),crownColors=new Float32Array(crown.count*3),crownColor=new THREE.Color();
+    for(let i=0;i<crown.count;i++){crownColor.setRGB(...coniferTint(crown.getY(i)),THREE.SRGBColorSpace);crownColors.set(crownColor.toArray(),i*3);}
+    this.geometry.conifer.setAttribute('color',new THREE.BufferAttribute(crownColors,3));
     // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.
     const leafUV = this.geometry.leaf.getAttribute('uv');
     for (let i = 0; i < leafUV.count; i++) leafUV.setY(i, 1 - leafUV.getY(i));
@@ -219,7 +222,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.mesh==='ridge'?'ridge':'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.mesh==='ridge'||p.mesh==='conifer'?p.mesh:'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -228,7 +231,7 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { dithering: true, color: 0xffffff, vertexColors:p.mesh==='ridge', roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
+    const options = { dithering: true, color: 0xffffff, vertexColors:p.mesh==='ridge'||p.mesh==='conifer', roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };

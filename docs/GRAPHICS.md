@@ -2,6 +2,10 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 37: snow-dusted canopy
+
+Frostline's new conifers now graduate from dark evergreen lower boughs to restrained snow on the upper tips. A shared sRGB height ramp drives a static 1.6 KiB vertex colour attribute on the 45-triangle bough geometry and matching Canvas face tint. This introduces no texture, geometry, additional batch or alpha pass compared with release 36; the total world and shadow scene counts remain the release 36 profile. The new material variant is confined to conifers.
+
 ## Release 36: alpine conifer silhouettes
 
 Frostline's broadleaf trees have been replaced with original three-tier, five-sided conifers. Each opaque bough mesh has 45 triangles and uses the existing surface atlas. A separate slender bark trunk retains the human-scale tree shape. The same authored geometry is used by WebGL and the Canvas fallback. This reduces transparent canopy overdraw on that map, although the effect on GPU time is unmeasured.

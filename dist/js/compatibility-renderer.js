@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=36';
-import {identityFor} from './combat-identity.js?v=36';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=36';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=36';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh} from './meshes.js?v=36';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=36';
-import {loadImages} from './textures.js?v=36';
-import {weatherParticles} from './particles.js?v=36';
+import {animateWeaponParts} from './weapon-models.js?v=37';
+import {identityFor} from './combat-identity.js?v=37';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=37';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=37';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint} from './meshes.js?v=37';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=37';
+import {loadImages} from './textures.js?v=37';
+import {weatherParticles} from './particles.js?v=37';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -35,15 +35,15 @@ export class CompatibilityRenderer {
   const transform=c=>({x:m[0]*c[0]+m[4]*c[1]+m[8]*c[2]+m[12],y:m[1]*c[0]+m[5]*c[1]+m[9]*c[2]+m[13],z:m[2]*c[0]+m[6]*c[1]+m[10]*c[2]+m[14]});
   const normal=n=>{let x=m[0]*n[0]/p.w+m[4]*n[1]/p.h+m[8]*n[2]/p.d,y=m[1]*n[0]/p.w+m[5]*n[1]/p.h+m[9]*n[2]/p.d,z=m[2]*n[0]/p.w+m[6]*n[1]/p.h+m[10]*n[2]/p.d,l=Math.hypot(x,y,z)||1;return{x:x/l,y:y/l,z:z/l};};
   const mat=material(p),sun=this.arena.info.sun,polygons=[],leaf=p.leaf!==undefined;
-  const push=(points,n,uvs)=>{
+  const push=(points,n,uvs,tint)=>{
    const light=.38+Math.max(0,n.x*sun[0]+n.y*sun[1]+n.z*sun[2])*.67+(mat.emissive||0)*.25;
    const tile=mat.pattern>0?mat.pattern-1:-1,scale=parent?9:.42;
    const u=uvs??points.map(q=>Math.abs(n.y)>.65?[q.x*scale,q.z*scale]:Math.abs(n.x)>Math.abs(n.z)?[q.z*scale,q.y*scale]:[q.x*scale,q.y*scale]);
-   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));const base=p.mesh==='ridge'?ridgeTint(centre.y,this.arena.info.id):mat.color;polygons.push({centre,radius,points,normal:n,color:base.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,landscape:p.landscape,tile,leaf:p.leaf,uvs:u,shade:light});
+   const centre={x:0,y:0,z:0};for(const q of points){centre.x+=q.x/points.length;centre.y+=q.y/points.length;centre.z+=q.z/points.length;}let radius=0;for(const q of points)radius=Math.max(radius,Math.hypot(q.x-centre.x,q.y-centre.y,q.z-centre.z));const base=tint??(p.mesh==='ridge'?ridgeTint(centre.y,this.arena.info.id):mat.color);polygons.push({centre,radius,points,normal:n,color:base.map(v=>clamp(Math.pow(v*light,.65)*255,0,255)),ground:p.ground,landscape:p.landscape,tile,leaf:p.leaf,uvs:u,shade:light});
   };
   // Large architectural surfaces remain quads; visible curved details use shared meshes.
   const mesh=this.meshes[p.mesh];
-  if(mesh){for(let i=0;i<mesh.length;i+=24){const points=[0,8,16].map(o=>transform([mesh[i+o],mesh[i+o+1],mesh[i+o+2]])),n=normal([(mesh[i+3]+mesh[i+11]+mesh[i+19])/3,(mesh[i+4]+mesh[i+12]+mesh[i+20])/3,(mesh[i+5]+mesh[i+13]+mesh[i+21])/3]);push(points,n,leaf?[0,8,16].map(o=>[mesh[i+o+6],mesh[i+o+7]]):null);}}
+  if(mesh){for(let i=0;i<mesh.length;i+=24){const points=[0,8,16].map(o=>transform([mesh[i+o],mesh[i+o+1],mesh[i+o+2]])),n=normal([(mesh[i+3]+mesh[i+11]+mesh[i+19])/3,(mesh[i+4]+mesh[i+12]+mesh[i+20])/3,(mesh[i+5]+mesh[i+13]+mesh[i+21])/3]);push(points,n,leaf?[0,8,16].map(o=>[mesh[i+o+6],mesh[i+o+7]]):null,p.mesh==='conifer'?coniferTint((mesh[i+1]+mesh[i+9]+mesh[i+17])/3):null);}}
   else{const points=corners.map(transform);for(let i=0;i<faces.length;i++)push(faces[i].map(i=>points[i]),normal(normals[i]));}
   return polygons;
  }

@@ -201,3 +201,9 @@ Nine distant ridges now use vertex colours for dark foothills, light peaks and F
 Frostline's near and perimeter trees now use opaque, tiered conifer crowns and slender bark trunks. Both renderers share one original 45-triangle crown mesh, and the trees use the existing surface atlas. The seeded ten-map profile changes from 1,302 to 1,310 world batches, 175,874 to 176,030 visible world triangles and 151,120 to 151,435 shadow-caster triangles. The small increase is isolated to Frostline; transparent tree canopy cards were removed there. The scene profile does not estimate the saved alpha overdraw or measure iPhone GPU time.
 
 Release 36 verification: 171/171 automated tests and JavaScript syntax checks passed, including bough winding, complete Frostline scene construction and Canvas conifer geometry. The packaged check still requires the icon missing from this local handoff.
+
+## Release 37: snow on conifer boughs
+
+Frostline crowns now use a gradual evergreen-to-snow vertex tint on their upper boughs. Canvas fallback shades from the same source palette. The static colour attribute adds about 1.6 KiB for the shared mesh, without another texture, polygon or batch. The scene counts remain as profiled for release 36. A physical iPhone visual and frame check remains outstanding.
+
+Release 37 verification: 172/172 automated tests and JavaScript syntax checks passed. A specific renderer regression checks finite vertex colours, a distinct conifer material and equivalent Canvas shading.

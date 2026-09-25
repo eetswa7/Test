@@ -4,7 +4,7 @@ import {Renderer,isFriendly,neutraliseFinish} from '../dist/js/three-renderer.js
 import {Arena,MAPS} from '../dist/js/maps.js';
 import {Weapon} from '../dist/js/weapons.js';
 import {makeCube,makeCylinder,makeSphere,part} from '../dist/js/geometry.js';
-import {roundedBox,tube,leafCard,rockMesh,groundSurface,coniferMesh} from '../dist/js/meshes.js';
+import {roundedBox,tube,leafCard,rockMesh,groundSurface,coniferMesh,coniferTint} from '../dist/js/meshes.js';
 import {direction} from '../dist/js/math.js';
 import {LightingField} from '../dist/js/lighting-field.js';
 import {RoomLights} from '../dist/js/room-lights.js';
@@ -20,5 +20,8 @@ export function fixture(){
   const g=new THREE.BufferGeometry(),b=new THREE.InterleavedBuffer(make(),8);
   g.setAttribute('position',new THREE.InterleavedBufferAttribute(b,3,0));g.setAttribute('normal',new THREE.InterleavedBufferAttribute(b,3,3));g.setAttribute('uv',new THREE.InterleavedBufferAttribute(b,2,6));r.geometry[key]=installMetricUV(g,key);
  }
+ const crown=r.geometry.conifer.getAttribute('position'),colors=new Float32Array(crown.count*3),color=new THREE.Color();
+ for(let i=0;i<crown.count;i++){color.setRGB(...coniferTint(crown.getY(i)),THREE.SRGBColorSpace);colors.set(color.toArray(),i*3);}
+ r.geometry.conifer.setAttribute('color',new THREE.BufferAttribute(colors,3));
  return r;
 }

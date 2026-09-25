@@ -104,3 +104,9 @@ export function coniferMesh(){
  }
  return new Float32Array(out);
 }
+
+export function coniferTint(height){
+ const t=Math.max(0,Math.min(1,(height-.02)/.46));
+ const snow=t*t*(3-2*t)*.7;
+ return [.31,.44,.36].map((v,i)=>v+([.79,.87,.87][i]-v)*snow);
+}
