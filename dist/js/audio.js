@@ -1,4 +1,4 @@
-import {WEAPONS} from './weapons.js?v=31';
+import {WEAPONS} from './weapons.js?v=32';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -48,6 +48,8 @@ export class AudioSystem {
   synth('stepHard',.17,(t,n,low)=>low*Math.exp(-t*32)*.9+Math.sin(t*730)*Math.exp(-t*55)*.16);
   synth('stepGravel',.20,(t,n,low)=>(n*.12+low*.58)*Math.exp(-t*24)+Math.sin(t*520)*Math.exp(-t*48)*.065);
   synth('stepSoft',.17,(t,n,low)=>low*Math.exp(-t*23)*.47+Math.sin(t*450)*Math.exp(-t*43)*.053);
+  synth('stepSnow',.23,(t,n,low)=>low*1.08*Math.exp(-t*19)+(n-low)*(.18*Math.exp(-t*70)+.05*Math.exp(-t*10))+Math.sin(t*1910+Math.sin(t*18)*.018)*Math.exp(-t*38)*.035,7183);
+  synth('stepQuarry',.20,(t,n,low)=>(n-low)*.18*Math.exp(-t*76)+low*.52*Math.exp(-t*26)+Math.sin(t*4021)*Math.exp(-t*46)*.047,1949);
   synth('impactMetal',.28,(t,n,low)=>(n-low)*Math.exp(-t*160)*.24+(Math.sin(t*9420)+Math.sin(t*15437)*.42)*Math.exp(-t*36)*.10);
   synth('impactStone',.20,(t,n,low)=>n*Math.exp(-t*95)*.21+low*Math.exp(-t*24)*.23);
   synth('impactWood',.18,(t,n,low)=>low*Math.exp(-t*47)*.34+Math.sin(t*3370)*Math.exp(-t*84)*.10);
@@ -86,7 +88,7 @@ export class AudioSystem {
    const pan=e.position?Math.sin(Math.atan2(dx,-dz)-game.player.yaw):0;
    switch(e.type){
     case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:own});if(own)this.haptic(8);break;
-    case 'step':if(d<24){const hard=game.arena.indoors(e.position),soft=game.arena.info?.tag==='MIXED'||game.arena.info?.tag==='FOREST';this.play(hard?'stepHard':soft?'stepSoft':'stepGravel',{volume:volume*(own?.28:.48)*(e.value??1),pan,rate:.91+Math.random()*.16,distance:d});}break;
+    case 'step':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST');const sound=hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(own?.28:.48)*(e.value??1),pan,rate:.91+Math.random()*.16,distance:d});}break;
     case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d});}break;
     case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true});if(d<14)this.haptic(30);break;
     case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime)});break;}

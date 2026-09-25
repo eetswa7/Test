@@ -173,3 +173,9 @@ Capture the Flag adds team flag bases, touch pickup and return, death drops, a 2
 Frostline now has sparse wind-blown snow and Iron Quarry has drifting grit. A shared deterministic camera-space weather field feeds Three.js billboards and small, depth-sorted Canvas particles, with roof-aware shelter and counts tuned to graphics quality. The effect uses the existing particle pool and adds no textures, GPU passes or unbounded objects. README map/mode counts were corrected to the current ten battlegrounds and eight modes.
 
 Release 31 verification: 165/165 automated regressions and JavaScript syntax checks passed. Weather tests cover deterministic motion, quality limits, finite view-local positions, map selection and roof shelter. Packaged static checks remain blocked in this handoff because `dist/icon-192.png` is missing; remote image assets were not changed.
+
+## Release 32: surface-aware footstep sound
+
+Frostline and Iron Quarry now use distinct synthesized snow-crunch and stone-grit step profiles for player and NPC movement. Indoor routes on both maps keep the harder enclosed-room sound; the other map profiles are unchanged. A focused routing regression checks alpine snow, quarry grit, indoor hard surfaces and forest soft ground.
+
+The routing regression also exposed Canopy's existing `FOREST BASE` tag mismatch, which sent its outdoor footsteps to the gravel profile. Forest routes now select the soft-ground sample. Release 32 verification: 166/166 automated tests and JavaScript syntax checks passed after advancing the offline shell. The packaged static checker still requires the missing local icon image to run.
