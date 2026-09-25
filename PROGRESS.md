@@ -167,3 +167,9 @@ Release 29 verification: 157/157 automated regressions and JavaScript syntax che
 ## Release 30: Capture the Flag and grounded objective routing
 
 Capture the Flag adds team flag bases, touch pickup and return, death drops, a 25-second automatic return, captures only while your own flag is home, and a three-capture limit. Bots carry, escort, recover and return to base. The radar, objective strip, capture feed, per-player capture table and both renderers show flag state; the Three.js renderer adds animated, team-coloured cloth. A navigation nearest-node fix keeps ground actors from snapping onto a nearby room roof when an occupied grid cell has only an upper-floor node.
+
+## Release 31: wind-driven map weather
+
+Frostline now has sparse wind-blown snow and Iron Quarry has drifting grit. A shared deterministic camera-space weather field feeds Three.js billboards and small, depth-sorted Canvas particles, with roof-aware shelter and counts tuned to graphics quality. The effect uses the existing particle pool and adds no textures, GPU passes or unbounded objects. README map/mode counts were corrected to the current ten battlegrounds and eight modes.
+
+Release 31 verification: 165/165 automated regressions and JavaScript syntax checks passed. Weather tests cover deterministic motion, quality limits, finite view-local positions, map selection and roof shelter. Packaged static checks remain blocked in this handoff because `dist/icon-192.png` is missing; remote image assets were not changed.

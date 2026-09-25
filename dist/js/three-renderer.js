@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=30';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=30';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=30';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=30';
-import {billboardVertex,billboardFragment,ambientDust} from './particles.js?v=30';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=30';
-import {DecalSystem} from './decal-system.js?v=30';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=30';
-import {LightingField} from './lighting-field.js?v=30';
-import {RoomLights} from './room-lights.js?v=30';
-import {waterMaterial,patchWater} from './water-material.js?v=30';
-import {visualGroundHeight} from './surface-placement.js?v=30';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=30';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=30';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=30';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=30';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=31';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=31';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=31';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=31';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=31';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=31';
+import {DecalSystem} from './decal-system.js?v=31';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=31';
+import {LightingField} from './lighting-field.js?v=31';
+import {RoomLights} from './room-lights.js?v=31';
+import {waterMaterial,patchWater} from './water-material.js?v=31';
+import {visualGroundHeight} from './surface-placement.js?v=31';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=31';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=31';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=31';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=31';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=30';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=30';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=30';
-import { loadImages } from './textures.js?v=30';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=30';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=30';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=30';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=31';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=31';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface } from './meshes.js?v=31';
+import { loadImages } from './textures.js?v=31';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=31';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=31';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=31';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -598,6 +598,7 @@ export class Renderer {
           smoke.y + 1.25 + i % 3 * .48, smoke.z + Math.cos(angle) * radius * .34,
           radius * 1.7, 3.7, .38, .41, .40, opacity, 0); }
     }
+    for(const p of weatherParticles(this,game.time??0))count=this.writeBillboard(count,p.x,p.y,p.z,p.sizeX,p.sizeY,...p.color,p.alpha,p.kind);
     count=ambientDust(this,count,game.time??0);
     this.fxMesh.geometry.instanceCount = count;
     if (count) for (const attr of this.fxAttributeList) {
@@ -777,6 +778,7 @@ export class Renderer {
       const d = direction(yaw, pitch); this.target.set(this.eye.x + d.x, this.eye.y + d.y, this.eye.z + d.z);
       fov = verticalFov(aimFov(this.settings.fov ?? 80, p.weapon, p.ads), aspect) / RAD;
     }
+    this.weatherYaw=yaw;this.weatherPitch=pitch;
     this.camera.position.set(this.eye.x, this.eye.y, this.eye.z); this.camera.lookAt(this.target);
     this.camera.fov = fov; this.camera.aspect = aspect; this.camera.updateProjectionMatrix(); this.camera.updateMatrixWorld();
     this.worldVP.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);

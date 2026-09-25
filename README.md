@@ -39,7 +39,7 @@ Movement, looking and firing use independent pointer tracking. Settings include 
 
 ## Content
 
-Seven fully simulated player-versus-bot modes:
+Eight fully simulated player-versus-bot modes:
 
 | Mode | Rules |
 | --- | --- |
@@ -52,7 +52,7 @@ Seven fully simulated player-versus-bot modes:
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 | Capture the Flag | Steal the enemy flag, carry it home while your flag is safe, return dropped allied flags; first to three captures |
 
-Ten battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** and **Iron Quarry**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Ten battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** and **Iron Quarry**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
 The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, two marksman rifles, an LMG, two pistols and a field blade. The Mako 7 adds a deliberate semi-automatic long-range option. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
@@ -121,11 +121,11 @@ Verification for that expansion: 100 regression tests, including native touch re
 
 The joystick has independent window-level pointer release and native touch-contact reconciliation. It recovers from failed capture, interrupted touches, reused pointer IDs and page backgrounding without pausing the match. Native TouchLists are accessed by index; release handling preserves the other thumb's held fire/aim and does not time out a stationary held stick. A small dead zone removes accidental thumb drift.
 
-Respawns use 95–144 connected ground pockets per map. Threat scoring prefers shelter, avoids nearby enemies, recent deaths, repeated positions, occupied pockets and live grenades, and lets team spawn regions move when the fight shifts. Round starts preserve team separation. All six maps gain freestanding sightline screens with multiple escape directions; Foundry and Relay gain side loading doors. Static clearance is baked once, and at most 24 shortlisted pockets receive visibility checks per respawn. Container measurements across maps were 0.96–2.10 ms median and 1.46–3.47 ms p95; these are not iPhone timings.
+Respawns use 95–144 connected ground pockets per map. Threat scoring prefers shelter, avoids nearby enemies, recent deaths, repeated positions, occupied pockets and live grenades, and lets team spawn regions move when the fight shifts. Round starts preserve team separation. Maps gain freestanding sightline screens with multiple escape directions; Foundry and Relay gain side loading doors. Static clearance is baked once, and at most 24 shortlisted pockets receive visibility checks per respawn. Container measurements across maps were 0.96–2.10 ms median and 1.46–3.47 ms p95; these are not iPhone timings.
 
 A new original ultra-realistic 2×2 material atlas provides anodised metal, sand ceramic coating, woven gloves and stippled polymer. The model material system derives normal and roughness detail and preserves colour/wear contrast. Weapon lighting follows world sunlight and dims reflections indoors. Reloads now distinguish tactical and empty magazines, top-loading mechanisms, empty pistol slides, pump shells and LMG feed covers. Smooth stride integration avoids viewmodel snapping when speed changes; fully aimed sights stay centred. Audio reserves voices for the player's weapon and hit confirmations.
 
-Rendering reuses unchanged instance transforms, sends occupied buffer ranges and skips idle weapon uploads. Actor bevel triangles fall 75%, world bevel triangles 43.75%; distant actor detail and overlapping smoke layers are reduced. Shadow projection snaps to texels. These savings are measured geometry and buffer costs, not FPS claims. All gameplay, six maps, seven modes, equipment, loadouts, local progression and two-thumb controls are retained.
+Rendering reuses unchanged instance transforms, sends occupied buffer ranges and skips idle weapon uploads. Actor bevel triangles fall 75%, world bevel triangles 43.75%; distant actor detail and overlapping smoke layers are reduced. Shadow projection snaps to texels. These savings are measured geometry and buffer costs, not FPS claims. All gameplay, ten maps, eight modes, equipment, loadouts, local progression and two-thumb controls are retained.
 
 Each deployment advances the complete offline release using `node scripts/release.mjs <number>` before static validation, committing and publishing. This prevents an installed copy combining assets from different checkpoints. Touch handling follows [Pointer Events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events) and the native [TouchList interface](https://developer.mozilla.org/en-US/docs/Web/API/TouchList).
 

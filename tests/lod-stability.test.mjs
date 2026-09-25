@@ -8,7 +8,7 @@ import {weaponPose,sightHeight} from '../dist/js/aim.js';
 import {Weapon} from '../dist/js/weapons.js';
 import {orientWeaponEnvironment} from '../dist/js/environment-probes.js';
 import {DecalSystem} from '../dist/js/decal-system.js';
-import {ambientDust} from '../dist/js/particles.js';
+import {ambientDust,weatherParticles} from '../dist/js/particles.js';
 
 test('detail thresholds use hysteresis to avoid boundary flicker',()=>{
  assert.equal(detailVisible(true,.8),true);assert.equal(detailVisible(false,.8),false);
@@ -50,4 +50,13 @@ test('ambient dust stays inside lit rooms and shares a bounded billboard pool',(
  const r={nearestLights:[{x:0,y:3,z:0}],weaponLampVisible:true,quality:'ultra',arena:{indoors:()=>true},eye:{},writeBillboard:n=>Math.min(280,n+1)};
  assert.equal(ambientDust(r,200,1),210);r.quality='medium';assert.equal(ambientDust(r,200,1),200);
  r.quality='high';assert.equal(ambientDust(r,200,1),206);r.weaponLampVisible=false;assert.equal(ambientDust(r,200,1),200);
+});
+test('map weather is deterministic, view-local, quality bounded and absent under roofs',()=>{
+ const r={quality:'high',arena:{info:{id:8},indoors:()=>false},eye:{x:4,y:2,z:-3},weatherYaw:.7,weatherPitch:.1};
+ const first=weatherParticles(r,12),again=weatherParticles(r,12),later=weatherParticles(r,13);
+ assert.equal(first.length,14);assert.deepEqual(first,again);assert.notDeepEqual(first,later);
+ for(const p of first){assert(Object.values(p).filter(v=>typeof v==='number').every(Number.isFinite));assert(p.y>r.eye.y-8&&p.y<r.eye.y+12);}
+ r.quality='low';assert.equal(weatherParticles(r,12).length,5);r.quality='ultra';assert.equal(weatherParticles(r,12).length,18);
+ r.arena={info:{id:0},indoors:()=>false};assert.deepEqual(weatherParticles(r,12),[]);
+ r.arena={info:{id:9},indoors:()=>true};assert.deepEqual(weatherParticles(r,12),[]);
 });
