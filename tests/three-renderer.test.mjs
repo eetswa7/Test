@@ -12,7 +12,7 @@ import {direction} from '../dist/js/math.js';
 // deliberately replaced; these tests do not claim a device or shader compile.
 import {fixture} from './renderer-fixture.mjs';
 
-test('all eight maps build complete finite Three instances and release replaced batches',()=>{
+test('all ten maps build complete finite Three instances and release replaced batches',()=>{
  const r=fixture();let disposed=0;
  for(const info of MAPS){
   const oldCount=r.worldBatches.length;r.arena=new Arena(info.id);r.buildWorld();

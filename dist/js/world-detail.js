@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=28';
-import {rng} from './math.js?v=28';
+import {prepareGroundSurfaces} from './surface-placement.js?v=29';
+import {rng} from './math.js?v=29';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -22,7 +22,7 @@ export function dressWorld(arena){
  };
  const free=(x,z,margin=1)=>!arena.collides({x,y:.02,z},margin,2)&&arena.spawns.every(p=>Math.hypot(p.x-x,p.z-z)>3.2)&&arena.objectives.every(p=>Math.hypot(p.x-x,p.z-z)>4.2);
  // Break up the ground with roads, shoulders and shallow drainage strips.
- if(id===0||id===3||id===5||id===7){
+ if(id===0||id===3||id===5||id===7||id===8||id===9){
   for(const x of [-s*.66,s*.66])add(x,.011,0,4.3,.012,s*2-2,'asphalt');
   for(const z of [-s*.63,s*.63])add(0,.013,z,s*2-2,.012,3.7,'asphalt');
   for(const x of [-s*.66-2.3,s*.66+2.3])add(x,.07,0,.24,.14,s*2-2,'concrete',{mesh:'bevel'});
@@ -77,14 +77,14 @@ export function dressWorld(arena){
  const treeSpots=[[-s+3,-s*.45],[-s*.4,-s+3],[s*.42,s-3],[s-3,s*.4],[-s+3,s*.55],[s-3,-s*.6]];
  if(id!==1&&id!==4&&id!==6)for(const [x,z]of treeSpots)if(free(x,z,.65)){
   arena.box(x,.8,z,.42,1.6,.42,'bark',{invisible:true});
-  if(id===3||id===5||id===7)tree(x,z,5+random()*2);else palm(x,z,5.5+random()*2.5);
+  if(id===3||id===5||id===7||id===8||id===9)tree(x,z,5+random()*2);else palm(x,z,5.5+random()*2.5);
   plant(x+.8,z,.65,3);
  }
  // Continuous surrounding hills and foliage replace the old rectangular skyline.
  for(let i=0;i<(id===4?0:30);i++){
   const angle=i/30*Math.PI*2,radius=s+17+random()*16,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
   const h=5+random()*13;add(x,h*.22-2,z,12+random()*12,h,13+random()*10,id===2?'limestone':'rock',{mesh:'rock',yaw:random()*6.28,color:id===2?[.92,.83,.65]:[.7,.76,.69]});
-  if(id!==1&&i%2===0){if(id===3||id===5||id===7)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
+  if(id!==1&&i%2===0){if(id===3||id===5||id===7||id===8||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
   if(i%2)plant(x,z,3+random()*2,0);
  }
  if(id===4){
@@ -147,6 +147,30 @@ export function dressWorld(arena){
    add(x,1.65,z,.065,1.14,.065,'steel');
    add(x,2.22,z,.065,.065,2.9,'steel');
   }
+ }
+ if(id===8){
+  // Wind-packed snowbanks and lit route markers give the listening post a colder silhouette.
+  for(const [x,z]of [[-34,-27],[-32,25],[33,-24],[35,28],[-7,-34],[8,34]]){
+   add(x,.28,z,5.2,.55,4.2,'snow',{mesh:'rock',yaw:random()*6.28,color:[.82,.89,.93]});
+   add(x,.62,z,2.8,.22,2.4,'white',{mesh:'rock',yaw:random()*6.28,color:[.92,.96,.98]});
+  }
+  for(const x of [-16,16])for(const z of [-31,31]){
+   add(x,1.8,z,.12,3.6,.12,'steel',{mesh:'cylinder'});
+   add(x,3.65,z,.32,.22,.32,'orange',{mesh:'sphere',emissive:.55});
+  }
+ }
+ if(id===9){
+  // Paired conveyor trestles point from the quarry shelves toward the crusher.
+  for(const sign of [-1,1]){
+   const x=sign*19;
+   add(x,5.4,0,.5,.5,32,'steel',{mesh:'bevel',pitch:sign*.08});
+   for(const z of [-13,0,13]){
+    add(x,2.7,z,.32,5.4,.32,'rust',{mesh:'bevel'});
+    add(x+sign*1.2,4.8,z,.10,4,.10,'steel',{mesh:'cylinder',roll:.4});
+   }
+   add(x,5.78,0,.72,.16,32,'dark');
+  }
+  for(const x of [-30,30])for(const z of [-25,25])add(x,.4,z,4.2,.8,3.4,'rock',{mesh:'rock',yaw:random()*6.28,color:[.73,.48,.31]});
  }
  // Light rubble, low planters and sandbags are chamfered to catch the sunlight.
  for(const b of arena.blocks){if(b.h>.7&&b.h<1.5&&!b.ground&&!b.stair&&!b.dock&&!b.overlook&&b.w>2){b.mesh='bevel';for(let i=0;i<Math.floor(b.w);i++)add(b.x-b.w/2+.6+i,b.y+b.h/2+.10,b.z,.82,.23,.54,'fabric',{mesh:'bevel',color:[.88,.8,.60]});}}

@@ -4,10 +4,17 @@ import {Arena,MAPS} from '../dist/js/maps.js';
 import {Navigation} from '../dist/js/navigation.js';
 
 const freshMaps=MAPS.filter(m=>m.id>=4);
-test('Breakwater and Citadel have unique themes and stable selectable map IDs',()=>{
- assert.equal(MAPS.length,8);assert.equal(new Set(MAPS.map(m=>m.id)).size,8);
+test('map roster includes ten distinct selectable battlegrounds',()=>{
+ assert.equal(MAPS.length,10);assert.equal(new Set(MAPS.map(m=>m.id)).size,10);
  assert.equal(new Arena(4).info.name,'BREAKWATER');assert.equal(new Arena(5).info.name,'CITADEL');
+ assert.equal(new Arena(8).info.name,'FROSTLINE');assert.equal(new Arena(9).info.name,'IRON QUARRY');
  assert.equal(new Arena(99).info.id,MAPS.length-1);assert.equal(new Arena(NaN).info.id,0);
+});
+test('Frostline and Iron Quarry use authored terrain and landmark dressing',()=>{
+ const frost=new Arena(8),quarry=new Arena(9);
+ assert.equal(frost.blocks.find(b=>b.ground).surface,'snow');assert.equal(quarry.blocks.find(b=>b.ground).surface,'gravel');
+ assert(frost.decor.some(p=>p.surface==='snow'));assert(quarry.decor.some(p=>p.surface==='dark'&&p.d===32));
+ assert(frost.info.sky[2]>quarry.info.sky[2]);assert.notDeepEqual(frost.info.fog,quarry.info.fog);
 });
 test('every new spawn is collision safe and reaches every ground objective',()=>{
  for(const m of freshMaps){

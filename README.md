@@ -47,11 +47,11 @@ Seven fully simulated player-versus-bot modes:
 | Free For All | Eight combatants, first to 20, respawns, 6-minute limit |
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
-| Gun Game | One elimination advances the weapon, 15 stages ending with a blade kill |
+| Gun Game | One elimination advances the weapon, 16 stages ending with a blade kill |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 
-Eight battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard** and **Canopy**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Ten battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** and **Iron Quarry**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Each has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
 The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, two marksman rifles, an LMG, two pistols and a field blade. The Mako 7 adds a deliberate semi-automatic long-range option. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
@@ -98,7 +98,7 @@ npm test
 npm run check
 ```
 
-The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all eight maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
+The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all ten maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
 
 Browser checks exercised launch, loadout persistence, deployment, touch actions, pause, match completion, results, restart, menu return and the layout editor. Layouts were inspected at 667 × 375, 844 × 390 and 932 × 430; switching to 390 × 844 displayed the rotation guard. These checks used compatibility graphics. The final revision’s browser recheck was blocked by the cloud browser URL policy; the final 48-test regression suite and static validation passed. Additional simulations reached completed TDM, Sabotage and Domination matches on Foundry, Dustline and Relay.
 

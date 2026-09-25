@@ -1,5 +1,5 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=28';
-import {dressWorld} from './world-detail.js?v=28';
+import {rng,rayBox,distance,clamp} from './math.js?v=29';
+import {dressWorld} from './world-detail.js?v=29';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -8,7 +8,9 @@ export const MAPS=[
  {id:4,name:'BREAKWATER',location:'Maritime repair terminal',size:39,weather:'sun',tag:'DOCKYARD',description:'A dry-dock crossing, raised service walks and a cargo warehouse.',sky:[.49,.64,.72],fog:[.58,.67,.69],sun:[-.7,.72,.22]},
  {id:5,name:'CITADEL',location:'Upland communications fortress',size:40,weather:'overcast',tag:'HIGHLANDS',description:'A four-way courtyard, covered approaches and a radar overlook.',sky:[.36,.49,.59],fog:[.47,.56,.58],sun:[.35,.81,-.46]},
  {id:6,name:'SWITCHYARD',location:'Rail freight interchange',size:38,weather:'overcast',tag:'RAIL TERMINAL',description:'Offset freight cars, a four-door depot and raised signal platform.',sky:[.38,.49,.58],fog:[.5,.56,.59],sun:[-.58,.75,.3]},
- {id:7,name:'CANOPY',location:'Forest research outpost',size:42,weather:'sun',tag:'FOREST BASE',description:'Interconnected cabins, a sheltered courtyard and an observation deck.',sky:[.4,.57,.66],fog:[.5,.62,.58],sun:[.55,.82,-.35]}
+ {id:7,name:'CANOPY',location:'Forest research outpost',size:42,weather:'sun',tag:'FOREST BASE',description:'Interconnected cabins, a sheltered courtyard and an observation deck.',sky:[.4,.57,.66],fog:[.5,.62,.58],sun:[.55,.82,-.35]},
+ {id:8,name:'FROSTLINE',location:'Alpine border station',size:42,weather:'overcast',tag:'ALPINE',description:'A snowbound listening post, radio beacon and split-level patrol routes.',sky:[.52,.64,.73],fog:[.68,.74,.78],sun:[-.48,.83,.24]},
+ {id:9,name:'IRON QUARRY',location:'Red Mesa extraction site',size:40,weather:'sun',tag:'QUARRY',description:'An abandoned stoneworks threaded by conveyors, drill shelters and broken lanes.',sky:[.57,.65,.68],fog:[.71,.68,.58],sun:[.55,.79,-.18]}
 ];
 export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.88,metal:.08,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.88,metal:0,pattern:1},blue:{color:[.12,.29,.37],rough:.66,metal:.05,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
 const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
@@ -18,7 +20,7 @@ Object.assign(SURFACES,{
  plaster:{color:[.94,.92,.84],rough:.94,metal:0,tile:1},limestone:{color:[.95,.9,.8],rough:.95,metal:0,tile:2},
  asphalt:{color:[.82,.87,.89],rough:.92,metal:0,tile:4},dirt:{color:[.95,.89,.77],rough:1,metal:0,tile:5},gravel:{color:[.9,.9,.85],rough:1,metal:0,tile:7},
  fabric:{color:[.8,.82,.71],rough:.98,metal:0,tile:9},rubber:{color:[.035,.044,.039],rough:.85,metal:0,tile:-1},skin:{color:[.41,.28,.19],rough:.82,metal:0,tile:-1},
- bark:{color:[.47,.38,.28],rough:1,metal:0,tile:15},rock:{color:[.86,.88,.82],rough:1,metal:0,tile:15},grass:{color:[.8,.89,.65],rough:1,metal:0,tile:13},moss:{color:[.8,.9,.67],rough:1,metal:0,tile:12},tiles:{color:[.9,.81,.70],rough:.85,metal:0,tile:14},brass:{color:[.55,.37,.12],rough:.33,metal:.9,tile:-1}
+ bark:{color:[.47,.38,.28],rough:1,metal:0,tile:15},rock:{color:[.86,.88,.82],rough:1,metal:0,tile:15},grass:{color:[.8,.89,.65],rough:1,metal:0,tile:13},moss:{color:[.8,.9,.67],rough:1,metal:0,tile:12},tiles:{color:[.9,.81,.70],rough:.85,metal:0,tile:14},snow:{color:[.78,.86,.91],rough:.92,metal:0,tile:1},brass:{color:[.55,.37,.12],rough:.33,metal:.9,tile:-1}
 });
 export class Arena {
  constructor(id=0){this.info=MAPS[Number.isFinite(id)?clamp(Math.floor(id),0,MAPS.length-1):0];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+this.info.id*511);this.build();dressWorld(this);this.bakeCollision();}
@@ -42,7 +44,7 @@ export class Arena {
  building(x,z,w,d,h=7,surface='stone'){this.box(x,h/2,z,w,h,d,surface);this.detail(x,h+.15,z,w+.45,.3,d+.45,'white');for(let y=2;y<h-.5;y+=2.2)for(let xx=x-w/2+1.2;xx<x+w/2-.6;xx+=2){for(const zz of [z-d/2-.015,z+d/2+.015]){this.detail(xx,y,zz,.8,1.1,.06,'glass');this.detail(xx,y-.62,zz,1,.1,.14,'white');}}this.detail(x+.5,h+.55,z,1.5,.8,1.2,'steel');}
  build(){
   const id=this.info.id,s=this.info.size;
-  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'dirt':id===3||id===5||id===7?'grass':id===4?'asphalt':'concrete',{ground:true});
+  this.box(0,-.2,0,s*2,.4,s*2,id===2?'sand':id===0?'dirt':id===3||id===5||id===7?'grass':id===4?'asphalt':id===8?'snow':id===9?'gravel':'concrete',{ground:true});
   for(const sign of [-1,1]){this.box(sign*s,id===4&&sign===1?.65:1.4,0,.8,id===4&&sign===1?1.3:2.8,s*2,id===4?'concrete':'plaster');this.box(0,1.4,sign*s,s*2,2.8,.8,'plaster');}
   this.spawns=[{x:-s+5,y:0,z:-s+5,team:0},{x:-s+9,y:0,z:-s+5,team:0},{x:-s+5,y:0,z:-s+9,team:0},{x:-s+10,y:0,z:-s+10,team:0},{x:s-5,y:0,z:s-5,team:1},{x:s-9,y:0,z:s-5,team:1},{x:s-5,y:0,z:s-9,team:1},{x:s-10,y:0,z:s-10,team:1},{x:-s+5,y:0,z:s-5,team:0},{x:s-5,y:0,z:-s+5,team:1}];
   this.objectives=[{name:'A',x:-s*.5,y:0,z:s*.28},{name:'B',x:0,y:0,z:0},{name:'C',x:s*.5,y:0,z:-s*.28}];
@@ -86,6 +88,8 @@ export class Arena {
   if(id===5)this.buildCitadel();
   if(id===6)this.buildSwitchyard();
   if(id===7)this.buildCanopy();
+  if(id===8)this.buildFrostline();
+  if(id===9)this.buildIronQuarry();
   this.improveFlow();
   // Set dressing stays separate from collision; small breakables have their own hit state.
   for(let i=0;i<26;i++){let x=(this.random()-.5)*(s*2-5),z=(this.random()-.5)*(s*2-5);if(this.collides({x,y:0,z},.6,1.9))continue;this.detail(x,.012,z,.06+this.random()*.22,.025,.1+this.random()*.15,'dark',{yaw:this.random()*6.28});}
@@ -205,6 +209,36 @@ export class Arena {
   for(const [x,z,t]of [[-13,-4,true],[14,4,true],[-9,25,false],[10,-30,false],[-31,2,true],[31,-1,true],[-27,-29,false],[28,29,false]])this.barrier(x,z,t);
   this.container(0,27,false,'green');for(const [x,z]of [[-18,-14],[19,14],[-17,19],[22,-19],[-4,5],[4,-5]])this.crate(x,z,2);
   this.objectives=[{name:'A',x:-22,y:0,z:1},{name:'B',x:0,y:0,z:0},{name:'C',x:23,y:0,z:-1}];
+ }
+ buildFrostline(){
+  // A radio station and patrol cabins frame three broad, snow-cleared routes.
+  this.room(-23,-16,12,12,3.7,'concrete',true,true);this.room(23,16,12,12,3.7,'concrete',true,true);
+  this.room(-22,18,10,9,3.2,'steel');this.room(22,-18,10,9,3.2,'steel',true,true);
+  for(const [x,z,t]of [[-11,-8,false],[11,8,false],[-9,12,true],[9,-12,true],[-29,8,true],[29,-8,true]])this.barrier(x,z,t);
+  this.container(-8,25,false,'white');this.container(8,-25,false,'green');
+  this.box(0,.52,0,3.2,1.04,3.2,'steel');
+  this.detail(0,2.2,0,.2,2.3,.2,'steel',{mesh:'cylinder'});
+  this.detail(0,3.5,0,2.2,.16,1.7,'white',{mesh:'sphere',color:[.77,.84,.87]});
+  this.detail(0,4.2,0,4.8,.08,.08,'orange');
+  for(const [x,z]of [[-18,10],[18,-10],[-30,-25],[30,25]])this.crate(x,z,2);
+  this.objectives=[{name:'A',x:-24,y:0,z:0},{name:'B',x:5,y:0,z:0},{name:'C',x:24,y:0,z:0}];
+ }
+ buildIronQuarry(){
+  // Stone crushers and loading shelters leave two broad flanks around the pit floor.
+  this.room(-22,-17,13,12,4.1,'stone',true,true);this.room(22,17,13,12,4.1,'steel');
+  this.room(-21,18,10,9,3.3,'concrete');this.room(21,-18,10,9,3.3,'concrete',true,true);
+  for(const [x,z,turn,surface]of [[-9,-24,false,'rust'],[9,24,false,'orange'],[-25,6,true,'steel'],[25,-6,true,'rust']])this.container(x,z,turn,surface);
+  for(const [x,z,t]of [[-10,-8,false],[10,8,false],[-8,13,true],[8,-13,true],[-29,-7,true],[29,7,true],[-14,27,false],[14,-27,false]])this.barrier(x,z,t);
+  // The crusher apron stays low so both bots and players can cross the centre.
+  this.box(0,.42,0,9,.84,9,'concrete');
+  for(const x of [-5.8,5.8]){
+   this.box(x,2.3,0,.42,4.6,1.2,'steel');
+   this.detail(x,4.7,0,.7,.25,1.4,'orange');
+  }
+  this.detail(0,3.7,0,11,.45,.65,'steel',{mesh:'bevel'});
+  this.detail(0,3.25,0,2.1,.12,2.1,'orange');
+  for(const [x,z]of [[-19,-2],[18,3],[-31,23],[31,-23],[-14,20],[14,-20]])this.crate(x,z,2);
+  this.objectives=[{name:'A',x:-24,y:0,z:0},{name:'B',x:5.2,y:0,z:0},{name:'C',x:24,y:0,z:0}];
  }
  bakeCollision(){
   // Expand by the largest gameplay capsule. Point queries then touch one bucket.
