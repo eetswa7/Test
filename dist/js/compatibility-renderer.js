@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=35';
-import {identityFor} from './combat-identity.js?v=35';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=35';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=35';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint} from './meshes.js?v=35';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=35';
-import {loadImages} from './textures.js?v=35';
-import {weatherParticles} from './particles.js?v=35';
+import {animateWeaponParts} from './weapon-models.js?v=36';
+import {identityFor} from './combat-identity.js?v=36';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=36';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=36';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh} from './meshes.js?v=36';
+import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=36';
+import {loadImages} from './textures.js?v=36';
+import {weatherParticles} from './particles.js?v=36';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -19,7 +19,7 @@ export class CompatibilityRenderer {
   this.canvas=canvas;this.settings=settings;this.ctx=canvas.getContext('2d',{alpha:false});if(!this.ctx)throw new Error('The browser could not create a drawing surface.');
   this.compatibility=true;this.quality='compatibility';this.fps=30;this.renderScale=.8;this.lost=false;this.drawCalls=0;this.frameAverage=16.7;this.lastRender=0;this.frames=0;this.fpsAge=0;
   this.matrix=identity();this.parent=identity();this.combined=identity();this.view=identity();this.weaponView=identity();this.eye={x:0,y:2,z:0};this.target={x:0,y:2,z:-1};this.weaponKey='';this.weaponParts=[];this.world=[];this.textures=[];this.leaves=[];this.patterns=[];
-  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard()};
+  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard(),conifer:coniferMesh()};
   this.ready=loadImages().then(images=>{this.images=images;this.extract(images.surfaces,4,this.textures);this.extract(images.leaves,2,this.leaves,true);this.patterns=this.textures.map(t=>this.ctx.createPattern(t,'repeat'));});
  }
  chooseQuality(){return 'compatibility';}

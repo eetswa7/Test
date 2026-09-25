@@ -84,3 +84,23 @@ export function ridgeTint(height,id){
  if(id===9)return mix([.45,.34,.29],[.78,.59,.44],smooth(-2,14));
  return mix([.39,.46,.43],[.76,.79,.72],smooth(-2,17));
 }
+
+// Three overlapping five-sided boughs keep a readable alpine tree silhouette
+// without transparent leaf cards or extra alpha overdraw.
+export function coniferMesh(){
+ const out=[],sides=5,turn=Math.PI*2;
+ const face=(a,b,c,uvs)=>{
+  const u=b.map((v,i)=>v-a[i]),v=c.map((q,i)=>q-a[i]);
+  const n=normalize([u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]);
+  tri(out,a,b,c,n,n,n,uvs);
+ };
+ for(const [lower,upper,radius]of [[-.43,.16,.5],[-.16,.35,.37],[.08,.5,.24]]){
+  for(let i=0;i<sides;i++){
+   const point=(j,y,r)=>{const angle=j/sides*turn;return [Math.cos(angle)*r,y,Math.sin(angle)*r];};
+   const a=point(i,lower,radius),b=point(i+1,lower,radius),c=point(i+1,upper,.018),d=point(i,upper,.018);
+   face(a,c,b,[[0,0],[1,1],[1,0]]);face(a,d,c,[[0,0],[0,1],[1,1]]);
+   face([0,lower,0],a,b,[[.5,.5],[1,0],[0,0]]);
+  }
+ }
+ return new Float32Array(out);
+}

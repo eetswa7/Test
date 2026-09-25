@@ -195,3 +195,9 @@ Seeded High-quality scene profiles across all ten maps show 1,544 → 1,302 worl
 ## Release 35: height-toned landscape
 
 Nine distant ridges now use vertex colours for dark foothills, light peaks and Frostline's snow cap. Dustline sandstone and Iron Quarry stone receive separate palettes. The Canvas fallback shares the same height ramp. Geometry, batch and shadow counts are unchanged; each ridgeline adds a static 13.5 KiB colour buffer and a separate material variant. Release 35 verification: 170/170 automated tests and JavaScript syntax checks passed. iPhone GPU time and appearance still require a device check.
+
+## Release 36: Frostline conifers
+
+Frostline's near and perimeter trees now use opaque, tiered conifer crowns and slender bark trunks. Both renderers share one original 45-triangle crown mesh, and the trees use the existing surface atlas. The seeded ten-map profile changes from 1,302 to 1,310 world batches, 175,874 to 176,030 visible world triangles and 151,120 to 151,435 shadow-caster triangles. The small increase is isolated to Frostline; transparent tree canopy cards were removed there. The scene profile does not estimate the saved alpha overdraw or measure iPhone GPU time.
+
+Release 36 verification: 171/171 automated tests and JavaScript syntax checks passed, including bough winding, complete Frostline scene construction and Canvas conifer geometry. The packaged check still requires the icon missing from this local handoff.

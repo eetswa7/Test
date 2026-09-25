@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=35';
-import {rng} from './math.js?v=35';
+import {prepareGroundSurfaces} from './surface-placement.js?v=36';
+import {rng} from './math.js?v=36';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -19,6 +19,10 @@ export function dressWorld(arena){
  const tree=(x,z,h=5)=>{
   add(x,h*.3,z,.3,h*.6,.3,'bark',{mesh:'cylinder'});
   for(let j=0;j<5;j++){const a=j*2.4;plant(x+Math.cos(a)*.7,z+Math.sin(a)*.7,h*.72,0,h*.3+(j%2)*.6);}
+ };
+ const conifer=(x,z,h=7)=>{
+  add(x,h*.38,z,.24,h*.76,.24,'bark',{mesh:'cylinder'});
+  add(x,h*.57,z,h*.65,h*.86,h*.65,'green',{mesh:'conifer',color:[.30,.43,.35],rough:1});
  };
  const free=(x,z,margin=1)=>!arena.collides({x,y:.02,z},margin,2)&&arena.spawns.every(p=>Math.hypot(p.x-x,p.z-z)>3.2)&&arena.objectives.every(p=>Math.hypot(p.x-x,p.z-z)>4.2);
  // Break up the ground with roads, shoulders and shallow drainage strips.
@@ -77,7 +81,8 @@ export function dressWorld(arena){
  const treeSpots=[[-s+3,-s*.45],[-s*.4,-s+3],[s*.42,s-3],[s-3,s*.4],[-s+3,s*.55],[s-3,-s*.6]];
  if(id!==1&&id!==4&&id!==6)for(const [x,z]of treeSpots)if(free(x,z,.65)){
   arena.box(x,.8,z,.42,1.6,.42,'bark',{invisible:true});
-  if(id===3||id===5||id===7||id===8||id===9)tree(x,z,5+random()*2);else palm(x,z,5.5+random()*2.5);
+  if(id===8)conifer(x,z,5+random()*2);
+  else if(id===3||id===5||id===7||id===9)tree(x,z,5+random()*2);else palm(x,z,5.5+random()*2.5);
   plant(x+.8,z,.65,3);
  }
  // A low-poly textured ridgeline has a continuous silhouette and fewer
@@ -87,7 +92,7 @@ export function dressWorld(arena){
   add(0,0,0,1,1,1,surface,{mesh:'ridge',color:[1,1,1],landscape:true});
   for(let i=0;i<30;i++){
    const angle=i/30*Math.PI*2,radius=s+6+random()*2,x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
-   if(id!==1&&i%2===0){if(id===3||id===5||id===7||id===8||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
+   if(id!==1&&i%2===0){if(id===8)conifer(x,z,7+random()*4);else if(id===3||id===5||id===7||id===9)tree(x,z,7+random()*4);else palm(x,z,7+random()*3);}
    if(i%2)plant(x,z,3+random()*2,0);
   }
  }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Arena,MAPS} from '../dist/js/maps.js';
-import {ridgeMesh,ridgeTint} from '../dist/js/meshes.js';
+import {ridgeMesh,ridgeTint,coniferMesh} from '../dist/js/meshes.js';
 import {CompatibilityRenderer} from '../dist/js/compatibility-renderer.js';
 import {identity} from '../dist/js/math.js';
 import {fixture} from './renderer-fixture.mjs';
@@ -56,4 +56,21 @@ test('ridge elevation adds pale snow caps and stable rock shading in both render
  fallback.arena=arena;fallback.matrix=identity();fallback.meshes={ridge:ridgeMesh(arena.info.size,arena.info.id)};
  const faces=fallback.box(arena.decor.find(p=>p.mesh==='ridge'));
  assert(new Set(faces.map(f=>f.color.map(Math.round).join(','))).size>20);
+});
+
+test('Frostline conifers have outward boughs and replace alpha-card canopy',()=>{
+ const mesh=coniferMesh();assert.equal(mesh.length/24,45);assert(mesh.every(Number.isFinite));
+ for(let i=0;i<mesh.length;i+=24){
+  const centre=[0,0,0];for(const offset of [0,8,16])for(let axis=0;axis<3;axis++)centre[axis]+=mesh[i+offset+axis]/3;
+  const normal=mesh.slice(i+3,i+6);
+  if(normal[1]>-.9)assert(centre[0]*normal[0]+centre[2]*normal[2]>0,'bough faces inward');
+ }
+ const arena=new Arena(8),conifers=arena.decor.filter(p=>p.mesh==='conifer');
+ assert(conifers.length>=15);assert(!arena.decor.some(p=>p.mesh==='leaf'));
+ const renderer=fixture();renderer.arena=arena;renderer.buildWorld();
+ const batch=renderer.worldBatches.find(b=>b.userData.parts[0].mesh==='conifer');
+ assert(batch);assert.equal(batch.geometry.getAttribute('position').count,mesh.length/8);
+ const fallback=Object.create(CompatibilityRenderer.prototype);
+ fallback.arena=arena;fallback.matrix=identity();fallback.meshes={conifer:mesh};
+ assert.equal(fallback.box(conifers[0]).length,45);
 });

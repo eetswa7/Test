@@ -1,27 +1,27 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=35';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=35';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=35';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=35';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=35';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=35';
-import {DecalSystem} from './decal-system.js?v=35';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=35';
-import {LightingField} from './lighting-field.js?v=35';
-import {RoomLights} from './room-lights.js?v=35';
-import {waterMaterial,patchWater} from './water-material.js?v=35';
-import {visualGroundHeight} from './surface-placement.js?v=35';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=35';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=35';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=35';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=35';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=36';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=36';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=36';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=36';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=36';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=36';
+import {DecalSystem} from './decal-system.js?v=36';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=36';
+import {LightingField} from './lighting-field.js?v=36';
+import {RoomLights} from './room-lights.js?v=36';
+import {waterMaterial,patchWater} from './water-material.js?v=36';
+import {visualGroundHeight} from './surface-placement.js?v=36';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=36';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=36';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=36';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=36';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=35';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=35';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint } from './meshes.js?v=35';
-import { loadImages } from './textures.js?v=35';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=35';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=35';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=35';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=36';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=36';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh } from './meshes.js?v=36';
+import { loadImages } from './textures.js?v=36';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob } from './aim.js?v=36';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=36';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=36';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -100,7 +100,8 @@ export class Renderer {
       cube: bufferGeometry(makeCube()),surface:bufferGeometry(groundSurface()), cylinder: bufferGeometry(makeCylinder(16)),
       sphere: bufferGeometry(makeSphere()), bevel: bufferGeometry(roundedBox(.1, 4)),
       bevelWorld: bufferGeometry(roundedBox(.08, 3)), bevelActor: bufferGeometry(roundedBox(.1, 2)),
-      tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh())
+      tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh()),
+      conifer:bufferGeometry(coniferMesh())
     };
     for(const [kind,g] of Object.entries(this.geometry))installMetricUV(g,kind);
     // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.

@@ -2,6 +2,12 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 36: alpine conifer silhouettes
+
+Frostline's broadleaf trees have been replaced with original three-tier, five-sided conifers. Each opaque bough mesh has 45 triangles and uses the existing surface atlas. A separate slender bark trunk retains the human-scale tree shape. The same authored geometry is used by WebGL and the Canvas fallback. This reduces transparent canopy overdraw on that map, although the effect on GPU time is unmeasured.
+
+Seeded High-quality scene profiles across all ten maps: [release 34](profile-release34.json) 1,302 world batches, 175,874 frustum-visible world triangles and 151,120 shadow-caster triangles; [release 36](profile-release36.json) 1,310, 176,030 and 151,435 respectively. All deltas are on Frostline (+8 batches, +156 visible triangles, +315 shadow-caster triangles). These are scene counts and cannot establish iPhone frame rate or power use.
+
 ## Release 35: elevation colour on distant terrain
 
 The continuous ridge now shades from dark foothills to pale crests using a static vertex colour attribute. Frostline gains a gradual snow cap above the stone shoulder; Dustline and Iron Quarry use distinct sandstone and warm quarry palettes. The Canvas fallback samples the same height palette per triangle. This adds about 13.5 KiB of uncompressed vertex colour data for each of nine ridge meshes, and no triangles, batches, shadow casters, texture requests, or post-process passes. The texture remains visible under the tint. The same scene profile reports 1,302 total world batches across ten maps; it does not measure fragment load, shader compilation, GPU time, or iPhone frame rate.
