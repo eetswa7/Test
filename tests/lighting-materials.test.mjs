@@ -4,7 +4,7 @@ import * as THREE from '../dist/vendor/three.module.min.js';
 import {Arena,MAPS} from '../dist/js/maps.js';
 import {bakeLightField,LightingField} from '../dist/js/lighting-field.js';
 import {deriveSurfaceData,patchSurfaceDetail} from '../dist/js/material-detail.js';
-import {environmentRadiance,interiorRadiance,roomProbeSelected,sampleCloud} from '../dist/js/environment-probes.js';
+import {environmentRadiance,interiorRadiance,roomProbeSelected,sampleCloud,sampleCloudColor} from '../dist/js/environment-probes.js';
 
 test('every map bakes a bounded finite light field with room and exterior contrast',()=>{
  for(const info of MAPS){const a=new Arena(info.id),f=bakeLightField(a);assert.equal(f.data.byteLength,16384);assert(f.data.every(Number.isFinite));
@@ -69,4 +69,12 @@ test('cloud sampling joins at the sky seam and fades at the pole',()=>{
  const m={width:2,height:2,data:new Float32Array([.2,.9,.4,.8])};
  assert.equal(sampleCloud(m,0,.4),sampleCloud(m,1,.4));assert.equal(sampleCloud(m,.3,1),0);
  const sun=environmentRadiance(MAPS[0],64,32,m),grey=environmentRadiance(MAPS[1],64,32,m);assert.notDeepEqual(sun.pixels,grey.pixels);
+});
+test('authored cloud luminance survives sky conversion with a continuous wrap',()=>{
+ const make=value=>({width:2,height:2,data:new Float32Array(4).fill(.9),rgba:new Uint8ClampedArray(16).fill(value)});
+ const dark=make(50),bright=make(220);
+ assert.deepEqual(sampleCloudColor(bright,0,.5),sampleCloudColor(bright,1,.5));
+ const low=environmentRadiance(MAPS[1],64,32,dark),high=environmentRadiance(MAPS[1],64,32,bright);
+ const index=(24*64+16)*4;
+ assert(THREE.DataUtils.fromHalfFloat(high.pixels[index])>THREE.DataUtils.fromHalfFloat(low.pixels[index])+.15);
 });

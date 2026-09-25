@@ -221,3 +221,9 @@ Release 38 verification: 175/175 automated tests pass, including full bot matche
 Dustline and Iron Quarry now have up to 55 more dry-grass clumps each beside the outer routes. The existing foliage atlas, batching and adaptive quality control handle the added cards. A separate seed ensures existing scenery stays put. Breakwater's water gains a third wave direction and intermittent shore wash in the existing opaque water material, without a geometry strip or extra pass. The seeded ten-map profile shows unchanged 1,334 world batches and 660 more visible/shadow triangles from the added grass. GPU time and alpha overdraw remain unmeasured.
 
 Release 39 verification: 176/176 automated tests, JavaScript syntax checks and the complete packaged-asset checker pass. The water shader composition and bounded perimeter grass placement have focused regressions.
+
+## Release 40: photographic cloud shading in the existing sky probe
+
+The HDR background and PMREM reflection probe now retain the packaged sky image's cloud brightness variation at a 512 × 192 sampling resolution. Mirrored horizontal sampling keeps the seam continuous and the photographic mountain horizon is cropped away, leaving the authored map terrain in control. The same 512 × 256 GPU sky texture and existing PMREM are used; extra sampling happens once at map load. A synthetic container loop measured about 18 ms before and 30 ms after for this conversion, not iPhone timing. A focused regression checks cloud luminance and wrapping.
+
+Release 40 verification: 177/177 automated tests, JavaScript syntax checks and the packaged checker for 44 modules and all local assets passed.

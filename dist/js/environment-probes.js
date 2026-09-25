@@ -1,7 +1,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 
-// Original HDR radiance, independent of the photographic background. One PMREM
-// per map load, never a cubemap capture during combat. 128 px cube faces.
+// HDR radiance combines each map's atmosphere with authored cloud shading. One
+// PMREM per map load, never a cubemap capture during combat. 128 px cube faces.
 export function environmentRadiance(info,width=512,height=256,clouds=null){
   const pixels=new Uint16Array(width*height*4),sun=new THREE.Vector3(...info.sun).normalize();
   const sky=new THREE.Color().setRGB(...info.sky,THREE.SRGBColorSpace),fog=new THREE.Color().setRGB(...info.fog,THREE.SRGBColorSpace);
@@ -14,11 +14,14 @@ export function environmentRadiance(info,width=512,height=256,clouds=null){
     const horizon=Math.pow(1-Math.abs(dy),3),ground=dy<0;
     const i=(y*width+x)*4;
     const longitudeUV=((longitude-azimuth)/(Math.PI*2)+1.5)%1;
-    const cloud=clouds&&dy>0?sampleCloud(clouds,longitudeUV,latitude/(Math.PI/2)):0;
-    const cover=overcast?.7+cloud*.25:cloud*.62;
+    const elevation=latitude/(Math.PI/2),cloud=clouds&&dy>0?sampleCloud(clouds,longitudeUV,elevation):0;
+    const photographed=clouds?.rgba&&dy>0?sampleCloudColor(clouds,longitudeUV,elevation):null;
+    const brightness=photographed?(photographed[0]*.2126+photographed[1]*.7152+photographed[2]*.0722)/255:.72;
+    const cloudShade=Math.max(.20,Math.min(1,Math.pow(brightness,1.45)*1.1));
+    const cover=overcast?.45+cloud*.5:cloud*.9;
     for(let c=0;c<3;c++){
       let base=ground?fogChannels[c]*.24:skyChannels[c]*(1-horizon*.55)+fogChannels[c]*horizon*.75;
-      if(!ground)base=base*(1-cover)+(.42+horizon*.16)*[1,.98,.94][c]*cover;
+      if(!ground)base=base*(1-cover)+(cloudShade*(overcast?.78:1)+horizon*.06)*[1,.98,.94][c]*cover;
       pixels[i+c]=THREE.DataUtils.toHalfFloat(base+solar*[1,.86,.66][c]);
     }pixels[i+3]=THREE.DataUtils.toHalfFloat(1);
   }return {pixels,width,height};
@@ -61,17 +64,22 @@ export function interiorRadiance(width=256,height=128){
 }
 export function roomProbeSelected(wasInside,sky){return wasInside?sky<.62:sky<.46;}
 
-// Reuse broad cloud structure from the original sky asset, without importing
-// its mountain horizon or its fixed lighting into every map. Generated once.
+// Retain cloud structure and luminance from the original sky image without
+// importing its fixed mountain horizon or baked sun into every map.
 export function cloudMask(image){
- const canvas=document.createElement('canvas');canvas.width=128;canvas.height=64;
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=192;
  const c=canvas.getContext('2d',{willReadFrequently:true});
- c.drawImage(image,0,0,image.width,image.height*.69,0,0,128,64);
- const rgba=c.getImageData(0,0,128,64).data,data=new Float32Array(128*64);
+ c.drawImage(image,0,0,image.width,image.height*.69,0,0,canvas.width,canvas.height);
+ const rgba=c.getImageData(0,0,canvas.width,canvas.height).data,data=new Float32Array(canvas.width*canvas.height);
  for(let i=0;i<data.length;i++){const r=rgba[i*4],g=rgba[i*4+1],b=rgba[i*4+2];
   data[i]=Math.max(0,Math.min(1,(Math.min(r,g,b)/Math.max(1,r,g,b)-.5)*2))*Math.min(1,(r+g+b)/480);
  }
- return {data,width:128,height:64};
+ return {data,rgba,width:canvas.width,height:canvas.height};
+}
+export function sampleCloudColor(mask,u,elevation){
+ const x=(1-Math.abs(u*2-1))*(mask.width-1),y=(1-elevation)*(mask.height-1),ix=Math.floor(x),iy=Math.floor(y);
+ const fx=x-ix,fy=y-iy,at=(a,b,c)=>mask.rgba[(Math.min(mask.height-1,Math.max(0,b))*mask.width+Math.min(mask.width-1,Math.max(0,a)))*4+c];
+ return [0,1,2].map(c=>(at(ix,iy,c)*(1-fx)+at(ix+1,iy,c)*fx)*(1-fy)+(at(ix,iy+1,c)*(1-fx)+at(ix+1,iy+1,c)*fx)*fy);
 }
 export function sampleCloud(mask,u,elevation){
  // Mirror at the wrap seam and zenith, avoiding texture seams and pole pinching.

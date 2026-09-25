@@ -2,6 +2,12 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 40: authored cloud depth in the HDR sky
+
+The packaged photographic sky's cloud colour and luminance now shape the visible 512 × 256 HDR sky and its existing PMREM reflections, alongside each map's own sky/fog palette and sun direction. Sampling uses a 512 × 192 crop of the cloud portion with a mirrored horizontal wrap; the original mountain horizon remains excluded because every map has its own landscape. Dark cloud undersides and bright edges survive the map-load conversion instead of becoming one uniformly grey tint. The overcast maps retain a cooler, lower-intensity blend. The higher-detail CPU mask and colour data use about 0.75 MiB; the GPU sky texture size, PMREM resolution, draw count and combat-time shader work are unchanged.
+
+In a synthetic container loop, converting the 512 × 256 sky averaged about 18 ms with the old 128 × 64 density mask and 30 ms with the new 512 × 192 colour mask. Both occur at map load. These are container CPU figures, not iPhone startup or frame-time measurements. Native screenshots are still needed to tune exposure and cloud contrast against the supplied references.
+
 ## Release 39: grounded vegetation and harbour water
 
 Dustline and Iron Quarry gain at most 55 additional grass clumps each in their outer playable lanes. These use the existing transparent grass atlas, three cards per clump, spatial leaf batches and quality-tier density controls. Their own deterministic random stream preserves all previously authored tree and outcrop positions. Breakwater's water adds a third small ripple direction and a restrained, intermittent shoreline wash in the existing opaque physical material. The wash uses world position and one additional cosine, with no extra geometry, texture or pass. The Canvas fallback retains its simple water shading.
