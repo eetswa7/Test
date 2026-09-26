@@ -227,3 +227,9 @@ Release 39 verification: 176/176 automated tests, JavaScript syntax checks and t
 The HDR background and PMREM reflection probe now retain the packaged sky image's cloud brightness variation at a 512 × 192 sampling resolution. Mirrored horizontal sampling keeps the seam continuous and the photographic mountain horizon is cropped away, leaving the authored map terrain in control. The same 512 × 256 GPU sky texture and existing PMREM are used; extra sampling happens once at map load. A synthetic container loop measured about 18 ms before and 30 ms after for this conversion, not iPhone timing. A focused regression checks cloud luminance and wrapping.
 
 Release 40 verification: 177/177 automated tests, JavaScript syntax checks and the packaged checker for 44 modules and all local assets passed.
+
+## Release 41: scoped optical glass and glove finish
+
+First-person magnified optics gain coated objective and ocular lenses, fine objective rings and alignment marks. Scoped ADS continues to use the clear world view, while reflex and prism optics retain their unobstructed sight ray. The operator's gloves gain knuckle guards and cuff trim, using existing instanced weapon geometry and material families. The default weapon's scene counts and all ten maps are recorded in `docs/profile-release41.json`; no iPhone GPU timing or native screenshot has been obtained.
+
+Release 41 verification: 178/178 automated tests, including optic selection and aiming regressions, JavaScript syntax and complete packaged-asset checks pass.

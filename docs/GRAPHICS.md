@@ -2,6 +2,12 @@
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
 
+## Release 41: first-person scope and gloves
+
+Magnified optics now have a pair of dark coated lens discs inside their existing tubular housing, plus stepped objective rings and small alignment marks. The opaque discs are visible only in the hip-fire weapon pass; scoped ADS already displays the unobstructed world through its dedicated reticle view. Four slim knuckle guards per glove and restrained wrist trim improve the near-camera silhouette across all weapons. Shared geometry, existing materials and dynamic instancing keep these details within the current weapon pass. The coated glass adds one physical-material batch when a scope is fitted, with no extra render target or post-process pass.
+
+The [release 41 container profile](profile-release41.json) uses the same seeded ten-map, High-quality scene count as [release 39](profile-release39.json). World geometry and 1,334 world batches are unchanged. The default viewmodel grows from 15,240 to 15,720 submitted triangles and from 10 to 12 weapon batches as the near-camera details use a small cube geometry and a glove material grouping. The profile measures submitted triangles and batches, not raster cost, shader compile time, iPhone FPS or how the result looks on a device. The procedural weapon shapes remain below the asset fidelity of the supplied mobile FPS references.
+
 ## Release 40: authored cloud depth in the HDR sky
 
 The packaged photographic sky's cloud colour and luminance now shape the visible 512 × 256 HDR sky and its existing PMREM reflections, alongside each map's own sky/fog palette and sun direction. Sampling uses a 512 × 192 crop of the cloud portion with a mirrored horizontal wrap; the original mountain horizon remains excluded because every map has its own landscape. Dark cloud undersides and bright edges survive the map-load conversion instead of becoming one uniformly grey tint. The overcast maps retain a cooler, lower-intensity blend. The higher-detail CPU mask and colour data use about 0.75 MiB; the GPU sky texture size, PMREM resolution, draw count and combat-time shader work are unchanged.

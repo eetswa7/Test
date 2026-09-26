@@ -3,6 +3,7 @@
 const C={steel:[.27,.30,.32],edge:[.42,.45,.46],black:[.115,.13,.14],polymer:[.16,.175,.17],tan:[.48,.39,.27],olive:[.28,.32,.22],wood:[.48,.29,.145],rubber:[.043,.048,.044],glove:[.36,.38,.30],sleeve:[.23,.28,.22],brass:[.66,.44,.16],red:[.55,.055,.025]};
 const finish=(color=C.black,metal=.72,rough=.39,tile=-1)=>({color,metal,rough,tile,...(tile===9?{finishTile:2}:tile===-1&&metal>.45?{finishTile:0}:{})});
 const METAL=finish(),EDGE=finish(C.edge,.88,.28),POLY={...finish(C.polymer,0,.7),finishTile:3},RUBBER=finish(C.rubber,0,.87),WOOD=finish(C.wood,0,.71,10),TAN={...finish(C.tan,.08,.63),finishTile:1},OLIVE={...finish(C.olive,.08,.64),finishTile:1},BRASS={...finish(C.brass,.92,.31),finishTile:undefined},GLOVE=finish(C.glove,0,.94,9),SLEEVE=finish(C.sleeve,0,.98,9);
+const OPTIC_GLASS={...finish([.055,.105,.14],.12,.11),surface:'glass'};
 const PROFILES=[
  {barrel:-.604,grip:.103,support:-.293,width:.088,mag:.017,stock:.278},
  {barrel:-.668,grip:.109,support:-.302,width:.105,mag:-.01,stock:.298},
@@ -180,7 +181,15 @@ function addOptic(b,w){
   for(const z of [-.074,.067]){box(0,.116,z,.046,.047,.031,METAL);tube(0,.188,z,.079,.026,METAL);}
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);
   for(const z of [-.171,.137])tube(0,.188,z,.094,.01,EDGE);
-  // No opaque lens plane: scoped ADS displays the world through the HUD reticle.
+  // The scope fills with coated optical glass in hip view. Magnified ADS renders
+  // the world through the separate scope view, so this disc never masks a target.
+  cyl(0,.188,-.185,.066,.002,OPTIC_GLASS);
+  cyl(0,.188,.153,.061,.002,OPTIC_GLASS);
+  for(const z of [-.199,-.191,.159])tube(0,.188,z,.078,.003,EDGE);
+  for(let i=0;i<8;i++){
+   const a=i*Math.PI/4;
+   box(Math.cos(a)*.04,.188+Math.sin(a)*.04,-.202,.004,.004,.003,EDGE,'',{roll:a});
+  }
   cyl(0,.24,-.025,.035,.027,RUBBER,'',{pitch:0});cyl(.048,.188,-.025,.031,.031,RUBBER,'',{pitch:0,roll:Math.PI/2});
  }else if(w.optic===1||w.optic===2){
   const prism=w.optic===2,wide=prism?.10:.082,z=short?-.013:.017;
@@ -215,18 +224,24 @@ function addHands(b,w){
  const {box}=b,id=w.def.id,pr=b.profile,z=pr.grip,short=id>=10&&id<12;
  const palm=(x,y,z,s=.98,tag='hand',roll=0)=>{
   box(x,y,z,.071*s,.091*s,.075*s,GLOVE,tag,{mesh:'sphere',roll});
-  for(let i=0;i<4;i++)box(x-.029*s+i*.018*s,y-.03*s,z-.025*s,.018*s,.045*s,.045*s,RUBBER,tag,{mesh:'sphere',pitch:.3,roll});
+  for(let i=0;i<4;i++){
+   const fx=x-.029*s+i*.018*s;
+   box(fx,y-.03*s,z-.025*s,.018*s,.045*s,.045*s,RUBBER,tag,{mesh:'sphere',pitch:.3,roll});
+   box(fx,y+.023*s,z-.017*s,.015*s,.007*s,.021*s,GLOVE,tag,{mesh:'cube',roll});
+  }
   box(x+.039*s,y+.005*s,z-.032*s,.026*s,.064*s,.031*s,GLOVE,tag,{mesh:'sphere',roll:-.4});
   box(x+.002*s,y+.024*s,z+.024*s,.06*s,.02*s,.051*s,RUBBER,tag,{mesh:'bevel'});
  };
  palm(.027,-.112,z+.008,1,'rightHand',-.13);
  box(.071,-.196,z+.131,.1,.105,.222,SLEEVE,'rightHand',{pitch:-.31,roll:-.20});box(.047,-.166,z+.054,.098,.028,.092,RUBBER,'rightHand',{pitch:-.26});
+ box(.071,-.179,z+.096,.101,.013,.015,GLOVE,'rightHand',{pitch:-.31,roll:-.20});
  if(id===12)return;
  if(short){palm(-.026,-.115,z+.016,1.03,'supportHand',.14);box(-.076,-.198,z+.127,.1,.102,.214,SLEEVE,'supportHand',{pitch:-.3,roll:.2});}
  else{
   const supportY=w.grip===1?-.124:-.057,tag=id===5?'pumpHand':'supportHand';
   palm(-.031,supportY,pr.support+.013,1,tag,.24);
   box(-.088,supportY-.105,pr.support+.088,.102,.236,.108,SLEEVE,tag,{roll:-.37,pitch:-.33});box(-.058,supportY-.044,pr.support+.051,.104,.031,.102,RUBBER,tag,{roll:-.3});
+  box(-.061,supportY-.081,pr.support+.071,.105,.014,.018,GLOVE,tag,{roll:-.3});
  }
 }
 export function weaponModel(w){

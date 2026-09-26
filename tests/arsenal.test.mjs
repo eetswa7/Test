@@ -32,3 +32,10 @@ test('reflex and prism optics leave a clear central sight ray',()=>{
   }
  }
 });
+test('coated scope lenses belong only to magnified optics',()=>{
+ for(const id of [0,7,8,10])for(const optic of [0,1,2,3]){
+  const lenses=weaponModel(weapon(id,optic)).filter(p=>p.surface==='glass');
+  assert.equal(lenses.length,id===7||optic===3?2:0,`${id}/${optic}`);
+  for(const lens of lenses){assert(lens.rough<.2);assert(lens.z<-.15||lens.z>.15);}
+ }
+});
