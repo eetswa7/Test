@@ -1,5 +1,6 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=41';
-import {dressWorld} from './world-detail.js?v=41';
+import {rng,rayBox,distance,clamp} from './math.js?v=42';
+import {dressWorld} from './world-detail.js?v=42';
+import {RayGrid} from './ray-grid.js?v=42';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -241,6 +242,7 @@ export class Arena {
   this.objectives=[{name:'A',x:-24,y:0,z:0},{name:'B',x:5.2,y:0,z:0},{name:'C',x:24,y:0,z:0}];
  }
  bakeCollision(){
+  this.rayGrid=new RayGrid(this.blocks,this.info.size);
   // Expand by the largest gameplay capsule. Point queries then touch one bucket.
   this.collisionBlocks=this.blocks;this.collisionCount=this.blocks.length;
   const n=Math.ceil(this.info.size*2/4)+2;this.collisionSize=n;
@@ -258,7 +260,10 @@ export class Arena {
  }
  collides(p,r=.32,h=1.75){for(const b of this.nearby(p,r)){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
  floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.nearby(p)){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.32&&Math.abs(p.z-b.z)<b.d/2+.32)floor=top;}return floor;}
- trace(o,d,limit=160){let t=limit,block=null;for(const b of this.blocks){if(b.destroyed)continue;let n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};}
+ trace(o,d,limit=160){
+  if(this.rayGrid?.blocks===this.blocks&&this.rayGrid.count===this.blocks.length&&this.collisionCells)return this.rayGrid.trace(o,d,limit);
+  let t=limit,block=null;for(const b of this.blocks){if(b.destroyed)continue;const n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};
+ }
  visible(a,b){const len=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);if(len<.01)return true;return this.trace(a,{x:(b.x-a.x)/len,y:(b.y-a.y)/len,z:(b.z-a.z)/len},len).t>=len-.12;}
- indoors(p){return this.blocks.some(b=>b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}
+ indoors(p){return this.nearby(p).some(b=>!b.destroyed&&b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}
 }

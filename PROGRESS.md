@@ -233,3 +233,24 @@ Release 40 verification: 177/177 automated tests, JavaScript syntax checks and t
 First-person magnified optics gain coated objective and ocular lenses, fine objective rings and alignment marks. Scoped ADS continues to use the clear world view, while reflex and prism optics retain their unobstructed sight ray. The operator's gloves gain knuckle guards and cuff trim, using existing instanced weapon geometry and material families. The default weapon's scene counts and all ten maps are recorded in `docs/profile-release41.json`; no iPhone GPU timing or native screenshot has been obtained.
 
 Release 41 verification: 178/178 automated tests, including optic selection and aiming regressions, JavaScript syntax and complete packaged-asset checks pass.
+# Release 42: traversal, touch tracking and ray budgets
+
+- Added jump-to-vault over reachable 0.4–1.25 m cover. The capsule lifts before
+  crossing the obstacle, validates every intermediate position and rejects
+  tall walls, blocked landings and low ceilings. Respawns clear traversal state.
+- Jump can release a slide or crouch where standing clearance exists. Existing
+  sprint, slide cooldown, coyote time and jump buffering remain in use.
+- Touch look integrates coalesced hardware samples without applying the final
+  event twice. Other contacts retain their own movement/fire ownership.
+- Sprint FOV eases by up to 5 degrees, fades out under ADS and is disabled by
+  reduced motion. Strafing shifts viewmodel weight; vaulting lowers the weapon.
+- Added bounded height haze and forward sun scattering to the existing fog
+  stage, with no extra draw, render target or texture read.
+- Static grid rays preserve the exact AABB collision test, overlap ordering,
+  ground hits, destroyed obstacles and the fallback for changed collision arrays.
+- Validation: 26 test files pass, static/offline validation passes, 13 shader
+  variants compile/link. 7,500 random/axis-aligned rays match a full scan exactly.
+  The 25,000-ray container profile reduces candidate checks by 93.5–96.0%.
+- Browser limitation: cloud browser blocks localhost and browser runtime
+  downloads did not produce usable archives. No new rendered-frame or physical
+  iPhone FPS claim. Profiling data is in `docs/profile-release42-rays.json`.

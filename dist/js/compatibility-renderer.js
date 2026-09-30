@@ -1,11 +1,11 @@
-import {animateWeaponParts} from './weapon-models.js?v=41';
-import {identityFor} from './combat-identity.js?v=41';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=41';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=41';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=41';
-import {aimFov,verticalFov,scopeVisible,weaponPose} from './aim.js?v=41';
-import {loadImages} from './textures.js?v=41';
-import {weatherParticles} from './particles.js?v=41';
+import {animateWeaponParts} from './weapon-models.js?v=42';
+import {identityFor} from './combat-identity.js?v=42';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=42';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=42';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=42';
+import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=42';
+import {loadImages} from './textures.js?v=42';
+import {weatherParticles} from './particles.js?v=42';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -99,7 +99,7 @@ export class CompatibilityRenderer {
  render(game,dt,menu,elapsed=dt){
   if(!this.images)return;this.fpsAge+=elapsed;this.lastRender+=dt;if(this.lastRender<1/30)return;this.lastRender=0;this.frames++;if(this.fpsAge>.7){this.fps=Math.round(this.frames/this.fpsAge);this.frames=0;this.fpsAge=0;}
   const width=Math.max(2,Math.round(this.canvas.clientWidth*this.renderScale)),height=Math.max(2,Math.round(this.canvas.clientHeight*this.renderScale));if(this.canvas.width!==width||this.canvas.height!==height){this.canvas.width=width;this.canvas.height=height;this.patterns=this.textures.map(t=>this.ctx.createPattern(t,'repeat'));}
-  const c=this.ctx,p=game.player;let yaw=p.yaw,pitch=p.pitch;this.fov=aimFov(this.settings.fov??80,p.weapon,p.ads);
+  const c=this.ctx,p=game.player;let yaw=p.yaw,pitch=p.pitch;this.fov=aimFov(movementFov(this.movementFovState??(this.movementFovState={}),p,this.settings.fov??80,game.paused?0:dt,this.settings.motion!==false),p.weapon,p.ads);
   if(menu){this.eye={x:15,y:6.5,z:25};this.target={x:-4,y:2,z:-8};this.fov=65*Math.PI/180;yaw=Math.atan2(this.target.x-this.eye.x,-(this.target.z-this.eye.z));pitch=-.12;}else{this.eye=game.eye(p);this.eye.y-=p.dead?1.2:0;const d=direction(p.yaw,p.pitch);this.target={x:this.eye.x+d.x,y:this.eye.y+d.y,z:this.eye.z+d.z};this.fov=verticalFov(this.fov,width/height);}
   this.weatherYaw=yaw;this.weatherPitch=pitch;this.worldFov=this.fov;lookAt(this.view,this.eye,this.target);this.sky(yaw,pitch);this.drawCalls=0;
   const polygons=this.world.slice();for(const a of game.actors)if(a.id!==0&&distance(a,p)<55){compose(this.parent,a.x,a.y,a.z,1,1,1,-a.yaw,0,a.dead?1.5:0);for(const q of actorModel(a,game.time,identityFor(a,p,game.rules)))polygons.push(...this.box(q,this.parent));}

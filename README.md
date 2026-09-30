@@ -1,5 +1,17 @@
 # BREACHLINE
 
+**Latest checkpoint: Release 42.** Low-cover vaulting, slide-to-jump transitions,
+coalesced touch tracking, sprint lens easing, directional weapon weight and
+height-dependent atmospheric haze. World sight and bullet rays now use a static
+grid broadphase with the same exact collision narrowphase.
+
+Release 42 validation: 26 test files pass, packaged/offline checks pass and 13
+GLSL ES shader variants compile and link in Mesa. A 25,000-ray container workload
+reduced candidate obstacle checks by 93.5–96.0% versus a full scan. This is a CPU
+workload result, not an iPhone frame-rate measurement. The available cloud browser
+blocks the local preview, so this checkpoint has no new visual browser or physical
+iPhone verification.
+
 An original, playable HTML first-person shooter for landscape iPhone screens. Choose a mode, map and loadout, fight bots, finish the match, earn local XP and play again. All game assets are included or generated locally. There are no CDN, engine download, account or asset-service dependencies.
 
 ## Play

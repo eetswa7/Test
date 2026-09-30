@@ -1,6 +1,6 @@
-import {emptyInput} from './engine.js?v=41';
-import {ControllerInput} from './gamepad.js?v=41';
-import {clamp} from './math.js?v=41';
+import {emptyInput} from './engine.js?v=42';
+import {ControllerInput} from './gamepad.js?v=42';
+import {clamp} from './math.js?v=42';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -93,7 +93,13 @@ export class TouchInput {
  }
  pointerMove(e){
   const p=this.pointers.get(e.pointerId);if(!p)return;if(!this.active&&!this.editing||e.pointerType==='mouse'&&e.buttons===0){this.pointerUp(e,true);return;}if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;e.preventDefault();const dx=e.clientX-p.x,dy=e.clientY-p.y;
-  if(['look','fire','ads'].includes(p.role))this.addLook(dx,dy);
+  if(['look','fire','ads'].includes(p.role)){
+   // Safari/ProMotion can batch several hardware samples into one pointer event.
+   // Integrate each segment once, preserving acceleration without double counting.
+   const samples=e.getCoalescedEvents?.()??[];let x=p.x,y=p.y;
+   for(const sample of samples)if(Number.isFinite(sample.clientX)&&Number.isFinite(sample.clientY)){this.addLook(sample.clientX-x,sample.clientY-y);x=sample.clientX;y=sample.clientY;}
+   this.addLook(e.clientX-x,e.clientY-y);
+  }
   if(p.role==='stick'){
    const x=(e.clientX-p.ox)/45,z=-(e.clientY-p.oy)/45,n=Math.hypot(x,z),gain=n>.1?Math.min(1,(n-.1)/.9)/n:0;
    this.move.x=x*gain;this.move.z=z*gain;this.knob.style.transform=`translate(calc(-50% + ${this.move.x*28}px),calc(-50% + ${-this.move.z*28}px))`;

@@ -1,0 +1,75 @@
+{
+  "scope": "Container CPU ray workload, no iPhone or GPU timing.",
+  "report": [
+    {
+      "map": "OLD QUARTER",
+      "rays": 2500,
+      "gridMs": 12.52,
+      "fullScanMs": 31.7,
+      "candidateReductionPercent": 94.1
+    },
+    {
+      "map": "FOUNDRY",
+      "rays": 2500,
+      "gridMs": 5.83,
+      "fullScanMs": 34.22,
+      "candidateReductionPercent": 93.5
+    },
+    {
+      "map": "DUSTLINE",
+      "rays": 2500,
+      "gridMs": 6.91,
+      "fullScanMs": 46.5,
+      "candidateReductionPercent": 94.7
+    },
+    {
+      "map": "RELAY",
+      "rays": 2500,
+      "gridMs": 8.86,
+      "fullScanMs": 39.11,
+      "candidateReductionPercent": 95.8
+    },
+    {
+      "map": "BREAKWATER",
+      "rays": 2500,
+      "gridMs": 17.86,
+      "fullScanMs": 28.42,
+      "candidateReductionPercent": 94.6
+    },
+    {
+      "map": "CITADEL",
+      "rays": 2500,
+      "gridMs": 6.39,
+      "fullScanMs": 36.02,
+      "candidateReductionPercent": 95.1
+    },
+    {
+      "map": "SWITCHYARD",
+      "rays": 2500,
+      "gridMs": 11.67,
+      "fullScanMs": 32.79,
+      "candidateReductionPercent": 94.2
+    },
+    {
+      "map": "CANOPY",
+      "rays": 2500,
+      "gridMs": 7.34,
+      "fullScanMs": 95.08,
+      "candidateReductionPercent": 96
+    },
+    {
+      "map": "FROSTLINE",
+      "rays": 2500,
+      "gridMs": 10.13,
+      "fullScanMs": 69.71,
+      "candidateReductionPercent": 95.1
+    },
+    {
+      "map": "IRON QUARRY",
+      "rays": 2500,
+      "gridMs": 9.29,
+      "fullScanMs": 77.56,
+      "candidateReductionPercent": 95.2
+    }
+  ]
+}
