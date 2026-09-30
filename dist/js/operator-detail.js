@@ -1,5 +1,6 @@
-import {weaponModel,muzzlePosition} from './weapon-models.js?v=47';
-import {clamp} from './math.js?v=47';
+import {weaponModel,muzzlePosition} from './weapon-models.js?v=48';
+import {clamp} from './math.js?v=48';
+import {poseSegment} from './actor-pose.js?v=48';
 
 const templates=new Map(),MAX_TEMPLATES=32;
 function template(w){
@@ -42,16 +43,12 @@ export function addOperatorGear(parts,actor){
  }else add(0,.84,-.17,.22,.07,.045,'rubber');
 }
 
-function segment(q,ax,ay,az,bx,by,bz){
- const x=ax-bx,y=ay-by,z=az-bz,l=Math.hypot(x,y,z)||1;
- q.x=(ax+bx)/2;q.y=(ay+by)/2;q.z=(az+bz)/2;q.h=l;q.yaw=0;q.roll=-Math.asin(clamp(x/l,-1,1));q.pitch=Math.atan2(z,y);
-}
 function arm(parts,upperIndex,foreIndex,handIndex,side,target,duck){
  const sx=side*.25,sy=1.36-duck,sz=-.02,dx=target.x-sx,dy=target.y-sy,dz=target.z-sz,raw=Math.hypot(dx,dy,dz)||1,length=clamp(raw,.035,.649);
  const ux=dx/raw,uy=dy/raw,uz=dz/raw,along=(.32*.32-.34*.34+length*length)/(2*length),bend=Math.sqrt(Math.max(0,.32*.32-along*along));
  let bx=side,by=-.65,bz=.12;const dot=bx*ux+by*uy+bz*uz;bx-=ux*dot;by-=uy*dot;bz-=uz*dot;const n=Math.hypot(bx,by,bz)||1;
  const ex=sx+ux*along+bx/n*bend,ey=sy+uy*along+by/n*bend,ez=sz+uz*along+bz/n*bend,wx=sx+ux*length,wy=sy+uy*length,wz=sz+uz*length;
- segment(parts[upperIndex],sx,sy,sz,ex,ey,ez);segment(parts[foreIndex],ex,ey,ez,wx,wy,wz);
+ poseSegment(parts[upperIndex],sx,sy,sz,ex,ey,ez);poseSegment(parts[foreIndex],ex,ey,ez,wx,wy,wz);
  const hand=parts[handIndex];hand.x=wx;hand.y=wy;hand.z=wz;hand.pitch=.1;hand.roll=side*.2;
 }
 function mount(out,p,c,s,y,recoil,dy=0,dz=0){

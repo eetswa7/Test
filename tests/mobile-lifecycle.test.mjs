@@ -60,7 +60,7 @@ test('the application keeps its 60 Hz simulation and single-use input edges at e
   for(const refresh of [60,90,120])for(const cap of [30,60]){
    const {app}=fixture();let steps=0,jumps=0,look=0,renders=0,samples=0;
    app.playing=true;app.store.data.settings.frameRate=cap;
-   app.game={paused:false,time:0,events:[],player:{crouched:false,weapon:new Weapon(0)},rules:{phase:'playing'},update(dt,input){assert.equal(dt,1/60);steps++;this.time+=dt;jumps+=Number(input.jump);look+=input.lx;}};
+   app.game={paused:false,time:0,events:[],player:{crouched:false,weapon:new Weapon(0),ads:0},actors:[],eye:()=>({x:0,y:1.66,z:0}),rules:{phase:'playing'},update(dt,input){assert.equal(dt,1/60);steps++;this.time+=dt;jumps+=Number(input.jump);look+=input.lx;}};
    app.input.controller={poll(){},connected:false,lost:false,edges:[]};app.input.sample=dt=>({...emptyInput(),mx:.5,lx:dt*.2,jump:++samples===1});
    app.renderer.render=()=>renders++;app.renderer.recordFrame=()=>{};
    for(let i=0;i<refresh*5;i++)app.frame(1000+i*1000/refresh);

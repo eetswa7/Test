@@ -1,6 +1,6 @@
-import {emptyInput} from './engine.js?v=47';
-import {ControllerInput} from './gamepad.js?v=47';
-import {clamp} from './math.js?v=47';
+import {emptyInput} from './engine.js?v=48';
+import {ControllerInput} from './gamepad.js?v=48';
+import {clamp} from './math.js?v=48';
 
 export const CONTROL_LAYOUT={fire:[.87,.68,88],ads:[.91,.40,56],reload:[.36,.90,50],jump:[.70,.81,54],crouch:[.70,.9,48],swap:[.49,.9,50],grenade:[.72,.48,48],interact:[.60,.53,56],melee:[.94,.26,44],sprint:[.13,.43,44]};
 const ADVANCED_LAYOUT={...CONTROL_LAYOUT,fire:[.9,.57,82],ads:[.81,.31,52],reload:[.81,.8,51],jump:[.94,.88,51],crouch:[.7,.9,48],grenade:[.65,.72,48],swap:[.51,.91,48],interact:[.7,.51,48]};
@@ -11,7 +11,7 @@ export class TouchInput {
  constructor(canvas,layer,settings){
   this.controller=new ControllerInput(settings);this.canvas=canvas;this.layer=layer;this.settings=settings;this.active=false;this.editing=false;
   this.pointers=new Map();this.keys=new Set();this.actions=emptyInput();this.holds={};this.look={x:0,y:0};this.move={x:0,z:0};
-  this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.gyro={x:0,y:0};this.lastGamepadButtons=[];this.contextAvailable=false;this.nativeTouches=null;
+  this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.gyro={x:0,y:0};this.aimAssistGain=1;this.lastGamepadButtons=[];this.contextAvailable=false;this.nativeTouches=null;
   this.stick=layer.querySelector('#stick');this.knob=layer.querySelector('#stick-knob');
   layer.addEventListener('pointerdown',e=>this.pointerDown(e),{passive:false});
   // Window capture still receives releases outside the HUD or after Safari loses capture.
@@ -46,13 +46,14 @@ export class TouchInput {
   // Remove ownership before releasing capture; the lost-capture event can be synchronous.
   for(const id of this.pointers.keys())this.pointerUp({pointerId:id},true);
   this.pointers.clear();this.nativeTouches=null;this.keys.clear();this.holds={};this.actions=emptyInput();this.look.x=this.look.y=0;this.move.x=this.move.z=0;this.stickID=null;this.adsToggle=false;this.sprintToggle=false;this.previousFire=false;this.lastGamepadButtons=[];this.gyro.x=this.gyro.y=0;
-  if(this.knob)this.knob.style.transform='translate(-50%,-50%)';for(const b of this.layer.querySelectorAll('.pressed'))b.classList.remove('pressed');
+  this.aimAssistGain=1;if(this.knob)this.knob.style.transform='translate(-50%,-50%)';for(const b of this.layer.querySelectorAll('.pressed'))b.classList.remove('pressed');
  }
  isAiming(){return this.adsToggle||this.holds.mouseADS||(this.settings.adsMode==='hold'&&this.holds.ads)||(this.simple&&this.settings.aimFire!==false&&this.holds.fire);}
- addLook(dx,dy){
+ addLook(dx,dy,touch=false){
   if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
   let mult=this.settings.sensitivity*.0027;if(this.isAiming())mult*=this.settings.adsSensitivity*(this.scopeScale??1);
   if(this.settings.aimAcceleration)mult*=1+Math.min(1,Math.hypot(dx,dy)/28)*.5;
+  if(touch&&this.settings.aimAssist!==false)mult*=clamp(this.aimAssistGain??1,.55,1);
   this.look.x+=clamp(dx,-180,180)*mult;this.look.y-=clamp(dy,-180,180)*mult;
  }
  pointerDown(e){
@@ -97,8 +98,9 @@ export class TouchInput {
    // Safari/ProMotion can batch several hardware samples into one pointer event.
    // Integrate each segment once, preserving acceleration without double counting.
    const samples=e.getCoalescedEvents?.()??[];let x=p.x,y=p.y;
-   for(const sample of samples)if(Number.isFinite(sample.clientX)&&Number.isFinite(sample.clientY)){this.addLook(sample.clientX-x,sample.clientY-y);x=sample.clientX;y=sample.clientY;}
-   this.addLook(e.clientX-x,e.clientY-y);
+   const touch=p.type==='touch'||p.type==='pen';
+   for(const sample of samples)if(Number.isFinite(sample.clientX)&&Number.isFinite(sample.clientY)){this.addLook(sample.clientX-x,sample.clientY-y,touch);x=sample.clientX;y=sample.clientY;}
+   this.addLook(e.clientX-x,e.clientY-y,touch);
   }
   if(p.role==='stick'){
    const x=(e.clientX-p.ox)/45,z=-(e.clientY-p.oy)/45,n=Math.hypot(x,z),gain=n>.1?Math.min(1,(n-.1)/.9)/n:0;

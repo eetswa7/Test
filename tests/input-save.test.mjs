@@ -73,3 +73,19 @@ test('invalid coalesced hardware samples cannot inject non-finite aim',()=>{
  event.getCoalescedEvents=()=>[{clientX:NaN,clientY:0},{clientX:710,clientY:220},{clientX:Infinity,clientY:1}];f.input.pointerMove(event);
  const frame=f.input.sample(1/60);assert(Number.isFinite(frame.lx)&&Number.isFinite(frame.ly));assert(frame.lx>0&&frame.ly>0);
 });
+
+test('touch aim friction scales thumb deltas while mouse and gyroscope keep their sensitivity',()=>{
+ const a=fixture(),b=fixture();a.input.aimAssistGain=.55;
+ for(const f of [a,b]){f.input.pointerDown(f.ev(2,600,170));f.input.pointerMove(f.ev(2,620,160));}
+ const slow=a.input.sample(.016),raw=b.input.sample(.016);assert(Math.abs(slow.lx/raw.lx-.55)<1e-12);assert(Math.abs(slow.ly/raw.ly-.55)<1e-12);
+ a.input.addLook(20,-10);a.input.gyro.x=.03;a.input.gyro.y=.02;const mixed=a.input.sample(.016);
+ assert(Math.abs(mixed.lx-(raw.lx+.03))<1e-12);assert(Math.abs(mixed.ly-(raw.ly+.02))<1e-12);
+ a.input.settings.aimAssist=false;a.input.pointerMove(a.ev(2,640,150));assert(Math.abs(a.input.sample(.016).lx-raw.lx)<1e-12);
+ a.input.reset();assert.equal(a.input.aimAssistGain,1);
+});
+
+test('the aim slowdown preference persists and older saves receive the default',()=>{
+ let data='';const storage={getItem:()=>data,setItem:(k,v)=>data=v},s=new SaveStore(storage);s.data.settings.aimAssist=false;s.persist();
+ assert.equal(new SaveStore(storage).data.settings.aimAssist,false);
+ assert.equal(new SaveStore({getItem:()=>JSON.stringify({version:1,controlRevision:2,settings:{}})}).data.settings.aimAssist,true);
+});

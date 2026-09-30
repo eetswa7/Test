@@ -336,3 +336,14 @@ Frontline starts at the middle sector. Uncontested occupation moves the line tow
 Large-map regression fixes: weighted A* reaches all spawn pockets within the 5,000-node budget (maximum 271/333 expansions in the recorded corner-route sweep). Respawn visibility covers the full 140 m firing range. Larger spatial batches bring the expanded maps to 174/157 world batches. Melee-equipped bots close distance at a sprint, and authored forward flag bases keep CTF from stalling at distant map corners. Bot Gun Game and CTF matches now finish with full-ladder or capture wins on both expanded maps.
 
 Release 47 verification: 223/223 regressions, 52-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. Physical iPhone frame timing remains unmeasured.
+
+
+## Release 48: touch friction, jump momentum and operator locomotion
+
+Saved touch aim slowdown uses optic-aware angular silhouettes, enemy relationships and cached visibility checks at 12.5 Hz. It respects walls, smoke and flashes, scales only touch or pen deltas, and never changes angles, recoil or trigger state. Mouse, controller and gyroscope sensitivity keep their existing behaviour. Disabling it, melee, death and a new match clear the friction state.
+
+Player flight retains launch momentum on stick release and approaches air steering gradually. Ground response stays immediate. Footsteps accumulate actual horizontal ground travel instead of requested speed, removing wall-pressure foley; landing severity drives heavier surface sound and local feedback.
+
+Closed elliptical torso and limb profiles replace rectangular operator sections. Shared smooth-normal geometry keeps limbs at 48 triangles apiece. Three-dimensional joint IK follows local sideways or reverse movement, with flight tuck and connected knees. Both renderers share the same anatomy and cached component objects.
+
+Release 48 verification: 233/233 regressions, 54-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. Four exact-mesh operator poses were visually inspected in a CPU geometry preview. Container actor update medians are 0.190–0.235 ms across 15 maps, with no concurrent test load. This preview is not an in-game rendered frame, and physical iPhone frame timing remains unmeasured.

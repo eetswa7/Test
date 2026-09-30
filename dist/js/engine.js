@@ -1,12 +1,12 @@
-import {Arena,MAPS} from './maps.js?v=47';
-import {Navigation} from './navigation.js?v=47';
-import {SpawnDirector} from './spawns.js?v=47';
-import {MatchRules} from './modes.js?v=47';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=47';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=47';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=47';
-import {traceBullet} from './ballistics.js?v=47';
-import {beginVault,advanceVault} from './traversal.js?v=47';
+import {Arena,MAPS} from './maps.js?v=48';
+import {Navigation} from './navigation.js?v=48';
+import {SpawnDirector} from './spawns.js?v=48';
+import {MatchRules} from './modes.js?v=48';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=48';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=48';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=48';
+import {traceBullet} from './ballistics.js?v=48';
+import {beginVault,advanceVault} from './traversal.js?v=48';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -40,16 +40,24 @@ export class Game {
  resetRound(){this.spawner.resetRound();for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='elimination'?`ROUND ${this.rules.round} · ELIMINATE ALL ENEMIES`:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
  canSee(a,b){if(a.flashed>.3)return false;const from=this.eye(a),to=this.eye(b);if(!this.arena.visible(from,to))return false;for(const s of this.smokes)if(s.age<13&&pointSegment(s,from,to)<Math.min(5.2,s.age*4))return false;return true;}
  moveActor(a,tx,tz,dt){
-  const speed=Math.hypot(tx,tz),accel=1-Math.exp(-dt*(speed>0?30:38));a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
+  const speed=Math.hypot(tx,tz),wasGrounded=a.grounded,startX=a.x,startZ=a.z;
+  // Releasing the stick in flight retains launch momentum. Ground friction
+  // still stops promptly, and air steering approaches the chosen speed gradually.
+  const response=a.id===0&&!wasGrounded?(speed>0?6:.35):(speed>0?30:38),accel=1-Math.exp(-dt*response);
+  a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
   const radius=.31,height=a.height,step=a.grounded?.36:0;
   for(const key of ['x','z']){
    let p={x:a.x,y:a.y,z:a.z};p[key]+=(key==='x'?a.vx:a.vz)*dt;let ground=this.arena.floorAt(p,a.y+step);let nextY=a.grounded&&ground>=a.y-.08?ground:a.y;p.y=nextY+.04;
    if(!this.arena.collides(p,radius,height-.04)){a[key]=p[key];a.y=nextY;}else if(key==='x')a.vx=0;else a.vz=0;
   }
   a.vy-=19*dt;const next=a.y+a.vy*dt,ground=this.arena.floorAt(a,a.y+.08);
-  if(next<=ground&&a.vy<=0){if(a.vy<-12)this.damage(a,Math.max(0,(-a.vy-12)*8),null,false);if(!a.grounded)a.landKick=Math.min(.13,-a.vy*.006);a.y=ground;a.vy=0;a.grounded=true;}
+  if(next<=ground&&a.vy<=0){
+   if(a.vy<-12)this.damage(a,Math.max(0,(-a.vy-12)*8),null,false);
+   if(!wasGrounded){a.landKick=Math.min(.13,-a.vy*.006);if(a.vy<-3)this.emit('land',{position:{x:a.x,y:ground,z:a.z},source:a.id,value:Math.min(1,-a.vy/12)});}
+   a.y=ground;a.vy=0;a.grounded=true;
+  }
   else{const p={x:a.x,y:next,z:a.z};if(a.vy>0&&this.arena.collides(p,radius,height)){a.vy=0;}else a.y=next;a.grounded=false;}
-  if(speed>.8&&a.grounded){a.stepClock+=dt*speed;if(a.stepClock>1.8){a.stepClock=0;this.emit('step',{position:{x:a.x,y:a.y,z:a.z},source:a.id,value:a.sprinting?1:.6});}}
+  if(wasGrounded&&a.grounded){a.stepClock+=Math.hypot(a.x-startX,a.z-startZ);if(a.stepClock>1.8){a.stepClock%=1.8;this.emit('step',{position:{x:a.x,y:a.y,z:a.z},source:a.id,value:a.sprinting?1:.6});}}
  }
  update(dt,input=emptyInput()){
   if(this.paused||this.rules.phase==='finished')return;dt=clamp(dt,0,1/30);this.time+=dt;

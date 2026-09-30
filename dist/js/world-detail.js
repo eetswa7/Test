@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=47';
-import {rng} from './math.js?v=47';
+import {prepareGroundSurfaces} from './surface-placement.js?v=48';
+import {rng} from './math.js?v=48';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */

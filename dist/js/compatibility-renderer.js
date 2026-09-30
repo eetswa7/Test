@@ -1,12 +1,13 @@
-import {updateWeaponClearance} from './weapon-clearance.js?v=47';
-import {animateWeaponParts} from './weapon-models.js?v=47';
-import {identityFor} from './combat-identity.js?v=47';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=47';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=47';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=47';
-import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=47';
-import {loadImages} from './textures.js?v=47';
-import {weatherParticles} from './particles.js?v=47';
+import {updateWeaponClearance} from './weapon-clearance.js?v=48';
+import {animateWeaponParts} from './weapon-models.js?v=48';
+import {identityFor} from './combat-identity.js?v=48';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=48';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=48';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=48';
+import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=48';
+import {loadImages} from './textures.js?v=48';
+import {weatherParticles} from './particles.js?v=48';
+import {operatorTorso,operatorLimb} from './operator-meshes.js?v=48';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -20,7 +21,7 @@ export class CompatibilityRenderer {
   this.canvas=canvas;this.settings=settings;this.ctx=canvas.getContext('2d',{alpha:false});if(!this.ctx)throw new Error('The browser could not create a drawing surface.');
   this.compatibility=true;this.quality='compatibility';this.fps=30;this.renderScale=.8;this.lost=false;this.drawCalls=0;this.frameAverage=16.7;this.lastRender=0;this.frames=0;this.fpsAge=0;
   this.matrix=identity();this.parent=identity();this.combined=identity();this.view=identity();this.weaponView=identity();this.eye={x:0,y:2,z:0};this.target={x:0,y:2,z:-1};this.weaponKey='';this.weaponParts=[];this.world=[];this.textures=[];this.leaves=[];this.patterns=[];
-  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard(),conifer:coniferMesh(),strata:strataRockMesh(5)};
+  this.meshes={cylinder:makeCylinder(6),tube:tube(8),leaf:leafCard(),conifer:coniferMesh(),strata:strataRockMesh(5),operatorTorso:operatorTorso(6),operatorLimb:operatorLimb(6)};
   this.ready=loadImages().then(images=>{this.images=images;this.extract(images.surfaces,4,this.textures);this.extract(images.leaves,2,this.leaves,true);this.patterns=this.textures.map(t=>this.ctx.createPattern(t,'repeat'));});
  }
  chooseQuality(){return 'compatibility';}

@@ -27,9 +27,9 @@ test('animated legs join at their knees, lift alternating feet and stay finite w
   for(const q of p)for(const k of ['x','y','z','pitch'])assert(Number.isFinite(q[k]??0));
   for(let leg=0;leg<2;leg++){
    const thigh=p[leg],shin=p[2+leg];
-   const kneeA={y:thigh.y-Math.cos(thigh.pitch)*.205,z:thigh.z-Math.sin(thigh.pitch)*.205};
-   const kneeB={y:shin.y+Math.cos(shin.pitch)*.17,z:shin.z+Math.sin(shin.pitch)*.17};
-   assert(Math.hypot(kneeA.y-kneeB.y,kneeA.z-kneeB.z)<.002);
+   const end=(q,sign)=>({x:q.x-Math.sin(q.roll)*sign*q.h/2,y:q.y+Math.cos(q.roll)*Math.cos(q.pitch)*sign*q.h/2,z:q.z+Math.cos(q.roll)*Math.sin(q.pitch)*sign*q.h/2});
+   const kneeA=end(thigh,-1),kneeB=end(shin,1);
+   assert(Math.hypot(kneeA.x-kneeB.x,kneeA.y-kneeB.y,kneeA.z-kneeB.z)<.002);
   }
  }
  assert(lift);a.vx=a.vz=0;for(let i=120;i<180;i++)actorModel(a,i/60);assert(a.renderParts[0].z<0,'knees bend toward the forward -Z axis');a.crouched=true;for(let i=180;i<210;i++)actorModel(a,i/60);assert(a.renderParts[6].y<.5);

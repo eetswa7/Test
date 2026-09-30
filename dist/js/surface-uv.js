@@ -10,7 +10,7 @@ export function installMetricUV(geometry,kind){
   if(kind==='surface'){a=[1,0,0];b=[0,0,1];}
   else if(box){const face=Math.floor(i/(count/6));[a,b]=face<2?[[0,0,1],[0,1,0]]:face<4?[[1,0,0],[0,0,1]]:[[1,0,0],[0,1,0]];}
   else if(kind==='sphere'){a=[Math.PI,0,0];b=[0,Math.PI/2,0];}
-  else if(kind==='cylinder'||kind==='tube'){[a,b]=Math.abs(n.getY(i))>.9?[[1,0,0],[0,0,1]]:[[Math.PI,0,0],[0,1,0]];}
+  else if(kind==='cylinder'||kind==='tube'||kind==='operatorTorso'||kind==='operatorLimb'){[a,b]=Math.abs(n.getY(i))>.9?[[1,0,0],[0,0,1]]:[[Math.PI,0,0],[0,1,0]];}
   else{a=[1,0,0];b=[0,1,0];}
   u.set(a,i*3);v.set(b,i*3);
  }

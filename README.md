@@ -1,6 +1,17 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 47.** 30 weapons, 15 maps and 11 modes.
+**Latest checkpoint: Release 48.** 30 weapons, 15 maps and 11 modes.
+
+Release 48 adds saved touch aim slowdown over visible enemy silhouettes, with
+wall, smoke and flash checks. It scales thumb input without steering or firing.
+Sprint jumps retain momentum when the stick is released; ground stops stay
+responsive and air steering is gradual. Footsteps follow actual ground travel
+and landings use heavier surface foley. Operators use tapered elliptical
+torsos and limbs, with joint IK for sideways strides, reverse travel and flight.
+The same shared geometry works in both renderers.
+
+Release 48 verification: 233/233 regressions, 54-module packaged/offline checks
+and all 13 GLSL ES compile/link variants pass. Physical iPhone FPS is unmeasured.
 
 Release 47 adds Crossfire District (120 m across) and Blacksite (116 m across).
 Rooms have open window apertures and four-way access, with a 3.6 m city overpass,
