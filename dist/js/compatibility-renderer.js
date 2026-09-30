@@ -1,11 +1,12 @@
-import {animateWeaponParts} from './weapon-models.js?v=44';
-import {identityFor} from './combat-identity.js?v=44';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=44';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=44';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=44';
-import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=44';
-import {loadImages} from './textures.js?v=44';
-import {weatherParticles} from './particles.js?v=44';
+import {updateWeaponClearance} from './weapon-clearance.js?v=45';
+import {animateWeaponParts} from './weapon-models.js?v=45';
+import {identityFor} from './combat-identity.js?v=45';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=45';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=45';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=45';
+import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=45';
+import {loadImages} from './textures.js?v=45';
+import {weatherParticles} from './particles.js?v=45';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];
@@ -29,7 +30,7 @@ export class CompatibilityRenderer {
    if(alpha){const data=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<data.data.length;i+=4)data.data[i+3]=data.data[i+3]<148?0:255;ctx.putImageData(data,0,0);}out.push(c);
   }
  }
- setArena(arena){this.arena=arena;this.meshes.ridge=arena.info.id===4?null:ridgeMesh(arena.info.size,arena.info.id);this.buildWorld();}
+ setArena(arena){this.arena=arena;this.weaponClearanceState={};this.meshes.ridge=arena.info.id===4?null:ridgeMesh(arena.info.size,arena.info.id);this.buildWorld();}
  box(p,parent=null){
   compose(this.matrix,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);let m=this.matrix;if(parent){multiply(this.combined,parent,this.matrix);m=this.combined;}
   const transform=c=>({x:m[0]*c[0]+m[4]*c[1]+m[8]*c[2]+m[12],y:m[1]*c[0]+m[5]*c[1]+m[9]*c[2]+m[13],z:m[2]*c[0]+m[6]*c[1]+m[10]*c[2]+m[14]});
@@ -102,7 +103,7 @@ export class CompatibilityRenderer {
   const c=this.ctx,p=game.player;let yaw=p.yaw,pitch=p.pitch;this.fov=aimFov(movementFov(this.movementFovState??(this.movementFovState={}),p,this.settings.fov??80,game.paused?0:dt,this.settings.motion!==false),p.weapon,p.ads);
   if(menu){this.eye={x:15,y:6.5,z:25};this.target={x:-4,y:2,z:-8};this.fov=65*Math.PI/180;yaw=Math.atan2(this.target.x-this.eye.x,-(this.target.z-this.eye.z));pitch=-.12;}else{this.eye=game.eye(p);this.eye.y-=p.dead?1.2:0;const d=direction(p.yaw,p.pitch);this.target={x:this.eye.x+d.x,y:this.eye.y+d.y,z:this.eye.z+d.z};this.fov=verticalFov(this.fov,width/height);}
   this.weatherYaw=yaw;this.weatherPitch=pitch;this.worldFov=this.fov;lookAt(this.view,this.eye,this.target);this.sky(yaw,pitch);this.drawCalls=0;
-  const polygons=this.world.slice();for(const a of game.actors)if(a.id!==0&&distance(a,p)<55){compose(this.parent,a.x,a.y,a.z,1,1,1,-a.yaw,0,a.dead?1.5:0);for(const q of actorModel(a,game.time,identityFor(a,p,game.rules)))polygons.push(...this.box(q,this.parent));}
+  const polygons=this.world.slice();for(const a of game.actors)if(a.id!==0&&distance(a,p)<55){compose(this.parent,a.x,a.y,a.z,1,1,1,-a.yaw,0,a.dead?1.5:0);for(const q of actorModel(a,game.time,identityFor(a,p,game.rules)))if(!q.hidden)polygons.push(...this.box(q,this.parent));}
   if(['domination','sabotage','hardpoint','hill'].includes(game.rules.mode.id))for(let i=0;i<game.rules.points.length;i++){if(['hardpoint','hill'].includes(game.rules.mode.id)&&i!==game.rules.activePoint||game.rules.mode.id==='sabotage'&&i===1)continue;const point=game.rules.points[i];polygons.push(...this.box(part(point.x,point.y+1,point.z,.05,2,.05,'steel')),...this.box(part(point.x+.4,point.y+1.7,point.z,.8,.5,.06,'green',{color:point.owner===(game.rules.mode.teams?p.team:p.id)?[.10,.72,.91]:point.owner>=0?[.94,.16,.11]:[.8,.85,.4]})));}
   if(game.rules.mode.id==='ctf')for(const flag of game.rules.flags){const carrier=flag.carrier===null?null:game.actors.find(a=>a.id===flag.carrier&&!a.dead),x=carrier?carrier.x+Math.cos(carrier.yaw)*.28:flag.x,z=carrier?carrier.z+Math.sin(carrier.yaw)*.28:flag.z,y=carrier?carrier.y+.65:flag.y,yaw=(carrier?.yaw??0)+Math.sin(game.time*4+flag.team*2)*.13,color=flag.team===p.team?[.10,.72,.91]:[.94,.16,.11];polygons.push(...this.box(part(x,y+.88,z,.075,1.76,.075,'steel',{mesh:'cylinder'})),...this.box(part(x+.31*Math.cos(yaw),y+1.43,z+.31*Math.sin(yaw),.68,.43,.045,'fabric',{yaw,color})),...this.box(part(x+.31*Math.cos(yaw),y+1.43,z+.31*Math.sin(yaw),.10,.43,.06,'white',{yaw,color:[.9,.92,.88]})));}
   for(const tag of game.rules.tags??[])polygons.push(...this.box(part(tag.x,tag.y+.55+Math.sin(game.time*3+tag.id)*.07,tag.z,.25,.35,.06,'white',{yaw:game.time,color:tag.team===p.team?[.10,.72,.91]:[.94,.16,.11]})));
@@ -112,7 +113,7 @@ export class CompatibilityRenderer {
   for(const smoke of game.smokes){const from=this.eye,d=Math.hypot(smoke.x-from.x,smoke.z-from.z);if(d<7){c.fillStyle=`rgba(118,128,128,${clamp((7-d)/7,0,.8)*Math.min(1,smoke.age)})`;c.fillRect(0,0,width,height);}}
   if(!p.dead&&(menu||!scopeVisible(p))){
    const weapon=p.weapon,key=[weapon.def.id,weapon.optic,weapon.barrel,weapon.grip].join('/');if(key!==this.weaponKey){this.weaponKey=key;this.weaponParts=weaponModel(weapon);}animateWeaponParts(this.weaponParts,weapon,p,game.time);
-   const pose=weaponPose(p,game.time,this.settings.motion!==false,menu);compose(this.parent,pose.x,pose.y,pose.z,pose.scale,pose.scale,pose.scale,pose.yaw,pose.pitch,pose.roll);
+   if(menu)p.weaponObstruction=0;else updateWeaponClearance(this.weaponClearanceState??(this.weaponClearanceState={}),this.arena,p,game.paused?0:dt);const pose=weaponPose(p,game.time,this.settings.motion!==false,menu);compose(this.parent,pose.x,pose.y,pose.z,pose.scale,pose.scale,pose.scale,pose.yaw,pose.pitch,pose.roll);
    const parts=[];for(const q of this.weaponParts)if(!q.hidden)parts.push(...this.box(q,this.parent));if(weapon.sinceShot<.05&&weapon.barrel!==1&&weapon.def.id!==12){const muzzle=this.weaponParts.muzzle;parts.push(...this.box(part(muzzle.x,muzzle.y,muzzle.z,.11,.11,.19,'orange',{emissive:4}),this.parent));}this.fov=65*Math.PI/180;this.paint(parts,this.weaponView,true);
   }
  }

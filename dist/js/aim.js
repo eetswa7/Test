@@ -1,4 +1,4 @@
-import {clamp,lerp,angleDelta} from './math.js?v=44';
+import {clamp,lerp,angleDelta} from './math.js?v=45';
 
 // Rendering, HUD and input share the same optic definition. Never put an opaque
 // first-person scope model in front of the magnified world camera.
@@ -60,5 +60,6 @@ export function weaponPose(p,time,motion=true,menu=false,out={}){
  out.yaw=reload*.2*reloadTilt-sprint*.20;
  out.pitch=reload*.47*reloadTilt+sprint*.21+kick*.16*hip+view.vault*.42*hip;
  out.roll=(view.inertiaX*.4-view.strafe*.028)*hip+lerp(short?-.02:-.035,0,ads)-reload*.22*reloadTilt+sprint*.18+(motion?sign*kick*.11*hip:0);
+ const obstruction=clamp(p.weaponObstruction??0,0,1)*hip*hip;out.x+=obstruction*.08;out.y-=obstruction*.15;out.z+=obstruction*.10;out.pitch+=obstruction*.55;out.roll-=obstruction*.18;
  out.scale=1;return out;
 }

@@ -47,7 +47,7 @@ test('vault crosses low cover with valid capsules and returns to grounded play',
 test('vault refuses tall walls, occupied landings and low ceilings',()=>{
  for(const kind of ['tall','occupied','ceiling']){
   const g=course(),p=g.player;
-  if(kind==='tall'){g.arena.blocks[1].h=2;g.arena.blocks[1].y=1;}
+  if(kind==='tall'){g.arena.blocks[1].h=2.4;g.arena.blocks[1].y=1.2;}
   if(kind==='occupied')g.arena.box(0,2,-1.15,1,2,.5);
   if(kind==='ceiling')g.arena.box(0,2,0,3,.3,3,'concrete',{roof:true});
   g.arena.bakeCollision();assert(!beginVault(p,g.arena,0,-1),kind);

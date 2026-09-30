@@ -311,3 +311,10 @@ Release 41 verification: 178/178 automated tests, including optic selection and 
 - Browser limitation: cloud browser blocks localhost and browser runtime
   downloads did not produce usable archives. No new rendered-frame or physical
   iPhone FPS claim. Profiling data is in `docs/profile-release42-rays.json`.
+
+
+## Release 45: operator weapons, high mantles and wall handling
+
+Recovered and completed the previous unfinished pass. Bots carry their equipped firearm with two-grip arm poses, magazine motion, role equipment and bounded distance detail. Jump mantles clear ledges up to 2.2 m with standing headroom and capsule validation. Both renderers lower the hip-fire weapon near walls while preserving fully aimed sight alignment. Local hit reactions return to the base pose without moving collision or aim.
+
+Validation: 211/211 tests, packaged/offline checks for 50 JavaScript modules, and 13/13 Mesa GLSL ES compile/link variants pass. Actor CPU fixture medians across 13 maps are 0.17–0.32 ms. Physical iPhone frame timing remains unmeasured.

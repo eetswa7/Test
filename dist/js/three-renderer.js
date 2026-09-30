@@ -1,28 +1,31 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=44';
-import {patchAtmosphere} from './atmosphere.js?v=44';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=44';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=44';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=44';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=44';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=44';
-import {DecalSystem} from './decal-system.js?v=44';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=44';
-import {LightingField} from './lighting-field.js?v=44';
-import {RoomLights} from './room-lights.js?v=44';
-import {waterMaterial,patchWater} from './water-material.js?v=44';
-import {visualGroundHeight} from './surface-placement.js?v=44';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=44';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=44';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=44';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=44';
+import {operatorMuzzle} from './operator-detail.js?v=45';
+import {updateWeaponClearance} from './weapon-clearance.js?v=45';
+import {WEAPONS} from './weapons.js?v=45';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=45';
+import {patchAtmosphere} from './atmosphere.js?v=45';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=45';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=45';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=45';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=45';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=45';
+import {DecalSystem} from './decal-system.js?v=45';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=45';
+import {LightingField} from './lighting-field.js?v=45';
+import {RoomLights} from './room-lights.js?v=45';
+import {waterMaterial,patchWater} from './water-material.js?v=45';
+import {visualGroundHeight} from './surface-placement.js?v=45';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=45';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=45';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=45';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=45';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=44';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=44';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=44';
-import { loadImages } from './textures.js?v=44';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=44';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=44';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=44';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=45';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=45';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=45';
+import { loadImages } from './textures.js?v=45';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=45';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=45';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=45';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -200,7 +203,7 @@ export class Renderer {
   }
 
   setArena(arena) {
-    this.arena = arena; this.cameraY = null; this.cameraBobState = {}; this.movementFovState={}; this.shadowClock = 1;
+    this.arena = arena; this.cameraY = null; this.cameraBobState = {}; this.movementFovState={}; this.weaponClearanceState={}; this.shadowClock = 1;
     if(this.qualityController){this.qualityController.warmup=2;this.qualityController.slow=this.qualityController.fast=0;}
     for (const effect of this.effects) effect.life = 0;
     this.decalSystem?.clear();
@@ -560,8 +563,10 @@ export class Renderer {
           this.particle({ x: p.x + rightX * .23, y: p.y - .15, z: p.z + rightZ * .23 },
             3, [.63, .43, .12], .028, 1.1, rightX * 1.8, 1.2, rightZ * 1.8);
         } else if (event.end) {
+          const source=game.actors.find(a=>a.id===event.source),start=source?operatorMuzzle(source,{def:WEAPONS[event.weapon],barrel:event.suppressed?1:0}):p;
+          if(!event.suppressed)this.particle(start,2,[2.3,1.3,.45],.08,.045);
           for (let i = 1; i <= 3; i++) { const t = i * .15;
-            this.particle({ x: lerp(p.x, event.end.x, t), y: lerp(p.y, event.end.y, t), z: lerp(p.z, event.end.z, t) },
+            this.particle({ x: lerp(start.x, event.end.x, t), y: lerp(start.y, event.end.y, t), z: lerp(start.z, event.end.z, t) },
               2, [1.8, 1.14, .38], .025, .055); }
         }
       } else if (event.type === 'impact') {
@@ -655,8 +660,8 @@ export class Renderer {
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
       const identity = identityFor(a, player, game.rules), parts = actorModel(a, game.time, identity);
       for (let i = 0; i < parts.length; i++) {
-        if (distant && !FAR_ACTOR_PARTS.has(i)) continue;
         const q = parts[i]; let color;
+        if (q.hidden || distant && !FAR_ACTOR_PARTS.has(i) && !q.actorFar) continue;
         // Navy/cyan versus warm charcoal/crimson is stable after sides switch and in FFA.
         if (q.surface === 'fabric') color = identity.cloth;
         if (q.surface === 'white' || q.teamBand) color = identity.band;
@@ -810,6 +815,7 @@ export class Renderer {
     this.frames++; this.lastFPS += elapsed;
     if (this.lastFPS >= .6) { this.fps = Math.round(this.frames / this.lastFPS); this.frames = 0; this.lastFPS = 0; }
     this.applyQuality(); const aspect = this.resize(), p = game.player;
+    if(menu)p.weaponObstruction=0;else updateWeaponClearance(this.weaponClearanceState??(this.weaponClearanceState={}),this.arena,p,game.paused?0:dt);
     let yaw = p.yaw, pitch = p.pitch, fov;
     if (menu) {
       const t = game.time * .04; this.eye.x = 15 + Math.sin(t) * 2; this.eye.y = 6.5; this.eye.z = 25;

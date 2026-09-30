@@ -1,6 +1,20 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 44.** 24 weapons, 13 maps and 10 modes.
+**Latest checkpoint: Release 45.** 24 weapons, 13 maps and 10 modes.
+
+Release 45 replaces the generic bot rifle with the operator's actual equipped
+weapon, including loadout changes during Gun Game. Arm poses follow both grips,
+reloads move the magazine and support hand, and impacts produce local upper-body
+reactions. Distant weapons retain five major components; nearby models use at
+most 24 cached components. Operators have helmets, headsets and role equipment.
+Jumping against cover now vaults low obstacles or mantles accessible ledges up
+to 2.2 m. Both paths validate standing headroom, landing space and each moving
+capsule. Near-wall weapon lowering uses three cached rays at 12.5 Hz, with fully
+aimed sights preserved. Actor poses reuse their component objects.
+
+Release 45 verification: 30 regression files, 50-module/offline checks and all 13
+GLSL ES compile/link variants pass. Container scene profiles record actor update
+medians of 0.17–0.32 ms across 13 maps. These are CPU fixtures, not device FPS.
 
 Release 44 adds deadline-based frame pacing, saved 30/60 FPS caps and quality
 budgets matched to the selected cap. Match preparation compiles both equipped

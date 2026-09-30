@@ -1,4 +1,4 @@
-import {clamp,lerp} from './math.js?v=44';
+import {clamp,lerp} from './math.js?v=45';
 
 export function beginVault(actor,arena,dx,dz){
  const length=Math.hypot(dx,dz);
@@ -7,10 +7,11 @@ export function beginVault(actor,arena,dx,dz){
  const hit=arena.trace({x:actor.x,y:actor.y+.55,z:actor.z},{x:dx,y:0,z:dz},.95);
  if(!hit.block||hit.block.roof||hit.block.ground)return false;
  const top=hit.block.y+hit.block.h/2,rise=top-actor.y;
- if(rise<.4||rise>1.25)return false;
+ if(rise<.4||rise>2.2)return false;
  const to={x:actor.x+dx*(hit.t+.62),y:top+.025,z:actor.z+dz*(hit.t+.62)};
- if(arena.collides({...to,y:to.y+.035},.31,1.75)||!arena.visible({x:actor.x,y:actor.y+1.67,z:actor.z},{x:to.x,y:to.y+1.67,z:to.z}))return false;
- actor.vault={from:{x:actor.x,y:actor.y,z:actor.z},to,time:0,duration:.36};
+ const head={x:actor.x,y:actor.y+1.67,z:actor.z},lifted={x:actor.x,y:to.y+1.67,z:actor.z};
+ if(arena.collides({...to,y:to.y+.035},.31,1.75)||!arena.visible(head,lifted)||!arena.visible(lifted,{x:to.x,y:to.y+1.67,z:to.z}))return false;
+ actor.vault={from:{x:actor.x,y:actor.y,z:actor.z},to,time:0,duration:rise>1.25?.62:.36,kind:rise>1.25?'mantle':'vault'};
  actor.vy=actor.vx=actor.vz=0;actor.grounded=false;actor.crouched=false;actor.sliding=false;actor.slideLeft=0;
  return true;
 }
