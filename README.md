@@ -1,6 +1,14 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 46.** 30 weapons, 13 maps and 10 modes.
+**Latest checkpoint: Release 47.** 30 weapons, 15 maps and 11 modes.
+
+Release 47 adds Crossfire District (120 m across) and Blacksite (116 m across).
+Rooms have open window apertures and four-way access, with a 3.6 m city overpass,
+raised facility service routes, vehicle cover and separate street or cargo flanks.
+Frontline moves the active fight between sectors. Teams capture to push forward,
+defend to reverse the line, and win by breaking through the enemy rear. Respawns
+stay behind the current sector; bots refresh routes after each push. Navigation
+floor construction now uses collision buckets instead of scanning every block.
 
 Release 46 adds Storm 68, Needle 57, Jackal 12, Sentinel 762, Heron S and
 Paladin 45. Each has an original model, handling, audio, attachments, bot role

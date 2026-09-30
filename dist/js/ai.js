@@ -1,4 +1,4 @@
-import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=46';
+import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=47';
 export const ROLES=[{name:'Rifleman',weapon:0,variants:[0,13,16,2,24],range:19},{name:'Rusher',weapon:3,variants:[3,14,17,21,25],range:9},{name:'Shotgunner',weapon:5,variants:[5,6,18,26],range:7},{name:'Marksman',weapon:8,variants:[8,15,19,28],range:37},{name:'Heavy',weapon:9,variants:[9,20,27],range:28},{name:'Elite',weapon:1,variants:[1,16,21],range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
 function nearestTag(bot,rules){
@@ -58,7 +58,7 @@ export function updateBot(bot,dt,e){
    bot.state=bot.weapon.reloadLeft>0?'reload':'retreat';let cover=null,cost=Infinity;
    for(const p of e.arena.cover){const d=distance(bot,p);if(d<cost&&d<13&&!e.arena.collides(p,.35,1.7)&&(!target||!e.arena.visible({...p,y:p.y+1.3},e.eye(target)))){cover=p;cost=d;}}
    bot.goal=cover??{x:bot.x-Math.sin(bot.yaw)*7,y:bot.y,z:bot.z+Math.cos(bot.yaw)*7};
-  }else if(e.rules.mode.id==='hardpoint'||e.rules.mode.id==='hill'){
+  }else if(['hardpoint','hill','frontline'].includes(e.rules.mode.id)){
    bot.goal=hardpointGoal(bot,e.rules);bot.state='objective';
   }else if(ctfGoal){
    bot.goal=ctfGoal;bot.state='objective';
@@ -94,7 +94,7 @@ export function updateBot(bot,dt,e){
   const p=bot.path[bot.pathIndex],dx=p.x-bot.x,dz=p.z-bot.z,n=Math.hypot(dx,dz);
   if(n<.35&&Math.abs(p.y-bot.y)<.4)bot.pathIndex++;
   else{
-   const speed=(bot.state==='evade'?5.8:bot.state==='engage'?1.8:bot.role===1?4.5:3.4)*e.difficulty.speed;
+   const speed=(bot.weapon.def.kind==='MELEE'&&target?5.5:bot.state==='evade'?5.8:bot.state==='engage'?1.8:bot.role===1?4.5:3.4)*e.difficulty.speed;
    let sx=dx/Math.max(.01,n),sz=dz/Math.max(.01,n);
    // Soft avoidance keeps allies from occupying the same doorway or firing line.
    for(const other of e.actors){if(other===bot||other.dead||Math.abs(other.y-bot.y)>1.6)continue;

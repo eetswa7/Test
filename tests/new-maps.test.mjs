@@ -4,8 +4,8 @@ import {Arena,MAPS} from '../dist/js/maps.js';
 import {Navigation} from '../dist/js/navigation.js';
 
 const freshMaps=MAPS.filter(m=>m.id>=4);
-test('map roster includes thirteen distinct selectable battlegrounds',()=>{
- assert.equal(MAPS.length,13);assert.equal(new Set(MAPS.map(m=>m.id)).size,13);
+test('map roster includes fifteen distinct selectable battlegrounds',()=>{
+ assert.equal(MAPS.length,15);assert.equal(new Set(MAPS.map(m=>m.id)).size,15);
  assert.equal(new Arena(4).info.name,'BREAKWATER');assert.equal(new Arena(5).info.name,'CITADEL');
  assert.equal(new Arena(8).info.name,'FROSTLINE');assert.equal(new Arena(9).info.name,'IRON QUARRY');
  assert.equal(new Arena(99).info.id,MAPS.length-1);assert.equal(new Arena(NaN).info.id,0);
@@ -43,7 +43,7 @@ test('new raised routes are reachable by navigation without teleporting or jumpi
 });
 test('new scenery remains finite and bounded for mobile rendering',()=>{
  for(const m of freshMaps){const arena=new Arena(m.id);
-  assert(arena.blocks.length<180);assert(arena.decor.length<900);assert(arena.foliage.length<800);
+  assert(arena.blocks.length<(m.colliderBudget??180));assert(arena.decor.length<(m.decorBudget??900));assert(arena.foliage.length<800);
   for(const b of [...arena.blocks,...arena.decor,...arena.foliage])for(const key of ['x','y','z','w','h','d'])assert(Number.isFinite(b[key])&&(key.length!==1||!['w','h','d'].includes(key)||b[key]>0),`${m.name} invalid ${key}`);
  }
 });

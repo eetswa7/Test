@@ -1,5 +1,5 @@
-import {GUN_ORDER} from './weapons.js?v=46';
-import {distance} from './math.js?v=46';
+import {GUN_ORDER} from './weapons.js?v=47';
+import {distance} from './math.js?v=47';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
@@ -11,7 +11,8 @@ export const MODES = [
  {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true},
  {id:'ctf',name:'CAPTURE THE FLAG',short:'CTF',description:'Steal the enemy flag, carry it home, and keep your own flag safe. First to 3 captures.',limit:3,time:480,teams:true},
  {id:'hill',name:'KING OF THE HILL',short:'KOTH',description:'Every operator for themselves. Occupy the hill alone to score. First to 75.',limit:75,time:480,teams:false},
- {id:'elimination',name:'ELIMINATION',short:'ELIM',description:'4 vs 4. One life each round. Eliminate the other team. First to 5 rounds.',limit:5,time:75,teams:true}
+ {id:'elimination',name:'ELIMINATION',short:'ELIM',description:'4 vs 4. One life each round. Eliminate the other team. First to 5 rounds.',limit:5,time:75,teams:true},
+ {id:'frontline',name:'FRONTLINE',short:'FRONT',description:'Capture the active sector to push the line. Break through the enemy rear sector to win.',limit:3,time:600,teams:true}
 ];
 
 export const HARDPOINT_SECONDS = 45;
@@ -28,6 +29,11 @@ export class MatchRules {
   this.points=arena.objectives.map(p=>({...p,owner:-1,progress:0,capturing:-1,contested:false}));
   this.siteProgress=0;this.interactor=null;
   this.activePoint=this.points.length>1?1:0;this.rotationRemaining=HARDPOINT_SECONDS;
+  this.frontlineProgress=0;
+  if(this.mode.id==='frontline'){
+   for(let i=0;i<this.points.length;i++)this.points[i].owner=i<this.activePoint?0:i>this.activePoint?1:-1;
+   this.scores=[this.points.filter(p=>p.owner===0).length,this.points.filter(p=>p.owner===1).length];
+  }
   // A tag belongs to the fallen actor's team; collecting your own team's tag denies it.
   this.tags=[];this.nextTagId=1;
   this.flags=mode==='ctf'?arena.spawns.reduce((out,spawn)=>{
@@ -36,6 +42,9 @@ export class MatchRules {
    const x=group.reduce((n,p)=>n+p.x,0)/group.length,z=group.reduce((n,p)=>n+p.z,0)/group.length;
    out.push({team:spawn.team,x,y:arena.floorAt({x,y:0,z}),z,homeX:x,homeY:arena.floorAt({x,y:0,z}),homeZ:z,carrier:null,atBase:true,age:0});return out;
   },[]):[];
+  for(const base of arena.flagBases??[])if(this.mode.id==='ctf'){
+   const flag=this.flags.find(f=>f.team===base.team);if(flag)Object.assign(flag,{x:base.x,y:base.y,z:base.z,homeX:base.x,homeY:base.y,homeZ:base.z});
+  }
  }
  get attackingTeam(){return Math.floor((this.round-1)/3)%2;}
  get respawns(){return !['sabotage','elimination'].includes(this.mode.id);}
@@ -148,6 +157,33 @@ export class MatchRules {
    }
   }
  }
+ spawnAllowed(actor,p){
+  if(this.mode.id!=='frontline'||this.points.length<2)return true;
+  const a=this.points[0],b=this.points.at(-1),front=this.points[this.activePoint],dx=b.x-a.x,dz=b.z-a.z,n=Math.hypot(dx,dz)||1;
+  const separation=((p.x-front.x)*dx+(p.z-front.z)*dz)/n;
+  return actor.team===0?separation<-6:separation>6;
+ }
+ updateFrontline(dt,engine){
+  const point=this.points[this.activePoint];if(!point)return;
+  const occupants=engine.actors.filter(a=>!a.dead&&distance(a,point)<4.8&&Math.abs(a.y-point.y)<1.8&&engine.arena.visible(engine.eye(a),{x:point.x,y:point.y+.3,z:point.z}));
+  const count=[occupants.filter(a=>a.team===0).length,occupants.filter(a=>a.team===1).length];
+  point.contested=count[0]>0&&count[1]>0;
+  if(!point.contested){
+   if(count[0]||count[1]){const team=count[0]?0:1;this.frontlineProgress+=(team===0?1:-1)*dt*Math.min(2,count[team])/8;point.capturing=team;}
+   else {const sign=Math.sign(this.frontlineProgress);this.frontlineProgress=sign*Math.max(0,Math.abs(this.frontlineProgress)-dt*.05);point.capturing=-1;}
+  }
+  point.progress=Math.min(1,Math.abs(this.frontlineProgress));
+  if(point.progress<1-1e-8)return;
+  const team=this.frontlineProgress>0?0:1,old=this.activePoint;
+  point.owner=team;point.progress=0;point.capturing=-1;point.contested=false;this.frontlineProgress=0;
+  this.scores=[this.points.filter(p=>p.owner===0).length,this.points.filter(p=>p.owner===1).length];
+  for(const actor of occupants)if(actor.team===team)actor.captures=(actor.captures??0)+1;
+  engine.emit('capture',{text:`${team===0?'BLUE':'RED'} SECURED ${point.name} · LINE ADVANCED`,source:team,position:{x:point.x,y:point.y,z:point.z}});
+  if(team===0&&old===this.points.length-1||team===1&&old===0){this.finish(team);return;}
+  this.activePoint+=team===0?1:-1;
+  // Force a route refresh, with existing per-frame A* and spawn safety budgets.
+  for(const actor of engine.actors)if(actor.id!==0){actor.pathClock=0;actor.aiClock=0;actor.path=[];actor.pathIndex=0;}
+ }
  updateElimination(engine){
   const alive=[0,0],health=[0,0];
   for(const actor of engine.actors)if(!actor.dead){alive[actor.team]++;health[actor.team]+=actor.health;}
@@ -202,6 +238,7 @@ export class MatchRules {
   if(this.mode.id==='hardpoint')this.updateHardpoint(elapsed,engine);
   if(this.mode.id==='confirmed')this.updateTags(elapsed,engine);
   if(this.mode.id==='hill')this.updateHill(elapsed,engine);
+  if(this.mode.id==='frontline')this.updateFrontline(elapsed,engine);
   if(this.mode.id==='elimination'){this.updateElimination(engine);return;}
   if(this.phase==='finished')return;
   if(this.mode.id==='domination') {

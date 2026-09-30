@@ -1,9 +1,9 @@
-import {MODES} from './modes.js?v=46';
-import {MAPS} from './maps.js?v=46';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=46';
-import {clamp,distance} from './math.js?v=46';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=46';
-import {identityFor,canIdentify} from './combat-identity.js?v=46';
+import {MODES} from './modes.js?v=47';
+import {MAPS} from './maps.js?v=47';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=47';
+import {clamp,distance} from './math.js?v=47';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=47';
+import {identityFor,canIdentify} from './combat-identity.js?v=47';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -81,6 +81,7 @@ export class Interface {
   if(r.mode.teams){$('score-blue').textContent=r.scores[0];$('score-red').textContent=r.scores[1];}else{$('score-blue').textContent=r.mode.id==='gun'?p.gunStage:r.mode.id==='hill'?p.hillScore??0:p.kills;$('score-red').textContent=Math.max(...g.actors.slice(1).map(a=>r.mode.id==='gun'?a.gunStage:r.mode.id==='hill'?a.hillScore??0:a.kills));}
   if(r.mode.id==='domination')$('objective').textContent=r.points.map(q=>`${q.name} ${q.contested?'CONTESTED':q.owner===p.team?'ALLIES':q.owner>=0?'ENEMIES':q.progress>0?'CAPTURING':'NEUTRAL'}`).join('   ');
   else if(r.mode.id==='hardpoint'){const q=r.points[r.activePoint];$('objective').textContent=`HOLD ${q.name} · ${q.contested?'CONTESTED':q.owner===p.team?'ALLIED CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
+  else if(r.mode.id==='frontline'){const q=r.points[r.activePoint];$('objective').textContent=`PUSH ${q.name} · ${q.contested?'CONTESTED':q.progress>0?`${q.capturing===p.team?'ALLIES':'ENEMIES'} ${Math.round(q.progress*100)}%`:'CAPTURE SECTOR'} · ${r.scores[p.team]}/${r.points.length} SECTORS`; }
   else if(r.mode.id==='hill'){const q=r.points[r.activePoint];$('objective').textContent=`HILL ${q.name} · ${q.contested?'CONTESTED':q.owner===p.id?'YOU CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
   else if(r.mode.id==='elimination'){$('objective').textContent=r.phase==='roundBreak'?r.message:`ROUND ${r.round} · ${g.actors.filter(a=>!a.dead&&a.team===p.team).length} ALLIES / ${g.actors.filter(a=>!a.dead&&a.team!==p.team).length} ENEMIES ALIVE`;}
   else if(r.mode.id==='ctf'){const own=r.flags.find(f=>f.team===p.team),enemy=r.flags.find(f=>f.team!==p.team),status=f=>f.carrier===p.id?'YOU':f.carrier!==null?'CARRIED':f.atBase?'HOME':'DROPPED';$('objective').textContent=`ENEMY ${status(enemy)} · OWN ${status(own)} · ${r.scores[p.team]}/${r.mode.limit}`;}
@@ -110,7 +111,7 @@ export class Interface {
   }
   const target=$('target-identity');target.classList.toggle('hidden',!centred);if(centred){target.dataset.relation=centred.identity.key;target.textContent=centred.el.textContent;}
  }
- radar(){const g=this.app.game,c=$('radar').getContext('2d'),w=160,s=2.3;c.clearRect(0,0,w,w);c.save();c.translate(w/2,w/2);c.rotate(-g.player.yaw);c.fillStyle='#233b3022';c.fillRect(-80,-80,160,160);for(const b of g.arena.blocks){if(b.ground||b.roof||b.destroyed)continue;c.fillStyle='#a1bba455';c.fillRect((b.x-g.player.x-b.w/2)*s,(b.z-g.player.z-b.d/2)*s,b.w*s,b.d*s);}for(let i=0;i<g.rules.points.length;i++){const p=g.rules.points[i],mode=g.rules.mode.id;if(!['domination','sabotage','hardpoint','hill'].includes(mode)||['hardpoint','hill'].includes(mode)&&i!==g.rules.activePoint)continue;c.fillStyle=p.owner===(g.rules.mode.teams?g.player.team:g.player.id)?'#70e5f5':p.owner>=0?'#ff786e':'#e2e8b2';c.font='12px Arial';c.fillText(p.name,(p.x-g.player.x)*s,(p.z-g.player.z)*s);}
+ radar(){const g=this.app.game,c=$('radar').getContext('2d'),w=160,s=2.3;c.clearRect(0,0,w,w);c.save();c.translate(w/2,w/2);c.rotate(-g.player.yaw);c.fillStyle='#233b3022';c.fillRect(-80,-80,160,160);for(const b of g.arena.blocks){if(b.ground||b.roof||b.destroyed)continue;c.fillStyle='#a1bba455';c.fillRect((b.x-g.player.x-b.w/2)*s,(b.z-g.player.z-b.d/2)*s,b.w*s,b.d*s);}for(let i=0;i<g.rules.points.length;i++){const p=g.rules.points[i],mode=g.rules.mode.id;if(!['domination','sabotage','hardpoint','hill','frontline'].includes(mode)||['hardpoint','hill','frontline'].includes(mode)&&i!==g.rules.activePoint)continue;c.fillStyle=p.owner===(g.rules.mode.teams?g.player.team:g.player.id)?'#70e5f5':p.owner>=0?'#ff786e':'#e2e8b2';c.font='12px Arial';c.fillText(p.name,(p.x-g.player.x)*s,(p.z-g.player.z)*s);}
   for(const flag of g.rules.flags??[]){const x=(flag.x-g.player.x)*s,z=(flag.z-g.player.z)*s;c.fillStyle=flag.team===g.player.team?'#70e5f5':'#ff786e';c.beginPath();c.moveTo(x,z-5);c.lineTo(x+4,z);c.lineTo(x,z+5);c.lineTo(x-4,z);c.closePath();c.fill();c.fillStyle='#102019';c.font='bold 7px Arial';c.fillText(flag.team===0?'B':'R',x-2,z+2);}
   for(const tag of g.rules.tags??[]){c.fillStyle=tag.team===g.player.team?'#70e5f5':'#ff786e';c.fillRect((tag.x-g.player.x)*s-2,(tag.z-g.player.z)*s-3,4,6);}
   for(const a of g.actors){if(a.dead||a.id===0)continue;const friendly=g.rules.mode.teams&&a.team===g.player.team;if(!friendly&&g.time-a.lastShot>1.8)continue;c.fillStyle=friendly?'#70e5f5':'#ff786e';c.beginPath();c.arc((a.x-g.player.x)*s,(a.z-g.player.z)*s,3,0,Math.PI*2);c.fill();}c.restore();c.fillStyle='#ddff7b';c.beginPath();c.moveTo(80,72);c.lineTo(75,86);c.lineTo(80,82);c.lineTo(85,86);c.closePath();c.fill();}

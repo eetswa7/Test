@@ -1,4 +1,4 @@
-import {distance} from './math.js?v=46';
+import {distance} from './math.js?v=47';
 // A small layered navigation grid includes room floors and reachable stairs/terraces.
 // Connectivity is baked once per match; A* runs at most once per bot per second.
 export class Navigation {
@@ -6,7 +6,7 @@ export class Navigation {
   this.arena=arena;this.step=1.25;this.size=arena.info.size;this.n=Math.ceil(this.size*2/this.step);this.cells=Array.from({length:this.n*this.n},()=>[]);this.nodes=[];
   for(let iz=1;iz<this.n-1;iz++)for(let ix=1;ix<this.n-1;ix++){
    const x=-this.size+(ix+.5)*this.step,z=-this.size+(iz+.5)*this.step,levels=[0];
-   for(const b of arena.blocks){let top=b.y+b.h/2;if(top>.1&&top<=4.8&&Math.abs(x-b.x)<b.w/2&&Math.abs(z-b.z)<b.d/2)levels.push(top);}
+   for(const b of arena.nearby({x,y:0,z})){let top=b.y+b.h/2;if(top>.1&&top<=4.8&&Math.abs(x-b.x)<b.w/2&&Math.abs(z-b.z)<b.d/2)levels.push(top);}
    for(const y of [...new Set(levels)])if(!arena.collides({x,y:y+.04,z},.34,1.75)){const id=this.nodes.length;this.nodes.push({x,y,z,id,ix,iz,links:[]});this.cells[iz*this.n+ix].push(id);}
   }
   for(const node of this.nodes)for(const [dx,dz]of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]]){
@@ -42,8 +42,9 @@ export class Navigation {
   const pop=()=>{const root=heap[0],last=heap.pop();if(heap.length){heap[0]=last;let i=0;for(;;){let a=i*2+1,b=a+1,j=i;if(a<heap.length&&heap[a].f<heap[j].f)j=a;if(b<heap.length&&heap[b].f<heap[j].f)j=b;if(j===i)break;[heap[i],heap[j]]=[heap[j],heap[i]];i=j;}}return root.id;};
   push(start,0);let reached=start,best=distance(from,to),count=0;
   while(heap.length&&count++<5000){const id=pop();if(this.closed[id])continue;this.closed[id]=1;const n=this.nodes[id],h=distance(n,this.nodes[goal]);if(h<best){best=h;reached=id;}if(id===goal){reached=id;break;}
-   for(const next of n.links){if(this.closed[next])continue;let t=this.g[id]+distance(n,this.nodes[next])+Math.abs(n.y-this.nodes[next].y);if(t<this.g[next]){this.g[next]=t;this.previous[next]=id;push(next,t+distance(this.nodes[next],this.nodes[goal]));}}
+    for(const next of n.links){if(this.closed[next])continue;let t=this.g[id]+distance(n,this.nodes[next])+Math.abs(n.y-this.nodes[next].y);if(t<this.g[next]){this.g[next]=t;this.previous[next]=id;const q=this.nodes[next],end=this.nodes[goal];push(next,t+distance(q,end)*1.15+Math.abs(q.y-end.y));}}
   }
+  this.lastExpanded=count;this.lastReached=reached===goal;
   const path=[];for(let id=reached;id!==start&&id!==-1;id=this.previous[id])path.push(this.nodes[id]);return path.reverse();
  }
 }

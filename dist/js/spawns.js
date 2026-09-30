@@ -77,6 +77,11 @@ export class SpawnDirector {
   const home=this.starts.filter(p=>p.team===actor.team&&(p.x+p.z)*side>this.arena.info.size*.4);
   let pool=initial&&teams?home:this.candidates;
   if(!pool.length)pool=this.candidates.length?this.candidates:this.starts;
+  if(rules.mode.id==='frontline'){
+   const rear=pool.filter(p=>rules.spawnAllowed(actor,p));
+   pool=rear.length?rear:this.candidates.filter(p=>rules.spawnAllowed(actor,p));
+   if(!pool.length)pool=home.length?home:this.starts.filter(p=>p.team===actor.team);
+  }
   let ax=0,az=0,ex=0,ez=0;
   for(const a of allies){ax+=a.x;az+=a.z;}for(const a of enemies){ex+=a.x;ez+=a.z;}
   if(allies.length){ax/=allies.length;az/=allies.length;}
@@ -132,7 +137,7 @@ export class SpawnDirector {
    this.lastChecks++;
    const head={x:p.x,y:p.y+1.62,z:p.z},torso={x:p.x,y:p.y+.9,z:p.z};
    for(const {enemy,eye} of eyes){
-    const d=separation(p,enemy);if(d>68)continue;
+    const d=separation(p,enemy);if(d>140)continue;
     // Both standing head and torso must be sheltered. A low wall must not
     // count as full cover, and destroyed geometry is checked on each ray.
     this.lastRays++;let visible=this.arena.visible(eye,head);
@@ -146,7 +151,7 @@ export class SpawnDirector {
   // use the same-side connected pockets, with no unchecked random displacement.
   if(!best&&initial&&teams){
    const side=actor.team?1:-1;
-   const fallback=this.candidates.filter(p=>(p.x+p.z)*side>this.arena.info.size*.4);
+   const fallback=this.candidates.filter(p=>(p.x+p.z)*side>this.arena.info.size*.4&&rules.spawnAllowed(actor,p));
    const free=fallback.find(p=>!actors.some(a=>a.id!==actor.id&&!a.dead&&separation(p,a)<1.6));
    best=free??fallback[0];
   }

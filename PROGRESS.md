@@ -325,3 +325,14 @@ Validation: 211/211 tests, packaged/offline checks for 50 JavaScript modules, an
 Six original firearms bring the arsenal and progression ladder to 30 weapons. Ballistic rays resolve exact material thickness and incidence, hollow prop skins, ordered silhouettes and bounded multi-surface penetration. Embedded obstacles cannot be skipped inside penetrable cover. Shotgun pellets stop at cover, and depleted magazines require an extra action cycle. New regression cases cover oblique rays, solid versus hollow cover, embedded concrete, ordered allied silhouettes, headshots through glass and energy exhaustion.
 
 Release 46 verification: 217/217 regressions, 51-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. No physical iPhone frame timing is claimed.
+
+
+## Release 47: expanded battlefields and Frontline
+
+Crossfire District covers 120 × 120 m with four accessible interiors, actual window apertures, a walkable 3.6 m concourse, traffic cover and outer streets. Blacksite covers 116 × 116 m with a generator hall, four bunkers, raised service routes, cargo approaches and watch towers. Large facades use storey bands with a bounded component count. The navigation bake samples collision buckets for each floor cell.
+
+Frontline starts at the middle sector. Uncontested occupation moves the line toward the opposing rear; defenders can reverse a push. Spawn pockets stay on the team's rear side, bots retarget each sector and both renderers and HUD expose the current objective. Capture checks respect walls and floor heights.
+
+Large-map regression fixes: weighted A* reaches all spawn pockets within the 5,000-node budget (maximum 271/333 expansions in the recorded corner-route sweep). Respawn visibility covers the full 140 m firing range. Larger spatial batches bring the expanded maps to 174/157 world batches. Melee-equipped bots close distance at a sprint, and authored forward flag bases keep CTF from stalling at distant map corners. Bot Gun Game and CTF matches now finish with full-ladder or capture wins on both expanded maps.
+
+Release 47 verification: 223/223 regressions, 52-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. Physical iPhone frame timing remains unmeasured.

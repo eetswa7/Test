@@ -18,7 +18,7 @@ function fixture(mode) {
 function place(actor,p){actor.x=p.x;actor.y=p.y;actor.z=p.z;}
 
 test('new objective modes are selectable, respawn-enabled team matches',()=>{
- assert.equal(new Set(MODES.map(m=>m.id)).size,10);
+ assert.equal(new Set(MODES.map(m=>m.id)).size,11);
  for(const mode of ['hardpoint','confirmed','ctf']){
   const {rules}=fixture(mode);assert.equal(rules.mode.id,mode);assert(rules.mode.teams);assert(rules.respawns);
   if(mode==='ctf')assert.deepEqual(rules.flags.map(f=>f.team),[0,1]);

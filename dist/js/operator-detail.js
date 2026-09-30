@@ -1,5 +1,5 @@
-import {weaponModel,muzzlePosition} from './weapon-models.js?v=46';
-import {clamp} from './math.js?v=46';
+import {weaponModel,muzzlePosition} from './weapon-models.js?v=47';
+import {clamp} from './math.js?v=47';
 
 const templates=new Map(),MAX_TEMPLATES=32;
 function template(w){

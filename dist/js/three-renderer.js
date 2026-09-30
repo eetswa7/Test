@@ -1,31 +1,31 @@
-import {operatorMuzzle} from './operator-detail.js?v=46';
-import {updateWeaponClearance} from './weapon-clearance.js?v=46';
-import {WEAPONS} from './weapons.js?v=46';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=46';
-import {patchAtmosphere} from './atmosphere.js?v=46';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=46';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=46';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=46';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=46';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=46';
-import {DecalSystem} from './decal-system.js?v=46';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=46';
-import {LightingField} from './lighting-field.js?v=46';
-import {RoomLights} from './room-lights.js?v=46';
-import {waterMaterial,patchWater} from './water-material.js?v=46';
-import {visualGroundHeight} from './surface-placement.js?v=46';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=46';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=46';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=46';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=46';
+import {operatorMuzzle} from './operator-detail.js?v=47';
+import {updateWeaponClearance} from './weapon-clearance.js?v=47';
+import {WEAPONS} from './weapons.js?v=47';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=47';
+import {patchAtmosphere} from './atmosphere.js?v=47';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=47';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=47';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=47';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=47';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=47';
+import {DecalSystem} from './decal-system.js?v=47';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=47';
+import {LightingField} from './lighting-field.js?v=47';
+import {RoomLights} from './room-lights.js?v=47';
+import {waterMaterial,patchWater} from './water-material.js?v=47';
+import {visualGroundHeight} from './surface-placement.js?v=47';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=47';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=47';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=47';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=47';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=46';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=46';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=46';
-import { loadImages } from './textures.js?v=46';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=46';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=46';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=46';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=47';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=47';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=47';
+import { loadImages } from './textures.js?v=47';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=47';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=47';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=47';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -353,7 +353,8 @@ export class Renderer {
       const mesh = p.mesh ?? 'cube', materialKey = this.materialKey(p, 'world');
       // Two-triangle floor finishes are cheap to submit together; retain spatial
       // chunks for 3D architecture where frustum culling saves substantial work.
-      const chunk = p.ground ? 'ground' : mesh==='surface'?'surface':`${Math.floor(p.x / 32)}/${Math.floor(p.z / 32)}`;
+      const cell=this.arena.info.size>50?48:32;
+      const chunk = p.ground ? 'ground' : mesh==='surface'?'surface':`${Math.floor(p.x / cell)}/${Math.floor(p.z / cell)}`;
       const key = `${chunk}/${mesh}/${materialKey}`;
       if (!bins.has(key)) bins.set(key, []); bins.get(key).push(p);
     }
@@ -679,8 +680,8 @@ export class Renderer {
       }
     }
     const rules = game.rules, id = rules.mode.id;
-    if (['domination', 'sabotage', 'hardpoint','hill'].includes(id)) for (let i = 0; i < rules.points.length; i++) {
-      if (id === 'sabotage' && i === 1 || ['hardpoint','hill'].includes(id) && i !== rules.activePoint) continue;
+    if (['domination', 'sabotage', 'hardpoint','hill','frontline'].includes(id)) for (let i = 0; i < rules.points.length; i++) {
+      if (id === 'sabotage' && i === 1 || ['hardpoint','hill','frontline'].includes(id) && i !== rules.activePoint) continue;
       const point = rules.points[i], color = point.owner === (rules.mode.teams?player.team:player.id) ? FRIEND : point.owner >= 0 ? ENEMY : [.8, .72, .38];
       const parts = point.renderParts ?? (point.renderParts = [
         part(point.x, point.y+.035, point.z, 4.7, .025, 4.7, 'dark', { mesh: 'tube', tile: -1, emissive: .18 }),

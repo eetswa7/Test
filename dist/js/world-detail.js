@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=46';
-import {rng} from './math.js?v=46';
+import {prepareGroundSurfaces} from './surface-placement.js?v=47';
+import {rng} from './math.js?v=47';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -26,7 +26,9 @@ export function dressWorld(arena){
  };
  const free=(x,z,margin=1)=>!arena.collides({x,y:.02,z},margin,2)&&arena.spawns.every(p=>Math.hypot(p.x-x,p.z-z)>3.2)&&arena.objectives.every(p=>Math.hypot(p.x-x,p.z-z)>4.2);
  // Break up the ground with roads, shoulders and shallow drainage strips.
- if(id===0||id===3||id===5||id===7||id===8||id===9||id===10||id===12){
+ if(id>=13){
+  // Expanded maps author their street and facility floors with the architecture.
+ }else if(id===0||id===3||id===5||id===7||id===8||id===9||id===10||id===12){
   for(const x of [-s*.66,s*.66])add(x,.011,0,4.3,.012,s*2-2,'asphalt');
   for(const z of [-s*.63,s*.63])add(0,.013,z,s*2-2,.012,3.7,'asphalt');
   for(const x of [-s*.66-2.3,s*.66+2.3])add(x,.07,0,.24,.14,s*2-2,'concrete',{mesh:'bevel'});
@@ -46,6 +48,17 @@ export function dressWorld(arena){
  for(const b of buildings){
   add(b.x,.20,b.z,b.w+.09,.4,b.d+.09,'concrete');
   add(b.x,b.h-.10,b.z,b.w+.2,.15,b.d+.2,'plaster');
+  if(id>=13){
+   // Large-city facade bands provide structure across storeys without hundreds
+   // of tiny shutter components. Windows and sills are already in the building.
+   for(const side of [-1,1]){
+    const z=b.z+side*(b.d/2+.06);
+    for(let y=1.1;y<b.h;y+=2.2)add(b.x,y,z,b.w,.16,.16,'limestone');
+    add(b.x+b.w*.4,b.h*.47,z,.11,b.h*.94,.13,'rust',{mesh:'cylinder'});
+   }
+   add(b.x-b.w*.24,b.h+.5,b.z,1.5,1,1.5,'steel',{mesh:'cylinder'});
+   continue;
+  }
   for(const side of [-1,1]){
    const z=b.z+side*(b.d/2+.04);
    for(let y=2;y<b.h-.5;y+=2.2)for(let x=b.x-b.w/2+1.2;x<b.x+b.w/2-.6;x+=2){
