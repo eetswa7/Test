@@ -1,3 +1,34 @@
+# Release 43: expanded arsenal, battlegrounds and objective rules
+
+- Added eight original firearm models and complete handling/audio profiles:
+  Peregrine 6 two-round rifle, Osprey S rapid-fire SMG, Bison 12 shell-fed pump,
+  Talon 338 bolt sniper, Rampart 556 drum LMG, Spectre SD integral suppressor,
+  Krait R six-shot revolver and Swift 93 automatic pistol. All 24 weapon models
+  pass finite-transform, distinct silhouette, attachment and cached-animation checks.
+- Expanded primary selection to 19 guns and sidearms to four, preserving every
+  existing weapon/save ID. Every gun has cached shot, suppressed, reload, seat
+  and rack sounds. Gun Game uses all 24 weapons and allows 30 seconds per tier.
+- Added Skybridge's raised transit concourse, Monsoon's four-door freight depot,
+  wet materials and reflective puddles, and Emberworks' tank farm and catwalk.
+  All spawn-to-objective routes pass, including the elevated concourse.
+- Added free-for-all King of the Hill and team Elimination. Hill uses exclusive
+  occupation, contested time reset, rotation and personal-score timeout ranking.
+  Elimination disables respawns, resets rounds, supports draws and ends at five.
+- Bot loadouts vary within each tactical role. Hill bots pursue the current zone;
+  Elimination bots participate in round play. Weather remains deterministic and
+  bounded to 36 rain streaks, clearing beneath roofs through the shared effect draw.
+- Validation includes all-map full Gun Game blade finishes, all-map existing
+  objective-mode results, new-map Hill scoring and Elimination completion, audio
+  coverage, save compatibility, navigation and rendering scene budgets.
+- Bot weapon variety uses a separate seeded stream so adding firearms preserves
+  spawn selection and simulation randomness. Ground contacts and bullet marks
+  follow the visible top of Monsoon's shallow puddles.
+- All 27 regression files passed. Static validation covers 47 modules and the
+  offline shell; all 13 compiled GLSL ES shader variants passed.
+- Graphics profile: new maps use 145–159 world batches at High in the CPU fixture.
+  Those counts are scene construction measurements, not iPhone GPU/FPS results.
+  The cloud browser still cannot open the local preview.
+
 # Graphics and controls revision — 2026-09-06
 
 Implemented: original texture/foliage/sky assets, detailed weapon and character models, map dressing, WebGL lighting and postprocessing, textured compatibility graphics, corrected 4× scopes, simpler two-thumb controls, context interactions, automatic empty reloads and safe control placement.

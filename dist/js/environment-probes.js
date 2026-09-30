@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.min.js';
 export function environmentRadiance(info,width=512,height=256,clouds=null){
   const pixels=new Uint16Array(width*height*4),sun=new THREE.Vector3(...info.sun).normalize();
   const sky=new THREE.Color().setRGB(...info.sky,THREE.SRGBColorSpace),fog=new THREE.Color().setRGB(...info.fog,THREE.SRGBColorSpace);
-  const overcast=info.weather==='overcast',azimuth=Math.atan2(sun.z,sun.x);
+  const overcast=info.weather==='overcast'||info.weather==='rain',azimuth=Math.atan2(sun.z,sun.x);
   const skyChannels=[sky.r,sky.g,sky.b],fogChannels=[fog.r,fog.g,fog.b];
   for(let y=0;y<height;y++)for(let x=0;x<width;x++){
     const latitude=((y+.5)/height-.5)*Math.PI,longitude=((x+.5)/width-.5)*Math.PI*2;

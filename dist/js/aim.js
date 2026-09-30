@@ -1,8 +1,8 @@
-import {clamp,lerp,angleDelta} from './math.js?v=42';
+import {clamp,lerp,angleDelta} from './math.js?v=43';
 
 // Rendering, HUD and input share the same optic definition. Never put an opaque
 // first-person scope model in front of the magnified world camera.
-export const isScoped=w=>w.def.id===7||w.optic===3;
+export const isScoped=w=>w.def.kind==='SNIPER'||w.def.id===7||w.optic===3;
 export const opticMagnification=w=>isScoped(w)?4:1.35;
 export function aimFov(horizontalDegrees,weapon,ads=0){
  const hip=horizontalDegrees*Math.PI/180;
@@ -50,7 +50,7 @@ export function weaponPose(p,time,motion=true,menu=false,out={}){
  view.phase=(view.phase+view.speed*dt*2.8)%(Math.PI*2);
  const r=w.reloadLeft>0?clamp(1-w.reloadLeft/w.reloadTime,0,1):0;
  const reload=w.reloadLeft>0?Math.sin(r*Math.PI):0,hip=1-ads;
- const shell=w.def.id===5,heavy=w.def.kind==='LMG',reloadTilt=shell?.42:heavy?1.13:1;
+ const shell=w.def.shellReload||w.def.id===5,heavy=w.def.kind==='LMG',reloadTilt=shell?.42:heavy?1.13:1;
  const bob=motion?Math.sin(view.phase)*Math.min(.012,view.speed*.0035)*hip:0;
  const sway=motion?(Math.cos(view.phase*.5)*Math.min(.005,view.speed*.0015)+Math.sin(time*1.7)*.0012)*hip:0;
  const sprint=view.sprint*hip,kick=clamp(p.visualKick??0,0,.3),sign=Math.sin((w.shotIndex??0)*1.73+w.def.id);

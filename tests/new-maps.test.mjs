@@ -4,8 +4,8 @@ import {Arena,MAPS} from '../dist/js/maps.js';
 import {Navigation} from '../dist/js/navigation.js';
 
 const freshMaps=MAPS.filter(m=>m.id>=4);
-test('map roster includes ten distinct selectable battlegrounds',()=>{
- assert.equal(MAPS.length,10);assert.equal(new Set(MAPS.map(m=>m.id)).size,10);
+test('map roster includes thirteen distinct selectable battlegrounds',()=>{
+ assert.equal(MAPS.length,13);assert.equal(new Set(MAPS.map(m=>m.id)).size,13);
  assert.equal(new Arena(4).info.name,'BREAKWATER');assert.equal(new Arena(5).info.name,'CITADEL');
  assert.equal(new Arena(8).info.name,'FROSTLINE');assert.equal(new Arena(9).info.name,'IRON QUARRY');
  assert.equal(new Arena(99).info.id,MAPS.length-1);assert.equal(new Arena(NaN).info.id,0);

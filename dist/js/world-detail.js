@@ -1,5 +1,5 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=42';
-import {rng} from './math.js?v=42';
+import {prepareGroundSurfaces} from './surface-placement.js?v=43';
+import {rng} from './math.js?v=43';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
@@ -26,11 +26,11 @@ export function dressWorld(arena){
  };
  const free=(x,z,margin=1)=>!arena.collides({x,y:.02,z},margin,2)&&arena.spawns.every(p=>Math.hypot(p.x-x,p.z-z)>3.2)&&arena.objectives.every(p=>Math.hypot(p.x-x,p.z-z)>4.2);
  // Break up the ground with roads, shoulders and shallow drainage strips.
- if(id===0||id===3||id===5||id===7||id===8||id===9){
+ if(id===0||id===3||id===5||id===7||id===8||id===9||id===10||id===12){
   for(const x of [-s*.66,s*.66])add(x,.011,0,4.3,.012,s*2-2,'asphalt');
   for(const z of [-s*.63,s*.63])add(0,.013,z,s*2-2,.012,3.7,'asphalt');
   for(const x of [-s*.66-2.3,s*.66+2.3])add(x,.07,0,.24,.14,s*2-2,'concrete',{mesh:'bevel'});
- }else if(id===1){
+ }else if(id===1||id===11){
   add(0,.011,0,s*2-1,.014,s*2-1,'asphalt');add(0,.028,0,25,.015,22,'concrete');
   for(const x of [-24,24])for(let z=-25;z<27;z+=4)add(x,.023,z,.12,.01,2,'white',{color:[.84,.72,.3]});
  }else if(id===4){
@@ -150,6 +150,41 @@ export function dressWorld(arena){
   }
   add(-21,5.74,-7,8,.18,5,'glass');
   for(const z of [-9.5,-7,-4.5])add(-21,5.86,z,8.1,.08,.085,'steel');
+ }
+ if(id===10){
+  for(const x of [-23,23])for(const z of [-16,16]){
+   if(x*z<0)continue;
+   for(const side of [-1,1])for(const offset of [-4.5,4.5]){
+    add(x+side*6.78,2.4,z+offset,.035,2.4,2.2,'glass');
+    add(x+side*6.8,2.4,z+offset-1.13,.05,2.6,.07,'steel');
+   }
+  }
+  for(const sign of [-1,1])for(let i=0;i<4;i++){
+   const x=sign*15,z=-12+i*8;
+   add(x,.48,z,1.9,.95,.58,'dark',{mesh:'bevel'});add(x,.98,z,1.92,.055,.6,'steel');
+   add(x,1.42,z+.22,1.92,.68,.075,'wood',{mesh:'bevel'});
+  }
+ }
+ if(id===11){
+  // Small reflective puddles reuse the water material and existing instance pass.
+  for(const [x,z,w,d]of [[-16,-7,3.4,1.8],[16,7,2.8,1.9],[-17,24,2.7,1.4],[17,-24,3.2,1.3],[-6,-19,2.9,1.7],[6,19,2.6,1.6]])
+   if(!arena.indoors({x,y:.05,z}))add(x,.041,z,w,.012,d,'water',{mesh:'surface',surfaceLayer:2,color:[.14,.22,.23],rough:.19});
+  for(const p of [...arena.blocks,...arena.decor])if(['asphalt','steel','concrete'].includes(p.surface)&&!arena.indoors({x:p.x,y:p.y+p.h/2+.04,z:p.z}))p.wet=true;
+  for(const [x,z]of [[-33,-4],[33,5],[-10,33],[10,-33]])if(free(x,z,.8)){
+   palm(x,z,6.5);plant(x+1,z,.9,3);
+  }
+ }
+ if(id===12){
+  for(const [x,z]of [[-7,-10],[7,10],[-28,2],[28,-2]]){
+   add(x+.45,3.3,z,.13,1.4,.13,'steel',{mesh:'cylinder'});
+   add(x,3.69,z,2.1,.06,2.1,'dark',{mesh:'tube'});
+   for(let i=0;i<5;i++)add(x-.85+i*.43,3.73,z, .09,.07,2.5,'orange');
+  }
+  for(const sign of [-1,1]){
+   const x=sign*21,z=sign*17;
+   add(x,7.8,z,.8,5.6,.8,'rust',{mesh:'cylinder'});add(x,10.62,z,.9,.12,.9,'steel',{mesh:'tube'});
+   add(x+1.1,5.4,z,2.2,.4,2.1,'steel',{mesh:'bevel'});
+  }
  }
  if(id===5){
   add(0,.026,0,19,.025,19,'limestone',{color:[.64,.67,.65]});

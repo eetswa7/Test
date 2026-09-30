@@ -20,7 +20,15 @@ const PROFILES=[
  {barrel:-.312,grip:.035,support:0,width:.046},
  {barrel:-.592,grip:.10,support:-.27,width:.092,mag:.0,stock:.285},
  {barrel:-.365,grip:.08,support:-.19,width:.10,mag:.025,stock:.225},
- {barrel:-.723,grip:.116,support:-.349,width:.102,mag:-.015,stock:.322}
+ {barrel:-.723,grip:.116,support:-.349,width:.102,mag:-.015,stock:.322},
+ {barrel:-.574,grip:.095,support:-.259,width:.09,mag:.012,stock:.285},
+ {barrel:-.301,grip:.04,support:-.139,width:.082,mag:.043,stock:.226},
+ {barrel:-.704,grip:.104,support:-.305,width:.109,stock:.314},
+ {barrel:-.964,grip:.121,support:-.347,width:.105,mag:-.021,stock:.362},
+ {barrel:-.687,grip:.118,support:-.31,width:.125,mag:-.054,stock:.297},
+ {barrel:-.381,grip:.059,support:-.197,width:.084,mag:.052,stock:.243},
+ {barrel:-.342,grip:.065,support:.034,width:.09,mag:.018},
+ {barrel:-.231,grip:.047,support:.027,width:.078,mag:.049}
 ];
 
 function builder(w){
@@ -171,13 +179,80 @@ function mako(b){
  grip(.116,POLY,-.13,.17);magazine(-.015,.19,.075,.108,finish(C.steel,.8,.4),.02);stock(.322,TAN,'skeleton');controls(.101);
  box(0,.083,.177,.07,.033,.145,POLY);box(.055,.026,.063,.009,.043,.055,EDGE);box(-.052,.027,.03,.008,.04,.042,RUBBER);
 }
-const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten,mako];
+function peregrine(b){
+ const {box,receiver,barrel,grip,magazine,stock,rail,vents,controls}=b;
+ receiver(-.021,.275,.09,OLIVE);box(0,.036,-.274,.093,.096,.234,OLIVE);
+ rail(.086,-.383,.094);vents(.047,-.203,5,.034,.025);barrel(-.395);
+ grip(.095);magazine(.012,.194,.068,.101,TAN,.025);stock(.285,POLY,'skeleton');controls(.09);
+ for(const side of [-1,1]){box(side*.048,-.014,-.263,.016,.034,.19,RUBBER);box(side*.048,.046,-.27,.009,.018,.12,EDGE);}
+ box(-.052,.001,.072,.007,.015,.048,EDGE);box(0,.078,.228,.072,.036,.094,OLIVE);
+}
+function osprey(b){
+ const {box,receiver,barrel,grip,magazine,stock,rail,ribs,controls}=b;
+ receiver(-.036,.23,.082,POLY);box(0,.022,-.158,.083,.096,.111,TAN);
+ ribs(0,.017,-.138,5,.016,.091,.087,.008,RUBBER);rail(.049,-.211,.086,.06);
+ barrel(-.214);grip(.04);magazine(.043,.286,.046,.079,METAL,.055);stock(.226,METAL,'skeleton');controls(.082,.042);
+ box(0,-.108,-.163,.039,.12,.045,POLY);box(.05,.011,.071,.019,.032,.033,EDGE,'bolt');
+}
+function bison(b){
+ const {box,cyl,receiver,barrel,grip,stock,ribs,rail}=b;
+ receiver(-.025,.286,.109,TAN);barrel(-.164,undefined,.037);
+ for(const side of [-1,1])cyl(side*.034,.004,-.392,.029,.458,EDGE);
+ box(0,-.012,-.309,.11,.086,.162,OLIVE,'pump');ribs(0,-.012,-.245,8,.018,.12,.079,.009,RUBBER,'pump');
+ rail(.085,-.185,.098);grip(.104,POLY,-.22,.177);stock(.314,OLIVE,'solid');
+ box(-.065,.039,-.071,.018,.022,.058,EDGE,'bolt');box(0,-.062,-.024,.079,.022,.069,METAL);
+ cyl(-.07,-.16,.01,.026,.068,finish(C.red,.03,.44),'loadShell',{hidden:true});
+ cyl(-.07,-.16,.051,.028,.011,BRASS,'loadShell',{hidden:true});
+}
+function talon(b){
+ const {box,cyl,receiver,barrel,grip,magazine,stock,rail,bipod}=b;
+ receiver(-.049,.345,.105,finish(C.steel,.9,.28));box(0,-.015,-.349,.10,.072,.338,OLIVE);
+ barrel(-.52,undefined,.046);for(const side of [-1,1])for(const y of [.041,.076])box(side*.025,y,-.704,.006,.008,.36,RUBBER);
+ rail(.105,-.232,.106);grip(.121,OLIVE,-.13,.176);magazine(-.021,.155,.08,.112,METAL,.02);stock(.362,OLIVE,'skeleton');bipod(-.508);
+ box(0,.076,.285,.086,.051,.183,TAN);box(.07,.05,.068,.052,.016,.015,EDGE,'bolt');
+ box(.09,.018,.068,.017,.075,.017,EDGE,'bolt',{roll:-.3});cyl(.105,-.02,.068,.034,.028,RUBBER,'bolt',{pitch:0});
+}
+function rampart(b){
+ const {box,cyl,receiver,barrel,grip,stock,rail,vents,bipod,controls}=b;
+ receiver(-.035,.319,.125,TAN);box(0,.024,-.327,.106,.115,.257,OLIVE);
+ vents(.055,-.22,6,.035,.036);rail(.091,-.43,.101);barrel(-.463,undefined,.033);
+ grip(.118,POLY);stock(.297,POLY);controls(.125);bipod(-.45);
+ cyl(0,-.184,-.054,.231,.119,METAL,'magazine');cyl(0,-.184,-.119,.19,.012,POLY,'magazine');
+ box(0,-.084,-.048,.073,.103,.106,METAL,'magazine');
+ for(const side of [-1,1])box(side*.065,.02,-.029,.008,.025,.088,RUBBER);
+}
+function spectre(b){
+ const {box,receiver,barrel,grip,magazine,stock,rail,ribs,controls}=b;
+ receiver(-.04,.242,.084,METAL);box(0,.025,-.194,.086,.103,.137,POLY);
+ ribs(0,.022,-.16,6,.017,.096,.092,.009,RUBBER);rail(.08,-.224,.087,.062);
+ barrel(-.262,undefined,.028);grip(.059);magazine(.052,.247,.049,.066,POLY,.045);stock(.243,METAL,'skeleton');controls(.084,.051);
+ box(-.054,.033,-.175,.027,.016,.038,EDGE,'bolt');box(0,.077,.166,.071,.036,.074,POLY);
+}
+function krait(b){
+ const {box,cyl,tube,grip}=b;
+ box(0,.025,-.066,.084,.081,.187,METAL);box(0,.078,-.158,.067,.023,.228,EDGE);
+ cyl(0,.026,-.232,.031,.22,METAL);box(0,-.006,-.238,.061,.032,.202,TAN);
+ cyl(0,.021,-.018,.107,.104,METAL,'cylinder');
+ for(let i=0;i<6;i++){const a=i*Math.PI/3;tube(Math.cos(a)*.035,.021+Math.sin(a)*.035,-.075,.02,.012,RUBBER,'cylinder');}
+ grip(.065,WOOD,-.21,.18);box(0,-.202,.032,.079,.019,.091,EDGE);
+ box(.053,.011,-.016,.014,.017,.071,METAL,'cylinder');box(0,.068,.084,.025,.032,.021,EDGE,'hammer',{pitch:-.3});
+ box(-.048,.01,.05,.012,.013,.024,EDGE);
+}
+function swift(b){
+ const {box,cyl,grip}=b;
+ box(0,.025,-.025,.078,.087,.259,TAN,'slide');box(0,-.029,-.008,.075,.052,.232,POLY);
+ box(0,.071,-.081,.06,.025,.196,METAL,'slide');cyl(0,.032,-.151,.021,.181,EDGE);
+ for(const side of [-1,1])for(let i=0;i<6;i++)box(side*.04,.03,.074-i*.014,.003,.046,.005,RUBBER,'slide');
+ grip(.047,POLY,-.16,.186);box(0,-.213,.035,.081,.038,.09,RUBBER,'magazine');
+ box(.044,.011,.032,.007,.016,.04,EDGE);box(0,-.064,-.087,.046,.015,.092,METAL);
+}
+const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten,mako,peregrine,osprey,bison,talon,rampart,spectre,krait,swift];
 
 function addOptic(b,w){
  const {box,tube,cyl}=b,id=w.def.id;
  if(id===12)return;
- const short=id===10||id===11,y=short?.03:.06;
- if(w.optic===3||id===7){
+ const short=w.def.kind==='PISTOL',y=short?.03:.06;
+ if(w.optic===3||w.def.kind==='SNIPER'||id===7){
   for(const z of [-.074,.067]){box(0,.116,z,.046,.047,.031,METAL);tube(0,.188,z,.079,.026,METAL);}
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);
   for(const z of [-.171,.137])tube(0,.188,z,.094,.01,EDGE);
@@ -221,7 +296,7 @@ function addAttachments(b,w){
  if(w.grip===4){for(const q of b.parts)if(q.tag==='magazine'&&q.y<-.11){q.y-=.033;q.h*=1.12;}}
 }
 function addHands(b,w){
- const {box}=b,id=w.def.id,pr=b.profile,z=pr.grip,short=id>=10&&id<12;
+ const {box}=b,id=w.def.id,pr=b.profile,z=pr.grip,short=w.def.kind==='PISTOL';
  const palm=(x,y,z,s=.98,tag='hand',roll=0)=>{
   box(x,y,z,.071*s,.091*s,.075*s,GLOVE,tag,{mesh:'sphere',roll});
   for(let i=0;i<4;i++){
@@ -238,7 +313,7 @@ function addHands(b,w){
  if(id===12)return;
  if(short){palm(-.026,-.115,z+.016,1.03,'supportHand',.14);box(-.076,-.198,z+.127,.1,.102,.214,SLEEVE,'supportHand',{pitch:-.3,roll:.2});}
  else{
-  const supportY=w.grip===1?-.124:-.057,tag=id===5?'pumpHand':'supportHand';
+  const supportY=w.grip===1?-.124:-.057,tag=w.def.shellReload||id===5?'pumpHand':'supportHand';
   palm(-.031,supportY,pr.support+.013,1,tag,.24);
   box(-.088,supportY-.105,pr.support+.088,.102,.236,.108,SLEEVE,tag,{roll:-.37,pitch:-.33});box(-.058,supportY-.044,pr.support+.051,.104,.031,.102,RUBBER,tag,{roll:-.3});
   box(-.061,supportY-.081,pr.support+.071,.105,.014,.018,GLOVE,tag,{roll:-.3});
@@ -254,7 +329,7 @@ export function weaponModel(w){
 }
 export function muzzlePosition(w){
  const profile=PROFILES[w.def.id]??PROFILES[0];
- return {x:0,y:w.def.id>=10&&w.def.id<12?.03:.06,z:profile.barrel-(w.barrel===1?.146:w.barrel===2?.052:.02)};
+ return {x:0,y:w.def.kind==='PISTOL'?.03:.06,z:profile.barrel-(w.barrel===1?.146:w.barrel===2?.052:.02)};
 }
 function smooth(a,b,t){t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t);}
 export function animateWeaponParts(parts,w,p,time){
@@ -269,7 +344,7 @@ export function animateWeaponParts(parts,w,p,time){
  for(const index of parts.animated){const q=parts[index];q.x=q.baseX;q.y=q.baseY;q.z=q.baseZ;q.yaw=q.baseYaw;q.pitch=q.basePitch;q.roll=q.baseRoll;
   switch(q.tag){
    case 'slide':q.z+=Math.max(slide,emptySlide)*.035;break;
-   case 'bolt':q.z+=(w.def.id===7?boltOpen*.068:slide*.026)+boltReload*.04;if(w.def.id===7)q.roll-=(boltOpen+boltReload)*.68;break;
+   case 'bolt':q.z+=(w.def.kind==='SNIPER'||w.def.id===7?boltOpen*.068:slide*.026)+boltReload*.04;if(w.def.kind==='SNIPER'||w.def.id===7)q.roll-=(boltOpen+boltReload)*.68;break;
    case 'pump':case 'pumpHand':q.z+=pump*.079;if(reloading&&q.tag==='pumpHand'){q.x-=leftReach*.035;q.y-=leftReach*.095;q.z+=leftReach*.27;q.roll-=leftReach*.5;}break;
    case 'magazine':
     if(w.def.id===4){q.y+=magDrop*.155;q.x-=magDrop*.07;q.roll+=magDrop*.16;}
@@ -283,6 +358,7 @@ export function animateWeaponParts(parts,w,p,time){
     break;
    case 'loadShell':q.hidden=!reloading||r<.08||r>.87;q.x-=leftReach*.045;q.y-=leftReach*.035;q.z+=leftReach*.08;break;
    case 'hammer':q.pitch-=slide*.5;break;
+   case 'cylinder':q.roll+=((w.capacity??6)-(w.ammo??6))*Math.PI/3;q.x-=leftReach*.07;q.y-=leftReach*.012;break;
   }
  }
  return parts;

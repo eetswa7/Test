@@ -1,16 +1,16 @@
-import {Arena,MAPS} from './maps.js?v=42';
-import {Navigation} from './navigation.js?v=42';
-import {SpawnDirector} from './spawns.js?v=42';
-import {MatchRules} from './modes.js?v=42';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=42';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=42';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=42';
-import {beginVault,advanceVault} from './traversal.js?v=42';
+import {Arena,MAPS} from './maps.js?v=43';
+import {Navigation} from './navigation.js?v=43';
+import {SpawnDirector} from './spawns.js?v=43';
+import {MatchRules} from './modes.js?v=43';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=43';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=43';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=43';
+import {beginVault,advanceVault} from './traversal.js?v=43';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
 export class Actor {
- constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??(role===0&&id%2?13:role===1&&id%2===0?14:ROLES[role].weapon),loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.captures=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.reset({x:0,y:0,z:0},0);}
+ constructor(id,team,role,loadout){this.id=id;this.name=names[id]??`OPERATOR ${id}`;this.team=team;this.role=role;this.weapons=[new Weapon(loadout?.primary??(role===0&&id%2?13:role===1&&id%2===0?14:ROLES[role].weapon),loadout),new Weapon(loadout?.secondary??10)];this.equipment=loadout?.equipment??'frag';this.slot=0;this.kills=0;this.deaths=0;this.captures=0;this.confirms=0;this.denies=0;this.streak=0;this.bestStreak=0;this.gunStage=0;this.hillScore=0;this.reset({x:0,y:0,z:0},0);}
  get weapon(){return this.weapons[this.slot];}
  get dead(){return this.health<=0;}
  get height(){return this.crouched?1.12:1.78;}
@@ -19,10 +19,15 @@ export class Actor {
 
 export class Game {
  constructor(config={},options={}){
+  const seed=options.seed??Date.now(),arsenalRandom=rng((seed^0x51b4e329)>>>0);
   this.config={mode:config.mode??'tdm',map:clamp(Math.floor(Number(config.map)||0),0,MAPS.length-1),difficulty:config.difficulty??'regular',loadout:sanitizeLoadout(config.loadout)};
-  this.arena=new Arena(this.config.map);this.nav=new Navigation(this.arena);this.spawner=new SpawnDirector(this.arena,this.nav);this.rules=new MatchRules(this.config.mode,this.arena);this.random=rng(options.seed??Date.now());this.difficulty=DIFFICULTY[this.config.difficulty]??DIFFICULTY.regular;
+  this.arena=new Arena(this.config.map);this.nav=new Navigation(this.arena);this.spawner=new SpawnDirector(this.arena,this.nav);this.rules=new MatchRules(this.config.mode,this.arena);this.random=rng(seed);this.difficulty=DIFFICULTY[this.config.difficulty]??DIFFICULTY.regular;
   this.time=0;this.paused=false;this.events=[];this.grenades=[];this.smokes=[];this.actors=[];this.shots=0;this.hits=0;this.headshots=0;this.weaponKills={};this.debug={god:false,ammo:false};this.damageYaw=0;this.lastKiller='';this.saved=false;
-  this.actors.push(new Actor(0,0,0,this.config.loadout));for(let i=1;i<8;i++)this.actors.push(new Actor(i,i<4?0:1,(i-1)%6));this.player=this.actors[0];
+  this.actors.push(new Actor(0,0,0,this.config.loadout));
+  // Cosmetic/loadout variety has its own stream, keeping spawn safety and
+  // simulation randomness stable as the weapon catalogue grows.
+  for(let i=1;i<8;i++){const role=(i-1)%6,variants=ROLES[role].variants,primary=this.rules.mode.id==='gun'?variants[0]:variants[Math.floor(arsenalRandom()*variants.length)];this.actors.push(new Actor(i,i<4?0:1,role,{primary}));}
+  this.player=this.actors[0];
   if(this.rules.mode.id==='gun')for(const a of this.actors)a.weapons=[new Weapon(GUN_ORDER[0]),new Weapon(10)];
   this.resetRound();
  }
@@ -31,7 +36,7 @@ export class Game {
  spawn(a,initial=false){
   const p=this.spawner.select(a,this,initial);a.reset(p,p.yaw);a.vault=null;
  }
- resetRound(){this.spawner.resetRound();for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
+ resetRound(){this.spawner.resetRound();for(const a of this.actors)a.health=0;for(const a of this.actors)this.spawn(a,true);this.grenades.length=0;this.smokes.length=0;this.rules.tags.length=0;this.emit('round',{text:this.rules.mode.id==='elimination'?`ROUND ${this.rules.round} · ELIMINATE ALL ENEMIES`:this.rules.mode.id==='sabotage'?`ROUND ${this.rules.round} · ${this.rules.attackingTeam===0?'ATTACK':'DEFEND'}`:'ENGAGE'});}
  canSee(a,b){if(a.flashed>.3)return false;const from=this.eye(a),to=this.eye(b);if(!this.arena.visible(from,to))return false;for(const s of this.smokes)if(s.age<13&&pointSegment(s,from,to)<Math.min(5.2,s.age*4))return false;return true;}
  moveActor(a,tx,tz,dt){
   const speed=Math.hypot(tx,tz),accel=1-Math.exp(-dt*(speed>0?30:38));a.vx=lerp(a.vx,tx,accel);a.vz=lerp(a.vz,tz,accel);
@@ -89,7 +94,7 @@ export class Game {
  shoot(a,bot=false){
   const w=a.weapon,d=w.def;if(a.dead||this.rules.phase!=='playing'||this.paused||a.switchLeft>0||w.cooldown>0)return false;
   if(d.id===12)return this.melee(a);
-  if(w.reloadLeft>0){if(d.id===5&&w.ammo>0)w.reloadLeft=0;else return false;}
+  if(w.reloadLeft>0){if(d.shellReload&&w.ammo>0)w.reloadLeft=0;else return false;}
   if(w.ammo<=0){w.cooldown=.22;if(a.id===0)this.emit('empty');w.reload();return false;}
   if(d.burst){if(!w.burstRemaining)w.burstRemaining=d.burst;w.burstRemaining--;}
   w.cooldown=d.burst&&!w.burstRemaining?.28:d.interval;if(!(a.id===0&&this.debug.ammo))w.ammo--;a.spawnProtection=0;

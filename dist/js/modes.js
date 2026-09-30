@@ -1,15 +1,17 @@
-import {GUN_ORDER} from './weapons.js?v=42';
-import {distance} from './math.js?v=42';
+import {GUN_ORDER} from './weapons.js?v=43';
+import {distance} from './math.js?v=43';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
  {id:'ffa',name:'FREE FOR ALL',short:'FFA',description:'Every operator for themselves. First to 20.',limit:20,time:360,teams:false},
  {id:'sabotage',name:'SABOTAGE',short:'SAB',description:'Plant or defuse. One life per round. First to 4 rounds.',limit:4,time:110,teams:true},
  {id:'domination',name:'DOMINATION',short:'DOM',description:'Capture A, B and C. Hold them to reach 150 points.',limit:150,time:480,teams:true},
- {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} weapons. One elimination per tier. Finish with the blade.`,limit:GUN_ORDER.length,time:480,teams:false},
+ {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} weapons. One elimination per tier. Finish with the blade.`,limit:GUN_ORDER.length,time:GUN_ORDER.length*30,teams:false},
  {id:'hardpoint',name:'HARDPOINT',short:'HARD',description:'Hold the rotating zone. Contested zones score nothing. First to 150.',limit:150,time:480,teams:true},
  {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true},
- {id:'ctf',name:'CAPTURE THE FLAG',short:'CTF',description:'Steal the enemy flag, carry it home, and keep your own flag safe. First to 3 captures.',limit:3,time:480,teams:true}
+ {id:'ctf',name:'CAPTURE THE FLAG',short:'CTF',description:'Steal the enemy flag, carry it home, and keep your own flag safe. First to 3 captures.',limit:3,time:480,teams:true},
+ {id:'hill',name:'KING OF THE HILL',short:'KOTH',description:'Every operator for themselves. Occupy the hill alone to score. First to 75.',limit:75,time:480,teams:false},
+ {id:'elimination',name:'ELIMINATION',short:'ELIM',description:'4 vs 4. One life each round. Eliminate the other team. First to 5 rounds.',limit:5,time:75,teams:true}
 ];
 
 export const HARDPOINT_SECONDS = 45;
@@ -36,7 +38,7 @@ export class MatchRules {
   },[]):[];
  }
  get attackingTeam(){return Math.floor((this.round-1)/3)%2;}
- get respawns(){return this.mode.id!=='sabotage';}
+ get respawns(){return !['sabotage','elimination'].includes(this.mode.id);}
  enemies(a,b){return a.id!==b.id&&(!this.mode.teams||a.team!==b.team);}
  onDeath(victim,engine){
   if(this.mode.id!=='ctf')return;
@@ -60,8 +62,8 @@ export class MatchRules {
  finish(winner){this.phase='finished';this.winner=winner;}
  roundEnd(team,text) {
   if(this.phase!=='playing')return;
-  this.scores[team]++;this.roundWinner=team;this.message=text;
-  if(this.scores[team]>=4){this.finish(team);return;}
+  if(team>=0)this.scores[team]++;this.roundWinner=team;this.message=text;
+  if(team>=0&&this.scores[team]>=this.mode.limit){this.finish(team);return;}
   this.phase='roundBreak';this.roundWait=4;
  }
  nextRound() {
@@ -124,6 +126,38 @@ export class MatchRules {
    if(this.scores[collector.team]>=this.mode.limit){this.finish(collector.team);return;}
   }
  }
+ updateHill(dt,engine){
+  if(!this.points.length)return;
+  let remaining=dt;
+  while(remaining>0&&this.phase==='playing'){
+   const step=Math.min(remaining,this.rotationRemaining),point=this.points[this.activePoint];
+   const occupants=engine.actors.filter(a=>!a.dead&&distance(a,point)<4.2&&Math.abs(a.y-point.y)<2.6);
+   const owner=occupants.length===1?occupants[0]:null;
+   point.contested=occupants.length>1;
+   if(point.owner!==owner?.id||!owner)this.tick=0;
+   point.owner=owner?.id??-1;point.progress=owner?1:0;point.capturing=point.owner;
+   if(owner){
+    this.tick+=step;const score=Math.floor(this.tick+1e-9);
+    if(score){this.tick=Math.max(0,this.tick-score);owner.hillScore=Math.min(this.mode.limit,(owner.hillScore??0)+score);if(owner.hillScore>=this.mode.limit){this.finish(owner.id);return;}}
+   }
+   remaining-=step;this.rotationRemaining-=step;
+   if(this.rotationRemaining<=1e-8){
+    point.owner=-1;point.progress=0;point.contested=false;this.tick=0;
+    this.activePoint=(this.activePoint+1)%this.points.length;this.rotationRemaining=HARDPOINT_SECONDS;
+    engine.emit('capture',{text:`HILL MOVED · ${this.points[this.activePoint].name}`});
+   }
+  }
+ }
+ updateElimination(engine){
+  const alive=[0,0],health=[0,0];
+  for(const actor of engine.actors)if(!actor.dead){alive[actor.team]++;health[actor.team]+=actor.health;}
+  if(!alive[0]&&!alive[1]){this.roundEnd(-1,'ROUND DRAW');return;}
+  if(!alive[0]||!alive[1]){this.roundEnd(alive[0]?0:1,'ENEMY TEAM ELIMINATED');return;}
+  if(this.time<=0){
+   const winner=alive[0]!==alive[1]?(alive[0]>alive[1]?0:1):Math.abs(health[0]-health[1])<.001?-1:health[0]>health[1]?0:1;
+   this.roundEnd(winner,winner<0?'ROUND DRAW':'ROUND SECURED');
+  }
+ }
  updateFlags(dt,engine){
   for(const flag of this.flags)if(flag.carrier!==null){
    const carrier=engine.actors.find(a=>a.id===flag.carrier&&!a.dead);
@@ -167,6 +201,8 @@ export class MatchRules {
   if(this.mode.id==='ctf')this.updateFlags(elapsed,engine);
   if(this.mode.id==='hardpoint')this.updateHardpoint(elapsed,engine);
   if(this.mode.id==='confirmed')this.updateTags(elapsed,engine);
+  if(this.mode.id==='hill')this.updateHill(elapsed,engine);
+  if(this.mode.id==='elimination'){this.updateElimination(engine);return;}
   if(this.phase==='finished')return;
   if(this.mode.id==='domination') {
    for(const p of this.points) {
@@ -222,8 +258,9 @@ export class MatchRules {
   if(this.time<=0&&this.mode.id!=='sabotage') {
    if(this.mode.teams)this.finish(this.scores[0]===this.scores[1]?-1:this.scores[0]>this.scores[1]?0:1);
    else {
-    const ranking=engine.actors.slice().sort((a,b)=>this.mode.id==='gun'?b.gunStage-a.gunStage:b.kills-a.kills);
-    this.finish((this.mode.id==='gun'?ranking[0].gunStage===ranking[1].gunStage:ranking[0].kills===ranking[1].kills)?-1:ranking[0].id);
+    const value=a=>this.mode.id==='gun'?a.gunStage:this.mode.id==='hill'?a.hillScore??0:a.kills;
+    const ranking=engine.actors.slice().sort((a,b)=>value(b)-value(a));
+    this.finish(!ranking[1]||value(ranking[0])!==value(ranking[1])?ranking[0].id:-1);
    }
   }
  }

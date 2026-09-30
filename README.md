@@ -1,6 +1,14 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 42.** Low-cover vaulting, slide-to-jump transitions,
+**Latest checkpoint: Release 43.** 24 weapons, 13 maps and 10 modes. Eight new
+firearms include Peregrine 6, Osprey S, Bison 12, Talon 338, Rampart 556, Spectre SD,
+Krait R and Swift 93. Skybridge adds an accessible raised concourse, Monsoon adds
+rain, wet materials and reflective puddles, and Emberworks adds refinery lanes
+and a pipe-service catwalk. King of the Hill scores solo occupation of rotating
+zones; Elimination uses one-life rounds to five wins. Bot arsenals vary by role.
+Gun Game now covers the complete 24-weapon ladder, with a 12-minute time limit.
+
+Release 42 added low-cover vaulting, slide-to-jump transitions,
 coalesced touch tracking, sprint lens easing, directional weapon weight and
 height-dependent atmospheric haze. World sight and bullet rays now use a static
 grid broadphase with the same exact collision narrowphase.
@@ -51,7 +59,7 @@ Movement, looking and firing use independent pointer tracking. Settings include 
 
 ## Content
 
-Eight fully simulated player-versus-bot modes:
+Ten fully simulated player-versus-bot modes:
 
 | Mode | Rules |
 | --- | --- |
@@ -59,14 +67,16 @@ Eight fully simulated player-versus-bot modes:
 | Free For All | Eight combatants, first to 20, respawns, 6-minute limit |
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
-| Gun Game | One elimination advances the weapon, 16 stages ending with a blade kill |
+| Gun Game | One elimination advances the weapon, 24 stages ending with a blade kill |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 | Capture the Flag | Steal the enemy flag, carry it home while your flag is safe, return dropped allied flags; first to three captures |
+| King of the Hill | Free for all, exclusive occupation scores personal points, rotating zones; first to 75 |
+| Elimination | 4 vs 4, one life per round, first to five rounds; timeouts use survivors then remaining health, equal results draw |
 
-Ten battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** and **Iron Quarry**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Thirteen battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** **Iron Quarry**, **Skybridge**, **Monsoon** and **Emberworks**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
-The arsenal contains three assault rifles, two SMGs, two shotguns, a bolt-action sniper, two marksman rifles, an LMG, two pistols and a field blade. The Mako 7 adds a deliberate semi-automatic long-range option. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
+The arsenal contains five rifles, five SMGs, three shotguns, two bolt-action snipers, two marksman rifles, two LMGs, four sidearms and a field blade. New options include a two-round burst rifle, a rapid-fire SMG, an integrally suppressed SMG, a drum-fed LMG, a revolver and an automatic pistol. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
 Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
 

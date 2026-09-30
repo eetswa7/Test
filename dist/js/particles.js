@@ -43,8 +43,9 @@ export function ambientDust(renderer,count,time){
 // deterministic weather field without adding textures or draw passes.
 export function weatherParticles(renderer,time=0){
   const id=renderer.arena?.info?.id;
-  if(id!==8&&id!==9)return [];
-  const quality=renderer.quality??'medium',total=quality==='ultra'?18:quality==='high'?14:quality==='low'?5:quality==='compatibility'?9:9;
+  const rain=renderer.arena?.info?.weather==='rain';
+  if(id!==8&&id!==9&&id!==12&&!rain)return [];
+  const quality=renderer.quality??'medium',total=rain?(quality==='ultra'?36:quality==='high'?28:quality==='low'?10:18):quality==='ultra'?18:quality==='high'?14:quality==='low'?5:9;
   const eye=renderer.eye??{x:0,y:2,z:0},yaw=Number.isFinite(renderer.weatherYaw)?renderer.weatherYaw:0;
   const pitch=Math.max(-.8,Math.min(.8,Number.isFinite(renderer.weatherPitch)?renderer.weatherPitch:0));
   const forward={x:Math.sin(yaw)*Math.cos(pitch),y:Math.sin(pitch),z:-Math.cos(yaw)*Math.cos(pitch)};
@@ -53,15 +54,15 @@ export function weatherParticles(renderer,time=0){
   const snow=id===8,particles=[];
   for(let i=0;i<total;i++){
     const depth=5+(i*.61803398875%1)*13;
-    const falling=i*.75487766625-time*(snow?.24:.055),vertical=(falling-Math.floor(falling)-.5)*depth*(snow?.72:.42);
+    const falling=i*.75487766625-time*(rain?1.1:snow?.24:.055),vertical=(falling-Math.floor(falling)-.5)*depth*(rain?.82:snow?.72:.42);
     const wind=(i*.569840291%1-.5)*depth*(snow?.035:.15)+Math.sin(time*(snow?.23:.4)+i*1.7)*depth*(snow?.018:.035);
     const horizontal=(i*.41421356237%1-.5)*depth*1.18+wind;
     const p={x:eye.x+forward.x*depth+right.x*horizontal+up.x*vertical,
       y:eye.y+forward.y*depth+right.y*horizontal+up.y*vertical,
       z:eye.z+forward.z*depth+right.z*horizontal+up.z*vertical,
-      sizeX:snow?.021:.014,sizeY:snow?.085:.031,sizeZ:snow?.018:.018,
-      color:snow?[.78,.87,.94]:[.50,.34,.23],alpha:snow?.34:.18,
-      kind:snow?1:0,yaw:snow?Math.atan2(wind,-.55):0};
+      sizeX:rain?.009:snow?.021:.014,sizeY:rain?.31:snow?.085:.031,sizeZ:.018,
+      color:rain?[.58,.74,.8]:snow?[.78,.87,.94]:[.50,.34,.23],alpha:rain?.25:snow?.34:.18,
+      kind:rain||snow?1:0,yaw:rain?-.12:snow?Math.atan2(wind,-.55):0};
     if(renderer.arena?.indoors?.(p))continue;
     particles.push(p);
   }

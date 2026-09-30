@@ -1,9 +1,9 @@
-import {MODES} from './modes.js?v=42';
-import {MAPS} from './maps.js?v=42';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=42';
-import {clamp,distance} from './math.js?v=42';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=42';
-import {identityFor,canIdentify} from './combat-identity.js?v=42';
+import {MODES} from './modes.js?v=43';
+import {MAPS} from './maps.js?v=43';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=43';
+import {clamp,distance} from './math.js?v=43';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=43';
+import {identityFor,canIdentify} from './combat-identity.js?v=43';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -32,9 +32,9 @@ export class Interface {
  renderWeapons(){const loadout=this.store.data.loadout,chosen=loadout[this.slot],w=new Weapon(chosen,this.slot==='primary'?loadout:{}),d=w.def;for(const b of document.querySelectorAll('[data-slot]'))b.classList.toggle('active',b.dataset.slot===this.slot);
   $('weapon-list').innerHTML=WEAPONS.filter(d=>this.slot==='primary'?PRIMARY_IDS.includes(d.id):d.kind==='PISTOL').map(d=>`<button class="weapon-row ${d.id===chosen?'active':''} ${this.store.unlocked(d)?'':'locked'}" data-weapon="${d.id}"><span>${d.name}</span><small>${this.store.unlocked(d)?d.kind:`LV ${d.unlock}`}</small></button>`).join('');
   for(const b of document.querySelectorAll('[data-weapon]'))b.onclick=()=>{const id=+b.dataset.weapon;if(!this.store.unlocked(WEAPONS[id])){this.toast(`Unlocks at operator level ${WEAPONS[id].unlock}.`);return;}loadout[this.slot]=id;this.persist();this.renderWeapons();this.app.previewWeapon();this.app.audio.ui();};
-  $('weapon-class').textContent=d.kind;$('weapon-name').textContent=d.name;$('weapon-unlock').textContent=`${this.store.data.weaponXP[d.id]??0} WEAPON XP · ${d.burst?'3-ROUND BURST':d.automatic?'AUTOMATIC':d.id===5?'PUMP ACTION':d.id===7?'BOLT ACTION':'SEMI AUTOMATIC'}`;
+  $('weapon-class').textContent=d.kind;$('weapon-name').textContent=d.name;$('weapon-unlock').textContent=`${this.store.data.weaponXP[d.id]??0} WEAPON XP · ${d.burst?`${d.burst}-ROUND BURST`:d.automatic?'AUTOMATIC':d.shellReload?'PUMP ACTION':d.kind==='SNIPER'?'BOLT ACTION':d.revolver?'REVOLVER':'SEMI AUTOMATIC'}`;
   $('weapon-stats').innerHTML=[['DAMAGE',`${d.damage}${d.pellets>1?` × ${d.pellets}`:''}`,''],['FIRE RATE',d.rpm,'RPM'],['MAGAZINE',w.capacity,''],['RANGE',Math.round(w.range),'m'],['RELOAD',w.reloadTime.toFixed(2),'s'],['ADS',Math.round(w.adsTime*1000),'ms']].map(([name,v,unit])=>`<div class="stat"><span>${name}</span><strong>${v}</strong> <small>${unit}</small></div>`).join('');
-  for(const key of Object.keys(ATTACHMENTS)){const el=$(`${key}-select`);el.value=loadout[key];el.disabled=this.slot!=='primary';}$('equipment-select').value=loadout.equipment;
+  for(const key of Object.keys(ATTACHMENTS)){const el=$(`${key}-select`);el.value=loadout[key];el.disabled=this.slot!=='primary'||key==='barrel'&&d.integralSuppressor;if(key==='barrel'&&d.integralSuppressor)el.value='1';}$('equipment-select').value=loadout.equipment;
  }
  renderSettings(){
   const slider=(key,name,min,max,step)=>`<label class="setting"><span>${name}<output id="out-${key}">${this.settings[key]}</output></span><input type="range" data-setting="${key}" min="${min}" max="${max}" step="${step}" value="${this.settings[key]}" aria-label="${name}"></label>`;
@@ -78,9 +78,11 @@ export class Interface {
   $('health').textContent=Math.ceil(Math.max(0,p.health));$('health-fill').style.width=`${Math.max(0,p.health)}%`;$('health-fill').style.background=p.health<30?'#ff785e':'var(--accent)';$('ammo').textContent=p.weapon.def.id===12?'∞':p.weapon.ammo;$('reserve').textContent=p.weapon.reserve;$('hud-weapon').textContent=p.weapon.def.name.toUpperCase();$('fire-mode').textContent=p.weapon.def.burst?'BURST':p.weapon.def.automatic?'AUTO':p.weapon.def.id===12?'MELEE':'SEMI';$('reload-label').textContent=p.weapon.reloadLeft>0?'RELOADING':p.switchLeft>0?'SWITCHING':'';
   $('grenade-count').textContent=`${p.equipment.toUpperCase()} · ${p.grenades}`;
   const remaining=Math.max(0,Math.ceil(r.mode.id==='sabotage'&&r.planted?r.bombTime:r.time));$('timer').textContent=`${Math.floor(remaining/60).toString().padStart(2,'0')}:${Math.ceil(remaining%60).toString().padStart(2,'0')}`;
-  if(r.mode.teams){$('score-blue').textContent=r.scores[0];$('score-red').textContent=r.scores[1];}else{$('score-blue').textContent=r.mode.id==='gun'?p.gunStage:p.kills;$('score-red').textContent=Math.max(...g.actors.slice(1).map(a=>r.mode.id==='gun'?a.gunStage:a.kills));}
+  if(r.mode.teams){$('score-blue').textContent=r.scores[0];$('score-red').textContent=r.scores[1];}else{$('score-blue').textContent=r.mode.id==='gun'?p.gunStage:r.mode.id==='hill'?p.hillScore??0:p.kills;$('score-red').textContent=Math.max(...g.actors.slice(1).map(a=>r.mode.id==='gun'?a.gunStage:r.mode.id==='hill'?a.hillScore??0:a.kills));}
   if(r.mode.id==='domination')$('objective').textContent=r.points.map(q=>`${q.name} ${q.contested?'CONTESTED':q.owner===p.team?'ALLIES':q.owner>=0?'ENEMIES':q.progress>0?'CAPTURING':'NEUTRAL'}`).join('   ');
   else if(r.mode.id==='hardpoint'){const q=r.points[r.activePoint];$('objective').textContent=`HOLD ${q.name} · ${q.contested?'CONTESTED':q.owner===p.team?'ALLIED CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
+  else if(r.mode.id==='hill'){const q=r.points[r.activePoint];$('objective').textContent=`HILL ${q.name} · ${q.contested?'CONTESTED':q.owner===p.id?'YOU CONTROL':q.owner>=0?'ENEMY CONTROL':'UNCLAIMED'} · ROTATES ${Math.ceil(r.rotationRemaining)}s`;}
+  else if(r.mode.id==='elimination')$('objective').textContent=r.phase==='roundBreak'?r.message:`ROUND ${r.round} · ONE LIFE · ELIMINATE ALL ENEMIES`;
   else if(r.mode.id==='ctf'){const own=r.flags.find(f=>f.team===p.team),enemy=r.flags.find(f=>f.team!==p.team),status=f=>f.carrier===p.id?'YOU':f.carrier!==null?'CARRIED':f.atBase?'HOME':'DROPPED';$('objective').textContent=`ENEMY ${status(enemy)} · OWN ${status(own)} · ${r.scores[p.team]}/${r.mode.limit}`;}
   else if(r.mode.id==='confirmed')$('objective').textContent='COLLECT ENEMY TAGS · DENY ALLIED TAGS';
   else if(r.mode.id==='sabotage')$('objective').textContent=r.phase==='roundBreak'?r.message:r.planted?(r.attackingTeam===p.team?'DEFEND THE CHARGE':'DEFUSE THE CHARGE'):`ROUND ${r.round} · ${r.attackingTeam===p.team?'PLANT AT A OR C':'DEFEND A AND C'}`;
@@ -108,7 +110,7 @@ export class Interface {
   }
   const target=$('target-identity');target.classList.toggle('hidden',!centred);if(centred){target.dataset.relation=centred.identity.key;target.textContent=centred.el.textContent;}
  }
- radar(){const g=this.app.game,c=$('radar').getContext('2d'),w=160,s=2.3;c.clearRect(0,0,w,w);c.save();c.translate(w/2,w/2);c.rotate(-g.player.yaw);c.fillStyle='#233b3022';c.fillRect(-80,-80,160,160);for(const b of g.arena.blocks){if(b.ground||b.roof||b.destroyed)continue;c.fillStyle='#a1bba455';c.fillRect((b.x-g.player.x-b.w/2)*s,(b.z-g.player.z-b.d/2)*s,b.w*s,b.d*s);}for(let i=0;i<g.rules.points.length;i++){const p=g.rules.points[i],mode=g.rules.mode.id;if(!['domination','sabotage','hardpoint'].includes(mode)||mode==='hardpoint'&&i!==g.rules.activePoint)continue;c.fillStyle=p.owner===g.player.team?'#70e5f5':p.owner>=0?'#ff786e':'#e2e8b2';c.font='12px Arial';c.fillText(p.name,(p.x-g.player.x)*s,(p.z-g.player.z)*s);}
+ radar(){const g=this.app.game,c=$('radar').getContext('2d'),w=160,s=2.3;c.clearRect(0,0,w,w);c.save();c.translate(w/2,w/2);c.rotate(-g.player.yaw);c.fillStyle='#233b3022';c.fillRect(-80,-80,160,160);for(const b of g.arena.blocks){if(b.ground||b.roof||b.destroyed)continue;c.fillStyle='#a1bba455';c.fillRect((b.x-g.player.x-b.w/2)*s,(b.z-g.player.z-b.d/2)*s,b.w*s,b.d*s);}for(let i=0;i<g.rules.points.length;i++){const p=g.rules.points[i],mode=g.rules.mode.id;if(!['domination','sabotage','hardpoint','hill'].includes(mode)||['hardpoint','hill'].includes(mode)&&i!==g.rules.activePoint)continue;c.fillStyle=p.owner===(g.rules.mode.teams?g.player.team:g.player.id)?'#70e5f5':p.owner>=0?'#ff786e':'#e2e8b2';c.font='12px Arial';c.fillText(p.name,(p.x-g.player.x)*s,(p.z-g.player.z)*s);}
   for(const flag of g.rules.flags??[]){const x=(flag.x-g.player.x)*s,z=(flag.z-g.player.z)*s;c.fillStyle=flag.team===g.player.team?'#70e5f5':'#ff786e';c.beginPath();c.moveTo(x,z-5);c.lineTo(x+4,z);c.lineTo(x,z+5);c.lineTo(x-4,z);c.closePath();c.fill();c.fillStyle='#102019';c.font='bold 7px Arial';c.fillText(flag.team===0?'B':'R',x-2,z+2);}
   for(const tag of g.rules.tags??[]){c.fillStyle=tag.team===g.player.team?'#70e5f5':'#ff786e';c.fillRect((tag.x-g.player.x)*s-2,(tag.z-g.player.z)*s-3,4,6);}
   for(const a of g.actors){if(a.dead||a.id===0)continue;const friendly=g.rules.mode.teams&&a.team===g.player.team;if(!friendly&&g.time-a.lastShot>1.8)continue;c.fillStyle=friendly?'#70e5f5':'#ff786e';c.beginPath();c.arc((a.x-g.player.x)*s,(a.z-g.player.z)*s,3,0,Math.PI*2);c.fill();}c.restore();c.fillStyle='#ddff7b';c.beginPath();c.moveTo(80,72);c.lineTo(75,86);c.lineTo(80,82);c.lineTo(85,86);c.closePath();c.fill();}

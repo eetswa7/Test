@@ -1,4 +1,4 @@
-import {WEAPONS} from './weapons.js?v=42';
+import {WEAPONS} from './weapons.js?v=43';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -6,7 +6,9 @@ const SHOTS=[
  [91,19,.32,1430],[69,12,.49,1020],[118,27,.24,1770],
  [137,37,.19,2180],[122,30,.25,1890],[52,9,.61,670],
  [61,12,.52,810],[46,7,.7,980],[64,12,.48,1280],
- [75,15,.54,880],[148,30,.26,2380],[81,16,.44,1720],[230,50,.1,3300],[106,23,.34,1620],[82,20,.39,1270]
+ [75,15,.54,880],[148,30,.26,2380],[81,16,.44,1720],[230,50,.1,3300],[106,23,.34,1620],[82,20,.39,1270],[66,13,.43,1500],
+ [99,24,.35,1560],[153,39,.17,2590],[49,9,.64,770],[39,6,.77,890],
+ [97,20,.38,1240],[113,26,.29,1460],[68,13,.51,1840],[164,35,.22,2690]
 ];
 function randomStream(seed){let n=seed>>>0;return()=>{n^=n<<13;n^=n>>>17;n^=n<<5;return(n>>>0)/2147483648-1;};}
 export class AudioSystem {
@@ -29,10 +31,10 @@ export class AudioSystem {
     const pressure=(Math.sin(phase)*.72+Math.sin(phase*1.63)*.17+Math.sin(phase*2.39)*.08)*Math.exp(-t*decay)*weight*(suppressed?.40:.81);
     const blast=(low*2.8+(n-low)*.11)*Math.exp(-t*decay*.83)*weight*(suppressed?.24:.89);
     const mech=t>.027?Math.sin((t-.027)*mechanical*6.283185)*Math.exp(-(t-.027)*155)*.075:0;
-    const shell=t>.135&&id!==7?(n-low)*Math.exp(-(t-.135)*195)*.022:0;
+    const shell=t>.135&&WEAPONS[id].kind!=='SNIPER'?(n-low)*Math.exp(-(t-.135)*195)*.022:0;
     // Pump and bolt closures follow the same animation timing, below the initial blast.
-    const open=(id===5||id===7)&&t>.14?(n-low)*Math.exp(-(t-.14)*100)*.058:0;
-    const close=(id===5||id===7)&&t>.47?(low*1.6+Math.sin((t-.47)*7300)*.13)*Math.exp(-(t-.47)*72)*.17:0;
+    const open=(WEAPONS[id].shellReload||WEAPONS[id].kind==='SNIPER')&&t>.14?(n-low)*Math.exp(-(t-.14)*100)*.058:0;
+    const close=(WEAPONS[id].shellReload||WEAPONS[id].kind==='SNIPER')&&t>.47?(low*1.6+Math.sin((t-.47)*7300)*.13)*Math.exp(-(t-.47)*72)*.17:0;
     return crack+pressure+blast+mech+shell+open+close;
    },7133+id*811);
    const reload=WEAPONS[id].reload||.3;
@@ -40,7 +42,7 @@ export class AudioSystem {
     const phase=t/reload,extract=phase>.13?(n-low)*Math.exp(-(phase-.13)*reload*65)*.21:0;
     const handling=(n*.024+low*.15)*Math.sin(Math.min(1,phase/.85)*Math.PI);
     const seat=phase>.69?(low*1.35+Math.sin((phase-.69)*reload*(1280+id*31))*.08)*Math.exp(-(phase-.69)*reload*61):0;
-    return id===5?(n*.1+low*.3)*Math.exp(-t*24):extract+handling+seat;
+    return WEAPONS[id].shellReload?(n*.1+low*.3)*Math.exp(-t*24):extract+handling+seat;
    },1013+id*13);
    synth(`seat${id}`,.11,(t,n,low)=>low*Math.exp(-t*49)*.31+(n-low)*Math.exp(-t*95)*.065,931+id*37);
    synth(`rack${id}`,.15,(t,n,low)=>(n-low)*Math.exp(-t*61)*.16+Math.sin(t*mechanical*3.14159)*Math.exp(-t*100)*.09,712+id*91);
@@ -92,7 +94,7 @@ export class AudioSystem {
     case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d});}break;
     case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true});if(d<14)this.haptic(30);break;
     case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime)});break;}
-    case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&id!==5?'rack':'seat'}${id}`,{volume:.55});this.haptic(9);break;}
+    case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&!w.def.shellReload?'rack':'seat'}${id}`,{volume:.55});this.haptic(9);break;}
     case 'empty':case 'switch':this.play('click',{volume:.7});break;
     case 'hit':this.play('hit',{volume:e.headshot?1.1:.8,important:true});break;
     case 'kill':if(own)this.play('kill',{volume:.8,important:true});break;

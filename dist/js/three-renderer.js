@@ -1,28 +1,28 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=42';
-import {patchAtmosphere} from './atmosphere.js?v=42';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=42';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=42';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=42';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=42';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=42';
-import {DecalSystem} from './decal-system.js?v=42';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=42';
-import {LightingField} from './lighting-field.js?v=42';
-import {RoomLights} from './room-lights.js?v=42';
-import {waterMaterial,patchWater} from './water-material.js?v=42';
-import {visualGroundHeight} from './surface-placement.js?v=42';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=42';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=42';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=42';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=42';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=43';
+import {patchAtmosphere} from './atmosphere.js?v=43';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=43';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=43';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=43';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=43';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=43';
+import {DecalSystem} from './decal-system.js?v=43';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=43';
+import {LightingField} from './lighting-field.js?v=43';
+import {RoomLights} from './room-lights.js?v=43';
+import {waterMaterial,patchWater} from './water-material.js?v=43';
+import {visualGroundHeight} from './surface-placement.js?v=43';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=43';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=43';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=43';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=43';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=42';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=42';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=42';
-import { loadImages } from './textures.js?v=42';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=42';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=42';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=42';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=43';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=43';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=43';
+import { loadImages } from './textures.js?v=43';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=43';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=43';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=43';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -201,7 +201,7 @@ export class Renderer {
     for (const effect of this.effects) effect.life = 0;
     this.decalSystem?.clear();
     this.clearDynamic(this.actorBatches);
-    const info = arena.info, overcast = info.weather === 'overcast';
+    const info = arena.info, overcast = info.weather === 'overcast'||info.weather==='rain';
     this.hazeSun?.value.set(...info.sun).normalize();if(this.hazeAmount)this.hazeAmount.value=overcast?.045:info.tag==='DESERT'||info.tag==='QUARRY'?.13:.075;
     this.scene.fog = new THREE.Fog(this.color.setRGB(...info.fog, THREE.SRGBColorSpace).clone(), 45, 155);
     this.sun.color.setHex(overcast ? 0xd6e4ef : 0xffefd8); this.sun.intensity = overcast ? 1.8 : 3.1;
@@ -229,7 +229,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -238,7 +238,7 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { dithering: true, color: 0xffffff, vertexColors:['ridge','conifer','strata'].includes(p.mesh), roughness: clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
+    const options = { dithering: true, color: 0xffffff, vertexColors:['ridge','conifer','strata'].includes(p.mesh), roughness: p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
       roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
@@ -670,9 +670,9 @@ export class Renderer {
       }
     }
     const rules = game.rules, id = rules.mode.id;
-    if (['domination', 'sabotage', 'hardpoint'].includes(id)) for (let i = 0; i < rules.points.length; i++) {
-      if (id === 'sabotage' && i === 1 || id === 'hardpoint' && i !== rules.activePoint) continue;
-      const point = rules.points[i], color = point.owner === player.team ? FRIEND : point.owner >= 0 ? ENEMY : [.8, .72, .38];
+    if (['domination', 'sabotage', 'hardpoint','hill'].includes(id)) for (let i = 0; i < rules.points.length; i++) {
+      if (id === 'sabotage' && i === 1 || ['hardpoint','hill'].includes(id) && i !== rules.activePoint) continue;
+      const point = rules.points[i], color = point.owner === (rules.mode.teams?player.team:player.id) ? FRIEND : point.owner >= 0 ? ENEMY : [.8, .72, .38];
       const parts = point.renderParts ?? (point.renderParts = [
         part(point.x, point.y+.035, point.z, 4.7, .025, 4.7, 'dark', { mesh: 'tube', tile: -1, emissive: .18 }),
         part(point.x, point.y+1, point.z, .04, 2, .04, 'steel'),

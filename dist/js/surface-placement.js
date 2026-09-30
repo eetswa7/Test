@@ -11,7 +11,9 @@ export function prepareGroundSurfaces(arena){
  // shadows and ground impacts follow the visible finish without changing physics.
  arena.visualFloorCells=new Map();
  for(const p of arena.decor){
-  if(p.surface==='water'||p.pitch||p.roll||p.h>.08||p.w<.04||p.d<.04||(p.mesh&&p.mesh!=='surface'))continue;
+  // Shallow ground puddles receive contacts and impacts on their visible top.
+  // Open water below the walkable ground never raises a ground query.
+  if((p.surface==='water'&&p.y<0)||p.pitch||p.roll||p.h>.08||p.w<.04||p.d<.04||(p.mesh&&p.mesh!=='surface'))continue;
   const c=Math.cos(p.yaw??0),s=Math.sin(p.yaw??0),w=(Math.abs(c)*p.w+Math.abs(s)*p.d)/2,d=(Math.abs(s)*p.w+Math.abs(c)*p.d)/2;
   const floor={part:p,c,s,top:p.mesh==='surface'?p.y:p.y+p.h/2};
   for(let x=Math.floor((p.x-w)/8);x<=Math.floor((p.x+w)/8);x++)for(let z=Math.floor((p.z-d)/8);z<=Math.floor((p.z+d)/8);z++){
