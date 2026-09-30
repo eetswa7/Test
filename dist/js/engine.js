@@ -1,11 +1,11 @@
-import {Arena,MAPS} from './maps.js?v=43';
-import {Navigation} from './navigation.js?v=43';
-import {SpawnDirector} from './spawns.js?v=43';
-import {MatchRules} from './modes.js?v=43';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=43';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=43';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=43';
-import {beginVault,advanceVault} from './traversal.js?v=43';
+import {Arena,MAPS} from './maps.js?v=44';
+import {Navigation} from './navigation.js?v=44';
+import {SpawnDirector} from './spawns.js?v=44';
+import {MatchRules} from './modes.js?v=44';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=44';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=44';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=44';
+import {beginVault,advanceVault} from './traversal.js?v=44';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];

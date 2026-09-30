@@ -55,3 +55,21 @@ test('window-level release listeners handle a contact ending outside the control
 test('array-like native TouchLists work without a JavaScript iterator',()=>{
  const {input,ev}=fixture();input.pointerDown(ev(5,90,260));const touches={0:{identifier:44,clientX:90,clientY:260},length:1};assert.doesNotThrow(()=>input.syncTouches({type:'touchstart',touches}));input.pointerMove(ev(5,20,260));assert(input.sample(.016).mx<-.9);input.syncTouches({type:'touchend',touches:{length:0}});assert.equal(input.sample(.016).mx,0);
 });
+
+test('coalesced touch samples preserve accelerated aim and never double-count the endpoint',()=>{
+ for(const acceleration of [false,true]){
+  const a=fixture(),b=fixture();a.input.settings.aimAcceleration=b.input.settings.aimAcceleration=acceleration;
+  for(const f of [a,b]){f.input.pointerDown(f.ev(1,90,260));f.input.pointerMove(f.ev(1,90,210));f.input.pointerDown(f.ev(2,700,230,'fire'));}
+  const points=[[714,222],[745,205],[739,213],[760,198]];
+  for(const [x,y]of points)a.input.pointerMove(a.ev(2,x,y,'fire'));
+  const event=b.ev(2,760,198,'fire');event.getCoalescedEvents=()=>points.map(([clientX,clientY])=>({clientX,clientY}));b.input.pointerMove(event);
+  const fa=a.input.sample(1/60),fb=b.input.sample(1/60);assert(Math.abs(fa.lx-fb.lx)<1e-12);assert(Math.abs(fa.ly-fb.ly)<1e-12);
+  assert(fb.fire&&fb.ads&&fb.mz>.9);assert.equal(b.input.sample(1/60).lx,0);
+  b.input.pointerUp(b.ev(2,760,198,'fire'),true);const released=b.input.sample(1/60);assert(!released.fire&&released.mz>.9);
+ }
+});
+test('invalid coalesced hardware samples cannot inject non-finite aim',()=>{
+ const f=fixture();f.input.pointerDown(f.ev(2,700,230,'fire'));const event=f.ev(2,720,210,'fire');
+ event.getCoalescedEvents=()=>[{clientX:NaN,clientY:0},{clientX:710,clientY:220},{clientX:Infinity,clientY:1}];f.input.pointerMove(event);
+ const frame=f.input.sample(1/60);assert(Number.isFinite(frame.lx)&&Number.isFinite(frame.ly));assert(frame.lx>0&&frame.ly>0);
+});

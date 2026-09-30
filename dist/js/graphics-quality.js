@@ -11,23 +11,26 @@ export class GraphicsQuality {
   reset(requested='auto'){
     this.requested=QUALITY[requested]?requested:'auto';
     this.tier=this.requested==='auto'?'medium':this.requested;
-    this.scale=1;this.warmup=2;this.slow=0;this.fast=0;this.cooldown=0;this.frameMs=16.67;this.reason='Measuring gameplay';
+    this.scale=1;this.warmup=2;this.slow=0;this.fast=0;this.cooldown=0;this.frameMs=16.67;this.targetFPS=60;this.reason='Measuring gameplay';
   }
-  sample(elapsed,cpuMs,gpuMs,active=true){
+  sample(elapsed,cpuMs,gpuMs,active=true,targetFPS=60){
     // Never learn from menus, background gaps, debugger stalls or map loading.
     if(!active||!Number.isFinite(elapsed)||elapsed<=0||elapsed>.25){this.slow=this.fast=0;return;}
+    targetFPS=targetFPS===30?30:60;
+    const budget=1000/targetFPS;
+    if(targetFPS!==this.targetFPS){this.targetFPS=targetFPS;this.frameMs=budget;this.warmup=2;this.slow=this.fast=this.cooldown=0;}
     if(this.warmup>0){this.warmup-=elapsed;return;}
     this.frameMs+=(elapsed*1000-this.frameMs)*.04;
     this.cooldown=Math.max(0,this.cooldown-elapsed);
     const gpuValid=Number.isFinite(gpuMs)&&gpuMs>0;
-    const overloaded=this.frameMs>19.5||(gpuValid&&gpuMs>15.5)||cpuMs>15;
-    // Promotion requires work headroom, not merely a frame cap of 60 Hz.
-    const headroom=this.frameMs<17.5&&cpuMs>0&&cpuMs<10&&(!gpuValid||gpuMs<11);
+    const overloaded=this.frameMs>budget*1.17||(gpuValid&&gpuMs>budget*.93)||cpuMs>budget*.9;
+    // Promotion requires measured work headroom at the chosen frame budget.
+    const headroom=this.frameMs<budget*1.05&&cpuMs>0&&cpuMs<budget*.6&&(!gpuValid||gpuMs<budget*.66);
     this.slow=overloaded?this.slow+elapsed:Math.max(0,this.slow-elapsed);
     this.fast=headroom?this.fast+elapsed:0;
     if(this.cooldown>0)return;
     if(this.slow>2.5){
-      if(cpuMs>15&&(!gpuValid||gpuMs<12))this.lowerTier();
+      if(cpuMs>budget*.9&&(!gpuValid||gpuMs<budget*.72))this.lowerTier();
       else if(this.scale>.75){this.scale=Math.max(.7,Math.round((this.scale-.08)*100)/100);this.reason='Reducing pixel cost';}
       else this.lowerTier();
       this.slow=this.fast=0;this.cooldown=3;

@@ -1,28 +1,28 @@
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=43';
-import {patchAtmosphere} from './atmosphere.js?v=43';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=43';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=43';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=43';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=43';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=43';
-import {DecalSystem} from './decal-system.js?v=43';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=43';
-import {LightingField} from './lighting-field.js?v=43';
-import {RoomLights} from './room-lights.js?v=43';
-import {waterMaterial,patchWater} from './water-material.js?v=43';
-import {visualGroundHeight} from './surface-placement.js?v=43';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=43';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=43';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=43';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=43';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=44';
+import {patchAtmosphere} from './atmosphere.js?v=44';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=44';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=44';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=44';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=44';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=44';
+import {DecalSystem} from './decal-system.js?v=44';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=44';
+import {LightingField} from './lighting-field.js?v=44';
+import {RoomLights} from './room-lights.js?v=44';
+import {waterMaterial,patchWater} from './water-material.js?v=44';
+import {visualGroundHeight} from './surface-placement.js?v=44';
+import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=44';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=44';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=44';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=44';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=43';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=43';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=43';
-import { loadImages } from './textures.js?v=43';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=43';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=43';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=43';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=44';
+import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=44';
+import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=44';
+import { loadImages } from './textures.js?v=44';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=44';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=44';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=44';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -147,7 +147,7 @@ export class Renderer {
 
   recordFrame(cpuMs,elapsed,active){
     this.profiler?.record(cpuMs,elapsed,active);
-    this.qualityController?.sample(elapsed,this.profiler?.cpuMs??cpuMs,this.profiler?.gpuMs,active);
+    this.qualityController?.sample(elapsed,this.profiler?.cpuMs??cpuMs,this.profiler?.gpuMs,active,this.settings.frameRate);
     if(this.qualityController){this.quality=this.qualityController.tier;this.renderScale=this.qualityController.scale;}
   }
 
@@ -190,6 +190,10 @@ export class Renderer {
     this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
+    // Upload generated textures while the loading screen can still yield.
+    if(this.renderer.initTexture)for(let i=0;i<this.textures.length;i++){
+      this.renderer.initTexture(this.textures[i]);if(i%6===5)await IDLE_FRAME();
+    }
     // Use the supported asynchronous shader warmup path when available.
     if (this.renderer.compileAsync) await this.renderer.compileAsync(this.scene, this.camera);
     return this;
@@ -634,18 +638,18 @@ export class Renderer {
     }
   }
 
-  updateActors(game) {
+  updateActors(game, preparing = false) {
     this.resetDynamic(this.actorBatches);
     const player = game.player;
     for (const a of game.actors) {
       const actorDistance = distance(a, player);
       if (a.id === player.id || actorDistance > this.camera.far) continue;
-      if (this.frustum && actorDistance > 12) {
+      if (!preparing && this.frustum && actorDistance > 12) {
         this.actorBounds.center.set(a.x, a.y + .9, a.z);
         if (!this.frustum.intersectsSphere(this.actorBounds)) continue;
       }
       const detailRange=(this.quality==='low'?24:38)*Math.tan(27.5*RAD)/Math.tan(this.camera.fov*RAD/2);
-      a.renderLOD=actorDetailLevel(a.renderLOD,actorDistance,detailRange);const distant=a.renderLOD===1;
+      a.renderLOD=actorDetailLevel(a.renderLOD,actorDistance,detailRange);const distant=!preparing&&a.renderLOD===1;
       const death = a.dead ? Math.min(1, (3 - a.respawnLeft) * 2) : 0;
       if (a.dead && death >= 1) continue;
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
@@ -757,7 +761,23 @@ export class Renderer {
     }
   }
 
-  renderWeapon(game, aspect, menu) {
+  async prepareMatch(game) {
+    if(this.lost||!this.loaded)throw new Error('Graphics are not ready. Reload to retry.');
+    this.applyQuality();const aspect=this.resize(),p=game.player,slot=p.slot;
+    this.updateActors(game,true);this.uploadDynamic(this.actorBatches);
+    if(this.lightingField?.texture.value)this.renderer.initTexture?.(this.lightingField.texture.value);
+    try{
+      // Both slots and the populated world are ready before controls activate.
+      for(let i=0;i<p.weapons.length;i++){
+        p.slot=i;this.prepareWeapon(game,aspect,false);
+        if(this.renderer.compileAsync)await this.renderer.compileAsync(this.weaponScene,this.weaponCamera);
+      }
+      if(this.renderer.compileAsync)await this.renderer.compileAsync(this.scene,this.camera);
+      if(this.lost)throw new Error('Graphics context unavailable');
+    }finally{p.slot=slot;this.prepareWeapon(game,aspect,false);}
+  }
+
+  prepareWeapon(game, aspect, menu) {
     const p = game.player, w = p.weapon;
     const key = `${w.def.id}/${w.optic}/${w.barrel}/${w.grip}`;
     if (key !== this.weaponKey) {
@@ -778,6 +798,10 @@ export class Renderer {
     this.muzzleLight.intensity = this.muzzle.visible ? .9 : 0;
     this.muzzleLight.position.copy(this.muzzle.position); this.weaponRoot.localToWorld(this.muzzleLight.position);
     this.weaponCamera.aspect = aspect; this.weaponCamera.updateProjectionMatrix();
+  }
+
+  renderWeapon(game, aspect, menu) {
+    this.prepareWeapon(game,aspect,menu);
     this.renderer.clearDepth(); this.renderer.render(this.weaponScene, this.weaponCamera);
   }
 

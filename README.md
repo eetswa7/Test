@@ -1,6 +1,19 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 43.** 24 weapons, 13 maps and 10 modes. Eight new
+**Latest checkpoint: Release 44.** 24 weapons, 13 maps and 10 modes.
+
+Release 44 adds deadline-based frame pacing, saved 30/60 FPS caps and quality
+budgets matched to the selected cap. Match preparation compiles both equipped
+weapons and full actor materials behind the loading screen. Generated textures
+upload in yielding batches. Deployment interruption, backgrounding and late
+screen-lock grants are handled without enabling stale controls. Reloads show
+remaining time and a progress track; Hill scoreboards rank hill points, and
+Elimination shows survivors.
+
+Release 44 verification: all 29 regression files and 48-module/offline checks
+pass. Timestamp profiles are synthetic; physical iPhone FPS remains unmeasured.
+
+Release 43 added eight new
 firearms include Peregrine 6, Osprey S, Bison 12, Talon 338, Rampart 556, Spectre SD,
 Krait R and Swift 93. Skybridge adds an accessible raised concourse, Monsoon adds
 rain, wet materials and reflective puddles, and Emberworks adds refinery lanes
@@ -86,9 +99,9 @@ Bots use sight and gunshot awareness, last-known positions, navigation, cover an
 
 The primary renderer is **Three.js r180**, with instanced world chunks, physically based standard/physical materials, generated normal and roughness maps, image-based environment reflections, photographic cloud detail in its HDR sky, alpha-tested wind-animated foliage, throttled directional soft shadows, contact shadows, interior lighting, ACES tone mapping and a separate first-person weapon scene. The previous custom WebGL renderer is removed. Effects use bounded pools. A simpler textured Canvas2D compatibility renderer runs the same simulation if WebGL2 cannot initialise. It reduces geometry and foliage density and does not represent GPU performance. Both paths use the same true 4× scope projection and remove the viewmodel from the scope’s clear sight picture.
 
-Rendering targets 60 frames per second during combat, 30 in the menu and 10 while paused. Automatic quality and dynamic render scaling reduce cost; shadows update at 15, 24 or 30 Hz according to quality. The fixed 60 Hz gameplay simulation is independent of display refresh. AI updates are throttled, navigation is baked per map, geometry is batched, and generated audio buffers are reused. Backgrounding pauses the match and audio. Low, Medium, High and Ultra quality options are available. See [graphics systems, budgets and profiling](docs/GRAPHICS.md).
+Rendering targets a saved 60 or 30 frames per second during combat, 30 in the menu and 10 while paused. Deadline pacing preserves the requested average across different display refresh rates. Automatic quality and dynamic render scaling reduce cost; shadows update at 15, 24 or 30 Hz according to quality. The fixed 60 Hz gameplay simulation is independent of display refresh. AI updates are throttled, navigation is baked per map, geometry is batched, and generated audio buffers are reused. Backgrounding pauses the match and audio. Low, Medium, High and Ultra quality options are available. See [graphics systems, budgets and profiling](docs/GRAPHICS.md).
 
-These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. The browser environment used for this build did not provide a WebGL2 context. The high-quality shader path, actual iPhone GPU and thermal behaviour, safe-area values from physical devices, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
+These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. Release 44 was checked with headless gameplay, input, rendering-scene and application-lifecycle regressions. The available browser blocks the local preview. The high-quality shader path, actual iPhone GPU and thermal behaviour, safe-area values from physical devices, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
 
 Visuals use original procedural 3D geometry with rounded weapon parts, hollow optics, detailed hand and character models, authored map dressing, continuous biome-tinted distant terrain, layered desert outcrops, dense arid grass and animated harbour shore wash. Four original generated texture atlases/environment images supply material detail. Asset prompts are included in `dist/assets/asset-prompts.json`; no reference-game assets are shipped. Audio is original synthesis. They are replaceable through the geometry, material and audio modules. This release does not include photoreal production character assets, motion-captured animation, native iOS haptics or online network multiplayer. Vibration is optional and only runs where the browser implements it.
 

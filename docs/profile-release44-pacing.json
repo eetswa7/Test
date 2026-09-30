@@ -1,0 +1,104 @@
+{
+  "measurement": "Synthetic animation timestamps; no browser, GPU or physical device benchmark",
+  "durationSeconds": 20,
+  "rows": [
+    {
+      "refreshHz": 30,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 30,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 30,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 30,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 45,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 22.5,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 45,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 45,
+      "currentAcceptedPerSecond": 45,
+      "expectedAcceptedPerSecond": 45
+    },
+    {
+      "refreshHz": 60,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 30,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 60,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 60,
+      "currentAcceptedPerSecond": 60,
+      "expectedAcceptedPerSecond": 60
+    },
+    {
+      "refreshHz": 75,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 25,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 75,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 37.5,
+      "currentAcceptedPerSecond": 60,
+      "expectedAcceptedPerSecond": 60
+    },
+    {
+      "refreshHz": 90,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 30,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 90,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 45,
+      "currentAcceptedPerSecond": 60,
+      "expectedAcceptedPerSecond": 60
+    },
+    {
+      "refreshHz": 120,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 30,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 120,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 60,
+      "currentAcceptedPerSecond": 60,
+      "expectedAcceptedPerSecond": 60
+    },
+    {
+      "refreshHz": 144,
+      "targetFPS": 30,
+      "previousAcceptedPerSecond": 28.8,
+      "currentAcceptedPerSecond": 30,
+      "expectedAcceptedPerSecond": 30
+    },
+    {
+      "refreshHz": 144,
+      "targetFPS": 60,
+      "previousAcceptedPerSecond": 48,
+      "currentAcceptedPerSecond": 60,
+      "expectedAcceptedPerSecond": 60
+    }
+  ]
+}

@@ -1,3 +1,29 @@
+# Release 44: iOS frame pacing, deployment preparation and combat feedback
+
+- Replaced elapsed-since-last-draw gating with a running render deadline. Synthetic
+  20-second timestamp workloads preserve 60 FPS on 75, 90 and 144 Hz displays;
+  the previous gate accepted 37.5, 45 and 48 frames per second respectively.
+  Jitter, missed deadlines, clock resets and rate switches do not create bursts.
+- Added a saved 30/60 FPS selection. Automatic graphics scales CPU/GPU/frame
+  thresholds to the selected budget and remeasures after changing it. The fixed
+  60 Hz simulation and single-use input edges are preserved at either render cap.
+- Generated textures upload in yielding batches during loading. Match preparation
+  compiles both equipped guns and populated, unculled actor materials before
+  controls activate. The active slot is restored even after failed preparation.
+- Backgrounding during deployment produces a paused match. Failed/context-lost
+  preparation returns to the menu and releases the previous screen lock. A lock
+  granted after leaving a match releases itself rather than keeping the display on.
+- Added remaining reload seconds and a progress track, shell-loading feedback,
+  objective-score ranking for Hill/Gun Game/Kill Confirmed/CTF, Elimination alive
+  counts and clearer vault instructions.
+- Focused checks cover coalesced touch acceleration, independent thumbs, invalid
+  samples, graphics budgets, warmup, lifecycle interruption and the actual frame
+  loop at 60/90/120 Hz with 30/60 FPS caps. Timing profile data is synthetic;
+  physical iPhone GPU frame rate, thermal behaviour and visual quality are unmeasured.
+- Final verification: all 29 regression files pass. Static checks validate 48
+  JavaScript modules, geometry, local assets and the complete Release 44 offline
+  shell. The shader stages are unchanged from the 13-variant Release 43 compile.
+
 # Release 43: expanded arsenal, battlegrounds and objective rules
 
 - Added eight original firearm models and complete handling/audio profiles:

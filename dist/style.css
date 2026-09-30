@@ -24,3 +24,5 @@ body:not(.desktop):has(.touch-layer.left-handed) .health-display{left:auto;right
 
 /* The installed release is shown at the end of Settings. */
 .game-version{margin:20px 0 0;padding-bottom:4px;color:var(--muted);font-size:10px;letter-spacing:1px;text-align:center}
+
+.ammo-display .reload-track{position:absolute;left:0;right:0;bottom:-5px;height:3px;background:#ffffff24}.ammo-display .reload-track i{display:block;width:100%;height:100%;background:var(--accent);transform-origin:left center}

@@ -1,3 +1,23 @@
+# Current checkpoint: Release 44
+
+Current content: 24 weapons, 13 maps and 10 modes. Low-cover vaulting, coalesced
+pointer tracking and a static ray broadphase accompany the newer lighting,
+materials and map dressing. See the Release 42–44 entries in `PROGRESS.md`.
+
+Combat can use a saved 60 or 30 FPS cap. A running deadline avoids refresh-rate
+aliasing, while simulation remains fixed at 60 Hz. Automatic quality evaluates
+CPU, GPU and frame times against the selected frame budget and ignores warmup,
+menus, pauses and background gaps. Texture uploads yield during loading;
+match preparation compiles full actors and both equipped weapon slots before
+activating controls. No additional render target or full-screen pass was added.
+
+`profile-release44-pacing.json` compares accepted frames using synthetic display
+timestamps. It is not a GPU/device benchmark. `profile-release42-rays.json`
+measures broadphase candidate reductions; `profile-release43.json` records scene
+counts for all 13 maps. Those CPU fixtures do not measure physical iPhone FPS.
+
+The following system documentation describes the established graphics pipeline.
+
 # BREACHLINE graphics
 
 Current changes and measurements: [release 23 renderer audit](RENDERER-AUDIT.md). The release 17 baseline below is retained for historical comparison.
