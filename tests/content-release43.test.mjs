@@ -11,8 +11,8 @@ import {weatherParticles} from '../dist/js/particles.js';
 import {fixture as rendererFixture} from './renderer-fixture.mjs';
 
 test('new primary and sidearm slots save with stable old IDs and a complete Gun Game ladder',()=>{
- assert.equal(WEAPONS.length,24);assert.deepEqual(SECONDARY_IDS,[10,11,22,23]);
- assert.equal(GUN_ORDER.length,24);assert.equal(new Set(GUN_ORDER).size,24);assert.equal(GUN_ORDER.at(-1),12);
+ assert.equal(WEAPONS.length,30);assert.deepEqual(SECONDARY_IDS,[10,11,22,23,29]);
+ assert.equal(GUN_ORDER.length,WEAPONS.length);assert.equal(new Set(GUN_ORDER).size,WEAPONS.length);assert.equal(GUN_ORDER.at(-1),12);
  let text='';const storage={getItem:()=>text,setItem:(key,value)=>text=value};
  for(const id of PRIMARY_IDS){const store=new SaveStore(storage);store.data.loadout.primary=id;store.data.loadout.secondary=22;store.persist();const loaded=new SaveStore(storage);assert.equal(loaded.data.loadout.primary,id);assert.equal(loaded.data.loadout.secondary,22);}
  assert.equal(sanitizeLoadout({primary:19,secondary:23}).secondary,23);
@@ -33,7 +33,7 @@ test('every gun has distinct cached shot, suppressed, reload and mechanical soun
   for(const key of ['shot','suppressed','reload','seat','rack'])assert(audio.buffers.has(key+weapon.id),`Missing ${key}${weapon.id}`);
   const data=audio.buffers.get('shot'+weapon.id).getChannelData(0);assert(data.every(Number.isFinite));signatures.add(Array.from(data.subarray(0,24)).join(','));
  }
- assert.equal(signatures.size,24);
+ assert.equal(signatures.size,WEAPONS.length);
 });
 test('new maps include raised concourse routes, wet reflections, bounded rain and refinery landmarks',()=>{
  const sky=new Arena(10),rain=new Arena(11),ember=new Arena(12);

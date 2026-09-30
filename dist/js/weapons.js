@@ -1,4 +1,4 @@
-import {clamp,lerp} from './math.js?v=45';
+import {clamp,lerp} from './math.js?v=46';
 // All distances are metres. Rates and timings drive the simulation, models and audio.
 const specs=[
  ['Kestrel AR','RIFLE',29,700,30,2.2,.019,.016,42,.19,1,true,1],
@@ -24,12 +24,18 @@ const specs=[
  ['Rampart 556','LMG',25,860,100,4.75,.019,.036,46,.31,1,true,3],
  ['Spectre SD','SMG',27,810,30,1.85,.015,.024,30,.14,1,true,2],
  ['Krait R','PISTOL',70,145,6,2.6,.073,.033,35,.17,1,false,2],
- ['Swift 93','PISTOL',20,1050,20,1.5,.019,.033,19,.1,1,true,1]
+ ['Swift 93','PISTOL',20,1050,20,1.5,.019,.033,19,.1,1,true,1],
+ ['Storm 68','RIFLE',36,610,25,2.4,.026,.020,54,.22,1,true,2],
+ ['Needle 57','SMG',19,980,50,2.65,.011,.025,28,.14,1,true,2],
+ ['Jackal 12','SHOTGUN',15,240,10,2.85,.052,.078,13,.24,8,false,3],
+ ['Sentinel 762','LMG',38,540,60,4.1,.032,.030,65,.35,1,true,3],
+ ['Heron S','MARKSMAN',48,300,12,2.15,.029,.027,82,.23,1,false,2],
+ ['Paladin 45','PISTOL',37,285,12,1.4,.029,.025,27,.11,1,false,1]
 ];
 export const WEAPONS=specs.map((s,id)=>{const[name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock]=s;return{id,name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock,burst:id===13?3:id===16?2:0,shellReload:id===5||id===18,integralSuppressor:id===21,revolver:id===22,interval:60/rpm};});
 export const PRIMARY_IDS=WEAPONS.filter(w=>!['PISTOL','MELEE'].includes(w.kind)).map(w=>w.id);
 export const SECONDARY_IDS=WEAPONS.filter(w=>w.kind==='PISTOL').map(w=>w.id);
-export const GUN_ORDER=[0,1,2,13,16,3,4,14,17,21,5,6,18,9,20,15,8,7,19,10,11,23,22,12];
+export const GUN_ORDER=[0,1,2,13,16,3,4,14,17,21,5,6,18,9,20,24,25,26,27,28,15,8,7,19,10,29,11,23,22,12];
 export const ATTACHMENTS={optic:['Iron sights','Reflex','Prism sight','4× optic'],barrel:['Standard barrel','Suppressor','Compensator'],handling:['Standard grip','Foregrip','Laser','Light stock','Extended magazine']};
 export const defaultLoadout=()=>({primary:0,secondary:10,optic:1,barrel:0,handling:0,equipment:'frag'});
 export function sanitizeLoadout(v={}){if(!v||typeof v!=='object')v={};const d=defaultLoadout();for(const k of ['primary','secondary','optic','barrel','handling'])if(Number.isFinite(v[k]))d[k]=Math.round(v[k]);d.primary=PRIMARY_IDS.includes(d.primary)?d.primary:clamp(d.primary,0,9);d.secondary=SECONDARY_IDS.includes(d.secondary)?d.secondary:clamp(d.secondary,10,11);d.optic=clamp(d.optic,0,3);d.barrel=clamp(d.barrel,0,2);d.handling=clamp(d.handling,0,4);d.equipment=['frag','smoke','flash'].includes(v.equipment)?v.equipment:'frag';return d;}
@@ -38,7 +44,7 @@ export class Weapon {
  get capacity(){return this.def.magazine+(this.grip===4?Math.max(2,Math.floor(this.def.magazine/3)):0);}
  get recoil(){const climb=this.def.automatic?lerp(.92,1.12,clamp(this.shotIndex/9,0,1)):1;return this.def.recoil*climb*(this.barrel===2?.72:1)*(this.grip===1?.8:1);}
  get adsTime(){return this.def.ads*(this.grip===3?.75:1)*(this.grip===4?1.15:1)*(this.optic===3?1.2:1);}
- get reloadTime(){return this.def.reload*(this.grip===4?1.15:1);}
+ get reloadTime(){const empty=this.reloadStartedEmpty&&!this.def.shellReload&&!this.def.revolver?(this.def.kind==='LMG'?.38:this.def.kind==='SNIPER'?.28:.18):0;return (this.def.reload+empty)*(this.grip===4?1.15:1);}
  get range(){return this.def.range*(this.barrel===1?.85:1);}
  reload(){if(this.reloadLeft>0||this.ammo>=this.capacity||this.reserve<=0||this.def.id===12)return false;this.burstRemaining=0;this.reloadStartedEmpty=this.ammo===0;this.reloadLeft=this.reloadTime;return true;}
  update(dt){this.cooldown=Math.max(0,this.cooldown-dt);this.sinceShot+=dt;if(this.sinceShot>.4)this.shotIndex=0;if(this.reloadLeft<=0)return false;this.reloadLeft-=dt;if(this.reloadLeft>0)return false;const n=Math.min(this.def.shellReload?1:this.capacity-this.ammo,this.reserve);this.ammo+=n;this.reserve-=n;this.reloadLeft=this.def.shellReload&&this.ammo<this.capacity&&this.reserve>0?this.reloadTime:0;return true;}

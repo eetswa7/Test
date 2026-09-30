@@ -1,11 +1,12 @@
-import {Arena,MAPS} from './maps.js?v=45';
-import {Navigation} from './navigation.js?v=45';
-import {SpawnDirector} from './spawns.js?v=45';
-import {MatchRules} from './modes.js?v=45';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=45';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=45';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=45';
-import {beginVault,advanceVault} from './traversal.js?v=45';
+import {Arena,MAPS} from './maps.js?v=46';
+import {Navigation} from './navigation.js?v=46';
+import {SpawnDirector} from './spawns.js?v=46';
+import {MatchRules} from './modes.js?v=46';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=46';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=46';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=46';
+import {traceBullet} from './ballistics.js?v=46';
+import {beginVault,advanceVault} from './traversal.js?v=46';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -102,27 +103,17 @@ export class Game {
   let anyHit=false,head=false;
   for(let i=0;i<d.pellets;i++){
    const angle=this.random()*Math.PI*2,spread=Math.sqrt(this.random())*baseSpread,dir=direction(a.yaw+Math.cos(angle)*spread,a.pitch+Math.sin(angle)*spread);
-   let wall=this.arena.trace(origin,dir,140),hit=null,part='body',t=wall.t;
-   for(const target of this.actors){if(target.dead||target.id===a.id)continue;
-    const h=target.height,boxes=[{x:target.x,y:target.y+h-.16,z:target.z,w:.36,h:.33,d:.36,part:'head'},{x:target.x,y:target.y+h*.57,z:target.z,w:.55,h:h*.52,d:.38,part:'body'},{x:target.x,y:target.y+h*.2,z:target.z,w:.43,h:h*.4,d:.36,part:'leg'}];
-    for(const b of boxes){const n=rayBox(origin,dir,b,t);if(n!==null&&n<t){t=n;hit=target;part=b.part;}}
-   }
-   const impact={x:origin.x+dir.x*t,y:origin.y+dir.y*t,z:origin.z+dir.z*t};
+   const result=traceBullet(this.arena,this.actors,a,origin,dir,w),hit=result.target,part=result.part,t=result.t,impact=result.end;
    if(i===0)for(const other of this.actors){
     if(other.id===0||other.dead||other===hit||other.spawnProtection>0||!this.rules.enemies(a,other))continue;
     if(distance(a,other)>35)continue;
     const eye=this.eye(other),along=(eye.x-origin.x)*dir.x+(eye.y-origin.y)*dir.y+(eye.z-origin.z)*dir.z;
     if(along>0&&along<t-.4&&pointSegment(eye,origin,impact)<1.45)other.suppression=2;
    }
-   if(hit){if(this.rules.enemies(a,hit)){this.damage(hit,w.damage(t,part),a,part==='head');anyHit=true;head=head||part==='head';this.emit('blood',{position:impact,value:part==='head'?8:5});}}
-   else if(wall.block){
-    const b=wall.block;this.emit('impact',{position:impact,surface:b.surface,normal:this.impactNormal(impact,b),value:d.kind==='SHOTGUN'?2:4});
+   if(hit&&this.rules.enemies(a,hit)){this.damage(hit,w.damage(t,part)*result.scale,a,part==='head');anyHit=true;head=head||part==='head';this.emit('blood',{position:impact,value:part==='head'?8:5});}
+   for(const contact of result.impacts){
+    const b=contact.block;this.emit('impact',{position:contact.position,surface:b.surface,normal:this.impactNormal(contact.position,b),value:d.kind==='SHOTGUN'?2:4,penetrated:contact.penetrated});
     if(b.breakable){b.hp-=d.damage;if(b.hp<=0&&!b.destroyed){b.destroyed=true;this.explode({...b,owner:a.id,kind:'frag'},5.5,90);}}
-    // Thin wooden cover can be penetrated once with a substantial damage penalty.
-    if(b.surface==='wood'&&d.kind!=='SHOTGUN'&&d.kind!=='SMG'){
-     const exit={x:impact.x+dir.x*1.6,y:impact.y+dir.y*1.6,z:impact.z+dir.z*1.6},behind=this.arena.trace(exit,dir,35);
-     for(const target of this.actors){if(target.dead||!this.rules.enemies(a,target))continue;const n=rayBox(exit,dir,{x:target.x,y:target.y+.9,z:target.z,w:.5,h:1.7,d:.4},behind.t);if(n!==null){this.damage(target,w.damage(t+n)*.45,a,false);anyHit=true;break;}}
-    }
    }
    if(i===0)this.emit('shot',{position:origin,end:impact,source:a.id,weapon:d.id,suppressed:w.barrel===1,indoor:this.arena.indoors(a)});
   }

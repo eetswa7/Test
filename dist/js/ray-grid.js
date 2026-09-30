@@ -1,4 +1,4 @@
-import {rayBox} from './math.js?v=45';
+import {rayBox} from './math.js?v=46';
 
 // Static world broadphase. The narrowphase remains the exact gameplay AABB test.
 // Ground is tested once; walls, stairs and props are visited along the ray only.
@@ -24,10 +24,10 @@ export class RayGrid {
    for(let z=z0;z<=z1;z++)for(let x=x0;x<=x1;x++)this.cells[z*this.width+x].push(i);
   }
  }
- trace(o,d,limit){
+ trace(o,d,limit,ignore=null){
   let t=limit,block=null,best=this.count;this.tested=0;
   const test=index=>{
-   const b=this.blocks[index];if(b.destroyed)return;
+   const b=this.blocks[index];if(b.destroyed||b===ignore)return;
    this.tested++;const hit=rayBox(o,d,b,t);
    // Equal-distance overlaps keep the same ordering as a full array scan.
    if(hit!==null&&(hit<t||block&&hit===t&&index<best)){t=hit;block=b;best=index;}

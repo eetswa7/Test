@@ -1,12 +1,12 @@
-import {updateWeaponClearance} from './weapon-clearance.js?v=45';
-import {animateWeaponParts} from './weapon-models.js?v=45';
-import {identityFor} from './combat-identity.js?v=45';
-import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=45';
-import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=45';
-import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=45';
-import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=45';
-import {loadImages} from './textures.js?v=45';
-import {weatherParticles} from './particles.js?v=45';
+import {updateWeaponClearance} from './weapon-clearance.js?v=46';
+import {animateWeaponParts} from './weapon-models.js?v=46';
+import {identityFor} from './combat-identity.js?v=46';
+import {identity,lookAt,multiply,compose,direction,clamp,lerp,distance} from './math.js?v=46';
+import {weaponModel,actorModel,part,material,makeCube,makeCylinder,makeSphere} from './geometry.js?v=46';
+import {roundedBox,tube,leafCard,rockMesh,ridgeMesh,ridgeTint,coniferMesh,coniferTint,strataRockMesh,strataTint} from './meshes.js?v=46';
+import {aimFov,verticalFov,scopeVisible,weaponPose,movementFov} from './aim.js?v=46';
+import {loadImages} from './textures.js?v=46';
+import {weatherParticles} from './particles.js?v=46';
 
 const corners=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
 const faces=[[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]];

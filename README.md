@@ -1,6 +1,17 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 45.** 24 weapons, 13 maps and 10 modes.
+**Latest checkpoint: Release 46.** 30 weapons, 13 maps and 10 modes.
+
+Release 46 adds Storm 68, Needle 57, Jackal 12, Sentinel 762, Heron S and
+Paladin 45. Each has an original model, handling, audio, attachments, bot role
+and Gun Game tier. Penetration now uses actual material, entry/exit thickness,
+incidence and a bounded energy budget. Hollow crates and freight containers
+have physical skins; solid concrete and embedded walls stop bullets. Multiple
+thin surfaces reduce damage while preserving nearest-target and headshot rules.
+Empty magazine reloads include the extra action cycle.
+
+Release 46 verification: 217/217 automated regressions, 51-module packaged/offline
+checks and 13/13 shader variants pass.
 
 Release 45 replaces the generic bot rifle with the operator's actual equipped
 weapon, including loadout changes during Gun Game. Arm poses follow both grips,

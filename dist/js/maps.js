@@ -1,6 +1,6 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=45';
-import {dressWorld} from './world-detail.js?v=45';
-import {RayGrid} from './ray-grid.js?v=45';
+import {rng,rayBox,distance,clamp} from './math.js?v=46';
+import {dressWorld} from './world-detail.js?v=46';
+import {RayGrid} from './ray-grid.js?v=46';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -30,9 +30,9 @@ export class Arena {
  constructor(id=0){this.info=MAPS[Number.isFinite(id)?clamp(Math.floor(id),0,MAPS.length-1):0];this.blocks=[];this.decor=[];this.cover=[];this.doors=[];this.breakables=[];this.spawns=[];this.objectives=[];this.random=rng(771+this.info.id*511);this.build();dressWorld(this);this.bakeCollision();}
  box(x,y,z,w,h,d,surface='concrete',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.blocks.push(b);this.collisionCells=null;if(h>.7&&h<2.3)this.cover.push({x:x+w/2+1,z,y:0},{x:x-w/2-1,z,y:0},{x,y:0,z:z+d/2+1},{x,y:0,z:z-d/2-1});return b;}
  detail(x,y,z,w,h,d,surface='dark',extra={}){const b={x,y,z,w,h,d,surface,...extra};this.decor.push(b);return b;}
- crate(x,z,stack=1){for(let i=0;i<stack;i++){this.box(x,i*1.18+.59,z,1.25,1.18,1.25,'wood');for(const dx of [-.43,.43])this.detail(x+dx,i*1.18+.6,z,.075,1.2,1.28,'steel');}}
+ crate(x,z,stack=1){for(let i=0;i<stack;i++){this.box(x,i*1.18+.59,z,1.25,1.18,1.25,'wood',{shellThickness:.035});for(const dx of [-.43,.43])this.detail(x+dx,i*1.18+.6,z,.075,1.2,1.28,'steel');}}
  barrier(x,z,turn=false){this.box(x,.65,z,turn?.8:3.1,1.3,turn?3.1:.8,'concrete');this.detail(x,1.31,z,turn?.8:3.1,.04,turn?3.1:.8,'orange');}
- container(x,z,turn=false,surface='blue'){this.box(x,1.45,z,turn?2.6:6,2.9,turn?6:2.6,surface);for(let i=-2;i<=2;i++)this.detail(x+(turn?0:i),1.48,z+(turn?i:0),turn?2.65:.065,2.78,turn?.065:2.65,'steel');this.detail(x,2.94,z,turn?2.65:6.05,.1,turn?6.05:2.65,'dark');}
+ container(x,z,turn=false,surface='blue'){this.box(x,1.45,z,turn?2.6:6,2.9,turn?6:2.6,surface,{shellThickness:.004});for(let i=-2;i<=2;i++)this.detail(x+(turn?0:i),1.48,z+(turn?i:0),turn?2.65:.065,2.78,turn?.065:2.65,'steel');this.detail(x,2.94,z,turn?2.65:6.05,.1,turn?6.05:2.65,'dark');}
  room(x,z,w,d,height=4,surface='stone',roof=true,sideDoors=false){
   for(const xx of [x-w/2,x+w/2]){
    if(sideDoors){for(const sign of [-1,1])this.box(xx,height/2,z+sign*(d/4+.8),.4,height,d/2-1.6,surface);this.box(xx,height-.5,z,.4,1,3.2,surface);}
@@ -321,9 +321,9 @@ export class Arena {
  }
  collides(p,r=.32,h=1.75){for(const b of this.nearby(p,r)){if(b.ground||b.destroyed)continue;if(Math.abs(p.x-b.x)<b.w/2+r&&Math.abs(p.z-b.z)<b.d/2+r&&p.y+h>b.y-b.h/2+.03&&p.y<b.y+b.h/2-.03)return true;}return false;}
  floorAt(p,maxY=p.y+.34){let floor=0;for(const b of this.nearby(p)){if(b.destroyed)continue;const top=b.y+b.h/2;if(top<=maxY+.001&&top>floor&&Math.abs(p.x-b.x)<b.w/2+.32&&Math.abs(p.z-b.z)<b.d/2+.32)floor=top;}return floor;}
- trace(o,d,limit=160){
-  if(this.rayGrid?.blocks===this.blocks&&this.rayGrid.count===this.blocks.length&&this.collisionCells)return this.rayGrid.trace(o,d,limit);
-  let t=limit,block=null;for(const b of this.blocks){if(b.destroyed)continue;const n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};
+ trace(o,d,limit=160,ignore=null){
+  if(this.rayGrid?.blocks===this.blocks&&this.rayGrid.count===this.blocks.length&&this.collisionCells)return this.rayGrid.trace(o,d,limit,ignore);
+  let t=limit,block=null;for(const b of this.blocks){if(b.destroyed||b===ignore)continue;const n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};
  }
  visible(a,b){const len=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);if(len<.01)return true;return this.trace(a,{x:(b.x-a.x)/len,y:(b.y-a.y)/len,z:(b.z-a.z)/len},len).t>=len-.12;}
  indoors(p){return this.nearby(p).some(b=>!b.destroyed&&b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}

@@ -318,3 +318,10 @@ Release 41 verification: 178/178 automated tests, including optic selection and 
 Recovered and completed the previous unfinished pass. Bots carry their equipped firearm with two-grip arm poses, magazine motion, role equipment and bounded distance detail. Jump mantles clear ledges up to 2.2 m with standing headroom and capsule validation. Both renderers lower the hip-fire weapon near walls while preserving fully aimed sight alignment. Local hit reactions return to the base pose without moving collision or aim.
 
 Validation: 211/211 tests, packaged/offline checks for 50 JavaScript modules, and 13/13 Mesa GLSL ES compile/link variants pass. Actor CPU fixture medians across 13 maps are 0.17–0.32 ms. Physical iPhone frame timing remains unmeasured.
+
+
+## Release 46: expanded arsenal and material-aware cover
+
+Six original firearms bring the arsenal and progression ladder to 30 weapons. Ballistic rays resolve exact material thickness and incidence, hollow prop skins, ordered silhouettes and bounded multi-surface penetration. Embedded obstacles cannot be skipped inside penetrable cover. Shotgun pellets stop at cover, and depleted magazines require an extra action cycle. New regression cases cover oblique rays, solid versus hollow cover, embedded concrete, ordered allied silhouettes, headshots through glass and energy exhaustion.
+
+Release 46 verification: 217/217 regressions, 51-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. No physical iPhone frame timing is claimed.

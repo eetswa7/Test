@@ -28,7 +28,13 @@ const PROFILES=[
  {barrel:-.687,grip:.118,support:-.31,width:.125,mag:-.054,stock:.297},
  {barrel:-.381,grip:.059,support:-.197,width:.084,mag:.052,stock:.243},
  {barrel:-.342,grip:.065,support:.034,width:.09,mag:.018},
- {barrel:-.231,grip:.047,support:.027,width:.078,mag:.049}
+ {barrel:-.231,grip:.047,support:.027,width:.078,mag:.049},
+ {barrel:-.612,grip:-.035,support:-.285,width:.11,mag:.146,stock:.266},
+ {barrel:-.403,grip:.061,support:-.222,width:.093,mag:-.205,stock:.23},
+ {barrel:-.571,grip:-.051,support:-.297,width:.12,mag:.14,stock:.285},
+ {barrel:-.881,grip:.132,support:-.379,width:.151,mag:-.066,stock:.338},
+ {barrel:-.789,grip:.106,support:-.324,width:.086,mag:-.035,stock:.334},
+ {barrel:-.214,grip:.041,support:.022,width:.076,mag:.041}
 ];
 
 function builder(w){
@@ -246,7 +252,58 @@ function swift(b){
  grip(.047,POLY,-.16,.186);box(0,-.213,.035,.081,.038,.09,RUBBER,'magazine');
  box(.044,.011,.032,.007,.016,.04,EDGE);box(0,-.064,-.087,.046,.015,.092,METAL);
 }
-const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten,mako,peregrine,osprey,bison,talon,rampart,spectre,krait,swift];
+function storm(b){
+ const {box,receiver,barrel,grip,magazine,rail,vents,controls}=b;
+ receiver(.038,.416,.11,TAN);box(0,.028,-.292,.109,.116,.264,POLY);
+ box(0,-.002,.267,.118,.17,.05,TAN);box(0,-.017,.296,.123,.177,.021,RUBBER);
+ rail(.161,-.423,.104);vents(.055,-.207,6,.032,.037);barrel(-.442,undefined,.033);
+ grip(-.035,POLY,-.13,.177);magazine(.146,.211,.077,.102,TAN,.06);controls(.11,-.032);
+ for(const side of [-1,1])box(side*.061,.02,.085,.008,.029,.099,RUBBER);
+ box(0,-.059,-.31,.052,.037,.15,POLY);
+}
+function needle(b){
+ const {box,cyl,receiver,barrel,grip,stock,rail,vents,controls}=b;
+ receiver(-.025,.252,.093,OLIVE);box(0,.029,-.238,.094,.092,.177,METAL);
+ cyl(0,-.068,-.211,.082,.33,OLIVE,'magazine');
+ for(let i=0;i<8;i++)cyl(0,-.068,-.066-i*.039,.085,.007,RUBBER,'magazine');
+ rail(.064,-.291,.089,.065);vents(.049,-.201,4,.026,.024);barrel(-.325);
+ grip(.061,POLY,-.13,.173);stock(.23,METAL,'skeleton');controls(.093,.049);
+ box(-.055,.042,-.05,.018,.021,.049,EDGE,'bolt');
+}
+function jackal(b){
+ const {box,cyl,receiver,barrel,grip,rail,vents,controls}=b;
+ receiver(.016,.436,.12,TAN);box(0,.016,-.294,.119,.115,.207,OLIVE);
+ rail(.173,-.407,.108,.085);vents(.061,-.239,4,.033,.04);barrel(-.413,undefined,.039);
+ grip(-.051,POLY,-.14,.18);cyl(0,-.177,.14,.215,.14,OLIVE,'magazine');
+ box(0,-.061,.142,.086,.11,.111,METAL,'magazine');
+ box(0,.012,.291,.123,.169,.073,TAN);box(0,-.015,.33,.129,.18,.02,RUBBER);controls(.12,-.049);
+ box(0,-.08,-.287,.065,.06,.179,POLY);
+}
+function sentinel(b){
+ const {box,cyl,receiver,barrel,grip,stock,rail,bipod,vents}=b;
+ receiver(-.042,.36,.151,finish(C.steel,.82,.43));box(0,.079,-.033,.146,.038,.329,OLIVE,'lid');
+ box(0,.016,-.39,.119,.12,.321,POLY);vents(.062,-.27,7,.038,.028);barrel(-.564,undefined,.045);
+ rail(.09,-.247,.105,.091);grip(.132,POLY,-.18,.178);stock(.338,WOOD,'solid');bipod(-.655);
+ box(-.048,-.141,-.066,.194,.204,.184,OLIVE,'magazine');
+ for(let i=0;i<9;i++){const x=-.093-i*.022;cyl(x,.025,-.044,.017,.079,BRASS,'belt');box(x,.016,-.05,.021,.013,.019,METAL,'belt');}
+ box(.096,.037,-.04,.046,.02,.029,EDGE,'bolt');cyl(0,.11,-.664,.027,.113,METAL);
+}
+function heron(b){
+ const {box,cyl,receiver,barrel,grip,magazine,stock,rail}=b;
+ receiver(-.037,.289,.086,finish(C.steel,.9,.32));box(0,-.025,-.326,.084,.073,.307,WOOD);
+ cyl(0,.036,-.406,.065,.261,WOOD);barrel(-.548,undefined,.032);cyl(0,.079,-.614,.025,.10,METAL);
+ grip(.106,WOOD,-.24,.174);magazine(-.035,.14,.068,.094,METAL,.04);stock(.334,WOOD,'solid');rail(.084,-.211,.094,.062);
+ box(.054,.039,.041,.036,.019,.019,EDGE,'bolt');box(0,.058,.253,.079,.025,.16,WOOD);
+}
+function paladin(b){
+ const {box,cyl,grip}=b;
+ box(0,.022,-.039,.076,.085,.269,METAL,'slide');box(0,-.029,-.02,.073,.054,.235,OLIVE);
+ cyl(0,.032,-.135,.022,.154,EDGE);grip(.041,OLIVE,-.17,.176);
+ for(const side of [-1,1])for(let i=0;i<7;i++)box(side*.04,.022,.071-i*.011,.003,.043,.006,RUBBER,'slide');
+ box(0,-.201,.029,.079,.019,.089,RUBBER,'magazine');box(-.044,-.012,.018,.01,.011,.039,EDGE);
+ box(0,.067,-.116,.056,.014,.116,POLY,'slide');
+}
+const BUILDERS=[kestrel,bastion,raptor,vesper,lynx,breach,tempest,longbow,warden,atlas,sable,dire,blade,harrow,marten,mako,peregrine,osprey,bison,talon,rampart,spectre,krait,swift,storm,needle,jackal,sentinel,heron,paladin];
 
 function addOptic(b,w){
  const {box,tube,cyl}=b,id=w.def.id;
