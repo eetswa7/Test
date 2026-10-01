@@ -158,6 +158,10 @@ def cavity(verts,tris,radius=.32):
 
 
 def object_mesh(name,verts,tris,colors=None,bake=True,radius=.32,physical=None):
+    previous=mesh_assets.get(name)
+    if previous:
+        old_mesh=previous.data;bpy.data.objects.remove(previous,do_unlink=True)
+        if old_mesh.users==0:bpy.data.meshes.remove(old_mesh)
     occlusion=cavity(verts,tris,radius) if bake else [1]*len(verts)
     mesh=bpy.data.meshes.new(name)
     mesh.from_pydata([conversion@p for p in verts],[],tris)
@@ -188,7 +192,7 @@ def object_mesh(name,verts,tris,colors=None,bake=True,radius=.32,physical=None):
     obj=bpy.data.objects.new(name,mesh);library.objects.link(obj)
     obj['blender_asset']=True;obj['units']='metres';obj['baked_ao']=bake
     mesh_assets[name]=obj
-    manifest['meshes'][name]={'triangles':len(tris),'vertices':len(verts)}
+    manifest['meshes'][name]={'triangles':len(tris),'vertices':len(verts),'vertexMaterial':bool(physical)}
     return obj
 
 
@@ -299,35 +303,50 @@ def manufactured_vertex(v,p,key):
     dims=(p['w'],p['h'],p['d']);radius=min(.0018,min(dims)*.08)
     return Vector([(math.copysign(d*.5-radius,x)+(x-math.copysign(.5-width,x))*radius/width)/d for x,d in zip(v,dims)])
 
+sys.path.insert(0,str(SOURCE))
+from art_geometry import author_shared,hero_part
+manifest['props']=author_shared(globals())
+manifest['artRevision']=2
+manifest['authorship']='Original Blender mesh authoring and native Cycles colour/normal/physical bakes'
+
 
 # Build complete weapon cores, preserving movable component names. Each group is
 # welded for a single indexed draw and inherits the exact existing joint matrix.
 for weapon in INPUT['weapons']:
-    groups=defaultdict(list)
-    for p in weapon['parts']:groups[group_signature(p)].append(p)
-    definitions=[]
-    for gi,(signature,parts) in enumerate(groups.items()):
+    record={'name':weapon['name'],'coreCount':weapon['coreCount'],'handCount':len(weapon.get('hands',[]))}
+    for section,source_parts in (('groups',weapon['parts']),('hands',weapon.get('hands',[]))):
+      groups=defaultdict(list)
+      for p in source_parts:groups[group_signature(p)].append(p)
+      definitions=[]
+      for gi,(signature,parts) in enumerate(groups.items()):
         anchor=parts[0];anchor_matrix=Matrix([anchor['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
         inverse=anchor_matrix.inverted()
         vertices=[];triangles=[];colours=[];physical=[]
         for p in parts:
             key='cylinder' if p.get('mesh')=='cylinder' else 'tube' if p.get('mesh')=='tube' else 'sphere' if p.get('mesh')=='sphere' else 'flat' if p.get('mesh')=='cube' else 'box'
-            v,t=BASE[key];matrix=Matrix([p['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
-            start=len(vertices);vertices.extend(matrix@manufactured_vertex(q,p,key) for q in v)
+            designed=hero_part(p,BASE)
+            if section=='hands':
+                hand_kind='sleeve_z' if p.get('tile')==9 and p['d']>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
+                if hand_kind:
+                    mesh=mesh_assets[hand_kind+'__near'].data;mesh.calc_loop_triangles()
+                    designed=([conversion.inverted()@v.co for v in mesh.vertices],[tuple(t.vertices) for t in mesh.loop_triangles])
+            v,t=designed or BASE[key];matrix=Matrix([p['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
+            start=len(vertices);vertices.extend(matrix@(q if designed else manufactured_vertex(q,p,key)) for q in v)
             triangles.extend(tuple(i+start for i in tri) for tri in t)
             colours.extend([tuple(linear(x) for x in p.get('color',(.2,.2,.2)))]*len(v))
             physical.extend([(p.get('rough',.6),p.get('metal',0))]*len(v))
         ao=cavity(vertices,triangles,.18)
         local=[inverse@p for p in vertices]
         colours=[tuple(x*ao[i] for x in c) for i,c in enumerate(colours)]
-        name=f"weapon_{weapon['id']}_{gi}"
+        name=f"weapon_{weapon['id']}_{section}_{gi}"
         object_mesh(name,local,triangles,colours,bake=False,physical=physical)
         # Welded vertices share indexed buffers; glTF splits only true UV/normal seams.
         definitions.append({'mesh':name,'anchor':anchor['index'],'tag':signature,
                             'finishTile':0,'rough':.5,'metal':.5,'tile':-1,
                             'vertexMaterial':True,'members':[p['index'] for p in parts]})
-    manifest['weapons'][str(weapon['id'])]={'name':weapon['name'],'coreCount':weapon['coreCount'],'groups':definitions}
-    print(f"Authored {weapon['name']}: {len(definitions)} rigid material groups",flush=True)
+      record[section]=definitions
+    manifest['weapons'][str(weapon['id'])]=record
+    print(f"Authored {weapon['name']}: {len(record['groups'])} weapon and {len(record['hands'])} hand groups",flush=True)
 
 
 def terrain(map_info,segments,steps):
@@ -437,12 +456,12 @@ def bake_details(name,columns,hero=False):
     obj.hide_render=True;obj.hide_set(True)
 
 
-bake_details('surfaces',4)
-bake_details('weapons',2,True)
-
-# Keep every original texture and both baked outputs inside the editable .blend.
-for file in ('surfaces-atlas.webp','weapon-finishes.webp','foliage-atlas.webp','horizon.webp'):
-    image=bpy.data.images.load(str(ROOT/'dist/assets'/file),check_existing=True);image.pack();image.use_fake_user=True
+from materials import bake_atlas,bake_auxiliary
+bake_atlas(scene,OUT,'surfaces',4)
+bake_atlas(scene,OUT,'weapons',2,True)
+bake_auxiliary(scene,OUT,'foliage',2,'foliage')
+bake_auxiliary(scene,OUT,'sky',1,'clouds')
+bake_auxiliary(scene,OUT,'effects',2,'effects')
 
 bpy.ops.object.select_all(action='DESELECT')
 for obj in mesh_assets.values():obj.select_set(True)
