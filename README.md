@@ -1,6 +1,20 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 48.** 30 weapons, 15 maps and 11 modes.
+**Latest checkpoint: Release 49.** 30 weapons, 15 maps and 11 modes.
+
+Release 49 replaces the primary renderer's generated mesh primitives with an
+original Blender-authored asset library: manufactured weapon cores, operators,
+modular architecture, props, vegetation and terrain. Blender supplies real
+bevels, baked vertex occlusion, normal/roughness/metallic atlases and near/far
+meshes. The game still runs in Three.js on iPhone Safari; Blender is the asset
+authoring tool. Gameplay, map collision, weapon handling, controls and saves
+retain their Release 48 behaviour.
+
+The editable [Blender source and rebuild instructions](authoring/blender/README.md)
+are included. New downloadable assets total 6.84 MiB. The default rifle falls
+from 12 to 10 draw batches and from 15,720 to 12,372 triangles. These are asset
+budgets, not measured iPhone FPS. Validation passes 238/238 regressions,
+58-module packaged/offline checks and 23 GLSL ES compile/link variants.
 
 Release 48 adds saved touch aim slowdown over visible enemy silhouettes, with
 wall, smoke and flash checks. It scales thumb input without steering or firing.
@@ -116,7 +130,7 @@ Movement, looking and firing use independent pointer tracking. Settings include 
 
 ## Content
 
-Ten fully simulated player-versus-bot modes:
+Eleven fully simulated player-versus-bot modes:
 
 | Mode | Rules |
 | --- | --- |
@@ -124,16 +138,17 @@ Ten fully simulated player-versus-bot modes:
 | Free For All | Eight combatants, first to 20, respawns, 6-minute limit |
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
-| Gun Game | One elimination advances the weapon, 24 stages ending with a blade kill |
+| Gun Game | One elimination advances the weapon, 30 stages ending with a blade kill |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 | Capture the Flag | Steal the enemy flag, carry it home while your flag is safe, return dropped allied flags; first to three captures |
 | King of the Hill | Free for all, exclusive occupation scores personal points, rotating zones; first to 75 |
 | Elimination | 4 vs 4, one life per round, first to five rounds; timeouts use survivors then remaining health, equal results draw |
+| Frontline | Capture successive sectors to push towards the enemy rear; defenders can reverse the line, with respawns behind the current sector |
 
-Thirteen battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline** **Iron Quarry**, **Skybridge**, **Monsoon** and **Emberworks**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+Fifteen battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline**, **Iron Quarry**, **Skybridge**, **Monsoon**, **Emberworks**, **Crossfire District** and **Blacksite**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
-The arsenal contains five rifles, five SMGs, three shotguns, two bolt-action snipers, two marksman rifles, two LMGs, four sidearms and a field blade. New options include a two-round burst rifle, a rapid-fire SMG, an integrally suppressed SMG, a drum-fed LMG, a revolver and an automatic pistol. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, wood penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
+The arsenal contains 29 firearms and a field blade: rifles, SMGs, shotguns, snipers, marksman rifles, LMGs and sidearms. Options include burst rifles, rapid-fire and integrally suppressed SMGs, a drum-fed LMG, a revolver and an automatic pistol. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, material-aware penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
 Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
 
@@ -141,13 +156,13 @@ Bots use sight and gunshot awareness, last-known positions, navigation, cover an
 
 ## Rendering and performance
 
-The primary renderer is **Three.js r180**, with instanced world chunks, physically based standard/physical materials, generated normal and roughness maps, image-based environment reflections, photographic cloud detail in its HDR sky, alpha-tested wind-animated foliage, throttled directional soft shadows, contact shadows, interior lighting, ACES tone mapping and a separate first-person weapon scene. The previous custom WebGL renderer is removed. Effects use bounded pools. A simpler textured Canvas2D compatibility renderer runs the same simulation if WebGL2 cannot initialise. It reduces geometry and foliage density and does not represent GPU performance. Both paths use the same true 4× scope projection and remove the viewmodel from the scope’s clear sight picture.
+The primary renderer is **Three.js r180**, with indexed Blender meshes, instanced world chunks, physically based standard/physical materials, Blender-baked normal and packed surface maps, image-based environment reflections, photographic cloud detail in its HDR sky, alpha-tested wind-animated foliage, throttled directional soft shadows, contact shadows, interior lighting, ACES tone mapping and a separate first-person weapon scene. Original animated joints drive merged Blender weapon cores; attachments and sights keep their existing transforms. Shared geometry and distance-based near/far meshes bound detail. Effects use bounded pools. A simpler textured Canvas2D compatibility renderer runs the same simulation with the original geometry if WebGL2 cannot initialise. Both paths use the same true 4× scope projection and remove the viewmodel from the scope's clear sight picture.
 
 Rendering targets a saved 60 or 30 frames per second during combat, 30 in the menu and 10 while paused. Deadline pacing preserves the requested average across different display refresh rates. Automatic quality and dynamic render scaling reduce cost; shadows update at 15, 24 or 30 Hz according to quality. The fixed 60 Hz gameplay simulation is independent of display refresh. AI updates are throttled, navigation is baked per map, geometry is batched, and generated audio buffers are reused. Backgrounding pauses the match and audio. Low, Medium, High and Ultra quality options are available. See [graphics systems, budgets and profiling](docs/GRAPHICS.md).
 
-These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. Release 44 was checked with headless gameplay, input, rendering-scene and application-lifecycle regressions. The available browser blocks the local preview. The high-quality shader path, actual iPhone GPU and thermal behaviour, safe-area values from physical devices, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
+These are performance budgets and engineering measures, **not measured iPhone frame-rate guarantees**. Release 49 was checked with headless gameplay/input regressions, actual Blender buffers and shader compilation. Chromium software WebGL2 provides rendered-frame checks; actual iPhone GPU and thermal behaviour, physical safe-area values, spatial audio perception, motion sensors and controllers require hardware testing. The compatibility renderer does not reproduce the WebGL lighting and effects.
 
-Visuals use original procedural 3D geometry with rounded weapon parts, hollow optics, detailed hand and character models, authored map dressing, continuous biome-tinted distant terrain, layered desert outcrops, dense arid grass and animated harbour shore wash. Four original generated texture atlases/environment images supply material detail. Asset prompts are included in `dist/assets/asset-prompts.json`; no reference-game assets are shipped. Audio is original synthesis. They are replaceable through the geometry, material and audio modules. This release does not include photoreal production character assets, motion-captured animation, native iOS haptics or online network multiplayer. Vibration is optional and only runs where the browser implements it.
+Visuals use original Blender mesh assets with manufactured bevels, shaped operator equipment, hollow optics, ribbed cargo, framed crates, curved foliage and biome-tinted eroded terrain. Four original albedo/foliage/environment images are retained, with four new 1024 px Blender-baked normal and surface atlases. Asset prompts are included in `dist/assets/asset-prompts.json`; no reference-game assets are shipped. Audio is original synthesis. This is a complete asset-pipeline replacement, but it does not establish commercial AAA fidelity, photoreal production characters, motion-captured animation or verified iPhone frame rate. Vibration is optional where the browser implements it.
 
 ## Architecture
 
@@ -159,6 +174,8 @@ Visuals use original procedural 3D geometry with rounded weapon parts, hollow op
 | `maps.js`, `navigation.js`, `spawns.js` | Authored worlds, collision, connected spawn pockets, threat scoring and A* routes |
 | `ai.js` | Perception, tactics, movement and bot actions |
 | `three-renderer.js` | Three.js scene, physical materials, lighting, batched geometry and pooled effects |
+| `blender-assets.js`, `blender-material.js` | Packaged mesh loading, existing-rig bindings, near/far geometry and per-vertex PBR properties |
+| `authoring/blender/`, `scripts/build-blender-assets.mjs` | Editable Blender source, native mesh construction, baking and lossless export |
 | `weapon-models.js`, `geometry.js`, `meshes.js` | Distinct firearm mechanisms, animated hands, actors and geometry |
 | `combat-identity.js` | Player-relative ally/enemy uniforms, labels and visibility rules |
 | `boot.js`, `sw.js` | Complete-release installation before importing the game |
@@ -176,11 +193,12 @@ Input commands and simulation events are separated from presentation. This provi
 ```sh
 npm test
 npm run check
+npm run profile:blender
 ```
 
 The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all ten maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
 
-Browser checks exercised launch, loadout persistence, deployment, touch actions, pause, match completion, results, restart, menu return and the layout editor. Layouts were inspected at 667 × 375, 844 × 390 and 932 × 430; switching to 390 × 844 displayed the rotation guard. These checks used compatibility graphics. The final revision’s browser recheck was blocked by the cloud browser URL policy; the final 48-test regression suite and static validation passed. Additional simulations reached completed TDM, Sabotage and Domination matches on Foundry, Dustline and Relay.
+Earlier browser checks exercised launch, loadout persistence, deployment, touch actions, pause, match completion, results, restart, menu return and the layout editor using compatibility graphics. Release 49 uses an additional real WebGL2 browser pass at 932 × 430. See [current graphics validation and limits](docs/GRAPHICS.md) for evidence and device-testing gaps.
 
 Tap the BREACHLINE logo five times quickly, or press F3, to open developer tools. They provide god mode, unlimited ammo, unlock everything, spawn enemy, FPS / position / active actor overlay and restart. Normal progression does not prevent testing the full arsenal.
 

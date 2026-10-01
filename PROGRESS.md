@@ -347,3 +347,51 @@ Player flight retains launch momentum on stick release and approaches air steeri
 Closed elliptical torso and limb profiles replace rectangular operator sections. Shared smooth-normal geometry keeps limbs at 48 triangles apiece. Three-dimensional joint IK follows local sideways or reverse movement, with flight tuck and connected knees. Both renderers share the same anatomy and cached component objects.
 
 Release 48 verification: 233/233 regressions, 54-module packaged/offline checks and all 13 GLSL ES compile/link variants pass. Four exact-mesh operator poses were visually inspected in a CPU geometry preview. Container actor update medians are 0.190–0.235 ms across 15 maps, with no concurrent test load. This preview is not an in-game rendered frame, and physical iPhone frame timing remains unmeasured.
+
+## Release 49: Blender-authored graphics
+
+The primary Three.js renderer now consumes an original Blender mesh library for
+all 30 weapon cores, shared architecture and props, operator components,
+vegetation and all 15 maps' terrain/harbour presentation. Native bevels and
+weighted normals replace hard-edge primitive outlines. Framed crates, ribbed
+cargo, shaped helmets/boots/equipment and eroded biome terrain add surface and
+silhouette detail. Vertex AO and four native Cycles normal/ORM atlas bakes
+replace normals inferred from albedo in the primary renderer. The sky's HDR
+texture uses linear filtering to remove magnified pixel blocks.
+
+Weapon components merge by their existing animation tag, with per-vertex base
+colour, roughness and metalness. Original attachment parts, sights, muzzle
+alignment, reload joints and hand poses remain authoritative. Indexed near/far
+geometry, shared materials, existing instancing and quarter-second world LOD
+selection keep detail bounded. No extra post-processing pass is added.
+
+The compressed library and four new textures total 6.84 MiB. The default rifle
+falls from 12 to 10 draw batches and from 15,720 to 12,372 triangles; all 30
+default weapons reduce both in the asset fixture. Seeded map scenes use 72–169
+world batches before frustum culling. These are CPU/scene counts rather than
+iPhone performance measurements. The editable `.blend`, packed images, source
+builder and rig extraction/export scripts are committed with rebuild instructions.
+
+Gameplay and map topology retain Release 48 behaviour. The Canvas compatibility
+path remains available with original geometry. Complete offline installation
+includes the Blender assets and native/fallback lossless gzip decoding.
+
+Release 49 verification: 238/238 regressions, 58-module packaged/offline checks,
+all-map real-asset collision/rig checks and 23/23 Mesa GLSL ES compile/link
+variants pass. Chromium software WebGL2 provides real rendered-frame checks.
+Six representative maps deploy without browser errors, and the complete 99-file
+offline cache successfully deploys with the network disabled. Exact source
+comparisons confirm 30 gameplay/input/map/audio/save modules are unchanged
+apart from release identifiers. Browser and source evidence are saved in
+`docs/validation-release49-browser.json` and `docs/validation-release49-gameplay.json`.
+Physical iPhone FPS, thermal endurance and commercial AAA visual fidelity remain
+unverified. Raw counts are in `docs/profile-release49-blender.json`.
+
+Final source validation reopens the saved Blender project and confirms all eight
+original and baked images are packed and retained. The builder gives these
+images persistent users, so subsequent saves keep them available for editing.
+Lossless segments restore the complete source project and runtime assets;
+unused segments are removed when rebuilding a smaller export. The packaged
+runtime bytes remain identical after the source fix. Fresh checks pass all 238
+regressions, 58 JavaScript modules, 23 shader variants and the 99-file offline
+installation. Source evidence is in `docs/validation-release49-source.json`.

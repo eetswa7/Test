@@ -1,0 +1,47 @@
+{
+  "generator": "4.0.2",
+  "meshDataBlocks": 171,
+  "images": [
+    {
+      "name": "foliage-atlas.webp",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "horizon.webp",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "surfaces-atlas.webp",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "surfaces-normal.png",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "surfaces-orm",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "weapon-finishes.webp",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "weapons-normal.png",
+      "packed": true,
+      "retained": true
+    },
+    {
+      "name": "weapons-orm",
+      "packed": true,
+      "retained": true
+    }
+  ],
+  "textBlocks": []
+}

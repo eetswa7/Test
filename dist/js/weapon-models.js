@@ -377,8 +377,8 @@ function addHands(b,w){
  }
 }
 export function weaponModel(w){
- const b=builder(w);(BUILDERS[w.def.id]??kestrel)(b);addOptic(b,w);addMuzzle(b,w);addAttachments(b,w);addHands(b,w);
- const p=b.parts;p.weaponId=w.def.id;p.muzzle=muzzlePosition(w);p.animated=[];
+ const b=builder(w);(BUILDERS[w.def.id]??kestrel)(b);const coreCount=b.parts.length;addOptic(b,w);addMuzzle(b,w);addAttachments(b,w);addHands(b,w);
+ const p=b.parts;p.coreCount=coreCount;p.weaponId=w.def.id;p.muzzle=muzzlePosition(w);p.animated=[];
  // Give textured finishes the same small material palette on every weapon.
  for(const q of p)if(q.finishTile!==undefined)q.finishTile=Math.round(q.finishTile);
  for(let i=0;i<p.length;i++){const q=p[i];if(q.tag){q.baseX=q.x;q.baseY=q.y;q.baseZ=q.z;q.baseYaw=q.yaw;q.basePitch=q.pitch;q.baseRoll=q.roll;p.animated.push(i);}}

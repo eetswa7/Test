@@ -2,3 +2,10 @@ node_modules/
 .DS_Store
 test-results/
 *.tar.gz
+authoring/blender/*.blend1
+authoring/blender/*.blend2
+dist/assets/blender/breachline-library.glb
+dist/assets/blender/breachline-library.glb.gz
+dist/assets/blender/*.png
+authoring/blender/breachline-assets.blend
+authoring/blender/rig-input.json

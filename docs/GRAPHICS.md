@@ -1,22 +1,86 @@
-# Current checkpoint: Release 44
+# Current checkpoint: Release 49
 
-Current content: 24 weapons, 13 maps and 10 modes. Low-cover vaulting, coalesced
-pointer tracking and a static ray broadphase accompany the newer lighting,
-materials and map dressing. See the Release 42–44 entries in `PROGRESS.md`.
+Current content remains 30 weapons, 15 maps and 11 modes. Blender now supplies
+the primary renderer's complete shared mesh kit, merged weapon cores, operator
+equipment, vegetation and map-specific terrain. Three.js r180 remains the Safari
+runtime. The original simulation, collision, controls, sound and save systems
+retain their Release 48 behaviour. The Canvas compatibility renderer keeps the
+previous geometry and the same simulation.
 
-Combat can use a saved 60 or 30 FPS cap. A running deadline avoids refresh-rate
-aliasing, while simulation remains fixed at 60 Hz. Automatic quality evaluates
-CPU, GPU and frame times against the selected frame budget and ignores warmup,
-menus, pauses and background gaps. Texture uploads yield during loading;
-match preparation compiles full actors and both equipped weapon slots before
-activating controls. No additional render target or full-screen pass was added.
+## Blender graphics pipeline
 
-`profile-release44-pacing.json` compares accepted frames using synthetic display
-timestamps. It is not a GPU/device benchmark. `profile-release42-rays.json`
-measures broadphase candidate reductions; `profile-release43.json` records scene
-counts for all 13 maps. Those CPU fixtures do not measure physical iPhone FPS.
+Restore the editable `.blend` with `npm run source:blender`.
+See [source and rebuild instructions](../authoring/blender/README.md). Native
+Blender bevels, weighted face normals, deterministic vertex AO and Cycles CPU
+texture baking produce indexed near/far meshes and four 1024 px normal/ORM
+atlases. Weapon roughness and metalness remain per vertex after core components
+are merged by their existing moving-joint tags. Original optic, barrel attachment,
+muzzle and hand animation contracts remain in use. The visible sky now uses
+linear filtering rather than magnifying individual HDR texels.
 
-The following system documentation describes the established graphics pipeline.
+| Current asset budget | Measured value |
+| --- | ---: |
+| Exported indexed meshes | 169 |
+| New download, compressed GLB and four baked atlases | 7,167,330 bytes (6.84 MiB) |
+| Raw GLB before lossless compression | 27,189,264 bytes (25.93 MiB) |
+| Default rifle draw batches, previous → Blender | 12 → 10 |
+| Default rifle submitted triangles, previous → Blender | 15,720 → 12,372 |
+| All-map world batches before frustum culling | 72–169 |
+| Additional full-screen render passes | 0 |
+
+[Full scene counts](profile-release49-blender.json) cover all 30 weapons and 15
+maps using the real exported buffers. Every default weapon reduces both draws
+and submitted triangles in this fixture. Maps retain collision and layout;
+authored surface geometry changes their scene counts. The all-map world batch
+range includes small indoor maps and the two expanded battlefields. These counts
+do not measure fill rate, shadow cost, driver allocations or device frame rate.
+
+World meshes share materials and instance batches. Near/far changes run at most
+four times per second, use hysteresis and retain conservative batch bounds.
+Operator detail follows the existing FOV-aware LOD. World/weapon atlas tiles stay
+at 256/512 px, with mipmaps; PNG/gzip are transfer formats, not GPU compression.
+Decoded texture storage remains approximately 40.6 MiB in the browser fixture.
+The raw asset buffer and loaded geometry also consume memory. Native gzip
+decompression has a vendored local fallback for browsers without that API.
+Every asset and decoder is included in the atomic Release 49 offline shell.
+
+Combat still offers saved 60/30 FPS caps, a fixed 60 Hz simulation, dynamic render
+scaling and measured quality reductions. Texture uploads yield during startup;
+match preparation compiles actors and both weapon slots before controls activate.
+The existing shadow cadence, indirect field, PMREM, contact shadows and ACES
+presentation remain in use.
+
+## Release 49 verification
+
+238/238 regressions and static/package checks for 57 JavaScript modules pass.
+Real-asset tests inspect finite geometry, indices, baked colour and material
+attributes, all map collision invariants, all 30 weapon cores with attachment
+variations, moving joints, lossless gzip fallback and offline asset hashes.
+23 original/Blender GLSL ES material variants compile and link in Mesa.
+
+For repeatable asset counts and optional Linux shader validation:
+
+```sh
+npm test
+npm run check
+npm run profile:blender
+node scripts/export-shader-check.mjs > /tmp/breachline-shaders.json
+python3 scripts/check-shaders.py /tmp/breachline-shaders.json
+```
+
+The renderer is checked using Chromium 153 with software WebGL2 at a 932 × 430
+touch viewport. [Browser results](validation-release49-browser.json) cover urban,
+harbour, alpine, rainy and expanded maps, scope/reload rendering and deployment
+after disabling the network. All 73 offline files are cached and no runtime
+errors are reported. [Source comparisons](validation-release49-gameplay.json)
+confirm 30 gameplay, map, input, sound and save modules remain identical after
+normalising release URLs. Software rendering verifies shader execution and asset loading;
+it cannot establish native iPhone FPS or thermal behaviour. Physical Safari/PWA,
+touch ergonomics, context recovery, sensors and controller hardware still need
+device testing. The asset pipeline is fully implemented, but the art remains
+stylised and does not establish commercial AAA fidelity.
+
+The following release entries and baseline measurements are historical context.
 
 # BREACHLINE graphics
 
@@ -119,9 +183,9 @@ Presentation uses native MSAA plus ACES filmic tone mapping and sRGB output in t
 
 ## Asset and backend decisions
 
-The current original assets are procedural geometry with WebP atlases. WebP reduces download size; decoded Canvas/DataTextures are **not GPU-compressed textures**. Hero finishes use 512 px tiles and ordinary surfaces use 256 px tiles, with mipmaps. There are no 4K material allocations. Existing models avoid runtime loader/decoder dependencies and share geometry/material batches.
+Release 49 uses Blender-authored indexed GLB geometry with WebP albedo and PNG baked atlases. Transfer compression reduces downloads; decoded Canvas/DataTextures are **not GPU-compressed textures**. Hero finishes use 512 px tiles and ordinary surfaces use 256 px tiles, with mipmaps. There are no 4K material allocations. The packaged loader reads the exact static mesh subset needed by the existing rig and shares geometry/material batches.
 
-For a future authored asset replacement, prefer GLB with metre units, consistent tangent space, shared PBR materials, baked-light UVs and LOD meshes. Use Meshopt when geometry savings justify decode work; package KTX2/Basis and its decoder locally and test ASTC transcoding on Safari. [Three's KTX2 loader](https://threejs.org/docs/pages/KTX2Loader.html) supports renderer capability detection. No unused decoder, unvalidated replacement asset, or claim of GPU compression is added in this release.
+The authored replacement uses metre-unit GLB, shared PBR materials, baked vertex occlusion and near/far geometry. Lossless gzip reduces the current geometry download without a geometry-extension decoder. Meshopt and KTX2/Basis remain possible later optimisations after device measurements justify their decode/transcode work. [Three's KTX2 loader](https://threejs.org/docs/pages/KTX2Loader.html) supports renderer capability detection. No ASTC or GPU-compression claim is made for the current PNG/WebP assets.
 
 [WebGPURenderer](https://threejs.org/docs/pages/WebGPURenderer.html) can select WebGPU with a WebGL2 backend fallback. It is not a drop-in replacement for this renderer: [Material.onBeforeCompile](https://threejs.org/docs/pages/Material.html#onBeforeCompile) is specific to WebGLRenderer. The material, light-field, leaf/depth and particle patches need Node Material/TSL equivalents, as do the new procedural decals. That port would need side-by-side image and timing checks on supported iPhones. `render-pipeline.js` records capability exposure, and the extracted systems isolate the porting work. WebGPU is **not enabled** merely because `navigator.gpu` exists. The current WebGL2 and Canvas compatibility paths remain reliable fallbacks.
 

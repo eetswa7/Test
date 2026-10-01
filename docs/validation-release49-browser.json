@@ -1,0 +1,56 @@
+{
+  "scope": "Chromium 153 WebGL2 software rendering at 932 x 430 touch viewport. This does not measure iPhone FPS.",
+  "boot": {
+    "meshes": 169,
+    "webgl2": true,
+    "programs": 15
+  },
+  "renderedMaps": [
+    0,
+    4,
+    8,
+    11,
+    13,
+    14
+  ],
+  "maps": [
+    {
+      "id": 4,
+      "worldBatches": 89,
+      "programs": 17
+    },
+    {
+      "id": 8,
+      "worldBatches": 157,
+      "programs": 17
+    },
+    {
+      "id": 11,
+      "worldBatches": 140,
+      "programs": 17
+    },
+    {
+      "id": 13,
+      "worldBatches": 169,
+      "programs": 17
+    },
+    {
+      "id": 14,
+      "worldBatches": 148,
+      "programs": 17
+    }
+  ],
+  "magnifiedScope": {
+    "visible": true,
+    "scenes": [
+      "world"
+    ]
+  },
+  "scopedAndReloadedWeapon": 7,
+  "offline": {
+    "release": 49,
+    "cachedFiles": 99,
+    "networkDisabledDeployment": true
+  },
+  "errors": []
+}

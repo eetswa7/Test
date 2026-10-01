@@ -1,0 +1,156 @@
+{
+  "baseCommit": "016ac9381ba0d5df1eeffca91952d33d99bdcb21",
+  "scope": "Exact source comparison, ignoring release import URL identifiers and the boot release constant. Visual geometry/material modules are evaluated by real-asset regression tests.",
+  "preservedModules": [
+    {
+      "path": "dist/js/actor-pose.js",
+      "normalisedSha256": "6f98f77a832913dd0bb72127d1eb0da4f3519e7cab21dfc3fc35f2324ddad215",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/ai.js",
+      "normalisedSha256": "7a05e23dfa2f37cc746d44d2f11139c03c82e438829c07e9ba7315bed762ed50",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/aim-assist.js",
+      "normalisedSha256": "e5bd6c5dbf5a49fa21c7388377778fd505fdbeab08aca7405448e91c684ccfc1",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/aim.js",
+      "normalisedSha256": "ad0268229113b0a4299dc1f63554e2d8a978bcbb9e529b34eb1014c69f3a422c",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/audio.js",
+      "normalisedSha256": "0d876bbcdf716aa4ee714ff9d81d5bbd658115baf75d8faeab183cc96174ceac",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/ballistics.js",
+      "normalisedSha256": "725810744f4b3e55dd28f93769878ddd1cbeb571acc5a39448fe92c3257da9fc",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/battlegrounds.js",
+      "normalisedSha256": "5b74bfb1fc5bdbea01fb5561ed8d544242904b320214ab9e7b09b5026bf19409",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/boot.js",
+      "normalisedSha256": "3582ef54a18557c3ec73c1c489008836421db1db7d7c4edbd734e08c67f1963e",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/combat-identity.js",
+      "normalisedSha256": "08deede98eb4b11853abdfab36663b8a9129657c3d957682d2551366974e03db",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/engine.js",
+      "normalisedSha256": "b91d08e38c89af02be19ad67bfce6eaab926ecd4e151b4888360d5287b5f5054",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/frame-pacer.js",
+      "normalisedSha256": "2ea2d813159e42d1aa357468d408f0d37060167423eeb8ae4fd6f03d5060cb43",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/gamepad.js",
+      "normalisedSha256": "45da68c51caa3594575c99f2b240a60487d3486040703eeca24565a1e3b1d5c9",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/geometry.js",
+      "normalisedSha256": "286492eacecb2bb66b3ea7df8bc2ec24a57e9b998ad4446e215832068c31324f",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/input.js",
+      "normalisedSha256": "60e8943ff296c2ed7ef3cf18d1dcbf2a1c7cf683562b82b2cde416618b588176",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/main.js",
+      "normalisedSha256": "e65809e30b0c8a64d6b025bc3586940aff6f5665a47f71f794f568c55da3c238",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/maps.js",
+      "normalisedSha256": "32fab3ebd49273c87357715f0350d61a1e948e8824224e2585bddf05025e9d52",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/math.js",
+      "normalisedSha256": "fbfda73463c46140efcdc2c8ec553230bb4a91c9b271f0b8903f942da1db750a",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/modes.js",
+      "normalisedSha256": "ee43f1c943b62d254b097ec240d55ac757d070373fdd1c703fbfea5ded942120",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/navigation.js",
+      "normalisedSha256": "482400da1564bdf8fe4b0734257db735e21fbf7169202a5e7a1330e221dc77d0",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/operator-detail.js",
+      "normalisedSha256": "398d48cd2037b6745d2e6ad742f00a17704dec43841ce72eb9c897530a464ad1",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/operator-meshes.js",
+      "normalisedSha256": "c1264467a86d02b0354bf0326c06d16f8ba43faada6199049d2b0cac561a513f",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/ray-grid.js",
+      "normalisedSha256": "56e1167ebbe97aa5eeb315e6e3fcb9189d4fff3c38f27b235724fb4942941116",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/save.js",
+      "normalisedSha256": "c474bdcce8bd8b5f714fc8645ad6b92815f5ba593bf244f5815e709867e6952b",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/spawns.js",
+      "normalisedSha256": "208b51d3ecca6564bfa7429a3c7ea3dd3bc4c6c1f319406513fa7ee24047da0e",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/surface-placement.js",
+      "normalisedSha256": "1566e699f89c470cf672dcb6165fc374d5f900af0c62c95172db0ee6b12b6143",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/traversal.js",
+      "normalisedSha256": "7713769d9317139c756105617a92a3ab6b49f9f32e100cf2fbde738078723730",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/ui.js",
+      "normalisedSha256": "8abb795bed4fcf72707c7f4408e45db65a65f7ad67b3b231f2d0bc13c2077a66",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/weapon-clearance.js",
+      "normalisedSha256": "98647578a5efaf4f1de19aa49ec08768eb9f7866f978500b3af9b5d252abc5d3",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/weapons.js",
+      "normalisedSha256": "65902d476309d50c3e7b3447b1afdfcc37965ad638d1ceb5be116fefe3a683e0",
+      "unchangedExceptReleaseIdentifiers": true
+    },
+    {
+      "path": "dist/js/world-detail.js",
+      "normalisedSha256": "8f1517b8ee8b68b28946069920c1df4b6b99ae5a34801638b7c245ec87adc50f",
+      "unchangedExceptReleaseIdentifiers": true
+    }
+  ]
+}

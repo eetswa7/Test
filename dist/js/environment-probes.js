@@ -31,6 +31,7 @@ export class EnvironmentProbes {
   setArena(info){
     const {pixels,width,height}=environmentRadiance(info,512,256,this.clouds);
     const texture=new THREE.DataTexture(pixels,width,height,THREE.RGBAFormat,THREE.HalfFloatType);
+    texture.minFilter=texture.magFilter=THREE.LinearFilter;
     texture.mapping=THREE.EquirectangularReflectionMapping;texture.colorSpace=THREE.LinearSRGBColorSpace;texture.needsUpdate=true;
     const target=this.generator.fromEquirectangular(texture);this.sky?.dispose();this.sky=texture;this.target?.dispose();this.target=target;
     const room=interiorRadiance();

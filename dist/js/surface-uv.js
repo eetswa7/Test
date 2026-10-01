@@ -7,7 +7,11 @@ export function installMetricUV(geometry,kind){
  const rounded=kind.startsWith('bevel'),box=rounded||kind==='cube';
  for(let i=0;i<count;i++){
   let a,b;
-  if(kind==='surface'){a=[1,0,0];b=[0,0,1];}
+  if(kind==='authored'){
+   const nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i)),nz=Math.abs(n.getZ(i));
+   [a,b]=ny>=nx&&ny>=nz?[[1,0,0],[0,0,1]]:nx>=nz?[[0,0,1],[0,1,0]]:[[1,0,0],[0,1,0]];
+  }
+  else if(kind==='surface'){a=[1,0,0];b=[0,0,1];}
   else if(box){const face=Math.floor(i/(count/6));[a,b]=face<2?[[0,0,1],[0,1,0]]:face<4?[[1,0,0],[0,0,1]]:[[1,0,0],[0,1,0]];}
   else if(kind==='sphere'){a=[Math.PI,0,0];b=[0,Math.PI/2,0];}
   else if(kind==='cylinder'||kind==='tube'||kind==='operatorTorso'||kind==='operatorLimb'){[a,b]=Math.abs(n.getY(i))>.9?[[1,0,0],[0,0,1]]:[[Math.PI,0,0],[0,1,0]];}
