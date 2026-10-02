@@ -1,3 +1,33 @@
+# Release 54: Nuketown recreation and lower combat allocation cost
+
+- Added the two houses with open interiors, stairs and balconies, back gardens,
+  school bus, open moving truck, cul-de-sac and flanking paths. Collision-safe
+  objectives and starts connect to both upper floors and the truck cargo area.
+  This is a handcrafted recreation with approximate dimensions and existing
+  Blender assets, not a verified exact Call of Duty map port.
+- Retained the existing asset download by reusing the Blender kit and desert
+  landscape. Authored dressing stays within 340 colliders and 1,400 decor items;
+  the new map uses 126 world batches in the browser fixture.
+- A* reuses typed-array heap storage and generation-stamped search buffers;
+  its search budget counts expanded nodes rather than duplicate heap pops.
+  Map-specific grid spacing and tread construction connect the compact stairs.
+- Bullet traces reuse exact hitboxes, with a conservative horizontal broadphase;
+  close-actor avoidance also rejects distant actors before distance calculations.
+  Long-barrel sniper traces now reach targets beyond the original 140 m cap.
+- Gun Game bot engagement distance follows the current gun. The two huge maps
+  get 22.5 minutes so the complete 29-firearm ladder can finish across their lanes.
+- Fixed-seed CPU profiles retain 471 route requests per map and the same shots
+  (571/426). Median 2,400-step simulation times: Crossfire 196.4 to 174.5 ms,
+  Blacksite 173.2 to 170.0 ms. Search expansions fall from 51,465 to 43,919 and
+  102,620 to 72,405. Container CPU measurements do not establish iPhone FPS.
+- Final verification: 255 tests passed; 62 JavaScript modules, geometry, assets,
+  manifest and complete Release 54 offline shell pass static checks. Software
+  WebGL2 rendered all 16 maps and 31 attachment options with no errors. The
+  actual loadout displays effects, the huge-map menu shows 8 vs 8, and Nuketown
+  deploys through the normal menu with service-worker installation enabled.
+- Release 53 was saved to GitHub main as
+  a31198ce51ada95b581648cb27307011ba4f7267 and its Pages deployment succeeded.
+
 # Release 53: gun finale, impactful attachments and 8 vs 8
 
 - Gun Game now advances through 29 unique firearms and ends on the Krait R.

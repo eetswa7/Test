@@ -1,0 +1,128 @@
+{
+  "release": 54,
+  "date": "2026-10-02",
+  "automated": {
+    "tests": 255,
+    "passed": 255,
+    "failed": 0,
+    "javascriptModulesValidated": 62,
+    "checks": [
+      "geometry winding",
+      "local imports and assets",
+      "Home Screen manifest",
+      "complete offline shell"
+    ]
+  },
+  "content": {
+    "weaponsIncludingBlade": 30,
+    "gunGameFirearmStages": 29,
+    "gunGameFinalWeapon": "Krait R",
+    "maps": 16,
+    "modes": 11,
+    "attachmentSlots": 5,
+    "attachmentOptions": 31,
+    "largeMapTeamSize": 8
+  },
+  "mapValidation": {
+    "map": "NUKETOWN",
+    "routes": [
+      "all starting spawns",
+      "three objectives",
+      "both house upper floors",
+      "both rear balconies",
+      "truck cargo area"
+    ],
+    "bots": [
+      "team deathmatch",
+      "gun game",
+      "domination",
+      "elimination",
+      "capture the flag"
+    ],
+    "geometryBudgets": {
+      "colliders": 340,
+      "decor": 1400
+    },
+    "limitation": "Handcrafted recreation with approximate dimensions and existing Blender kit, not a verified exact Call of Duty map port."
+  },
+  "performance": {
+    "method": "Node CPU simulation, fixed seed 441, 16 actors, 300 warmup updates then 2400 measured updates at 1/60; five repetitions, median wall time. Baseline is Release 53.",
+    "baselineLocalCommit": "d6edabc",
+    "before": {
+      "environment": "Node simulation CPU only, fixed seeds and 16 actors; not iPhone FPS",
+      "results": [
+        {
+          "map": "CROSSFIRE DISTRICT",
+          "actors": 16,
+          "steps": 2400,
+          "medianMilliseconds": 196.40112599999998,
+          "runs": [
+            361.29751799999997,
+            280.77979300000004,
+            191.7997089999999,
+            174.75474899999995,
+            196.40112599999998
+          ],
+          "paths": 471,
+          "expansions": 51465,
+          "shots": 571
+        },
+        {
+          "map": "BLACKSITE",
+          "actors": 16,
+          "steps": 2400,
+          "medianMilliseconds": 173.18114300000025,
+          "runs": [
+            189.01155500000004,
+            205.72021099999984,
+            172.59604800000034,
+            171.18937099999994,
+            173.18114300000025
+          ],
+          "paths": 471,
+          "expansions": 102620,
+          "shots": 426
+        }
+      ]
+    },
+    "after": {
+      "environment": "Node simulation CPU only, fixed seeds and 16 actors; not iPhone FPS",
+      "results": [
+        {
+          "map": "CROSSFIRE DISTRICT",
+          "actors": 16,
+          "steps": 2400,
+          "medianMilliseconds": 174.51297399999999,
+          "runs": [
+            275.73287999999997,
+            215.48966099999996,
+            174.51297399999999,
+            162.00584500000014,
+            158.31212600000003
+          ],
+          "paths": 471,
+          "expansions": 43919,
+          "shots": 571
+        },
+        {
+          "map": "BLACKSITE",
+          "actors": 16,
+          "steps": 2400,
+          "medianMilliseconds": 170.04491899999994,
+          "runs": [
+            177.169809,
+            173.00905300000022,
+            170.04491899999994,
+            145.93812499999967,
+            151.64329700000008
+          ],
+          "paths": 471,
+          "expansions": 72405,
+          "shots": 426
+        }
+      ]
+    },
+    "limitation": "Container CPU timing only. No physical iPhone frame-rate or thermal measurement."
+  },
+  "browserReport": "validation-release54-browser.json"
+}

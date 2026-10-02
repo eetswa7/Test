@@ -1,6 +1,25 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 53.** 30 weapons, 15 maps and 11 modes.
+**Latest checkpoint: Release 54.** 30 weapons, 16 maps and 11 modes.
+
+Release 54 adds a playable Nuketown recreation with two accessible two-storey
+houses, rear yards and balconies, the school bus, an open moving truck and
+cul-de-sac flanks. It uses the existing Blender kit; dimensions and artwork are
+an approximation, not a verified exact port of Call of Duty's map. All modes
+share the authored collision and navigation routes.
+
+Navigation now reuses a typed-array heap and generation-stamped search buffers.
+Bullet hit testing reuses exact hitboxes and rejects distant actors before the
+narrowphase. The fixed-seed 16-actor CPU fixture preserves shots and route
+requests while reducing route expansions. Measured medians changed from
+196.4 to 174.5 ms on Crossfire District and 173.2 to 170.0 ms on Blacksite;
+these are container simulation timings, not device FPS.
+
+Release 54 verification: 255/255 regressions and 62-module packaged/offline
+checks pass. Software WebGL2 rendered all 16 maps and 31 attachment options
+without errors, and the actual menu deployed the new map. Measurements are in
+[docs/validation-release54.json](docs/validation-release54.json) and
+[docs/validation-release54-browser.json](docs/validation-release54-browser.json).
 
 Release 53 removes the knife from Gun Game: all 29 firearms progress to a final
 Krait R revolver elimination. The two expanded arenas now field 8 vs 8 in
@@ -9,10 +28,11 @@ visible build comparisons and actual effects on recoil, aim, movement, reloads,
 capacity, range, damage, penetration and the distance bots hear shots.
 
 Blender supplies the complete primary 3D library and nine visual texture atlases.
-This checkpoint adds shaped and ventilated weapons, merged animated hands,
+Release 52 added shaped and ventilated weapons, merged animated hands,
 operator gear, native facades and machinery, full tree crowns, and Blender-baked
 surfaces, foliage, sky and effects. The editable project contains all 15 level
-assemblies. Collision, controls, combat, modes, audio and saves are preserved.
+base level assemblies; the additional Nuketown runtime assembly reuses that
+library. Collision, controls, combat, modes, audio and saves are preserved.
 
 The complete runtime art download is about 10.92 MiB. The default rifle uses
 8 draw batches instead of 12 and 12,468 triangles instead of 15,720. These are
@@ -156,23 +176,34 @@ Eleven fully simulated player-versus-bot modes:
 
 | Mode | Rules |
 | --- | --- |
-| Team Deathmatch | 4 vs 4, 40 eliminations, respawns, 6-minute limit |
+| Team Deathmatch | 4 vs 4, 40 eliminations, respawns, 6-minute limit; 8 vs 8 on the two huge maps |
 | Free For All | Eight combatants, first to 20, respawns, 6-minute limit |
 | Sabotage | Plant at A or C, defend or defuse, one life per round, first to four rounds, teams switch sides every three rounds |
 | Domination | Capture and contest A, B and C, hold sites to reach 150 points |
-| Gun Game | One elimination advances the weapon, 30 stages ending with a blade kill |
+| Gun Game | One elimination advances the weapon, 29 firearms ending with the Krait R revolver; 15 minutes, or 22.5 on the huge maps |
 | Hardpoint | Rotate zones every 45 seconds; uncontested occupation scores towards 150 |
 | Kill Confirmed | Collect enemy tags for points, recover allied tags to deny; first to 30 |
 | Capture the Flag | Steal the enemy flag, carry it home while your flag is safe, return dropped allied flags; first to three captures |
 | King of the Hill | Free for all, exclusive occupation scores personal points, rotating zones; first to 75 |
-| Elimination | 4 vs 4, one life per round, first to five rounds; timeouts use survivors then remaining health, equal results draw |
+| Elimination | One life per round, first to five rounds; timeouts use survivors then remaining health, equal results draw |
 | Frontline | Capture successive sectors to push towards the enemy rear; defenders can reverse the line, with respawns behind the current sector |
 
-Fifteen battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline**, **Iron Quarry**, **Skybridge**, **Monsoon**, **Emberworks**, **Crossfire District** and **Blacksite**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give the newest maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
+All team modes use 8 vs 8 on Crossfire District and Blacksite, and 4 vs 4
+elsewhere. Free-for-all modes retain eight combatants.
+
+Sixteen battlegrounds: **Old Quarter**, **Foundry**, **Dustline**, **Relay**, **Breakwater**, **Citadel**, **Switchyard**, **Canopy**, **Frostline**, **Iron Quarry**, **Skybridge**, **Monsoon**, **Emberworks**, **Crossfire District**, **Blacksite** and **Nuketown**. Breakwater adds a harbour and drydock routes; Citadel adds a covered courtyard, comms tunnel and radar overlook; Switchyard adds freight crossings; Canopy connects forest cabins around a sheltered court; Frostline adds alpine patrol routes and a snowbound beacon; Iron Quarry adds stoneworks, conveyors and a low central crusher apron. Wind-driven snow and drifting grit give these maps their own weather; both rendering paths share the same quality-bounded effects, which clear under roofs. Synthesized snow-crunch and stone-grit footsteps follow each map's surface, while indoor footsteps stay hard-surfaced. Each map has authored routes, cover, objective sites, safe spawns, indoor and outdoor areas and navigable elevation changes.
 
 The arsenal contains 29 firearms and a field blade: rifles, SMGs, shotguns, snipers, marksman rifles, LMGs and sidearms. Options include burst rifles, rapid-fire and integrally suppressed SMGs, a drum-fed LMG, a revolver and an automatic pistol. Weapons have individual damage, cadence, recoil, spread, handling, ammo and procedural sound profiles. Shotguns use pellets and per-shell loading where appropriate. Gunplay includes head and limb multipliers, range falloff, material-aware penetration, ADS, recoil that changes actual aim, dry firing, interrupted reloads, viewmodel animations, impacts and kill feedback.
 
-Primary-weapon attachments change real stats: optics, suppressor, compensator, extended magazine, foregrip, laser and stock options. Frag, smoke and flash equipment are functional. Local career records XP, level, weapon XP, unlocked guns, results and statistics. Attachments are available immediately to keep loadout experimentation accessible.
+Five primary-weapon attachment slots offer 31 choices: optics, barrels, handling,
+magazines and ammunition. They change actual recoil, spread, magnification,
+movement, reloads, capacity, range, damage, cover penetration and bot hearing.
+The loadout shows build comparisons and trade-offs; crouched stationary bipods,
+shotgun chokes, quickdraw grips, drum magazines and specialised ammunition have
+distinct uses. Saved older attachment builds remain valid. Frag, smoke and flash
+equipment are functional. Local career records XP, level, weapon XP, unlocked
+guns, results and statistics. Attachments are available immediately to keep
+loadout experimentation accessible.
 
 Bots use sight and gunshot awareness, last-known positions, navigation, cover and flanking choices, bursts, reloads, range preferences, retreat, objective play and grenade use against visible enemies. They seek cover after a nearby miss and reposition when a teammate blocks their firing lane. Difficulty changes reaction, accuracy and aggression rather than health. Allies participate in objectives. Team modes disable friendly fire.
 
@@ -191,9 +222,9 @@ Visuals use original Blender mesh assets with manufactured bevels, shaped operat
 | Module | Responsibility |
 | --- | --- |
 | `engine.js` | Fixed-step simulation, actors, movement, damage, projectiles and match lifecycle |
-| `weapons.js` | Arsenal, attachment modifiers, reload and weapon state |
+| `weapons.js`, `attachments.js` | Arsenal, attachment profiles, reload and weapon state |
 | `modes.js` | Scoring, rounds, captures, planting, defusing and completion |
-| `maps.js`, `navigation.js`, `spawns.js` | Authored worlds, collision, connected spawn pockets, threat scoring and A* routes |
+| `maps.js`, `nuketown.js`, `navigation.js`, `spawns.js` | Authored worlds, collision, connected spawn pockets, threat scoring and A* routes |
 | `ai.js` | Perception, tactics, movement and bot actions |
 | `three-renderer.js` | Three.js scene, physical materials, lighting, batched geometry and pooled effects |
 | `blender-assets.js`, `blender-material.js` | Packaged mesh loading, existing-rig bindings, near/far geometry and per-vertex PBR properties |
@@ -216,9 +247,10 @@ Input commands and simulation events are separated from presentation. This provi
 npm test
 npm run check
 npm run profile:blender
+node scripts/profile-combat.mjs
 ```
 
-The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all map navigation and bot-driven Gun Game completion across all ten maps. New regressions cover clear 4× scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
+The regression suite covers ballistics, cover, attachments, ammunition, movement and stairs, simultaneous touch input, tap firing, ADS modes, cancellation, configurable layouts, grenades, death and respawns, every mode's completion conditions, saves, all 16 maps' navigation and bot-driven Gun Game completion. New regressions cover clear scopes and centred hits, combined aim/fire, ADS dragging, jump/crouch holds, semi-auto repeat and auto-reload, cancellation and finite controller input. Release 54 checks also cover all expanded team modes, attachment effects, Nuketown interiors and objectives, search-buffer rollover and 2,000 exact hitbox comparisons. The static check validates local module imports, packaged assets, mesh winding, complete offline shell and the landscape Home Screen manifest.
 
 Earlier browser checks exercised launch, loadout persistence, deployment, touch actions, pause, match completion, results, restart, menu return and the layout editor using compatibility graphics. Release 49 uses an additional real WebGL2 browser pass at 932 × 430. See [current graphics validation and limits](docs/GRAPHICS.md) for evidence and device-testing gaps.
 

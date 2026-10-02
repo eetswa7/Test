@@ -1,4 +1,4 @@
-import {rayBox,clamp} from './math.js?v=53';
+import {rayBox,clamp} from './math.js?v=54';
 
 const POWER={PISTOL:.38,SMG:.3,RIFLE:1,LMG:1.18,MARKSMAN:1.35,SNIPER:1.85,SHOTGUN:0,MELEE:0};
 const COVER={wood:{resistance:1.3,depth:.55},glass:{resistance:.45,depth:.18},plaster:{resistance:3.8,depth:.22},steel:{resistance:12,depth:.075},blue:{resistance:12,depth:.075},rust:{resistance:12,depth:.075},dark:{resistance:12,depth:.075}};
@@ -19,19 +19,25 @@ export function boxInterval(origin,dir,box){
  return exit<0?null:{entry:Math.max(0,entry),exit,incidence};
 }
 
+const hitBox={x:0,y:0,z:0,w:0,h:0,d:0};
 function actorHit(actors,shooter,origin,dir,limit){
  let target=null,part='body',t=limit;
+ const horizontal=dir.x*dir.x+dir.z*dir.z;
  for(const actor of actors){
   if(actor.dead||actor.id===shooter.id)continue;
+  const along=horizontal>1e-9?clamp(((actor.x-origin.x)*dir.x+(actor.z-origin.z)*dir.z)/horizontal,0,t):0;
+  if((origin.x+dir.x*along-actor.x)**2+(origin.z+dir.z*along-actor.z)**2>.58**2)continue;
   const h=actor.height;
-  for(const box of [{x:actor.x,y:actor.y+h-.16,z:actor.z,w:.36,h:.33,d:.36,part:'head'},{x:actor.x,y:actor.y+h*.57,z:actor.z,w:.55,h:h*.52,d:.38,part:'body'},{x:actor.x,y:actor.y+h*.2,z:actor.z,w:.43,h:h*.4,d:.36,part:'leg'}]){
-   const hit=rayBox(origin,dir,box,t);if(hit!==null&&hit<t){t=hit;target=actor;part=box.part;}
+  hitBox.x=actor.x;hitBox.z=actor.z;
+  for(let section=0;section<3;section++){
+   hitBox.y=actor.y+(section===0?h-.16:section===1?h*.57:h*.2);hitBox.w=section===0?.36:section===1?.55:.43;hitBox.h=section===0?.33:section===1?h*.52:h*.4;hitBox.d=section===0?.36:section===1?.38:.36;
+   const hit=rayBox(origin,dir,hitBox,t);if(hit!==null&&hit<t){t=hit;target=actor;part=section===0?'head':section===1?'body':'leg';}
   }
  }
  return {target,part,t};
 }
 
-export function traceBullet(arena,actors,shooter,origin,dir,weapon,limit=140){
+export function traceBullet(arena,actors,shooter,origin,dir,weapon,limit=Math.max(140,(weapon.range??100)*1.35)){
  const start=(POWER[weapon.def.kind]??0)*(weapon.penetration??1);
  let energy=start,travelled=0,current=origin,layers=0;
  const impacts=[];

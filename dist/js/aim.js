@@ -1,4 +1,4 @@
-import {clamp,lerp,angleDelta} from './math.js?v=53';
+import {clamp,lerp,angleDelta} from './math.js?v=54';
 
 // Rendering, HUD and input share the same optic definition. Never put an opaque
 // first-person scope model in front of the magnified world camera.

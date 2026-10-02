@@ -1,7 +1,8 @@
-import {rng,rayBox,distance,clamp} from './math.js?v=53';
-import {dressWorld} from './world-detail.js?v=53';
-import {RayGrid} from './ray-grid.js?v=53';
-import {buildDistrict,buildBlacksite} from './battlegrounds.js?v=53';
+import {rng,rayBox,distance,clamp} from './math.js?v=54';
+import {dressWorld} from './world-detail.js?v=54';
+import {RayGrid} from './ray-grid.js?v=54';
+import {buildDistrict,buildBlacksite} from './battlegrounds.js?v=54';
+import {buildNuketown} from './nuketown.js?v=54';
 export const MAPS=[
  {id:0,name:'OLD QUARTER',location:'Coastal city',size:32,weather:'sun',tag:'URBAN',description:'Market alleys, a central plaza and elevated terraces.',sky:[.47,.65,.76],fog:[.59,.66,.65],sun:[-.5,.8,.35]},
  {id:1,name:'FOUNDRY',location:'Industrial district',size:35,weather:'overcast',tag:'INDUSTRIAL',description:'Four loading entrances connect the machinery hall to covered freight lanes.',sky:[.27,.38,.48],fog:[.35,.43,.46],sun:[-.6,.7,-.3]},
@@ -17,7 +18,8 @@ export const MAPS=[
  {id:11,name:'MONSOON',location:'Tropical logistics terminal',size:42,weather:'rain',tag:'TROPICAL',description:'Rain-soaked freight lanes wrap a four-door depot and jungle maintenance huts.',sky:[.31,.43,.48],fog:[.41,.53,.54],sun:[.24,.9,-.32]},
  {id:12,name:'EMBERWORKS',location:'Copper processing district',size:41,weather:'sun',tag:'REFINERY',description:'Twin processing halls, tank farms and an accessible pipe-service catwalk.',sky:[.62,.57,.47],fog:[.72,.61,.48],sun:[-.71,.48,.51]},
  {id:13,teamSize:8,name:'CROSSFIRE DISTRICT',location:'Coastal financial quarter',size:60,weather:'sun',tag:'CITY',groundSurface:'asphalt',colliderBudget:260,decorBudget:1500,description:'A 120 m city district with open-window interiors, traffic cover and a 3.6 m overpass.',sky:[.48,.63,.74],fog:[.62,.68,.70],sun:[-.65,.75,.25]},
- {id:14,teamSize:8,name:'BLACKSITE',location:'Restricted power station',size:58,weather:'overcast',tag:'INDUSTRIAL',groundSurface:'asphalt',colliderBudget:230,decorBudget:1200,description:'A 116 m facility with a generator hall, four bunkers, raised service routes and cargo flanks.',sky:[.29,.40,.51],fog:[.40,.48,.53],sun:[.45,.76,-.3]}
+ {id:14,teamSize:8,name:'BLACKSITE',location:'Restricted power station',size:58,weather:'overcast',tag:'INDUSTRIAL',groundSurface:'asphalt',colliderBudget:230,decorBudget:1200,description:'A 116 m facility with a generator hall, four bunkers, raised service routes and cargo flanks.',sky:[.29,.40,.51],fog:[.40,.48,.53],sun:[.45,.76,-.3]},
+ {id:15,name:'NUKETOWN',location:'Nevada test neighbourhood',size:32,navigationStep:.75,ridgeTemplate:2,authoredDressing:true,groundSurface:'grass',colliderBudget:340,decorBudget:1400,weather:'sun',tag:'CLASSIC',description:'Classic Nuketown recreation: twin two-storey houses, garages, rear balconies, a school bus and an open moving truck.',sky:[.53,.69,.81],fog:[.68,.72,.68],sun:[-.45,.85,.34]}
 ];
 export const SURFACES={concrete:{color:[.45,.47,.45],rough:.92,metal:0,pattern:1},sand:{color:[.61,.51,.35],rough:1,metal:0,pattern:1},stone:{color:[.68,.61,.48],rough:.94,metal:0,pattern:2},steel:{color:[.22,.3,.31],rough:.55,metal:.7,pattern:3},rust:{color:[.39,.2,.13],rough:.88,metal:.08,pattern:3},wood:{color:[.39,.28,.16],rough:.9,metal:0,pattern:4},dark:{color:[.075,.095,.105],rough:.6,metal:.5,pattern:0},white:{color:[.78,.79,.7],rough:.88,metal:0,pattern:1},blue:{color:[.12,.29,.37],rough:.66,metal:.05,pattern:3},orange:{color:[.79,.32,.08],rough:.7,metal:.2,pattern:0},glass:{color:[.11,.24,.29],rough:.18,metal:.65,pattern:0},green:{color:[.2,.29,.18],rough:.88,metal:0,pattern:1}};
 const surfaceTexture={concrete:0,sand:6,stone:1,steel:8,rust:11,wood:10,dark:8,white:0,blue:8,orange:-1,glass:-1,green:9};
@@ -103,6 +105,7 @@ export class Arena {
   if(id===12)this.buildEmberworks();
   if(id===13)buildDistrict(this);
   if(id===14)buildBlacksite(this);
+  if(id===15){buildNuketown(this);return;}
   this.improveFlow();
   // Set dressing stays separate from collision; small breakables have their own hit state.
   for(let i=0;i<26;i++){let x=(this.random()-.5)*(s*2-5),z=(this.random()-.5)*(s*2-5);if(this.collides({x,y:0,z},.6,1.9))continue;this.detail(x,.012,z,.06+this.random()*.22,.025,.1+this.random()*.15,'dark',{yaw:this.random()*6.28});}
@@ -130,13 +133,14 @@ export class Arena {
  accessSteps(x,edge,width,height,dir=1){
   // Landings align with the baked 1.25 m navigation cells; short dense treads can
   // otherwise leave the bot's collision radius straddling two different heights.
-  const run=1.25,origin=-this.info.size+run/2,count=Math.ceil(height/.3),rise=height/count;
+  const run=this.info.navigationStep??1.25,origin=-this.info.size+run/2,count=Math.ceil(height/.3),rise=height/count;
   const last=origin+(dir>0?Math.floor((edge-.36-origin)/run):Math.ceil((edge+.36-origin)/run))*run;
   for(let i=0;i<count;i++){
    const h=(i+1)*rise,centre=last-dir*(count-1-i)*run;
-   const start=centre-dir*.635,end=i===count-1?edge+dir*.05:centre+dir*.635;
+   const start=centre-dir*(run/2+.01),end=i===count-1?edge+dir*.05:centre+dir*(run/2+.01);
    this.box(x,h/2,(start+end)/2,width,h,Math.abs(end-start),'concrete',{stair:true});
   }
+  return {last,run};
  }
  buildBreakwater(){
   // Three routes: the west cargo hall, the central slip and the east container lanes.
@@ -332,5 +336,5 @@ export class Arena {
   let t=limit,block=null;for(const b of this.blocks){if(b.destroyed||b===ignore)continue;const n=rayBox(o,d,b,t);if(n!==null&&n<t){t=n;block=b;}}return{t,block};
  }
  visible(a,b){const len=Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);if(len<.01)return true;return this.trace(a,{x:(b.x-a.x)/len,y:(b.y-a.y)/len,z:(b.z-a.z)/len},len).t>=len-.12;}
- indoors(p){return this.nearby(p).some(b=>!b.destroyed&&b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y);}
+ indoors(p){for(const b of this.nearby(p))if(!b.destroyed&&b.roof&&Math.abs(p.x-b.x)<b.w/2&&Math.abs(p.z-b.z)<b.d/2&&p.y<b.y)return true;return false;}
 }

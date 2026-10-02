@@ -1,0 +1,132 @@
+{
+  "errors": [],
+  "views": [
+    {
+      "name": "nuketown-street",
+      "draws": 224,
+      "triangles": 234938,
+      "batches": 126
+    },
+    {
+      "name": "nuketown-yard",
+      "draws": 144,
+      "triangles": 117798,
+      "batches": 126
+    },
+    {
+      "name": "nuketown-yellow",
+      "draws": 182,
+      "triangles": 163250,
+      "batches": 126
+    },
+    {
+      "name": "nuketown-upper",
+      "draws": 125,
+      "triangles": 102892,
+      "batches": 126
+    }
+  ],
+  "scope": "Software WebGL2 visual and functional checks, not iPhone FPS.",
+  "maps": [
+    {
+      "name": "OLD QUARTER",
+      "actors": 8,
+      "draws": 265,
+      "triangles": 274436
+    },
+    {
+      "name": "FOUNDRY",
+      "actors": 8,
+      "draws": 206,
+      "triangles": 180572
+    },
+    {
+      "name": "DUSTLINE",
+      "actors": 8,
+      "draws": 273,
+      "triangles": 220734
+    },
+    {
+      "name": "RELAY",
+      "actors": 8,
+      "draws": 275,
+      "triangles": 193510
+    },
+    {
+      "name": "BREAKWATER",
+      "actors": 8,
+      "draws": 217,
+      "triangles": 200132
+    },
+    {
+      "name": "CITADEL",
+      "actors": 8,
+      "draws": 271,
+      "triangles": 201250
+    },
+    {
+      "name": "SWITCHYARD",
+      "actors": 8,
+      "draws": 233,
+      "triangles": 197136
+    },
+    {
+      "name": "CANOPY",
+      "actors": 8,
+      "draws": 262,
+      "triangles": 190866
+    },
+    {
+      "name": "FROSTLINE",
+      "actors": 8,
+      "draws": 257,
+      "triangles": 217174
+    },
+    {
+      "name": "IRON QUARRY",
+      "actors": 8,
+      "draws": 274,
+      "triangles": 209164
+    },
+    {
+      "name": "SKYBRIDGE",
+      "actors": 8,
+      "draws": 265,
+      "triangles": 211418
+    },
+    {
+      "name": "MONSOON",
+      "actors": 8,
+      "draws": 258,
+      "triangles": 227116
+    },
+    {
+      "name": "EMBERWORKS",
+      "actors": 8,
+      "draws": 284,
+      "triangles": 189484
+    },
+    {
+      "name": "CROSSFIRE DISTRICT",
+      "actors": 16,
+      "draws": 267,
+      "triangles": 400246
+    },
+    {
+      "name": "BLACKSITE",
+      "actors": 16,
+      "draws": 263,
+      "triangles": 385922
+    },
+    {
+      "name": "NUKETOWN",
+      "actors": 8,
+      "draws": 257,
+      "triangles": 211686
+    }
+  ],
+  "attachmentVariants": 31,
+  "textureBytes": 44919467,
+  "loadout": "Reflex: Clear close-range sight picture.\n\nBipod: Crouch while stationary for 58% less recoil and tighter fire.\n\nDrum magazine: Double ammunition capacity; heavier and slower to reload.\n\nArmour-piercing: 65% more cover penetration; 6% less direct damage.",
+  "largeTeamDescription": "8 vs 8. First team to 40 eliminations."
+}

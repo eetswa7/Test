@@ -49,6 +49,12 @@ test('quiet attachments reduce actual bot investigation distance',()=>{
   const g=new Game({loadout},{seed:82});g.arena.blocks=[];const p=g.player,t=g.actors[4];g.actors=[p,t];Object.assign(p,{x:0,y:0,z:0,yaw:0,pitch:0,spawnProtection:0});Object.assign(t,{x:28,y:0,z:0,target:null,lastKnown:null});g.shoot(p);assert.equal(!!t.lastKnown,heard);
  }
 });
+test('long sniper barrels can hit across the diagonal of an expanded arena',()=>{
+ const g=new Game({}, {seed:17});g.arena.blocks=[];const p=g.player,t=g.actors[4];g.actors=[p,t];Object.assign(p,{x:0,y:0,z:0});Object.assign(t,{x:0,y:0,z:-180,health:100});
+ const origin={x:0,y:1,z:0},dir={x:0,y:0,z:-1};
+ assert.equal(traceBullet(g.arena,g.actors,p,origin,dir,new Weapon(19)).target,null);
+ assert.equal(traceBullet(g.arena,g.actors,p,origin,dir,new Weapon(19,{barrel:3})).target,t);
+});
 test('attachment mobility changes player movement in the simulation',()=>{
  const travel=loadout=>{const g=new Game({loadout},{seed:71});g.actors=[g.player];g.arena.blocks=[];Object.assign(g.player,{x:0,y:0,z:0,yaw:0});for(let i=0;i<60;i++)g.update(1/60,{...emptyInput(),mz:1});return -g.player.z;};
  assert(travel({handling:3})>travel({})*1.08);assert(travel({magazine:3})<travel({})*.93);

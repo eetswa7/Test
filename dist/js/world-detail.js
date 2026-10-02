@@ -1,9 +1,10 @@
-import {prepareGroundSurfaces} from './surface-placement.js?v=53';
-import {rng} from './math.js?v=53';
+import {prepareGroundSurfaces} from './surface-placement.js?v=54';
+import {rng} from './math.js?v=54';
 
 /** Visual dressing is separate from navigation and damage collision. Large
  * trunks get simple collision boxes; leaves, pebbles and trim stay inexpensive. */
 export function dressWorld(arena){
+ if(arena.info.authoredDressing){prepareGroundSurfaces(arena);return;}
  const random=rng(46190+arena.info.id*113),id=arena.info.id,s=arena.info.size;
  arena.foliage=[];const add=(...args)=>arena.detail(...args);
  const card=(x,y,z,w,h,leaf,yaw=0,pitch=0,roll=0,color=[.9,.95,.8])=>arena.foliage.push({x,y,z,w,h,d:1,surface:'green',mesh:'leaf',leaf,yaw,pitch,roll,color});

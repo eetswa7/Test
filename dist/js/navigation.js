@@ -1,9 +1,9 @@
-import {distance} from './math.js?v=53';
+import {distance} from './math.js?v=54';
 // A small layered navigation grid includes room floors and reachable stairs/terraces.
 // Connectivity is baked once per match; A* runs at most once per bot per second.
 export class Navigation {
  constructor(arena){
-  this.arena=arena;this.step=1.25;this.size=arena.info.size;this.n=Math.ceil(this.size*2/this.step);this.cells=Array.from({length:this.n*this.n},()=>[]);this.nodes=[];
+  this.arena=arena;this.step=arena.info.navigationStep??1.25;this.size=arena.info.size;this.n=Math.ceil(this.size*2/this.step);this.cells=Array.from({length:this.n*this.n},()=>[]);this.nodes=[];
   for(let iz=1;iz<this.n-1;iz++)for(let ix=1;ix<this.n-1;ix++){
    const x=-this.size+(ix+.5)*this.step,z=-this.size+(iz+.5)*this.step,levels=[0];
    for(const b of arena.nearby({x,y:0,z})){let top=b.y+b.h/2;if(top>.1&&top<=4.8&&Math.abs(x-b.x)<b.w/2&&Math.abs(z-b.z)<b.d/2)levels.push(top);}
@@ -16,7 +16,8 @@ export class Navigation {
     if(this.walkable(node,to))node.links.push(id);
    }
   }
-  this.g=new Float32Array(this.nodes.length);this.previous=new Int32Array(this.nodes.length);this.closed=new Uint8Array(this.nodes.length);
+  this.g=new Float32Array(this.nodes.length);this.previous=new Int32Array(this.nodes.length);this.closed=new Uint32Array(this.nodes.length);this.seen=new Uint32Array(this.nodes.length);this.searchId=0;
+  this.heapIds=new Int32Array(Math.max(64,this.nodes.length*2));this.heapScores=new Float64Array(this.heapIds.length);this.heapSize=0;
  }
  // Sweep a standing capsule along each edge, including intermediate step heights.
  walkable(from,to){
@@ -35,14 +36,24 @@ export class Navigation {
   // than every unseen cell's horizontal lower bound.
   if(best>=0&&cost<(r+.5)*this.step)break;
  }return best;}
+ pushNode(id,score){
+  if(this.heapSize===this.heapIds.length){const ids=new Int32Array(this.heapSize*2),scores=new Float64Array(ids.length);ids.set(this.heapIds);scores.set(this.heapScores);this.heapIds=ids;this.heapScores=scores;}
+  let i=this.heapSize++;
+  while(i){const p=(i-1)>>1;if(this.heapScores[p]<=score)break;this.heapIds[i]=this.heapIds[p];this.heapScores[i]=this.heapScores[p];i=p;}
+  this.heapIds[i]=id;this.heapScores[i]=score;
+ }
+ popNode(){
+  const id=this.heapIds[0],size=--this.heapSize,lastId=this.heapIds[size],lastScore=this.heapScores[size];let i=0;
+  while(i*2+1<size){let child=i*2+1;if(child+1<size&&this.heapScores[child+1]<this.heapScores[child])child++;if(this.heapScores[child]>=lastScore)break;this.heapIds[i]=this.heapIds[child];this.heapScores[i]=this.heapScores[child];i=child;}
+  if(size){this.heapIds[i]=lastId;this.heapScores[i]=lastScore;}return id;
+ }
  path(from,to){
   const start=this.nearest(from),goal=this.nearest(to);if(start<0||goal<0)return[];
-  this.g.fill(Infinity);this.previous.fill(-1);this.closed.fill(0);this.g[start]=0;
-  const heap=[];const push=(id,f)=>{let i=heap.length;heap.push({id,f});while(i){let p=(i-1)>>1;if(heap[p].f<=f)break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p;}};
-  const pop=()=>{const root=heap[0],last=heap.pop();if(heap.length){heap[0]=last;let i=0;for(;;){let a=i*2+1,b=a+1,j=i;if(a<heap.length&&heap[a].f<heap[j].f)j=a;if(b<heap.length&&heap[b].f<heap[j].f)j=b;if(j===i)break;[heap[i],heap[j]]=[heap[j],heap[i]];i=j;}}return root.id;};
-  push(start,0);let reached=start,best=distance(from,to),count=0;
-  while(heap.length&&count++<5000){const id=pop();if(this.closed[id])continue;this.closed[id]=1;const n=this.nodes[id],h=distance(n,this.nodes[goal]);if(h<best){best=h;reached=id;}if(id===goal){reached=id;break;}
-    for(const next of n.links){if(this.closed[next])continue;let t=this.g[id]+distance(n,this.nodes[next])+Math.abs(n.y-this.nodes[next].y);if(t<this.g[next]){this.g[next]=t;this.previous[next]=id;const q=this.nodes[next],end=this.nodes[goal];push(next,t+distance(q,end)*1.15+Math.abs(q.y-end.y));}}
+  let search=this.searchId=(this.searchId+1)>>>0;if(!search){this.closed.fill(0);this.seen.fill(0);search=this.searchId=1;}
+  this.heapSize=0;this.g[start]=0;this.previous[start]=-1;this.seen[start]=search;
+  this.pushNode(start,0);let reached=start,best=distance(from,to),count=0;
+  while(this.heapSize&&count<5000){const id=this.popNode();if(this.closed[id]===search)continue;count++;this.closed[id]=search;const n=this.nodes[id],h=distance(n,this.nodes[goal]);if(h<best){best=h;reached=id;}if(id===goal){reached=id;break;}
+    for(const next of n.links){if(this.closed[next]===search)continue;let t=this.g[id]+distance(n,this.nodes[next])+Math.abs(n.y-this.nodes[next].y);if(this.seen[next]!==search||t<this.g[next]){this.seen[next]=search;this.g[next]=t;this.previous[next]=id;const q=this.nodes[next],end=this.nodes[goal];this.pushNode(next,t+distance(q,end)*1.15+Math.abs(q.y-end.y));}}
   }
   this.lastExpanded=count;this.lastReached=reached===goal;
   const path=[];for(let id=reached;id!==start&&id!==-1;id=this.previous[id])path.push(this.nodes[id]);return path.reverse();
