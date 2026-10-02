@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
 import {Game} from '../dist/js/engine.js';
 import {identityFor,canIdentify} from '../dist/js/combat-identity.js';
+import {TEXTURE_FILES} from '../dist/js/textures.js';
 
 test('identity follows the player and game rules, including FFA and team changes',()=>{
  const g=new Game(),p=g.player,ally=g.actors[1],enemy=g.actors[4];
@@ -22,7 +23,7 @@ const swSource=await readFile(new URL('../dist/sw.js',import.meta.url),'utf8');
 const RELEASE=swSource.match(/const RELEASE='(\d+)'/)[1];
 test('offline shell retains every authored texture in each release',()=>{
  const shell=swSource.match(/const SHELL=\[([^\]]+)\]/)[1];
- for(const texture of ['surfaces-atlas.webp','foliage-atlas.webp','horizon.webp','weapon-finishes.webp'])assert(shell.includes(`./assets/${texture}`),`missing ${texture}`);
+ for(const texture of TEXTURE_FILES)assert(shell.includes(`./assets/${texture}`),`missing ${texture}`);
 });
 function worker(fetcher=async request=>({ok:true,redirected:false,url:String(request)})){
  const handlers={},state={matches:0,puts:0,activated:false,deleted:[]};

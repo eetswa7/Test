@@ -3,7 +3,9 @@ import * as THREE from '../vendor/three.module.min.js';
 // Stable UV metric per face, independent of interpolated bevel normals. Two
 // static vertex attributes replace axis decisions in the vertex shader.
 export function installMetricUV(geometry,kind){
- const n=geometry.getAttribute('normal'),count=n.count,u=new Float32Array(count*3),v=new Float32Array(count*3);
+ // Authored axes contain only exact zero/one components. Unnormalised bytes
+ // preserve shader values and reduce both CPU and GPU storage by 75%.
+ const n=geometry.getAttribute('normal'),count=n.count,Axis=kind==='authored'?Uint8Array:Float32Array,u=new Axis(count*3),v=new Axis(count*3);
  const rounded=kind.startsWith('bevel'),box=rounded||kind==='cube';
  for(let i=0;i<count;i++){
   let a,b;

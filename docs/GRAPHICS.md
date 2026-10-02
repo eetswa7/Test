@@ -1,3 +1,37 @@
+# Current checkpoint: Release 50
+
+The primary game renderer now takes its complete 3D library and all nine visual
+texture atlases from Blender. The editable source includes the shared asset
+kit, all 30 weapon rigs with merged animated hands, operator equipment, and
+complete metre-scale assemblies for all 15 maps.
+
+Manufactured receiver profiles, open handguard vents, tapered grips and magazines,
+smooth cloth and hand surfaces, recessed facade glazing, rooftop machinery and
+complete palm, broadleaf and conifer crowns replace the simpler shared shapes.
+The original layout, collision, weapon handling, input, modes, sound and saves
+remain authoritative. Native Cycles bakes supply surface colour, normal and
+physical detail, foliage, sky and smoke/flash/contact/impact imagery. Original
+photography is an input to the Blender material graphs. Runtime textures are
+lossless WebP transcodes whose decoded pixels are checked against the bakes.
+
+The 223 exported meshes occupy a 30.10 MiB raw GLB and about 5.27 MiB after gzip.
+The complete runtime library, including nine texture atlases, is 11,580,547 bytes
+(11.04 MiB). These are transfer and CPU-buffer sizes. Texture storage is about
+42.8 MiB in the software browser fixture. No full-screen post-processing target
+is added. All maps instance the shared kit; near/far models retain conservative
+bounds. Identical hand geometry is shared across the arsenal, and decoration
+already included in the native facade is removed from the draw list.
+
+The default rifle uses 8 batches and 10,940 submitted triangles, compared with
+12 and 15,720 for the previous generated viewmodel. Native canopy geometry costs
+more triangles in the alpine view. These counts are not iPhone frame timings.
+The complete generated assets, source, and offline shell are versioned together.
+See [scene counts](profile-release50-blender.json),
+[browser checks](validation-release50-browser.json), and
+[Blender authoring instructions](../authoring/blender/README.md).
+
+The following entries describe earlier checkpoints.
+
 # Current checkpoint: Release 49
 
 Current content remains 30 weapons, 15 maps and 11 modes. Blender now supplies
@@ -212,3 +246,39 @@ The repeatable profile constructs real Three scenes at an 844 × 390 reference v
 Browser checks use the real game through the responsive harness. This cloud browser disables its WebGL driver, so checks cover Canvas fallback, settings, gameplay flow and layout. They do **not** validate the appearance or compilation of the new GPU shaders. Native GPU timing, iPhone Safari/PWA context recovery, gyro/controller hardware, safe areas and thermal endurance need physical-device testing.
 
 The next justified graphics step is a fixed-route exterior/interior comparison and a 15–20 minute combat run on physical iPhones, recording actual resolution, frame p95, draws and GPU timing where supported. Further expensive effects or a backend migration should be based on those measurements. This release does not claim commercial AAA assets, photoreal characters, or verified sustained 60 FPS.
+
+
+## Release 51: canopy selection and authored-stream memory
+
+Near and far Blender canopy meshes are selected per tree at quarter-second
+intervals with hysteresis. Tree counts and conservative culling bounds are
+retained; unchanged selections do not upload instance matrices or colours.
+Unnormalised byte texture axes use exactly the same zero/one shader values as
+float attributes with 75% less CPU/GPU storage for those streams. Mixed facade
+glazing avoids masonry texture and bump response within a single shared draw.
+
+All 242 regressions pass. Software WebGL2 renders all 15 maps and 30 weapons,
+including attachments, reloads and a scope, with no errors. The 116-file
+Release 51 cache deploys a match offline. Counts and browser evidence are in
+`profile-release51-blender.json` and `validation-release51-browser.json`.
+Physical iPhone GPU timing and thermal endurance remain unmeasured.
+
+
+## Release 52: native surface modelling and geometry memory
+
+Longitudinal weapon profiles, real metre-scale bevels and weighted normals
+replace abrupt component edges. Broader opaque tree leaves improve silhouettes
+without new materials or draws. The default rifle uses 8 draws and 12,468
+triangles against the original 12 draws and 15,720 triangles.
+
+Core glTF normalised 16-bit colour and physical attributes save 4.00 MiB of
+vertex data. Maximum scalar error is below 0.00000763. Exact spatial-stream
+hashes match the Blender export. Weighted normal seam sharing and compact
+attributes bring the unpacked library to 17.02 MiB, against Release 50's
+30.10 MiB. The complete runtime art download is 10.92 MiB.
+
+243 regressions, 60-module packaged checks and 28 shader compile/link variants
+pass. All 15 maps and 30 weapons render without errors; a 116-file installation
+deploys offline. Browser evidence is `validation-release52-browser.json` and
+scene counts are `profile-release52-blender.json`. These do not establish
+physical iPhone FPS or commercial AAA fidelity.

@@ -4,7 +4,10 @@ import {resolve} from 'node:path';
 import {WEAPONS,Weapon} from '../dist/js/weapons.js';
 import {weaponModel} from '../dist/js/weapon-models.js';
 import {compose} from '../dist/js/math.js';
-import {MAPS} from '../dist/js/maps.js';
+import {MAPS,Arena} from '../dist/js/maps.js';
+import {material} from '../dist/js/geometry.js';
+import {blenderWorld} from '../dist/js/blender-world.js';
+import {blenderKind} from '../dist/js/blender-kind.js';
 const out=resolve(process.argv[2]??'authoring/blender/rig-input.json');
 const weapons=WEAPONS.map(def=>{
  const w=new Weapon(def.id,{optic:0,barrel:0,grip:0}),p=weaponModel(w);
@@ -16,5 +19,6 @@ const weapons=WEAPONS.map(def=>{
  }),hands:hands.map(extract)};
 });
 await mkdir(resolve(out,'..'),{recursive:true});
-await writeFile(out,JSON.stringify({schema:1,units:'metres',forward:'-Z',up:'Y',maps:MAPS.map(({id,size,name})=>({id,size,name})),weapons})+'\n');
+const maps=MAPS.map(info=>{const arena=new Arena(info.id);return {...info,parts:blenderWorld(arena).filter(p=>!p.invisible&&!p.destroyed).map(p=>{const matrix=new Float32Array(16);compose(matrix,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);const kind=p.mesh==='ridge'?`ridge_${info.id}`:blenderKind(p,'world');return {kind,matrix:Array.from(matrix),material:material(p),authoredColour:!!p.blenderColour,surface:p.surface,leaf:p.leaf};})};});
+await writeFile(out,JSON.stringify({schema:1,units:'metres',forward:'-Z',up:'Y',maps,weapons})+'\n');
 console.log(`Exported ${weapons.length} unchanged weapon rigs for Blender.`);

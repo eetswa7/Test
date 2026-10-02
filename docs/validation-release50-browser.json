@@ -1,0 +1,136 @@
+{
+  "maps": [
+    {
+      "map": "OLD QUARTER",
+      "draws": 110,
+      "triangles": 133702,
+      "worldBatches": 144
+    },
+    {
+      "map": "FOUNDRY",
+      "draws": 89,
+      "triangles": 109014,
+      "worldBatches": 90
+    },
+    {
+      "map": "DUSTLINE",
+      "draws": 94,
+      "triangles": 117212,
+      "worldBatches": 170
+    },
+    {
+      "map": "RELAY",
+      "draws": 89,
+      "triangles": 104900,
+      "worldBatches": 176
+    },
+    {
+      "map": "BREAKWATER",
+      "draws": 84,
+      "triangles": 110854,
+      "worldBatches": 107
+    },
+    {
+      "map": "CITADEL",
+      "draws": 87,
+      "triangles": 109048,
+      "worldBatches": 165
+    },
+    {
+      "map": "SWITCHYARD",
+      "draws": 89,
+      "triangles": 110204,
+      "worldBatches": 132
+    },
+    {
+      "map": "CANOPY",
+      "draws": 87,
+      "triangles": 103584,
+      "worldBatches": 161
+    },
+    {
+      "map": "FROSTLINE",
+      "draws": 88,
+      "triangles": 111906,
+      "worldBatches": 170
+    },
+    {
+      "map": "IRON QUARRY",
+      "draws": 99,
+      "triangles": 111358,
+      "worldBatches": 166
+    },
+    {
+      "map": "SKYBRIDGE",
+      "draws": 90,
+      "triangles": 111332,
+      "worldBatches": 159
+    },
+    {
+      "map": "MONSOON",
+      "draws": 83,
+      "triangles": 115202,
+      "worldBatches": 160
+    },
+    {
+      "map": "EMBERWORKS",
+      "draws": 96,
+      "triangles": 114866,
+      "worldBatches": 175
+    },
+    {
+      "map": "CROSSFIRE DISTRICT",
+      "draws": 77,
+      "triangles": 117804,
+      "worldBatches": 175
+    },
+    {
+      "map": "BLACKSITE",
+      "draws": 82,
+      "triangles": 117926,
+      "worldBatches": 170
+    }
+  ],
+  "weapons": [
+    "Kestrel AR",
+    "Bastion 7",
+    "Raptor C",
+    "Vesper 9",
+    "Lynx PDW",
+    "Breach 12",
+    "Tempest S",
+    "Longbow M",
+    "Warden D",
+    "Atlas L",
+    "Sable P",
+    "Dire 50",
+    "Field blade",
+    "Harrow B3",
+    "Marten 45",
+    "Mako 7",
+    "Peregrine 6",
+    "Osprey S",
+    "Bison 12",
+    "Talon 338",
+    "Rampart 556",
+    "Spectre SD",
+    "Krait R",
+    "Swift 93",
+    "Storm 68",
+    "Needle 57",
+    "Jackal 12",
+    "Sentinel 762",
+    "Heron S",
+    "Paladin 45"
+  ],
+  "geometry": 223,
+  "textureBytes": 44919467,
+  "programs": 23,
+  "cache": {
+    "name": "breachline-v50",
+    "files": 116
+  },
+  "offlineDeployed": true,
+  "errors": [],
+  "scope": "Chromium software WebGL2 at a 932 x 430 touch viewport. These checks do not measure iPhone FPS."
+}

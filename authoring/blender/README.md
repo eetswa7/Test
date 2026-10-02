@@ -1,76 +1,77 @@
-# Blender asset source
+# Blender art source
 
-Run `npm run source:blender` to restore `breachline-assets.blend`, then open it
-in Blender. The Asset gallery collection displays
-the weapons, modular world kit, operator pieces and distant landscapes. The
-Runtime meshes collection contains the exact exported geometry; it is hidden
-in the gallery. Original albedo images and the baked texture atlases are packed
-into the file. Meshes use metres, with axes converted to the game's Y-up space
-during glTF export.
+Run `npm run source:blender` to restore `breachline-assets.blend` and open it in
+Blender. The Asset gallery contains the shared kit and weapon rigs. The hidden
+Complete levels / metres collection contains all 15 map assemblies. Enable one
+map collection to inspect its geometry. Runtime meshes remain hidden in the
+gallery. Material graphs, original texture inputs and all nine native bakes are
+packed into the source project.
 
-Blender authors assets. Three.js renders them in the existing Safari game;
-collision, movement, scoring, controls, save data and weapon animation still
-belong to the original simulation.
+Blender authors the graphics; Three.js draws the exported library in Safari.
+The existing simulation owns collision, movement, combat, input, objectives,
+weapon transforms and saves. Its map layouts and behaviour are preserved.
 
 ## Rebuild
 
-Requirements: Node 20+, Blender with its glTF exporter, and NumPy available to
-Blender's Python. This export was verified using Blender 4.0.2 and Cycles CPU
-baking. The committed game assets require no local Blender installation to play.
-
-From the repository root:
+Requirements: Node 20+, Blender 4.0+ with its glTF exporter and NumPy, and Python
+with Pillow/WebP support. This pipeline is verified with Blender 4.0.2, Cycles
+CPU baking and lossless WebP compression. The game requires no Blender install.
 
 ```sh
 npm run assets:blender
+node scripts/release.mjs 52
 npm test
 npm run check
 npm run profile:blender
 ```
 
-Set `BLENDER_BIN` if Blender is not on your PATH. The build can take several
-minutes. It exports `rig-input.json` directly from all 30 existing weapon models
-and 15 maps, runs `build_assets.py`, then losslessly compresses the GLB. The input
-includes stable component indices, exact transforms and moving-joint tags.
-Neither source extraction nor runtime asset loading edits gameplay data.
+`BLENDER_BIN` and `PYTHON_BIN` can select installed executables. Construction is
+in `build_assets.py` and `art_geometry.py`; native material graphs and Cycles
+bakes are in `materials.py`. Rebuilding replaces the saved source and exports,
+so incorporate manual asset edits into these definitions before regenerating.
+`export-blender-input.mjs` extracts exact original rig transforms, moving tags,
+hand bindings and unchanged visual map assemblies.
 
-The editable source and runtime assets are stored in bounded lossless segments.
-Reassembly verifies the source hash. Segmenting changes file transport only;
-the GLB, PNG and `.blend` bytes remain identical to the native Blender outputs.
+For geometry iteration after restoring a current native project, use
+`npm run assets:blender -- --reuse-bakes`. This restores the exact nine packed
+PNG bakes and editable shader graphs, then atomically saves the updated source.
+Run a full build when changing materials. An older project without all nine
+bakes requires a full build first.
 
-The builder uses Blender's evaluated bevel/weighted-normal modifiers, deterministic
-BVH ambient occlusion and native Cycles NORMAL/EMIT texture baking. It emits:
+The source builder produces profiled receivers with native Boolean vents,
+tapered magazines and grips, smooth articulated hand groups, operator anatomy
+and equipment, facade modules, machinery, props, vegetation and terrain.
+Vertex colours carry base colour and cavity occlusion. A second UV channel
+carries roughness/metalness for rigid groups and mixed-material props. It is
+physical data, not a lightmap. Identical hand shapes are deduplicated across
+weapons. Existing optics, grips, muzzles, reloads and sight alignment remain live.
 
-- `source/`: exact editable `.blend` bytes, restored by `npm run source:blender`.
-- `dist/assets/blender/breachline-library.part*.bin`: losslessly compressed
-  indexed GLB with near/far variants and merged weapon cores. Raw intermediates
-  are ignored by git.
-- Four 1024 × 1024 normal and packed surface PNG atlases, stored in segments.
-- `dist/assets/blender/manifest.json`: rig bindings, mesh budgets and SHA-256
-  asset integrity metadata.
+All surface albedo, normals and physical data; cutout foliage; cloud imagery;
+and smoke, flash, contact and impact stamps come from Blender shader bakes.
+Original photography is input to those graphs. Pillow performs lossless format
+compression, verifies every decoded pixel, then atomically replaces each file.
+It adds no artwork. PNG and WebP intermediates are ignored by git. Bounded asset
+segments restore the native GLB, compressed textures and editable `.blend`, with
+SHA-256 integrity metadata. Segmentation affects transport only.
 
-Vertex colours store linear base colour and baked occlusion. Weapon cores carry
-roughness/metalness in `TEXCOORD_1`; the local loader binds it as `breachMaterial`.
-The secondary channel is material data, not a lightmap. The runtime reuses existing
-albedo atlases, lighting, animation, attachments and exact muzzle/sight transforms.
+## Budgets and checks
 
-To keep a change reproducible, edit the construction/bake definitions in
-`build_assets.py`, then rebuild. Regeneration replaces the source `.blend` and
-exports, so manual gallery edits must be incorporated into the builder before
-running it. Changes to weapon core membership require a new export; the loader
-rejects stale rig bindings instead of silently dropping components.
+226 indexed meshes use about 5.15 MiB compressed geometry; the complete runtime
+art download is about 10.92 MiB. Packed raw geometry is 17.02 MiB.
+Textures remain mipmapped 256/512 px tiles; world objects are instanced by
+spatial chunk and material. Native near/far geometry and existing quality/scale
+controls bound detail. No full-screen post-processing target is added.
 
-## Mobile budgets and checks
+`tests/blender-assets.test.mjs` checks real buffers, all 30 rigs with attachment
+variations, hand coverage, all-map collision invariants, destruction, nonempty
+texture containers, asset/source hashes, gzip fallbacks and offline packaging.
+`profile:blender` reports scene counts and container CPU costs. Software browser
+checks exercise the real WebGL shaders, all maps/weapons and offline deployment.
+Neither those checks nor raw draw counts establish physical iPhone FPS or
+commercial AAA fidelity.
 
-The current library contains 169 meshes. Compressed geometry plus the four new
-atlases total 7,167,330 bytes, about 6.84 MiB. The uncompressed GLB is 25.93 MiB;
-this is a transfer/CPU buffer figure, not measured driver memory. Atlas tiles use
-the previous runtime sizes: 256 px for world surfaces and 512 px for weapons.
-Near/far geometry shares materials and is instanced, with quarter-second world
-LOD selection and hysteresis. No extra full-screen render pass is introduced.
-
-`tests/blender-assets.test.mjs` reads the real exported buffers and checks every
-map, weapon joint and attachment combination, native/fallback gzip decoding,
-asset hashes, collision invariance and first-person draw/triangle budgets.
-`scripts/export-shader-check.mjs` includes both original and Blender material
-variants for the optional Mesa compiler gate documented in `docs/GRAPHICS.md`.
-Scene counts and software rendering do not establish iPhone FPS or AAA fidelity.
+Revision 3 uses real physical edge radii, longitudinal receiver sections and
+weighted surface normals. Core glTF normalised 16-bit colour and physical
+streams save 4.00 MiB, with maximum scalar error below 0.00000763. Positions,
+normals, texture coordinates and indices are byte-identical to Blender's export.
+The packing manifest records verification hashes and precision bounds.

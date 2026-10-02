@@ -8,688 +8,1143 @@
   "meshes": {
     "architecture__near": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "architecture__far": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "hard__near": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": false
     },
     "hard__far": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "soft__near": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": false
     },
     "soft__far": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": false
     },
     "sphere__near": {
       "triangles": 216,
-      "vertices": 110
+      "vertices": 110,
+      "vertexMaterial": false
     },
     "sphere__far": {
       "triangles": 140,
-      "vertices": 72
+      "vertices": 72,
+      "vertexMaterial": false
     },
     "cylinder__near": {
       "triangles": 128,
-      "vertices": 66
+      "vertices": 66,
+      "vertexMaterial": false
     },
     "cylinder__far": {
       "triangles": 40,
-      "vertices": 22
+      "vertices": 22,
+      "vertexMaterial": false
     },
     "tube__near": {
       "triangles": 160,
-      "vertices": 80
+      "vertices": 80,
+      "vertexMaterial": false
     },
     "tube__far": {
       "triangles": 96,
-      "vertices": 48
+      "vertices": 48,
+      "vertexMaterial": false
     },
     "surface__near": {
       "triangles": 2,
-      "vertices": 4
+      "vertices": 4,
+      "vertexMaterial": false
     },
     "surface__far": {
       "triangles": 2,
-      "vertices": 4
+      "vertices": 4,
+      "vertexMaterial": false
     },
     "torso__near": {
-      "triangles": 192,
-      "vertices": 98
+      "triangles": 280,
+      "vertices": 142,
+      "vertexMaterial": false
     },
     "torso__far": {
-      "triangles": 80,
-      "vertices": 42
+      "triangles": 60,
+      "vertices": 32,
+      "vertexMaterial": false
     },
     "limb__near": {
-      "triangles": 168,
-      "vertices": 86
+      "triangles": 256,
+      "vertices": 130,
+      "vertexMaterial": false
     },
     "limb__far": {
       "triangles": 48,
-      "vertices": 26
+      "vertices": 26,
+      "vertexMaterial": false
     },
     "boot__near": {
-      "triangles": 564,
-      "vertices": 296
+      "triangles": 676,
+      "vertices": 360,
+      "vertexMaterial": true
     },
     "boot__far": {
-      "triangles": 324,
-      "vertices": 168
+      "triangles": 368,
+      "vertices": 192,
+      "vertexMaterial": true
     },
     "vest__near": {
-      "triangles": 804,
-      "vertices": 424
+      "triangles": 1020,
+      "vertices": 536,
+      "vertexMaterial": true
     },
     "vest__far": {
-      "triangles": 216,
-      "vertices": 112
+      "triangles": 476,
+      "vertices": 248,
+      "vertexMaterial": true
     },
     "pack__near": {
       "triangles": 304,
-      "vertices": 160
+      "vertices": 160,
+      "vertexMaterial": true
     },
     "pack__far": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
     "head__near": {
-      "triangles": 1116,
-      "vertices": 568
+      "triangles": 776,
+      "vertices": 398,
+      "vertexMaterial": true
     },
     "head__far": {
-      "triangles": 576,
-      "vertices": 292
+      "triangles": 496,
+      "vertices": 254,
+      "vertexMaterial": true
     },
     "helmet__near": {
-      "triangles": 216,
-      "vertices": 110
+      "triangles": 468,
+      "vertices": 242,
+      "vertexMaterial": true
     },
     "helmet__far": {
-      "triangles": 80,
-      "vertices": 42
+      "triangles": 96,
+      "vertices": 50,
+      "vertexMaterial": true
     },
     "glove__near": {
       "triangles": 756,
-      "vertices": 390
+      "vertices": 390,
+      "vertexMaterial": false
     },
     "glove__far": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": false
     },
     "crate__near": {
       "triangles": 924,
-      "vertices": 504
+      "vertices": 504,
+      "vertexMaterial": false
     },
     "crate__far": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "cargo_x__near": {
       "triangles": 1276,
-      "vertices": 696
+      "vertices": 696,
+      "vertexMaterial": false
     },
     "cargo_x__far": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "cargo_z__near": {
       "triangles": 1276,
-      "vertices": 696
+      "vertices": 696,
+      "vertexMaterial": false
     },
     "cargo_z__far": {
       "triangles": 44,
-      "vertices": 24
+      "vertices": 24,
+      "vertexMaterial": false
     },
     "drum__near": {
       "triangles": 768,
-      "vertices": 396
+      "vertices": 396,
+      "vertexMaterial": false
     },
     "drum__far": {
       "triangles": 128,
-      "vertices": 66
+      "vertices": 66,
+      "vertexMaterial": false
     },
     "rock__near": {
       "triangles": 252,
-      "vertices": 128
+      "vertices": 128,
+      "vertexMaterial": false
     },
     "rock__far": {
       "triangles": 96,
-      "vertices": 50
+      "vertices": 50,
+      "vertexMaterial": false
     },
     "strata__near": {
       "triangles": 192,
-      "vertices": 98
+      "vertices": 98,
+      "vertexMaterial": false
     },
     "strata__far": {
       "triangles": 64,
-      "vertices": 34
+      "vertices": 34,
+      "vertexMaterial": false
     },
     "conifer__near": {
-      "triangles": 240,
-      "vertices": 122
+      "triangles": 2016,
+      "vertices": 4032,
+      "vertexMaterial": false
     },
     "conifer__far": {
-      "triangles": 96,
-      "vertices": 50
+      "triangles": 480,
+      "vertices": 960,
+      "vertexMaterial": false
     },
     "leaf__near": {
       "triangles": 8,
-      "vertices": 10
+      "vertices": 10,
+      "vertexMaterial": false
     },
     "leaf__far": {
       "triangles": 2,
-      "vertices": 4
+      "vertices": 4,
+      "vertexMaterial": false
     },
-    "weapon_0_0": {
-      "triangles": 5948,
-      "vertices": 3108
+    "barrier_x__near": {
+      "triangles": 220,
+      "vertices": 120,
+      "vertexMaterial": true
     },
-    "weapon_0_1": {
+    "barrier_x__far": {
+      "triangles": 132,
+      "vertices": 72,
+      "vertexMaterial": true
+    },
+    "barrier_z__near": {
+      "triangles": 220,
+      "vertices": 120,
+      "vertexMaterial": true
+    },
+    "barrier_z__far": {
+      "triangles": 132,
+      "vertices": 72,
+      "vertexMaterial": true
+    },
+    "wall__near": {
+      "triangles": 132,
+      "vertices": 72,
+      "vertexMaterial": true
+    },
+    "wall__far": {
+      "triangles": 44,
+      "vertices": 24,
+      "vertexMaterial": true
+    },
+    "column__near": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 114,
+      "vertexMaterial": true
     },
-    "weapon_0_2": {
-      "triangles": 972,
-      "vertices": 504
+    "column__far": {
+      "triangles": 128,
+      "vertices": 66,
+      "vertexMaterial": true
     },
-    "weapon_1_0": {
-      "triangles": 5228,
-      "vertices": 2724
+    "vent__near": {
+      "triangles": 308,
+      "vertices": 168,
+      "vertexMaterial": true
     },
-    "weapon_1_1": {
-      "triangles": 216,
-      "vertices": 112
+    "vent__far": {
+      "triangles": 88,
+      "vertices": 48,
+      "vertexMaterial": true
     },
-    "weapon_1_2": {
-      "triangles": 972,
-      "vertices": 504
+    "hvac__near": {
+      "triangles": 1004,
+      "vertices": 540,
+      "vertexMaterial": true
     },
-    "weapon_2_0": {
-      "triangles": 4844,
-      "vertices": 2530
+    "hvac__far": {
+      "triangles": 260,
+      "vertices": 138,
+      "vertexMaterial": true
     },
-    "weapon_2_1": {
-      "triangles": 216,
-      "vertices": 112
+    "building_urban__near": {
+      "triangles": 3476,
+      "vertices": 1896,
+      "vertexMaterial": true
     },
-    "weapon_2_2": {
-      "triangles": 972,
-      "vertices": 504
+    "building_urban__far": {
+      "triangles": 924,
+      "vertices": 504,
+      "vertexMaterial": true
     },
-    "weapon_3_0": {
-      "triangles": 4084,
-      "vertices": 2134
+    "building_industrial__near": {
+      "triangles": 3608,
+      "vertices": 1968,
+      "vertexMaterial": true
     },
-    "weapon_3_1": {
-      "triangles": 432,
-      "vertices": 224
+    "building_industrial__far": {
+      "triangles": 924,
+      "vertices": 504,
+      "vertexMaterial": true
     },
-    "weapon_3_2": {
-      "triangles": 972,
-      "vertices": 504
+    "building_desert__near": {
+      "triangles": 3476,
+      "vertices": 1896,
+      "vertexMaterial": true
     },
-    "weapon_4_0": {
-      "triangles": 3152,
-      "vertices": 1634
+    "building_desert__far": {
+      "triangles": 924,
+      "vertices": 504,
+      "vertexMaterial": true
     },
-    "weapon_4_1": {
-      "triangles": 1132,
-      "vertices": 584
+    "pallet__near": {
+      "triangles": 352,
+      "vertices": 192,
+      "vertexMaterial": true
     },
-    "weapon_4_2": {
-      "triangles": 216,
-      "vertices": 112
+    "pallet__far": {
+      "triangles": 264,
+      "vertices": 144,
+      "vertexMaterial": true
     },
-    "weapon_5_0": {
-      "triangles": 4208,
-      "vertices": 2176
+    "sandbags__near": {
+      "triangles": 864,
+      "vertices": 448,
+      "vertexMaterial": true
     },
-    "weapon_5_1": {
-      "triangles": 216,
-      "vertices": 112
+    "sandbags__far": {
+      "triangles": 648,
+      "vertices": 336,
+      "vertexMaterial": true
     },
-    "weapon_5_2": {
-      "triangles": 568,
-      "vertices": 306
-    },
-    "weapon_5_3": {
-      "triangles": 256,
-      "vertices": 132
-    },
-    "weapon_6_0": {
-      "triangles": 5948,
-      "vertices": 3110
-    },
-    "weapon_6_1": {
-      "triangles": 324,
-      "vertices": 168
-    },
-    "weapon_6_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_7_0": {
-      "triangles": 4820,
-      "vertices": 2516
-    },
-    "weapon_7_1": {
-      "triangles": 452,
-      "vertices": 234
-    },
-    "weapon_7_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_8_0": {
-      "triangles": 6276,
-      "vertices": 3284
-    },
-    "weapon_8_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_8_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_9_0": {
-      "triangles": 5748,
-      "vertices": 2996
-    },
-    "weapon_9_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_9_2": {
-      "triangles": 108,
-      "vertices": 56
-    },
-    "weapon_9_3": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_9_4": {
-      "triangles": 1652,
-      "vertices": 854
-    },
-    "weapon_10_0": {
-      "triangles": 1620,
-      "vertices": 840
-    },
-    "weapon_10_1": {
-      "triangles": 1856,
-      "vertices": 962
-    },
-    "weapon_10_2": {
-      "triangles": 108,
-      "vertices": 56
-    },
-    "weapon_11_0": {
-      "triangles": 1404,
-      "vertices": 728
-    },
-    "weapon_11_1": {
-      "triangles": 1748,
-      "vertices": 906
-    },
-    "weapon_11_2": {
-      "triangles": 108,
-      "vertices": 56
-    },
-    "weapon_11_3": {
-      "triangles": 108,
-      "vertices": 56
-    },
-    "weapon_12_0": {
-      "triangles": 2064,
-      "vertices": 1068
-    },
-    "weapon_13_0": {
-      "triangles": 5712,
-      "vertices": 2986
-    },
-    "weapon_13_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_13_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_14_0": {
-      "triangles": 4908,
-      "vertices": 2562
-    },
-    "weapon_14_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_14_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_15_0": {
-      "triangles": 5512,
-      "vertices": 2876
-    },
-    "weapon_15_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_15_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_16_0": {
-      "triangles": 5928,
-      "vertices": 3098
-    },
-    "weapon_16_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_16_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_17_0": {
-      "triangles": 4088,
-      "vertices": 2138
-    },
-    "weapon_17_1": {
-      "triangles": 324,
-      "vertices": 168
-    },
-    "weapon_17_2": {
-      "triangles": 972,
-      "vertices": 504
-    },
-    "weapon_18_0": {
-      "triangles": 3736,
-      "vertices": 1950
-    },
-    "weapon_18_1": {
-      "triangles": 216,
-      "vertices": 112
-    },
-    "weapon_18_2": {
+    "equipment_case__near": {
       "triangles": 460,
-      "vertices": 248
+      "vertices": 248,
+      "vertexMaterial": true
     },
-    "weapon_18_3": {
+    "equipment_case__far": {
+      "triangles": 196,
+      "vertices": 104,
+      "vertexMaterial": true
+    },
+    "generator__near": {
+      "triangles": 628,
+      "vertices": 332,
+      "vertexMaterial": true
+    },
+    "generator__far": {
+      "triangles": 152,
+      "vertices": 80,
+      "vertexMaterial": true
+    },
+    "street_bin__near": {
+      "triangles": 196,
+      "vertices": 104,
+      "vertexMaterial": true
+    },
+    "street_bin__far": {
+      "triangles": 196,
+      "vertices": 104,
+      "vertexMaterial": true
+    },
+    "utility_van__near": {
+      "triangles": 2672,
+      "vertices": 1376,
+      "vertexMaterial": true
+    },
+    "utility_van__far": {
+      "triangles": 1544,
+      "vertices": 792,
+      "vertexMaterial": true
+    },
+    "palm__near": {
+      "triangles": 180,
+      "vertices": 92,
+      "vertexMaterial": false
+    },
+    "palm__far": {
+      "triangles": 140,
+      "vertices": 72,
+      "vertexMaterial": false
+    },
+    "finger__near": {
+      "triangles": 144,
+      "vertices": 74,
+      "vertexMaterial": false
+    },
+    "finger__far": {
+      "triangles": 96,
+      "vertices": 50,
+      "vertexMaterial": false
+    },
+    "sleeve_z__near": {
+      "triangles": 252,
+      "vertices": 128,
+      "vertexMaterial": false
+    },
+    "sleeve_z__far": {
+      "triangles": 140,
+      "vertices": 72,
+      "vertexMaterial": false
+    },
+    "palm_crown__near": {
+      "triangles": 708,
+      "vertices": 1416,
+      "vertexMaterial": false
+    },
+    "palm_crown__far": {
+      "triangles": 274,
+      "vertices": 548,
+      "vertexMaterial": false
+    },
+    "tree_crown__near": {
+      "triangles": 448,
+      "vertices": 896,
+      "vertexMaterial": false
+    },
+    "tree_crown__far": {
+      "triangles": 96,
+      "vertices": 192,
+      "vertexMaterial": false
+    },
+    "billboard__near": {
+      "triangles": 2,
+      "vertices": 4,
+      "vertexMaterial": false
+    },
+    "billboard__far": {
+      "triangles": 2,
+      "vertices": 4,
+      "vertexMaterial": false
+    },
+    "weapon_0_groups_0": {
+      "triangles": 7048,
+      "vertices": 3652,
+      "vertexMaterial": true
+    },
+    "weapon_0_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_0_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_0_hands_0": {
+      "triangles": 1652,
+      "vertices": 854,
+      "vertexMaterial": true
+    },
+    "weapon_0_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
+    },
+    "weapon_1_groups_0": {
+      "triangles": 6256,
+      "vertices": 3232,
+      "vertexMaterial": true
+    },
+    "weapon_1_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_1_groups_2": {
+      "triangles": 1100,
+      "vertices": 568,
+      "vertexMaterial": true
+    },
+    "weapon_1_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
+    },
+    "weapon_2_groups_0": {
+      "triangles": 5608,
+      "vertices": 2906,
+      "vertexMaterial": true
+    },
+    "weapon_2_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_2_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_2_hands_0": {
+      "triangles": 1652,
+      "vertices": 854,
+      "vertexMaterial": true
+    },
+    "weapon_3_groups_0": {
+      "triangles": 4656,
+      "vertices": 2420,
+      "vertexMaterial": true
+    },
+    "weapon_3_groups_1": {
+      "triangles": 432,
+      "vertices": 224,
+      "vertexMaterial": true
+    },
+    "weapon_3_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_4_groups_0": {
+      "triangles": 3464,
+      "vertices": 1790,
+      "vertexMaterial": true
+    },
+    "weapon_4_groups_1": {
+      "triangles": 1132,
+      "vertices": 584,
+      "vertexMaterial": true
+    },
+    "weapon_4_groups_2": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_4_hands_0": {
+      "triangles": 1652,
+      "vertices": 854,
+      "vertexMaterial": true
+    },
+    "weapon_4_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
+    },
+    "weapon_5_groups_0": {
+      "triangles": 4928,
+      "vertices": 2536,
+      "vertexMaterial": true
+    },
+    "weapon_5_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_5_groups_2": {
+      "triangles": 568,
+      "vertices": 306,
+      "vertexMaterial": true
+    },
+    "weapon_5_groups_3": {
       "triangles": 256,
-      "vertices": 132
+      "vertices": 132,
+      "vertexMaterial": true
     },
-    "weapon_19_0": {
-      "triangles": 4820,
-      "vertices": 2516
+    "weapon_6_groups_0": {
+      "triangles": 6972,
+      "vertices": 3616,
+      "vertexMaterial": true
     },
-    "weapon_19_1": {
+    "weapon_6_groups_1": {
+      "triangles": 324,
+      "vertices": 168,
+      "vertexMaterial": true
+    },
+    "weapon_6_groups_2": {
+      "triangles": 1100,
+      "vertices": 568,
+      "vertexMaterial": true
+    },
+    "weapon_6_hands_0": {
+      "triangles": 1652,
+      "vertices": 854,
+      "vertexMaterial": true
+    },
+    "weapon_6_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
+    },
+    "weapon_7_groups_0": {
+      "triangles": 5816,
+      "vertices": 3008,
+      "vertexMaterial": true
+    },
+    "weapon_7_groups_1": {
       "triangles": 452,
-      "vertices": 234
+      "vertices": 234,
+      "vertexMaterial": true
     },
-    "weapon_19_2": {
-      "triangles": 972,
-      "vertices": 504
+    "weapon_7_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
     },
-    "weapon_20_0": {
-      "triangles": 6488,
-      "vertices": 3390
+    "weapon_8_groups_0": {
+      "triangles": 7048,
+      "vertices": 3664,
+      "vertexMaterial": true
     },
-    "weapon_20_1": {
+    "weapon_8_groups_1": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
-    "weapon_20_2": {
-      "triangles": 364,
-      "vertices": 188
+    "weapon_8_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
     },
-    "weapon_21_0": {
-      "triangles": 4220,
-      "vertices": 2210
+    "weapon_8_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
     },
-    "weapon_21_1": {
+    "weapon_9_groups_0": {
+      "triangles": 6772,
+      "vertices": 3502,
+      "vertexMaterial": true
+    },
+    "weapon_9_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_9_groups_2": {
+      "triangles": 108,
+      "vertices": 56,
+      "vertexMaterial": true
+    },
+    "weapon_9_groups_3": {
+      "triangles": 268,
+      "vertices": 138,
+      "vertexMaterial": true
+    },
+    "weapon_9_groups_4": {
+      "triangles": 1652,
+      "vertices": 854,
+      "vertexMaterial": true
+    },
+    "weapon_9_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
+    },
+    "weapon_10_groups_0": {
+      "triangles": 1880,
+      "vertices": 970,
+      "vertexMaterial": true
+    },
+    "weapon_10_groups_1": {
+      "triangles": 2168,
+      "vertices": 1118,
+      "vertexMaterial": true
+    },
+    "weapon_10_groups_2": {
+      "triangles": 108,
+      "vertices": 56,
+      "vertexMaterial": true
+    },
+    "weapon_10_hands_1": {
+      "triangles": 1436,
+      "vertices": 742,
+      "vertexMaterial": true
+    },
+    "weapon_11_groups_0": {
+      "triangles": 1664,
+      "vertices": 858,
+      "vertexMaterial": true
+    },
+    "weapon_11_groups_1": {
+      "triangles": 2060,
+      "vertices": 1062,
+      "vertexMaterial": true
+    },
+    "weapon_11_groups_2": {
+      "triangles": 108,
+      "vertices": 56,
+      "vertexMaterial": true
+    },
+    "weapon_11_groups_3": {
+      "triangles": 108,
+      "vertices": 56,
+      "vertexMaterial": true
+    },
+    "weapon_11_hands_1": {
+      "triangles": 1436,
+      "vertices": 742,
+      "vertexMaterial": true
+    },
+    "weapon_12_groups_0": {
+      "triangles": 2324,
+      "vertices": 1198,
+      "vertexMaterial": true
+    },
+    "weapon_13_groups_0": {
+      "triangles": 6476,
+      "vertices": 3362,
+      "vertexMaterial": true
+    },
+    "weapon_13_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_13_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_14_groups_0": {
+      "triangles": 5368,
+      "vertices": 2792,
+      "vertexMaterial": true
+    },
+    "weapon_14_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_14_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_15_groups_0": {
+      "triangles": 6284,
+      "vertices": 3256,
+      "vertexMaterial": true
+    },
+    "weapon_15_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_15_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_16_groups_0": {
+      "triangles": 6692,
+      "vertices": 3474,
+      "vertexMaterial": true
+    },
+    "weapon_16_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_16_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_17_groups_0": {
+      "triangles": 4704,
+      "vertices": 2446,
+      "vertexMaterial": true
+    },
+    "weapon_17_groups_1": {
       "triangles": 324,
-      "vertices": 168
+      "vertices": 168,
+      "vertexMaterial": true
     },
-    "weapon_21_2": {
-      "triangles": 972,
-      "vertices": 504
+    "weapon_17_groups_2": {
+      "triangles": 1100,
+      "vertices": 568,
+      "vertexMaterial": true
     },
-    "weapon_22_0": {
-      "triangles": 2072,
-      "vertices": 1074
+    "weapon_18_groups_0": {
+      "triangles": 4456,
+      "vertices": 2310,
+      "vertexMaterial": true
     },
-    "weapon_22_1": {
+    "weapon_18_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_18_groups_2": {
+      "triangles": 772,
+      "vertices": 398,
+      "vertexMaterial": true
+    },
+    "weapon_18_groups_3": {
+      "triangles": 256,
+      "vertices": 132,
+      "vertexMaterial": true
+    },
+    "weapon_19_groups_0": {
+      "triangles": 5840,
+      "vertices": 3020,
+      "vertexMaterial": true
+    },
+    "weapon_19_groups_1": {
+      "triangles": 452,
+      "vertices": 234,
+      "vertexMaterial": true
+    },
+    "weapon_19_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_20_groups_0": {
+      "triangles": 7516,
+      "vertices": 3898,
+      "vertexMaterial": true
+    },
+    "weapon_20_groups_1": {
+      "triangles": 216,
+      "vertices": 112,
+      "vertexMaterial": true
+    },
+    "weapon_20_groups_2": {
+      "triangles": 416,
+      "vertices": 214,
+      "vertexMaterial": true
+    },
+    "weapon_21_groups_0": {
+      "triangles": 4776,
+      "vertices": 2488,
+      "vertexMaterial": true
+    },
+    "weapon_21_groups_1": {
+      "triangles": 324,
+      "vertices": 168,
+      "vertexMaterial": true
+    },
+    "weapon_21_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
+    },
+    "weapon_22_groups_0": {
+      "triangles": 2384,
+      "vertices": 1230,
+      "vertexMaterial": true
+    },
+    "weapon_22_groups_1": {
       "triangles": 1196,
-      "vertices": 602
+      "vertices": 602,
+      "vertexMaterial": true
     },
-    "weapon_22_2": {
+    "weapon_22_groups_2": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": true
     },
-    "weapon_23_0": {
-      "triangles": 1512,
-      "vertices": 784
+    "weapon_23_groups_0": {
+      "triangles": 1772,
+      "vertices": 914,
+      "vertexMaterial": true
     },
-    "weapon_23_1": {
-      "triangles": 1856,
-      "vertices": 962
+    "weapon_23_groups_1": {
+      "triangles": 2168,
+      "vertices": 1118,
+      "vertexMaterial": true
     },
-    "weapon_23_2": {
+    "weapon_23_groups_2": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": true
     },
-    "weapon_24_0": {
-      "triangles": 5824,
-      "vertices": 3050
+    "weapon_24_groups_0": {
+      "triangles": 6592,
+      "vertices": 3428,
+      "vertexMaterial": true
     },
-    "weapon_24_1": {
+    "weapon_24_groups_1": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
-    "weapon_24_2": {
-      "triangles": 972,
-      "vertices": 504
+    "weapon_24_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
     },
-    "weapon_25_0": {
-      "triangles": 4844,
-      "vertices": 2530
+    "weapon_25_groups_0": {
+      "triangles": 5616,
+      "vertices": 2910,
+      "vertexMaterial": true
     },
-    "weapon_25_1": {
+    "weapon_25_groups_1": {
       "triangles": 324,
-      "vertices": 168
+      "vertices": 168,
+      "vertexMaterial": true
     },
-    "weapon_25_2": {
+    "weapon_25_groups_2": {
       "triangles": 1152,
-      "vertices": 594
+      "vertices": 594,
+      "vertexMaterial": true
     },
-    "weapon_26_0": {
-      "triangles": 5176,
-      "vertices": 2714
+    "weapon_26_groups_0": {
+      "triangles": 6256,
+      "vertices": 3242,
+      "vertexMaterial": true
     },
-    "weapon_26_1": {
+    "weapon_26_groups_1": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
-    "weapon_26_2": {
-      "triangles": 236,
-      "vertices": 122
+    "weapon_26_groups_2": {
+      "triangles": 288,
+      "vertices": 148,
+      "vertexMaterial": true
     },
-    "weapon_27_0": {
-      "triangles": 5812,
-      "vertices": 3030
+    "weapon_26_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
     },
-    "weapon_27_1": {
+    "weapon_27_groups_0": {
+      "triangles": 6836,
+      "vertices": 3536,
+      "vertexMaterial": true
+    },
+    "weapon_27_groups_1": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
-    "weapon_27_2": {
+    "weapon_27_groups_2": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": true
     },
-    "weapon_27_3": {
-      "triangles": 108,
-      "vertices": 56
+    "weapon_27_groups_3": {
+      "triangles": 160,
+      "vertices": 82,
+      "vertexMaterial": true
     },
-    "weapon_27_4": {
+    "weapon_27_groups_4": {
       "triangles": 2124,
-      "vertices": 1098
+      "vertices": 1098,
+      "vertexMaterial": true
     },
-    "weapon_28_0": {
-      "triangles": 3888,
-      "vertices": 2030
+    "weapon_27_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
     },
-    "weapon_28_1": {
+    "weapon_28_groups_0": {
+      "triangles": 4996,
+      "vertices": 2578,
+      "vertexMaterial": true
+    },
+    "weapon_28_groups_1": {
       "triangles": 216,
-      "vertices": 112
+      "vertices": 112,
+      "vertexMaterial": true
     },
-    "weapon_28_2": {
-      "triangles": 972,
-      "vertices": 504
+    "weapon_28_groups_2": {
+      "triangles": 1076,
+      "vertices": 556,
+      "vertexMaterial": true
     },
-    "weapon_29_0": {
-      "triangles": 1728,
-      "vertices": 896
+    "weapon_28_hands_1": {
+      "triangles": 1560,
+      "vertices": 808,
+      "vertexMaterial": true
     },
-    "weapon_29_1": {
-      "triangles": 1748,
-      "vertices": 906
+    "weapon_29_groups_0": {
+      "triangles": 1988,
+      "vertices": 1026,
+      "vertexMaterial": true
     },
-    "weapon_29_2": {
+    "weapon_29_groups_1": {
+      "triangles": 2060,
+      "vertices": 1062,
+      "vertexMaterial": true
+    },
+    "weapon_29_groups_2": {
       "triangles": 108,
-      "vertices": 56
+      "vertices": 56,
+      "vertexMaterial": true
     },
     "ridge_0__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_0__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_1__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_1__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_2__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_2__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_3__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_3__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_5__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_5__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_6__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_6__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_7__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_7__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_8__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_8__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_9__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_9__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_10__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_10__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_11__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_11__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_12__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_12__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_13__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_13__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     },
     "ridge_14__near": {
       "triangles": 2048,
-      "vertices": 1161
+      "vertices": 1161,
+      "vertexMaterial": false
     },
     "ridge_14__far": {
       "triangles": 512,
-      "vertices": 325
+      "vertices": 325,
+      "vertexMaterial": false
     }
   },
   "weapons": {
     "0": {
       "name": "Kestrel AR",
       "coreCount": 78,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_0_0",
+          "mesh": "weapon_0_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -768,7 +1223,7 @@
           ]
         },
         {
-          "mesh": "weapon_0_1",
+          "mesh": "weapon_0_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -782,7 +1237,7 @@
           ]
         },
         {
-          "mesh": "weapon_0_2",
+          "mesh": "weapon_0_groups_2",
           "anchor": 59,
           "tag": "magazine",
           "finishTile": 0,
@@ -802,14 +1257,69 @@
             67
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_0_hands_1",
+          "anchor": 14,
+          "tag": "844f5f81a7a4e4d30631da269098cf615683e9979a48f7ffed3304f86e1c59a4",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "1": {
       "name": "Bastion 7",
       "coreCount": 66,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_1_0",
+          "mesh": "weapon_1_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -876,7 +1386,7 @@
           ]
         },
         {
-          "mesh": "weapon_1_1",
+          "mesh": "weapon_1_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -890,7 +1400,7 @@
           ]
         },
         {
-          "mesh": "weapon_1_2",
+          "mesh": "weapon_1_groups_2",
           "anchor": 49,
           "tag": "magazine",
           "finishTile": 0,
@@ -910,14 +1420,69 @@
             57
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "2": {
       "name": "Raptor C",
       "coreCount": 65,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_2_0",
+          "mesh": "weapon_2_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -983,7 +1548,7 @@
           ]
         },
         {
-          "mesh": "weapon_2_1",
+          "mesh": "weapon_2_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -997,7 +1562,7 @@
           ]
         },
         {
-          "mesh": "weapon_2_2",
+          "mesh": "weapon_2_groups_2",
           "anchor": 50,
           "tag": "magazine",
           "finishTile": 0,
@@ -1017,14 +1582,69 @@
             58
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_2_hands_0",
+          "anchor": 0,
+          "tag": "3018579422c364c15c9999b039380c83306f781a1bff10c862e087a4944beda6",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "3": {
       "name": "Vesper 9",
       "coreCount": 59,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_3_0",
+          "mesh": "weapon_3_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1082,7 +1702,7 @@
           ]
         },
         {
-          "mesh": "weapon_3_1",
+          "mesh": "weapon_3_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1098,7 +1718,7 @@
           ]
         },
         {
-          "mesh": "weapon_3_2",
+          "mesh": "weapon_3_groups_2",
           "anchor": 28,
           "tag": "magazine",
           "finishTile": 0,
@@ -1118,14 +1738,69 @@
             36
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "4": {
       "name": "Lynx PDW",
       "coreCount": 40,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_4_0",
+          "mesh": "weapon_4_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1166,7 +1841,7 @@
           ]
         },
         {
-          "mesh": "weapon_4_1",
+          "mesh": "weapon_4_groups_1",
           "anchor": 3,
           "tag": "magazine",
           "finishTile": 0,
@@ -1187,7 +1862,7 @@
           ]
         },
         {
-          "mesh": "weapon_4_2",
+          "mesh": "weapon_4_groups_2",
           "anchor": 37,
           "tag": "bolt",
           "finishTile": 0,
@@ -1200,14 +1875,69 @@
             39
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_4_hands_0",
+          "anchor": 0,
+          "tag": "a204a943d29a821db4122ecbbb2b493f4f0254a4fbd2950e794194a46bc69120",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_4_hands_1",
+          "anchor": 14,
+          "tag": "6475a0352518d7fb7c297015612550312aa01ce3b2fbe0b6809864c162dc7ef3",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "5": {
       "name": "Breach 12",
       "coreCount": 51,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_5_0",
+          "mesh": "weapon_5_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1255,7 +1985,7 @@
           ]
         },
         {
-          "mesh": "weapon_5_1",
+          "mesh": "weapon_5_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1269,7 +1999,7 @@
           ]
         },
         {
-          "mesh": "weapon_5_2",
+          "mesh": "weapon_5_groups_2",
           "anchor": 10,
           "tag": "pump",
           "finishTile": 0,
@@ -1292,7 +2022,7 @@
           ]
         },
         {
-          "mesh": "weapon_5_3",
+          "mesh": "weapon_5_groups_3",
           "anchor": 49,
           "tag": "loadShell",
           "finishTile": 0,
@@ -1305,14 +2035,69 @@
             50
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "6": {
       "name": "Tempest S",
       "coreCount": 80,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_6_0",
+          "mesh": "weapon_6_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1392,7 +2177,7 @@
           ]
         },
         {
-          "mesh": "weapon_6_1",
+          "mesh": "weapon_6_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1407,7 +2192,7 @@
           ]
         },
         {
-          "mesh": "weapon_6_2",
+          "mesh": "weapon_6_groups_2",
           "anchor": 61,
           "tag": "magazine",
           "finishTile": 0,
@@ -1427,14 +2212,69 @@
             69
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_6_hands_0",
+          "anchor": 0,
+          "tag": "0d8f1f8bcc12aad2d3ba27b762678f3d5fce5eab83c20789586dd9cf3e43caf1",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_6_hands_1",
+          "anchor": 14,
+          "tag": "f2ad09fbea4e826e52a743a6cadbf958b98d7d9b76b14f4fa81e4a1fdca03f0b",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "7": {
       "name": "Longbow M",
       "coreCount": 66,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_7_0",
+          "mesh": "weapon_7_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1499,7 +2339,7 @@
           ]
         },
         {
-          "mesh": "weapon_7_1",
+          "mesh": "weapon_7_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1515,7 +2355,7 @@
           ]
         },
         {
-          "mesh": "weapon_7_2",
+          "mesh": "weapon_7_groups_2",
           "anchor": 43,
           "tag": "magazine",
           "finishTile": 0,
@@ -1535,14 +2375,69 @@
             51
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_4_hands_1",
+          "anchor": 14,
+          "tag": "6475a0352518d7fb7c297015612550312aa01ce3b2fbe0b6809864c162dc7ef3",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "8": {
       "name": "Warden D",
       "coreCount": 84,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_8_0",
+          "mesh": "weapon_8_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1627,7 +2522,7 @@
           ]
         },
         {
-          "mesh": "weapon_8_1",
+          "mesh": "weapon_8_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1641,7 +2536,7 @@
           ]
         },
         {
-          "mesh": "weapon_8_2",
+          "mesh": "weapon_8_groups_2",
           "anchor": 66,
           "tag": "magazine",
           "finishTile": 0,
@@ -1661,14 +2556,69 @@
             74
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_4_hands_0",
+          "anchor": 0,
+          "tag": "a204a943d29a821db4122ecbbb2b493f4f0254a4fbd2950e794194a46bc69120",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_8_hands_1",
+          "anchor": 14,
+          "tag": "98bd9c27274c9473427873f4d593a3c3960231d240e06ca58791ed585f935853",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "9": {
       "name": "Atlas L",
       "coreCount": 80,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_9_0",
+          "mesh": "weapon_9_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -1741,7 +2691,7 @@
           ]
         },
         {
-          "mesh": "weapon_9_1",
+          "mesh": "weapon_9_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -1755,7 +2705,7 @@
           ]
         },
         {
-          "mesh": "weapon_9_2",
+          "mesh": "weapon_9_groups_2",
           "anchor": 8,
           "tag": "lid",
           "finishTile": 0,
@@ -1768,7 +2718,7 @@
           ]
         },
         {
-          "mesh": "weapon_9_3",
+          "mesh": "weapon_9_groups_3",
           "anchor": 60,
           "tag": "magazine",
           "finishTile": 0,
@@ -1782,7 +2732,7 @@
           ]
         },
         {
-          "mesh": "weapon_9_4",
+          "mesh": "weapon_9_groups_4",
           "anchor": 62,
           "tag": "belt",
           "finishTile": 0,
@@ -1807,14 +2757,69 @@
             75
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_9_hands_1",
+          "anchor": 14,
+          "tag": "3b2b263ae592d7fe9392b654e619efd2d02e4b7c57ba774caf2cb953c1b9bedf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "10": {
       "name": "Sable P",
       "coreCount": 33,
+      "handCount": 26,
       "groups": [
         {
-          "mesh": "weapon_10_0",
+          "mesh": "weapon_10_groups_0",
           "anchor": 0,
           "tag": "slide",
           "finishTile": 0,
@@ -1841,7 +2846,7 @@
           ]
         },
         {
-          "mesh": "weapon_10_1",
+          "mesh": "weapon_10_groups_1",
           "anchor": 1,
           "tag": "static",
           "finishTile": 0,
@@ -1870,7 +2875,7 @@
           ]
         },
         {
-          "mesh": "weapon_10_2",
+          "mesh": "weapon_10_groups_2",
           "anchor": 30,
           "tag": "magazine",
           "finishTile": 0,
@@ -1882,14 +2887,67 @@
             30
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_10_hands_1",
+          "anchor": 14,
+          "tag": "11323cda929dd69169ffb86b797fdc9c52840d288ccf7dd311fd2f67e39275b5",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
       ]
     },
     "11": {
       "name": "Dire 50",
       "coreCount": 31,
+      "handCount": 26,
       "groups": [
         {
-          "mesh": "weapon_11_0",
+          "mesh": "weapon_11_groups_0",
           "anchor": 0,
           "tag": "slide",
           "finishTile": 0,
@@ -1914,7 +2972,7 @@
           ]
         },
         {
-          "mesh": "weapon_11_1",
+          "mesh": "weapon_11_groups_1",
           "anchor": 2,
           "tag": "static",
           "finishTile": 0,
@@ -1942,7 +3000,7 @@
           ]
         },
         {
-          "mesh": "weapon_11_2",
+          "mesh": "weapon_11_groups_2",
           "anchor": 28,
           "tag": "magazine",
           "finishTile": 0,
@@ -1955,7 +3013,7 @@
           ]
         },
         {
-          "mesh": "weapon_11_3",
+          "mesh": "weapon_11_groups_3",
           "anchor": 29,
           "tag": "hammer",
           "finishTile": 0,
@@ -1967,14 +3025,67 @@
             29
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_11_hands_1",
+          "anchor": 14,
+          "tag": "883be119e7ec50bc9cdba9f419cca0596a8e810d62b4ed9b8c22e3a085464fcf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
       ]
     },
     "12": {
       "name": "Field blade",
       "coreCount": 18,
+      "handCount": 14,
       "groups": [
         {
-          "mesh": "weapon_12_0",
+          "mesh": "weapon_12_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2003,14 +3114,43 @@
             17
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        }
       ]
     },
     "13": {
       "name": "Harrow B3",
       "coreCount": 76,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_13_0",
+          "mesh": "weapon_13_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2087,7 +3227,7 @@
           ]
         },
         {
-          "mesh": "weapon_13_1",
+          "mesh": "weapon_13_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2101,7 +3241,7 @@
           ]
         },
         {
-          "mesh": "weapon_13_2",
+          "mesh": "weapon_13_groups_2",
           "anchor": 56,
           "tag": "magazine",
           "finishTile": 0,
@@ -2121,14 +3261,69 @@
             64
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_4_hands_1",
+          "anchor": 14,
+          "tag": "6475a0352518d7fb7c297015612550312aa01ce3b2fbe0b6809864c162dc7ef3",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "14": {
       "name": "Marten 45",
       "coreCount": 65,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_14_0",
+          "mesh": "weapon_14_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2194,7 +3389,7 @@
           ]
         },
         {
-          "mesh": "weapon_14_1",
+          "mesh": "weapon_14_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2208,7 +3403,7 @@
           ]
         },
         {
-          "mesh": "weapon_14_2",
+          "mesh": "weapon_14_groups_2",
           "anchor": 46,
           "tag": "magazine",
           "finishTile": 0,
@@ -2228,14 +3423,69 @@
             54
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_4_hands_0",
+          "anchor": 0,
+          "tag": "a204a943d29a821db4122ecbbb2b493f4f0254a4fbd2950e794194a46bc69120",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_4_hands_1",
+          "anchor": 14,
+          "tag": "6475a0352518d7fb7c297015612550312aa01ce3b2fbe0b6809864c162dc7ef3",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "15": {
       "name": "Mako 7",
       "coreCount": 71,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_15_0",
+          "mesh": "weapon_15_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2307,7 +3557,7 @@
           ]
         },
         {
-          "mesh": "weapon_15_1",
+          "mesh": "weapon_15_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2321,7 +3571,7 @@
           ]
         },
         {
-          "mesh": "weapon_15_2",
+          "mesh": "weapon_15_groups_2",
           "anchor": 52,
           "tag": "magazine",
           "finishTile": 0,
@@ -2341,14 +3591,69 @@
             60
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_9_hands_1",
+          "anchor": 14,
+          "tag": "3b2b263ae592d7fe9392b654e619efd2d02e4b7c57ba774caf2cb953c1b9bedf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "16": {
       "name": "Peregrine 6",
       "coreCount": 78,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_16_0",
+          "mesh": "weapon_16_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2427,7 +3732,7 @@
           ]
         },
         {
-          "mesh": "weapon_16_1",
+          "mesh": "weapon_16_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2441,7 +3746,7 @@
           ]
         },
         {
-          "mesh": "weapon_16_2",
+          "mesh": "weapon_16_groups_2",
           "anchor": 56,
           "tag": "magazine",
           "finishTile": 0,
@@ -2461,14 +3766,69 @@
             64
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_6_hands_1",
+          "anchor": 14,
+          "tag": "f2ad09fbea4e826e52a743a6cadbf958b98d7d9b76b14f4fa81e4a1fdca03f0b",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "17": {
       "name": "Osprey S",
       "coreCount": 59,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_17_0",
+          "mesh": "weapon_17_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2527,7 +3887,7 @@
           ]
         },
         {
-          "mesh": "weapon_17_1",
+          "mesh": "weapon_17_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2542,7 +3902,7 @@
           ]
         },
         {
-          "mesh": "weapon_17_2",
+          "mesh": "weapon_17_groups_2",
           "anchor": 41,
           "tag": "magazine",
           "finishTile": 0,
@@ -2562,14 +3922,69 @@
             49
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_2_hands_0",
+          "anchor": 0,
+          "tag": "3018579422c364c15c9999b039380c83306f781a1bff10c862e087a4944beda6",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_6_hands_1",
+          "anchor": 14,
+          "tag": "f2ad09fbea4e826e52a743a6cadbf958b98d7d9b76b14f4fa81e4a1fdca03f0b",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "18": {
       "name": "Bison 12",
       "coreCount": 54,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_18_0",
+          "mesh": "weapon_18_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2622,7 +4037,7 @@
           ]
         },
         {
-          "mesh": "weapon_18_1",
+          "mesh": "weapon_18_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2636,7 +4051,7 @@
           ]
         },
         {
-          "mesh": "weapon_18_2",
+          "mesh": "weapon_18_groups_2",
           "anchor": 11,
           "tag": "pump",
           "finishTile": 0,
@@ -2657,7 +4072,7 @@
           ]
         },
         {
-          "mesh": "weapon_18_3",
+          "mesh": "weapon_18_groups_3",
           "anchor": 52,
           "tag": "loadShell",
           "finishTile": 0,
@@ -2670,14 +4085,69 @@
             53
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_4_hands_0",
+          "anchor": 0,
+          "tag": "a204a943d29a821db4122ecbbb2b493f4f0254a4fbd2950e794194a46bc69120",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "19": {
       "name": "Talon 338",
       "coreCount": 66,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_19_0",
+          "mesh": "weapon_19_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2742,7 +4212,7 @@
           ]
         },
         {
-          "mesh": "weapon_19_1",
+          "mesh": "weapon_19_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2758,7 +4228,7 @@
           ]
         },
         {
-          "mesh": "weapon_19_2",
+          "mesh": "weapon_19_groups_2",
           "anchor": 44,
           "tag": "magazine",
           "finishTile": 0,
@@ -2778,14 +4248,69 @@
             52
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_9_hands_1",
+          "anchor": 14,
+          "tag": "3b2b263ae592d7fe9392b654e619efd2d02e4b7c57ba774caf2cb953c1b9bedf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "20": {
       "name": "Rampart 556",
       "coreCount": 78,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_20_0",
+          "mesh": "weapon_20_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2870,7 +4395,7 @@
           ]
         },
         {
-          "mesh": "weapon_20_1",
+          "mesh": "weapon_20_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2884,7 +4409,7 @@
           ]
         },
         {
-          "mesh": "weapon_20_2",
+          "mesh": "weapon_20_groups_2",
           "anchor": 73,
           "tag": "magazine",
           "finishTile": 0,
@@ -2898,14 +4423,69 @@
             75
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_1_hands_1",
+          "anchor": 14,
+          "tag": "3bd7165f53c6a8d8460c03023cd7c4dcc74b017363175cb2ca1af5b83e57525d",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "21": {
       "name": "Spectre SD",
       "coreCount": 62,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_21_0",
+          "mesh": "weapon_21_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -2967,7 +4547,7 @@
           ]
         },
         {
-          "mesh": "weapon_21_1",
+          "mesh": "weapon_21_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -2982,7 +4562,7 @@
           ]
         },
         {
-          "mesh": "weapon_21_2",
+          "mesh": "weapon_21_groups_2",
           "anchor": 44,
           "tag": "magazine",
           "finishTile": 0,
@@ -3002,14 +4582,69 @@
             52
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_8_hands_1",
+          "anchor": 14,
+          "tag": "98bd9c27274c9473427873f4d593a3c3960231d240e06ca58791ed585f935853",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "22": {
       "name": "Krait R",
       "coreCount": 28,
+      "handCount": 26,
       "groups": [
         {
-          "mesh": "weapon_22_0",
+          "mesh": "weapon_22_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3040,7 +4675,7 @@
           ]
         },
         {
-          "mesh": "weapon_22_1",
+          "mesh": "weapon_22_groups_1",
           "anchor": 4,
           "tag": "cylinder",
           "finishTile": 0,
@@ -3060,7 +4695,7 @@
           ]
         },
         {
-          "mesh": "weapon_22_2",
+          "mesh": "weapon_22_groups_2",
           "anchor": 26,
           "tag": "hammer",
           "finishTile": 0,
@@ -3072,14 +4707,67 @@
             26
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_11_hands_1",
+          "anchor": 14,
+          "tag": "883be119e7ec50bc9cdba9f419cca0596a8e810d62b4ed9b8c22e3a085464fcf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
       ]
     },
     "23": {
       "name": "Swift 93",
       "coreCount": 32,
+      "handCount": 26,
       "groups": [
         {
-          "mesh": "weapon_23_0",
+          "mesh": "weapon_23_groups_0",
           "anchor": 0,
           "tag": "slide",
           "finishTile": 0,
@@ -3105,7 +4793,7 @@
           ]
         },
         {
-          "mesh": "weapon_23_1",
+          "mesh": "weapon_23_groups_1",
           "anchor": 1,
           "tag": "static",
           "finishTile": 0,
@@ -3134,7 +4822,7 @@
           ]
         },
         {
-          "mesh": "weapon_23_2",
+          "mesh": "weapon_23_groups_2",
           "anchor": 29,
           "tag": "magazine",
           "finishTile": 0,
@@ -3146,14 +4834,67 @@
             29
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_2_hands_0",
+          "anchor": 0,
+          "tag": "3018579422c364c15c9999b039380c83306f781a1bff10c862e087a4944beda6",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_10_hands_1",
+          "anchor": 14,
+          "tag": "11323cda929dd69169ffb86b797fdc9c52840d288ccf7dd311fd2f67e39275b5",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
       ]
     },
     "24": {
       "name": "Storm 68",
       "coreCount": 80,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_24_0",
+          "mesh": "weapon_24_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3234,7 +4975,7 @@
           ]
         },
         {
-          "mesh": "weapon_24_1",
+          "mesh": "weapon_24_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -3248,7 +4989,7 @@
           ]
         },
         {
-          "mesh": "weapon_24_2",
+          "mesh": "weapon_24_groups_2",
           "anchor": 65,
           "tag": "magazine",
           "finishTile": 0,
@@ -3268,14 +5009,69 @@
             73
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_2_hands_0",
+          "anchor": 0,
+          "tag": "3018579422c364c15c9999b039380c83306f781a1bff10c862e087a4944beda6",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_6_hands_1",
+          "anchor": 14,
+          "tag": "f2ad09fbea4e826e52a743a6cadbf958b98d7d9b76b14f4fa81e4a1fdca03f0b",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "25": {
       "name": "Needle 57",
       "coreCount": 66,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_25_0",
+          "mesh": "weapon_25_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3341,7 +5137,7 @@
           ]
         },
         {
-          "mesh": "weapon_25_1",
+          "mesh": "weapon_25_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -3356,7 +5152,7 @@
           ]
         },
         {
-          "mesh": "weapon_25_2",
+          "mesh": "weapon_25_groups_2",
           "anchor": 9,
           "tag": "magazine",
           "finishTile": 0,
@@ -3376,14 +5172,69 @@
             17
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_4_hands_0",
+          "anchor": 0,
+          "tag": "a204a943d29a821db4122ecbbb2b493f4f0254a4fbd2950e794194a46bc69120",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_6_hands_1",
+          "anchor": 14,
+          "tag": "f2ad09fbea4e826e52a743a6cadbf958b98d7d9b76b14f4fa81e4a1fdca03f0b",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "26": {
       "name": "Jackal 12",
       "coreCount": 67,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_26_0",
+          "mesh": "weapon_26_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3458,7 +5309,7 @@
           ]
         },
         {
-          "mesh": "weapon_26_1",
+          "mesh": "weapon_26_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -3472,7 +5323,7 @@
           ]
         },
         {
-          "mesh": "weapon_26_2",
+          "mesh": "weapon_26_groups_2",
           "anchor": 59,
           "tag": "magazine",
           "finishTile": 0,
@@ -3485,14 +5336,69 @@
             60
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_2_hands_0",
+          "anchor": 0,
+          "tag": "3018579422c364c15c9999b039380c83306f781a1bff10c862e087a4944beda6",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_26_hands_1",
+          "anchor": 14,
+          "tag": "3e9d6d1a50dfe2687eb7cf1e01dbc5d3d5d11d57074bf46e88a5cd347f408511",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "27": {
       "name": "Sentinel 762",
       "coreCount": 84,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_27_0",
+          "mesh": "weapon_27_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3566,7 +5472,7 @@
           ]
         },
         {
-          "mesh": "weapon_27_1",
+          "mesh": "weapon_27_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -3580,7 +5486,7 @@
           ]
         },
         {
-          "mesh": "weapon_27_2",
+          "mesh": "weapon_27_groups_2",
           "anchor": 8,
           "tag": "lid",
           "finishTile": 0,
@@ -3593,7 +5499,7 @@
           ]
         },
         {
-          "mesh": "weapon_27_3",
+          "mesh": "weapon_27_groups_3",
           "anchor": 63,
           "tag": "magazine",
           "finishTile": 0,
@@ -3606,7 +5512,7 @@
           ]
         },
         {
-          "mesh": "weapon_27_4",
+          "mesh": "weapon_27_groups_4",
           "anchor": 64,
           "tag": "belt",
           "finishTile": 0,
@@ -3635,14 +5541,69 @@
             81
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_27_hands_1",
+          "anchor": 14,
+          "tag": "31625e955ffa62f3e34059f01db6ee4671b2e63a7c354417f4845b0f167afd43",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "28": {
       "name": "Heron S",
       "coreCount": 54,
+      "handCount": 28,
       "groups": [
         {
-          "mesh": "weapon_28_0",
+          "mesh": "weapon_28_groups_0",
           "anchor": 0,
           "tag": "static",
           "finishTile": 0,
@@ -3697,7 +5658,7 @@
           ]
         },
         {
-          "mesh": "weapon_28_1",
+          "mesh": "weapon_28_groups_1",
           "anchor": 3,
           "tag": "bolt",
           "finishTile": 0,
@@ -3711,7 +5672,7 @@
           ]
         },
         {
-          "mesh": "weapon_28_2",
+          "mesh": "weapon_28_groups_2",
           "anchor": 25,
           "tag": "magazine",
           "finishTile": 0,
@@ -3731,14 +5692,69 @@
             33
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_28_hands_1",
+          "anchor": 14,
+          "tag": "6e311eccdae4d7f3e58617ef2d47acad4511f2c85fa0a8c0cddd6a9ef5d5d93e",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27
+          ]
+        }
       ]
     },
     "29": {
       "name": "Paladin 45",
       "coreCount": 33,
+      "handCount": 26,
       "groups": [
         {
-          "mesh": "weapon_29_0",
+          "mesh": "weapon_29_groups_0",
           "anchor": 0,
           "tag": "slide",
           "finishTile": 0,
@@ -3766,7 +5782,7 @@
           ]
         },
         {
-          "mesh": "weapon_29_1",
+          "mesh": "weapon_29_groups_1",
           "anchor": 1,
           "tag": "static",
           "finishTile": 0,
@@ -3794,7 +5810,7 @@
           ]
         },
         {
-          "mesh": "weapon_29_2",
+          "mesh": "weapon_29_groups_2",
           "anchor": 30,
           "tag": "magazine",
           "finishTile": 0,
@@ -3806,6 +5822,58 @@
             30
           ]
         }
+      ],
+      "hands": [
+        {
+          "mesh": "weapon_0_hands_0",
+          "anchor": 0,
+          "tag": "b5f29692abae76b8f7705ece18bde1ab8e724fc203332bcec74827ae7aa8bfce",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "mesh": "weapon_11_hands_1",
+          "anchor": 14,
+          "tag": "883be119e7ec50bc9cdba9f419cca0596a8e810d62b4ed9b8c22e3a085464fcf",
+          "finishTile": 0,
+          "rough": 0.5,
+          "metal": 0.5,
+          "tile": -1,
+          "vertexMaterial": true,
+          "members": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
       ]
     }
   },
@@ -3813,155 +5881,269 @@
     {
       "path": "breachline-library.part000.bin",
       "bytes": 262140,
-      "sha256": "fa1ec28e0f6b34637bf01ec32a17a60faaddc5efc2ef8643e94475e2da2512d6"
+      "sha256": "3d6e4bf4f64a404878bbe0f65b211771ca566bc0ac221c973c162f74eeeafe7d"
     },
     {
       "path": "breachline-library.part001.bin",
       "bytes": 262140,
-      "sha256": "eb7c2aeebdf9ca1b0a517286bbd01fb4a66263993d8a791f40f5dea078797171"
+      "sha256": "c022dc18d6374ac5c2c69328a4c14a753951f546e718e31f1a16cfc54b0a9671"
     },
     {
       "path": "breachline-library.part002.bin",
       "bytes": 262140,
-      "sha256": "5ff3c5ddb0f5527b05735d2168f92824f8e5485c430bebe5fc9e4c85f82efe7c"
+      "sha256": "4b8fa3d2657fd226076b732499b9cdc6fb2a4461dff2102217d2f0a20973b7ab"
     },
     {
       "path": "breachline-library.part003.bin",
       "bytes": 262140,
-      "sha256": "64b34265cab7ef0d4b735d4d55431e1bb795f5e190443c7c33fb495ed8f7ba20"
+      "sha256": "29fc889f3f9807783b7095401d1ada9b75151827769ab948a9e763d3bb95924d"
     },
     {
       "path": "breachline-library.part004.bin",
       "bytes": 262140,
-      "sha256": "254a0b8668d151e128e9d11a5e2069a469ad968aa8a18ae661c6c6e89dfa4bed"
+      "sha256": "8e9a733cf35589bbeae2f5e69fa435f6445a2143677c5259eb5c2f3e2f09bb79"
     },
     {
       "path": "breachline-library.part005.bin",
       "bytes": 262140,
-      "sha256": "5d8866281c2281edfb8ceaf7684c041f89be8953f26f4a060c524a389b25e312"
+      "sha256": "409b150aa9fd5b0bce6e28553b564019b8d99e10fde1941b394c4b253386344b"
     },
     {
       "path": "breachline-library.part006.bin",
       "bytes": 262140,
-      "sha256": "b3cb65623c4836d8bb0a595d33203825562500f575194502e627bc80703de810"
+      "sha256": "b84cdee6d129980f1af46f9bbda651a86897b131ca0fb42683226147e9c8a480"
     },
     {
       "path": "breachline-library.part007.bin",
       "bytes": 262140,
-      "sha256": "537f202fa3a7bb416c7739530e4dd4b495604446a014a94ea0114b2c7447b6e5"
+      "sha256": "d37e31c52da75e584900605cc4a85f66033f4e8661da80c691037381295eb3fa"
     },
     {
       "path": "breachline-library.part008.bin",
       "bytes": 262140,
-      "sha256": "9a54023b1534f5c7e54c9009268d07a14adb4b6ee325a1baebbe07e51c90e3a8"
+      "sha256": "5d86b66796db19c96ab0b8235a9cfb449d5aafebc13cff11c99b022c1df8c836"
     },
     {
       "path": "breachline-library.part009.bin",
       "bytes": 262140,
-      "sha256": "77b77d9e0968b8448e7867d1a33ed4eb66c74e7d00a7383b12a7cfe53bd108b6"
+      "sha256": "a7d57b5063a6d258f67a41a7ab12a130cca6713339d2b315cac7584f1e73d733"
     },
     {
       "path": "breachline-library.part010.bin",
       "bytes": 262140,
-      "sha256": "ed6a9c9a30f3c6c87ca0a3b71129d1830d111c00c623ebfc88a6c59e2322d26c"
+      "sha256": "38bb620106144c7a40591fb54775958c0a88446075632bbbad72e8d33183ac9f"
     },
     {
       "path": "breachline-library.part011.bin",
       "bytes": 262140,
-      "sha256": "311abd4c32922c56c8f426e30d547941d73f5fcb0576d4a4eb97d63b9ce9fab2"
+      "sha256": "91b71448afb17a5d982f9d9e66f080cce8bb30517c7c6dfb10f85cf35bb4dfed"
     },
     {
       "path": "breachline-library.part012.bin",
       "bytes": 262140,
-      "sha256": "0dd1684c51be327f25edf1dfda9b3b0bfe312983b71cd7bfb07403c93aac15ca"
+      "sha256": "91414ca925e4613ea15c0ba3f86c92570e7c875969ba65eee7e4e98dd8e9fbff"
     },
     {
       "path": "breachline-library.part013.bin",
       "bytes": 262140,
-      "sha256": "8902ff809f51f95cceae0e3f6f640e5014f2c929e45ffbf9ff93237050715685"
+      "sha256": "4db72db84c7ceae1689c202a8e6210b8b60a75098fdd659b141b8f144bb09652"
     },
     {
       "path": "breachline-library.part014.bin",
       "bytes": 262140,
-      "sha256": "7b24e6753f9b745318c98c47851011bae624c891949efad90ab982693aa066ca"
+      "sha256": "f601f925dc1893f07efe381fe08a0f78b77a9ffe2f4ed6079510a84228d556fb"
     },
     {
       "path": "breachline-library.part015.bin",
       "bytes": 262140,
-      "sha256": "ae5e1ae6d4be67252cf321056a662c98d5154d1123049db9f637897aae5fb8bb"
+      "sha256": "a0d1cb86ca3aa385bb4184deace9fe8dd3dfb4eb77d829f5c12fcd22905d61df"
     },
     {
       "path": "breachline-library.part016.bin",
       "bytes": 262140,
-      "sha256": "5d244a07992e0e073a3d6b05d0148b48c5b110b7da1bf4ae3cef34aa242c96ef"
+      "sha256": "43444eb8c2322e0014a5cd7ed88c1c21a4f98c327897ffeab50e394e0acfe19a"
     },
     {
       "path": "breachline-library.part017.bin",
-      "bytes": 33742,
-      "sha256": "a97c4f20c492e85fddfad654ceb19a6a1c937d55078f83975341e7a9b16f70e0"
+      "bytes": 262140,
+      "sha256": "5a9be34bef06b976615779d3337cbc48a7eeccedf82011ee7e0e4f9068e031ae"
+    },
+    {
+      "path": "breachline-library.part018.bin",
+      "bytes": 262140,
+      "sha256": "07573d24a589a6a18380b2d37886ffb2f75c4090db24ce85bf3eeab27ed55cbf"
+    },
+    {
+      "path": "breachline-library.part019.bin",
+      "bytes": 262140,
+      "sha256": "c64e657e373b4a25c1691d3e0acae5e48af9a8ae8fa3da74b7cf3546bb1702c1"
+    },
+    {
+      "path": "breachline-library.part020.bin",
+      "bytes": 157118,
+      "sha256": "a4c5f382f168db5c25c3093faa772adbd1380d6dec33d169d5b4ccb44e42abf4"
+    },
+    {
+      "path": "surfaces-albedo.part000.bin",
+      "bytes": 262140,
+      "sha256": "e67c0a0815c18db58768a27c1efe9f3c4df076708d20d8b79a97ea20288511ed"
+    },
+    {
+      "path": "surfaces-albedo.part001.bin",
+      "bytes": 262140,
+      "sha256": "aa5bf40e090a42aecdf525c61fabf9df1173d9066c82d8e3f228d61af4aa86bf"
+    },
+    {
+      "path": "surfaces-albedo.part002.bin",
+      "bytes": 262140,
+      "sha256": "fdc97da755f2700946f065cdb49785ba0c9ccb6688d46b6b2231dc21be79e63f"
+    },
+    {
+      "path": "surfaces-albedo.part003.bin",
+      "bytes": 262140,
+      "sha256": "c3b1043fc28ab71cc404baf1b2829bb831ef93dbaf1a2890e3a52b6d2843c04b"
+    },
+    {
+      "path": "surfaces-albedo.part004.bin",
+      "bytes": 262140,
+      "sha256": "224ceb5776a98091818588a7cb5befa8ad767ffd5a546a7e394035bdbed27b54"
+    },
+    {
+      "path": "surfaces-albedo.part005.bin",
+      "bytes": 32506,
+      "sha256": "6230815b20451ca127678c9933ee645669df15be8576be386e7ebedc3adf64fb"
+    },
+    {
+      "path": "weapons-albedo.part000.bin",
+      "bytes": 262140,
+      "sha256": "bd581dd35f89e7bbfe4b9ad98d67cc462b4101afe9a97a996df3b66e54a2b5f1"
+    },
+    {
+      "path": "weapons-albedo.part001.bin",
+      "bytes": 262140,
+      "sha256": "bbb5a7163ee595a0328ab19e48f42aa2eebbb3218f8617362111f79693eee13c"
+    },
+    {
+      "path": "weapons-albedo.part002.bin",
+      "bytes": 262140,
+      "sha256": "2bc436f2338cd87889dadf6834ba50d4becf0ed9f6112b3f23c65e48dc7be5fa"
+    },
+    {
+      "path": "weapons-albedo.part003.bin",
+      "bytes": 262140,
+      "sha256": "b16388f0d53864c09ea8f65bcdcaf4c67905bc79ee38f050d305a3ee527b98a2"
+    },
+    {
+      "path": "weapons-albedo.part004.bin",
+      "bytes": 76710,
+      "sha256": "9baea811532f54da61710109f160bdb56365d2686072bd305ac74d17e6432272"
+    },
+    {
+      "path": "foliage.part000.bin",
+      "bytes": 262140,
+      "sha256": "fda76d4e9b5357a37afe74a28e30286409b1addc3ba00c6a8cb291d3fc0c7a98"
+    },
+    {
+      "path": "foliage.part001.bin",
+      "bytes": 262140,
+      "sha256": "b37eadb98af9030edfb9f46cc4fb36574feb1eff6ecb89612481c7d32e5bb761"
+    },
+    {
+      "path": "foliage.part002.bin",
+      "bytes": 262140,
+      "sha256": "eac2f8d45aa999a29074cbff8da5bbc6ef3b3f7fbe9f8324c13854bf61b25ec6"
+    },
+    {
+      "path": "foliage.part003.bin",
+      "bytes": 262140,
+      "sha256": "ebad723737fb839cb1a6b7025f10458536018ee368fbf5ccfc9f0a4188b5bcf5"
+    },
+    {
+      "path": "foliage.part004.bin",
+      "bytes": 253512,
+      "sha256": "cd6d0368808a1a97b219aaf0a4e506216a2f7e4f6877a7dbe77ded6e9780b9d5"
+    },
+    {
+      "path": "sky.part000.bin",
+      "bytes": 243150,
+      "sha256": "a8b1d11063461d215f56811e05f212d4a426308249b122a38b9cc4874e61ecec"
+    },
+    {
+      "path": "effects.part000.bin",
+      "bytes": 104346,
+      "sha256": "556c1db5c25df26261109a2160e06d5dd433f7afa2b7d18f8caf060e04a3e87b"
     },
     {
       "path": "surfaces-normal.part000.bin",
       "bytes": 262140,
-      "sha256": "38166a5e9a08ec9a62866e42a9bd95009926af3434eed61d824f04f8a328052e"
+      "sha256": "4bc4b045a920d7f5c880a3ecb0dc474c87a928c5aebec7a7ee054baeb67e6bc1"
     },
     {
       "path": "surfaces-normal.part001.bin",
       "bytes": 262140,
-      "sha256": "185ea462b34e11a365cd5955a3037e76f77eb3cb4ac87781ef7eb2b83ee4bb54"
+      "sha256": "704608614d6adda4e0474703e3630996b06b09bada174bcb9bb3e6efec40ae59"
     },
     {
       "path": "surfaces-normal.part002.bin",
-      "bytes": 134068,
-      "sha256": "76774ea246d5e1bb6a1599b3445160d4a9f3e451179bb22fcfaef1e3deaea18d"
+      "bytes": 125454,
+      "sha256": "489f62c9a07c64f1dcddd56fa9e7cc0d8cdb1590c6cde16ae3b114bb1532c997"
     },
     {
       "path": "surfaces-orm.part000.bin",
       "bytes": 262140,
-      "sha256": "7d3ae7313ff4ba648b090496bd4340012ad1976092a179e2c0ad855c9c2a070a"
+      "sha256": "65ab2d2f69ab5e34f476130c77c60216e91db5ca8fdeea30d9f492be06245e7a"
     },
     {
       "path": "surfaces-orm.part001.bin",
-      "bytes": 213574,
-      "sha256": "8849d0d29af9b0913b19a6c51ffb3455020348864f825f3783dd61c45d9c7c85"
+      "bytes": 129768,
+      "sha256": "2040e79ef0e0d0e007086fee33b1814cc741cd61bcc4fcffff1e979922f3aa8a"
     },
     {
       "path": "weapons-normal.part000.bin",
       "bytes": 262140,
-      "sha256": "0762b1d58ef530b876a51c70e43366200981eb46538b13a3bd941e9f54de9bc6"
+      "sha256": "5ee3fce0cef36c4a5194d78dff676e1dc44a2804ebb190a19442227c00d86403"
     },
     {
       "path": "weapons-normal.part001.bin",
-      "bytes": 262140,
-      "sha256": "efebbc3431a1f01c7e4a25901c2d4ad6f051fc329e975ab6e9136156b2074169"
-    },
-    {
-      "path": "weapons-normal.part002.bin",
-      "bytes": 93722,
-      "sha256": "e8823ecbf9ea8d0c8794f83364c198491b26378acc15e637356eaf6a2a647e91"
+      "bytes": 44030,
+      "sha256": "06fc3df7ebf7c3a169fba7ef368c263356334b3d36a1c44f1a759236829a3354"
     },
     {
       "path": "weapons-orm.part000.bin",
       "bytes": 262140,
-      "sha256": "e40005e96bfbe4c6007457ac84ae75e5db452150896dfea8b826d8a683a9e881"
+      "sha256": "0fac1a2b8d7283122eaee8f79a571b3d7f92487ed50da4aca355b0bd2ab66ea9"
     },
     {
       "path": "weapons-orm.part001.bin",
       "bytes": 262140,
-      "sha256": "c7aa0b48b612e5827862ca31c91b1b10ccb4b8656bc03c48997f4e7782a9a0dc"
+      "sha256": "d932230f7ccf55f70e69d78f4d4d3eef71934bb3170669a82fba0d8571963612"
     },
     {
       "path": "weapons-orm.part002.bin",
-      "bytes": 262140,
-      "sha256": "95b26f1d11b8cd4d6b0e86506f6597f8dfe13dc82cce52f2b5a49519016f1273"
-    },
-    {
-      "path": "weapons-orm.part003.bin",
-      "bytes": 138724,
-      "sha256": "63ab571c3ee2bb9124922a007d54bfed33c3c5f9c49fe7dc0cde26c3838c327c"
+      "bytes": 60890,
+      "sha256": "58c0453de9d07086fbf3793e6b54bc29f9d18265ab302e22d5c178945bed4686"
     }
   ],
-  "downloadBytes": 7167330,
+  "props": [
+    "pallet",
+    "sandbags",
+    "equipment_case",
+    "generator",
+    "street_bin",
+    "utility_van",
+    "hvac"
+  ],
+  "artRevision": 3,
+  "authorship": "Original Blender mesh authoring and native Cycles colour/normal/physical bakes",
+  "geometryPacking": {
+    "normalisedBits": 16,
+    "streams": 376,
+    "savedBytes": 4194296,
+    "maxColourError": 0.00000762951052023968,
+    "maxMaterialError": 0.000007629510948348184,
+    "exactSourceSha256": "6d0907fda89b8bf38396a9db64f67568c31126639ca7ff5a639076dd0617774f",
+    "exactPackedSha256": "6d0907fda89b8bf38396a9db64f67568c31126639ca7ff5a639076dd0617774f"
+  },
   "library": {
     "parts": [
       "breachline-library.part000.bin",
@@ -3981,10 +6163,14 @@
       "breachline-library.part014.bin",
       "breachline-library.part015.bin",
       "breachline-library.part016.bin",
-      "breachline-library.part017.bin"
+      "breachline-library.part017.bin",
+      "breachline-library.part018.bin",
+      "breachline-library.part019.bin",
+      "breachline-library.part020.bin"
     ],
-    "bytes": 4490122,
-    "unpackedBytes": 27189264,
-    "sha256": "7800b8b8846c85d42f827cd13941201c08f4a758f69641521de4d90339c0b4d4"
-  }
+    "bytes": 5399918,
+    "unpackedBytes": 17843328,
+    "sha256": "762c9eccc88be55087b639137e4799f3fd510aa1ad06406b6f3b03b2641edbba"
+  },
+  "downloadBytes": 11450944
 }

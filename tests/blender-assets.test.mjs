@@ -9,6 +9,7 @@ import {Game} from '../dist/js/engine.js';
 import {Weapon,WEAPONS} from '../dist/js/weapons.js';
 import {MAPS} from '../dist/js/maps.js';
 import {readRuntimeLibrary} from '../scripts/asset-parts.mjs';
+import {BAKED_FILES} from '../dist/js/blender-files.js';
 
 const root=new URL('../dist/assets/blender/',import.meta.url);
 const packed=await readRuntimeLibrary();
@@ -16,6 +17,16 @@ const manifest=JSON.parse(await readFile(new URL('manifest.json',root),'utf8'));
 const buffer=await decodeBlenderLibrary(packed.buffer.slice(packed.byteOffset,packed.byteOffset+packed.byteLength));
 const geometries=parseBlenderGLB(buffer);
 const assets=new BlenderAssets(geometries,manifest);
+
+test('all nine Blender texture bakes reconstruct complete decodable WebP containers',async()=>{
+ const names=['surfaces','weapon','leaves','horizon','effects','surfaceNormal','surfaceORM','weaponNormal','weaponORM'];
+ for(const name of names){const files=BAKED_FILES[name];assert(files?.length,`missing bake ${name}`);const data=Buffer.concat(await Promise.all(files.map(p=>readFile(new URL('../dist/assets/'+p,import.meta.url)))));assert(data.length>32,name);assert.equal(data.toString('ascii',0,4),'RIFF',name);assert.equal(data.toString('ascii',8,12),'WEBP',name);assert.equal(data.readUInt32LE(4)+8,data.length,'complete WebP payload');}
+});
+
+test('native world dressing follows destroyed source props and never adds collision',()=>{
+ const game=new Game({map:3},{seed:817}),r=fixture();r.blenderAssets=assets;r.arena=game.arena;const blocks=game.arena.blocks.length;r.buildWorld();assert.equal(game.arena.blocks.length,blocks);
+ const batch=r.worldBatches.find(b=>b.userData.parts.some(p=>p.blenderKind==='generator'));assert(batch);const p=batch.userData.parts.find(p=>p.blenderKind==='generator'),source=Object.getPrototypeOf(p);source.destroyed=true;r.refreshDestroyed();assert(p.renderDestroyed);assert(batch.count<batch.userData.parts.length);
+});
 
 test('real Blender buffers have finite physical data, valid indices and neutral baked kit colour',()=>{
  assert(geometries.size>100);
@@ -44,7 +55,8 @@ test('all 30 authored weapon cores cover every original component once and keep 
   r.renderWeapon(game,932/430,false);
   const members=r.blenderWeaponGroups.flatMap(g=>g.members).sort((a,b)=>a-b);
   assert.deepEqual(members,Array.from({length:r.weaponParts.coreCount},(_,i)=>i),def.name);
-  const expected=r.blenderWeaponGroups.filter(p=>!p.hidden).length+r.weaponParts.slice(r.weaponParts.coreCount).filter(p=>!p.hidden).length;
+  const handMembers=new Set(r.blenderHandGroups?.flatMap(p=>p.members)??[]);
+  const expected=r.blenderWeaponGroups.filter(p=>!p.hidden).length+(r.blenderHandGroups?.filter(p=>!p.hidden).length??0)+r.weaponParts.slice(r.weaponParts.coreCount).filter((p,i)=>!p.hidden&&!handMembers.has(i+r.weaponParts.coreCount)).length;
   assert.equal([...r.weaponBatches.values()].reduce((n,e)=>n+e.used,0),expected);
   const muzzle={...r.weaponParts.muzzle};w.reload();w.reloadLeft=w.reloadTime*.55;r.renderWeapon(game,932/430,false);
   assert.deepEqual(r.weaponParts.muzzle,muzzle,'sight and muzzle contract stays fixed during reload');
@@ -70,7 +82,7 @@ test('both native and fallback gzip decode exactly, and offline shell includes a
  const native=globalThis.DecompressionStream;
  try{globalThis.DecompressionStream=undefined;const fallback=await decodeBlenderLibrary(packed.buffer.slice(packed.byteOffset,packed.byteOffset+packed.byteLength));assert.deepEqual(new Uint8Array(fallback),new Uint8Array(buffer));}
  finally{globalThis.DecompressionStream=native;}
- assert(manifest.downloadBytes<8*1048576,'complete new asset download below 8 MiB');
+ assert(manifest.downloadBytes<12*1048576,'complete Blender geometry and nine texture atlases below 12 MiB');
  assert.equal(packed.length,manifest.library.bytes);
  assert.equal(createHash('sha256').update(packed).digest('hex'),manifest.library.sha256,'segments must reconstruct the exact compressed GLB');
  for(const f of manifest.files){const data=await readFile(new URL(f.path,root));assert.equal(data.length,f.bytes);assert.equal(createHash('sha256').update(data).digest('hex'),f.sha256);}
@@ -79,6 +91,43 @@ test('both native and fallback gzip decode exactly, and offline shell includes a
  assert.equal(editable.length,source.bytes);assert.equal(createHash('sha256').update(editable).digest('hex'),source.sha256,'editable source reconstructs byte-for-byte');
  const sw=await readFile(new URL('../dist/sw.js',import.meta.url),'utf8');
  for(const f of BLENDER_FILES)assert(sw.includes(`'./assets/${f}'`));assert(sw.includes("'./vendor/gzip.js'"));
+});
+
+test('canopy LOD retains every tree, reduces distant work, restores detail and avoids idle uploads',()=>{
+ const r=fixture();r.blenderAssets=assets;r.arena=new Game({map:8},{seed:817}).arena;r.buildWorld();
+ assert(r.blenderWorldLODs.length>0);const tris=()=>r.blenderWorldLODs.reduce((n,p)=>n+(p.near.geometry.index.count*p.near.count+p.far.geometry.index.count*p.far.count)/3,0),full=tris();
+ r.camera.position.set(300,2,300);assets.lodClock=0;assets.updateLOD(r,1);
+ assert(tris()<full*.65,'distant canopy triangle cost falls');
+ for(const p of r.blenderWorldLODs){assert.equal(p.near.count+p.far.count,p.parts.length);assert.equal(p.near.count,0);assert(p.far.boundingSphere.equals(p.near.boundingSphere));}
+ const versions=r.blenderWorldLODs.flatMap(p=>[p.near.instanceMatrix.version,p.far.instanceMatrix.version]);assets.updateLOD(r,1);
+ assert.deepEqual(r.blenderWorldLODs.flatMap(p=>[p.near.instanceMatrix.version,p.far.instanceMatrix.version]),versions);
+ const pair=r.blenderWorldLODs[0],tree=pair.parts[0];r.camera.position.set(tree.x,tree.y,tree.z);assets.updateLOD(r,1);
+ assert(pair.near.userData.blenderSelection.includes(tree));
+ const represented=r.blenderWorldLODs.flatMap(p=>[...p.near.userData.blenderSelection,...p.far.userData.blenderSelection]);
+ assert.equal(new Set(represented).size,represented.length,'no duplicate tree instances');
+});
+
+test('authored texture axes use exact byte values and primary geometry cannot silently fall back',()=>{
+ let vertices=0;
+ for(const g of geometries.values())for(const name of ['breachUvU','breachUvV']){
+  const a=g.getAttribute(name);assert(a.array instanceof Uint8Array);assert.equal(a.normalized,false);
+  for(let i=0;i<a.count;i++)assert.equal(a.getX(i)+a.getY(i)+a.getZ(i),1);
+  vertices+=a.count;
+ }
+ assert(vertices*9>1024*1024,'real CPU/GPU stream saving exceeds one MiB');
+ const r=fixture();r.blenderAssets=assets;assert.throws(()=>r.partGeometry({blenderMesh:'absent'},'weapon'),/Missing required Blender geometry/);
+});
+
+test('compact native colours and physical scalars retain 16-bit precision and exact spatial streams',()=>{
+ const p=manifest.geometryPacking;assert.equal(p.normalisedBits,16);
+ assert(p.savedBytes>3*1048576,'actual shipped vertex storage saving');
+ assert(p.maxColourError<=.5/65535+1e-12);assert(p.maxMaterialError<=.5/65535+1e-12);
+ assert.equal(p.exactSourceSha256,p.exactPackedSha256,'positions, normals, UVs and indices remain byte-exact');
+ for(const [name,g] of geometries){
+  const colour=g.getAttribute('color');assert(colour.array instanceof Uint16Array,name);assert(colour.normalized,name);
+  const physical=g.getAttribute('breachMaterial');
+  if(physical){assert(physical.array instanceof Uint16Array,name);assert(physical.normalized,name);}
+ }
 });
 
 test('merged first-person cores reduce the representative draw and triangle budgets',()=>{

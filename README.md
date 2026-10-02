@@ -1,20 +1,36 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 49.** 30 weapons, 15 maps and 11 modes.
+**Latest checkpoint: Release 52.** 30 weapons, 15 maps and 11 modes.
 
-Release 49 replaces the primary renderer's generated mesh primitives with an
-original Blender-authored asset library: manufactured weapon cores, operators,
-modular architecture, props, vegetation and terrain. Blender supplies real
-bevels, baked vertex occlusion, normal/roughness/metallic atlases and near/far
-meshes. The game still runs in Three.js on iPhone Safari; Blender is the asset
-authoring tool. Gameplay, map collision, weapon handling, controls and saves
-retain their Release 48 behaviour.
+Blender supplies the complete primary 3D library and nine visual texture atlases.
+This checkpoint adds shaped and ventilated weapons, merged animated hands,
+operator gear, native facades and machinery, full tree crowns, and Blender-baked
+surfaces, foliage, sky and effects. The editable project contains all 15 level
+assemblies. Collision, controls, combat, modes, audio and saves are preserved.
 
-The editable [Blender source and rebuild instructions](authoring/blender/README.md)
-are included. New downloadable assets total 6.84 MiB. The default rifle falls
-from 12 to 10 draw batches and from 15,720 to 12,372 triangles. These are asset
-budgets, not measured iPhone FPS. Validation passes 238/238 regressions,
-58-module packaged/offline checks and 23 GLSL ES compile/link variants.
+The complete runtime art download is about 10.92 MiB. The default rifle uses
+8 draw batches instead of 12 and 12,468 triangles instead of 15,720. These are
+asset counts, not device frame-rate claims. Rebuild instructions and the editable
+source are in [authoring/blender](authoring/blender/README.md); measurements are
+in [docs/GRAPHICS.md](docs/GRAPHICS.md).
+
+Release 51 selects near and far Blender tree meshes per instance, keeping every
+tree and avoiding uploads when the selection is unchanged. Exact byte-valued
+texture axes use 75% less storage. Smooth window glazing retains its own baked
+colour and normals within the shared facade draw. The primary scene uses the
+authored library throughout, including effect quads and impact stamps.
+
+Release 51 verification: 242/242 regressions and packaged/offline checks pass.
+All 15 maps and 30 weapons render in software WebGL2 without errors, and the
+116-entry offline installation successfully deploys a match.
+
+Release 52 adds native bevels sized in metres, longitudinal receiver profiles,
+weighted machined-surface normals and fuller conifer/broadleaf silhouettes.
+Normalised 16-bit colour and physical streams save 4.00 MiB of vertex storage;
+positions, normals, texture coordinates and indices remain byte-exact during
+packing. The unpacked library is 17.02 MiB, down from 30.10 MiB in Release 50.
+All 243 regressions, 28 shader variants, every map/weapon and offline deployment
+pass. Physical iPhone frame timing remains unmeasured.
 
 Release 48 adds saved touch aim slowdown over visible enemy silhouettes, with
 wall, smoke and flash checks. It scales thumb input without steering or firing.

@@ -1,34 +1,34 @@
-import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=49';
-import {patchBlenderMaterial} from './blender-material.js?v=49';
-import {operatorMuzzle} from './operator-detail.js?v=49';
-import {updateWeaponClearance} from './weapon-clearance.js?v=49';
-import {WEAPONS} from './weapons.js?v=49';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=49';
-import {patchAtmosphere} from './atmosphere.js?v=49';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=49';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=49';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=49';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=49';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=49';
-import {DecalSystem} from './decal-system.js?v=49';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=49';
-import {LightingField} from './lighting-field.js?v=49';
-import {RoomLights} from './room-lights.js?v=49';
-import {waterMaterial,patchWater} from './water-material.js?v=49';
-import {visualGroundHeight} from './surface-placement.js?v=49';
-import {detailMaps,patchSurfaceDetail} from './material-detail.js?v=49';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=49';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=49';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=49';
+import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=52';
+import {patchBlenderMaterial} from './blender-material.js?v=52';
+import {blenderWorld} from './blender-world.js?v=52';
+import {operatorMuzzle} from './operator-detail.js?v=52';
+import {updateWeaponClearance} from './weapon-clearance.js?v=52';
+import {WEAPONS} from './weapons.js?v=52';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=52';
+import {patchAtmosphere} from './atmosphere.js?v=52';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=52';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=52';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=52';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=52';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=52';
+import {DecalSystem} from './decal-system.js?v=52';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=52';
+import {LightingField} from './lighting-field.js?v=52';
+import {RoomLights} from './room-lights.js?v=52';
+import {waterMaterial,patchWater} from './water-material.js?v=52';
+import {visualGroundHeight} from './surface-placement.js?v=52';
+import {patchSurfaceDetail} from './material-detail.js?v=52';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=52';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=52';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=52';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=49';
-import { makeCube, makeCylinder, makeSphere, actorModel, material, part } from './geometry.js?v=49';
-import { roundedBox, tube, leafCard, rockMesh, groundSurface, ridgeMesh, ridgeTint, coniferMesh, coniferTint, strataRockMesh, strataTint } from './meshes.js?v=49';
-import {operatorTorso,operatorLimb} from './operator-meshes.js?v=49';
-import { loadImages } from './textures.js?v=49';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=49';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=49';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=49';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=52';
+import { actorModel, material, part } from './geometry.js?v=52';
+import { ridgeMesh, ridgeTint } from './meshes.js?v=52';
+import { loadImages } from './textures.js?v=52';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=52';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=52';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=52';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -103,24 +103,9 @@ export class Renderer {
     this.interiorLights = Array.from({ length: 3 }, () => { const light = new THREE.PointLight(0xffdfad, 0, 11, 2);
       this.scene.add(light); return light; });
     this.muzzleLight = new THREE.PointLight(0xffb345, 0, 2.3, 2); this.weaponScene.add(this.muzzleLight);
-    this.geometry = {
-      cube: bufferGeometry(makeCube()),surface:bufferGeometry(groundSurface()), cylinder: bufferGeometry(makeCylinder(16)),
-      sphere: bufferGeometry(makeSphere()), bevel: bufferGeometry(roundedBox(.1, 4)),
-      bevelWorld: bufferGeometry(roundedBox(.08, 3)), bevelActor: bufferGeometry(roundedBox(.1, 2)),
-      operatorTorso:bufferGeometry(operatorTorso()),operatorLimb:bufferGeometry(operatorLimb()),
-      tube: bufferGeometry(tube(24)), leaf: bufferGeometry(leafCard()), rock: bufferGeometry(rockMesh()),
-      conifer:bufferGeometry(coniferMesh()),strata:bufferGeometry(strataRockMesh())
-    };
-    for(const [kind,g] of Object.entries(this.geometry))installMetricUV(g,kind);
-    const crown=this.geometry.conifer.getAttribute('position'),crownColors=new Float32Array(crown.count*3),crownColor=new THREE.Color();
-    for(let i=0;i<crown.count;i++){crownColor.setRGB(...coniferTint(crown.getY(i)),THREE.SRGBColorSpace);crownColors.set(crownColor.toArray(),i*3);}
-    this.geometry.conifer.setAttribute('color',new THREE.BufferAttribute(crownColors,3));
-    const strata=this.geometry.strata.getAttribute('position'),strataColors=new Float32Array(strata.count*3),strataColor=new THREE.Color();
-    for(let i=0;i<strata.count;i++){strataColor.setRGB(...strataTint(strata.getY(i)),THREE.SRGBColorSpace);strataColors.set(strataColor.toArray(),i*3);}
-    this.geometry.strata.setAttribute('color',new THREE.BufferAttribute(strataColors,3));
-    // leafCard's UVs are top-down for the legacy path; Three's CanvasTexture is bottom-up.
-    const leafUV = this.geometry.leaf.getAttribute('uv');
-    for (let i = 0; i < leafUV.count; i++) leafUV.setY(i, 1 - leafUV.getY(i));
+    // The primary path waits for its required native library. Historical CPU
+    // fixtures supply their own kit; the game allocates no duplicate mesh kit.
+    this.geometry = {};
     this.materials = new Map(); this.depthMaterials = new Map(); this.textures = []; this.partData = new WeakMap();
     this.worldBatches = []; this.actorBatches = new Map(); this.weaponBatches = new Map();
     this.matrix = new THREE.Matrix4(); this.parentMatrix = new THREE.Matrix4();
@@ -194,6 +179,7 @@ export class Renderer {
       map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = anisotropy;
       this.leafMaps.push(map); this.textures.push(map);
     }
+    this.installAuthoredEffects(images.effects);
     this.environmentProbes=new EnvironmentProbes(this.renderer,cloudMask(images.horizon));
     this.environment=this.environmentProbes.setArena(this.arena.info);
     // The visible sky and reflections now share weather, horizon and sun.
@@ -247,7 +233,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -262,6 +248,7 @@ export class Renderer {
         category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
+    if(p.blenderWind)Object.assign(options,{side:THREE.DoubleSide,roughness:1,metalness:0});
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
     const mat = water ? waterMaterial(options) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
@@ -309,9 +296,12 @@ export class Renderer {
         map: this.leafMaps[p.leaf], alphaTest: .58, side: THREE.DoubleSide });
       this.patchWind(depth); this.depthMaterials.set(key, depth);
     }
+    if(p.blenderWind){const plant={};this.patchWind(plant);const before=mat.onBeforeCompile;mat.onBeforeCompile=shader=>{before(shader);plant.onBeforeCompile(shader);};mat.customProgramCacheKey=()=> 'blender-opaque-canopy-wind-v1';
+      const depth=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});this.patchWind(depth);this.depthMaterials.set(key,depth);
+    }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
     mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
-    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?.baked?'blender-v1':'v2'}/${p.blenderVertexMaterial?'vertex-rm-v1':''}/room-lightfield-v2/haze-v1`;
+    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?.baked?'blender-v1':'v2'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/room-lightfield-v2/haze-v1`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -345,6 +335,7 @@ export class Renderer {
   buildWorld() {
     for (const batch of this.worldBatches) { this.world.remove(batch); batch.dispose(); }
     this.worldBatches.length = 0;
+    this.blenderWorldLODs=[];
     this.geometry.ridge?.dispose();
     if(!this.blenderAssets&&this.arena.info.id!==4){
       const id=this.arena.info.id,vertices=ridgeMesh(this.arena.info.size,id),geometry=bufferGeometry(vertices);
@@ -360,8 +351,10 @@ export class Renderer {
     for(const p of this.arena.decor){p.renderMicroDetail=!p.ground&&!p.emissive&&p.surface!=='glass'&&detailThickness(p)<.13;if(this.blenderAssets&&p.mesh==='ridge')p.blenderRidgeName=`ridge_${this.arena.info.id}`;}
     for(const p of this.arena.blocks)p.renderMicroDetail=false;
     const bins = new Map();
-    for (const list of [this.arena.blocks, this.arena.decor, this.arena.foliage ?? []]) for (const p of list) {
+    const visuals=this.blenderAssets?blenderWorld(this.arena):null;
+    for (const list of visuals?[visuals]:[this.arena.blocks, this.arena.decor, this.arena.foliage ?? []]) for (const p of list) {
       if (p.destroyed || p.invisible) continue;
+      this.blenderAssets?.prepare(p,'world');
       const mesh = this.blenderAssets?.key(p,'world') ?? p.mesh ?? 'cube', materialKey = this.materialKey(p, 'world');
       // Two-triangle floor finishes are cheap to submit together; retain spatial
       // chunks for 3D architecture where frustum culling saves substantial work.
@@ -382,9 +375,21 @@ export class Renderer {
       batch.userData.leaf = leaf; batch.userData.parts = parts; batch.userData.fullCount = parts.length;
       batch.userData.hasMicroDetail=parts.some(q=>q.renderMicroDetail);
       batch.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};
-      if (leaf) batch.customDepthMaterial = this.depthMaterials.get(this.materialKey(p, 'world'));
+      if (leaf||p.blenderWind) batch.customDepthMaterial = this.depthMaterials.get(this.materialKey(p, 'world'));
       batch.computeBoundingBox(); batch.computeBoundingSphere();
       this.world.add(batch); this.worldBatches.push(batch);
+      const kind=this.blenderAssets?.key(p,'world')?.split('/')[0];
+      if(this.blenderAssets&&['conifer','palm_crown','tree_crown'].includes(kind)){
+        const far=new THREE.InstancedMesh(this.blenderAssets.geometry(p,'world',true),batch.material,parts.length);
+        far.instanceMatrix.copy(batch.instanceMatrix);if(batch.instanceColor)far.instanceColor=batch.instanceColor.clone();
+        far.boundingBox=batch.boundingBox.clone();far.boundingSphere=batch.boundingSphere.clone();
+        far.castShadow=batch.castShadow;far.receiveShadow=batch.receiveShadow;far.onBeforeShadow=batch.onBeforeShadow;
+        far.customDepthMaterial=batch.customDepthMaterial;
+        const pair={near:batch,far,parts,visibility:new WeakMap()};
+        batch.userData.blenderPair=pair;far.userData={...batch.userData,blenderFar:true};
+        far.count=0;this.world.add(far);this.worldBatches.push(far);this.blenderWorldLODs.push(pair);
+        for(const b of [batch,far]){b.instanceMatrix.setUsage(THREE.DynamicDrawUsage);b.instanceColor?.setUsage(THREE.DynamicDrawUsage);}
+      }
     }
     this.buildStaticContacts();this.applyQuality(true); this.shadowClock = 1;
   }
@@ -415,6 +420,7 @@ export class Renderer {
   partGeometry(p, category) {
     const authored=this.blenderAssets?.geometry(p,category,p.blenderFar);
     if(authored)return authored;
+    if(this.blenderAssets)throw Error(`Missing required Blender geometry: ${category}/${p.blenderMesh??p.blenderKind??p.mesh??'cube'}`);
     if (p.mesh === 'bevel') {
       const simpler = category === 'actor' ? this.geometry.bevelActor : category === 'world' ? this.geometry.bevelWorld : null;
       if (simpler) return simpler;
@@ -429,6 +435,7 @@ export class Renderer {
   resetDynamic(map) { for (const entry of map.values()) { entry.used = 0; entry.matrixDirty = false; entry.colorDirty = false; } }
 
   addDynamic(map, group, p, category, parent, color) {
+    this.blenderAssets?.prepare(p,category);
     const data = this.partMaterial(p);
     const geometryKey=this.blenderAssets?.key(p,category)??p.mesh??'cube';
     let binding = data.bindings?.[category], entry = binding?.entry;
@@ -523,42 +530,44 @@ export class Renderer {
   }
 
   createEffectPool() {
-    const base = new THREE.PlaneGeometry(1, 1), geometry = new THREE.InstancedBufferGeometry();
-    geometry.index = base.index; geometry.setAttribute('position', base.getAttribute('position'));
-    geometry.setAttribute('uv', base.getAttribute('uv')); base.dispose();
+    const geometry = new THREE.InstancedBufferGeometry();
     this.fxAttributes = {};
     for (const [name, size] of [['instancePosition', 3], ['instanceTint', 3], ['instanceSize', 2], ['instanceAlpha', 1], ['instanceKind', 1]]) {
       const attr = new THREE.InstancedBufferAttribute(new Float32Array(FX_CAPACITY * size), size);
       attr.setUsage(THREE.DynamicDrawUsage); geometry.setAttribute(name, attr); this.fxAttributes[name] = attr;
     }
     geometry.instanceCount = 0;
-    const material = new THREE.ShaderMaterial({ vertexShader: billboardVertex, fragmentShader: billboardFragment,
+    const material = new THREE.ShaderMaterial({ uniforms:{uBreachEffects:{value:null}},vertexShader: billboardVertex, fragmentShader: billboardFragment,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass:true, toneMapped: true });
     this.fxAttributeList = Object.values(this.fxAttributes);
     this.fxMesh = new THREE.Mesh(geometry, material); this.fxMesh.frustumCulled = false; this.fxMesh.renderOrder = 3;
     this.scene.add(this.fxMesh);
-    const shadowCanvas = document.createElement('canvas'); shadowCanvas.width = shadowCanvas.height = 64;
-    const c = shadowCanvas.getContext('2d'), gradient = c.createRadialGradient(32, 32, 3, 32, 32, 31);
-    gradient.addColorStop(0, 'rgba(0,0,0,.38)'); gradient.addColorStop(1, 'rgba(0,0,0,0)');
-    c.fillStyle = gradient; c.fillRect(0, 0, 64, 64);
-    const shadowTexture = new THREE.CanvasTexture(shadowCanvas); this.textures.push(shadowTexture);
-    this.contactShadows = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1),
-      new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false,
+    this.contactShadows = new THREE.InstancedMesh(new THREE.BufferGeometry(),
+      new THREE.MeshBasicMaterial({ color:0x000000,opacity:.38,transparent: true, depthWrite: false,
         polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits:-4, toneMapped: false }), 64);
     this.contactShadows.count = 0;
     this.contactShadows.frustumCulled = false; this.contactShadows.renderOrder = 1; this.scene.add(this.contactShadows);
   }
 
   createMuzzle() {
-    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 128;
-    const context = canvas.getContext('2d'), glow = context.createRadialGradient(64, 64, 2, 64, 64, 62);
-    glow.addColorStop(0, 'rgba(255,255,236,1)'); glow.addColorStop(.18, 'rgba(255,221,126,.95)');
-    glow.addColorStop(.44, 'rgba(255,119,30,.4)'); glow.addColorStop(1, 'rgba(255,84,10,0)');
-    context.fillStyle = glow; context.fillRect(0, 0, 128, 128);
-    const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace; this.textures.push(map);
-    this.muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ map, color: 0xffe9a9, blending: THREE.AdditiveBlending,
+    this.muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0xffe9a9, blending: THREE.AdditiveBlending,
       depthWrite: false, toneMapped: false, transparent: true }));
     this.muzzle.visible = false; this.weaponRoot.add(this.muzzle);
+  }
+
+  installAuthoredEffects(image){
+    const quad=this.blenderAssets.geometries.get('billboard__near');
+    for(const key of ['position','uv'])this.fxMesh.geometry.setAttribute(key,quad.getAttribute(key));
+    this.fxMesh.geometry.setIndex(quad.index);
+    this.contactShadows.geometry.dispose();this.contactShadows.geometry=quad;
+    const atlas=new THREE.Texture(image);atlas.needsUpdate=true;atlas.colorSpace=THREE.SRGBColorSpace;
+    this.fxMesh.material.uniforms.uBreachEffects.value=atlas;this.textures.push(atlas);
+    const tile=index=>{const map=new THREE.CanvasTexture(tileCanvas(image,2,index,256));map.colorSpace=THREE.SRGBColorSpace;this.textures.push(map);return map;};
+    this.contactShadows.material.map=tile(2);this.contactShadows.material.color.setHex(0xffffff);this.contactShadows.material.needsUpdate=true;
+    this.muzzle.material.map=tile(1);this.muzzle.material.needsUpdate=true;
+    this.decalSystem.mesh.material.map=tile(3);this.decalSystem.mesh.material.needsUpdate=true;
+    this.decalSystem.mesh.material.onBeforeCompile=()=>{};this.decalSystem.mesh.material.customProgramCacheKey=()=>'blender-impact-stamp-v1';
+    this.decalSystem.mesh.geometry.dispose();this.decalSystem.mesh.geometry=quad.clone();
   }
 
   particle(position, kind, color, size, life, vx = 0, vy = 0, vz = 0) {
@@ -803,7 +812,7 @@ export class Renderer {
     const p = game.player, w = p.weapon;
     const key = `${w.def.id}/${w.optic}/${w.barrel}/${w.grip}`;
     if (key !== this.weaponKey) {
-      this.weaponKey = key; this.weaponParts = weaponModel(w);this.blenderWeaponGroups=this.blenderAssets?.weaponGroups(this.weaponParts,w.def.id); this.clearDynamic(this.weaponBatches);
+      this.weaponKey = key; this.weaponParts = weaponModel(w);this.blenderWeaponGroups=this.blenderAssets?.weaponGroups(this.weaponParts,w.def.id);this.blenderHandGroups=this.blenderAssets?.handGroups(this.weaponParts,w.def.id); this.clearDynamic(this.weaponBatches);
     }
     animateWeaponParts(this.weaponParts, w, p, game.time);
     this.resetDynamic(this.weaponBatches);
@@ -811,8 +820,9 @@ export class Renderer {
       syncBlenderWeapon(this.blenderWeaponGroups,this.weaponParts);
       for(const q of this.blenderWeaponGroups)if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
     }
+    if(this.blenderHandGroups){syncBlenderWeapon(this.blenderHandGroups,this.weaponParts);for(const q of this.blenderHandGroups)if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');}
     for (let i=this.blenderWeaponGroups?this.weaponParts.coreCount:0;i<this.weaponParts.length;i++){
-      const q=this.weaponParts[i];if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
+      const q=this.weaponParts[i];if(this.blenderHandGroups&&/^(rightHand|supportHand|pumpHand)$/.test(q.tag??''))continue;if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
     }
     this.uploadDynamic(this.weaponBatches);
     const pose = weaponPose(p, game.time, this.settings.motion !== false, menu, this.weaponPoseState ?? (this.weaponPoseState = {}));

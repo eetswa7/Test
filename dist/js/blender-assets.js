@@ -1,6 +1,8 @@
+import {blenderKind} from './blender-kind.js?v=52';
+export {blenderKind};
 import * as THREE from '../vendor/three.module.min.js';
-import {installMetricUV} from './surface-uv.js?v=49';
-import {LIBRARY_FILES} from './blender-files.js?v=49';
+import {installMetricUV} from './surface-uv.js?v=52';
+import {LIBRARY_FILES} from './blender-files.js?v=52';
 
 export const BLENDER_FILES=[...LIBRARY_FILES,'blender/manifest.json'];
 const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};
@@ -52,28 +54,6 @@ export function parseBlenderGLB(buffer){
  return geometries;
 }
 
-const bodyKinds=['limb','limb','limb','limb','boot','boot','soft','torso','vest','pack','head','helmet','hard','soft','limb','limb','limb','limb','glove','glove'];
-export function blenderKind(p,category){
- if(p.blenderMesh)return p.blenderMesh;
- if(category==='actor'&&Number.isInteger(p.blenderBodyIndex)&&bodyKinds[p.blenderBodyIndex])return bodyKinds[p.blenderBodyIndex];
- if(p.mesh==='ridge')return p.blenderRidgeName??null;
- if(p.mesh==='surface')return 'surface';
- if(p.mesh==='leaf')return 'leaf';
- if(p.mesh==='conifer')return 'conifer';
- if(p.mesh==='strata')return 'strata';
- if(p.mesh==='rock')return 'rock';
- if(p.mesh==='operatorTorso')return 'torso';
- if(p.mesh==='operatorLimb')return 'limb';
- if(p.mesh==='tube')return 'tube';
- if(p.mesh==='sphere')return 'sphere';
- if(p.mesh==='cylinder')return category==='world'&&p.breakable?'drum':'cylinder';
- if(category==='world'){
-  if(p.shellThickness>.02&&p.surface==='wood')return 'crate';
-  if(p.shellThickness>0&&p.shellThickness<.01)return p.w>p.d?'cargo_x':'cargo_z';
-  return 'architecture';
- }
- return p.tile===9||p.finishTile===2||p.surface==='fabric'?'soft':'hard';
-}
 
 export class BlenderAssets {
  constructor(geometries,manifest){
@@ -86,16 +66,45 @@ export class BlenderAssets {
   return this.geometries.get(p.blenderMesh?name:`${name}__${far?'far':'near'}`)??null;
  }
  key(p,category){const name=blenderKind(p,category);return name?(p.blenderMesh?name:`${name}/${p.blenderFar?'far':'near'}`):null;}
+ prepare(p,category){if(p.blenderPrepared===category)return;const g=this.geometry(p,category);p.blenderVertexMaterial=!!g?.getAttribute('breachMaterial');p.blenderPrepared=category;}
  weaponGroups(parts,id){
   const record=this.manifest.weapons[id];if(!record||record.coreCount!==parts.coreCount)throw Error('Blender weapon rig no longer matches source');
   return record.groups.map(g=>({ ...parts[g.anchor],blenderMesh:g.mesh,blenderColour:true,mesh:g.mesh,
    color:[1,1,1],rough:g.rough,metal:g.metal,finishTile:g.finishTile<0?undefined:g.finishTile,tile:g.tile,
    blenderVertexMaterial:g.vertexMaterial,anchor:g.anchor,members:g.members }));
  }
+ handGroups(parts,id){
+  const record=this.manifest.weapons[id],indices=[];
+  for(let i=parts.coreCount;i<parts.length;i++)if(/^(rightHand|supportHand|pumpHand)$/.test(parts[i].tag??''))indices.push(i);
+  if(!record.hands||record.handCount!==indices.length)return null;
+  return record.hands.map(g=>({...parts[indices[g.anchor]],blenderMesh:g.mesh,blenderColour:true,mesh:g.mesh,color:[1,1,1],rough:.8,metal:0,finishTile:0,tile:-1,blenderVertexMaterial:true,anchor:indices[g.anchor],members:g.members.map(i=>indices[i])}));
+ }
  updateLOD(renderer,dt){
   this.lodClock-=dt;if(this.lodClock>0)return;this.lodClock=.25;
   const near=renderer.quality==='low'?13:renderer.quality==='medium'?21:30;
+  const canopyDistance=renderer.quality==='low'?12:renderer.quality==='medium'?18:24;
+  for(const pair of renderer.blenderWorldLODs??[]){
+   const selected=[[],[]];
+   for(const p of pair.parts){
+    if(p.destroyed)continue;
+    const d=Math.hypot(p.x-renderer.camera.position.x,p.y-renderer.camera.position.y,p.z-renderer.camera.position.z);
+    const wasFar=pair.visibility.get(p)??false;
+    const far=wasFar?d>canopyDistance*.85:d>canopyDistance*1.15;
+    pair.visibility.set(p,far);selected[far?1:0].push(p);
+   }
+   for(const [i,b] of [pair.near,pair.far].entries()){
+    const parts=selected[i],old=b.userData.blenderSelection;
+    if(old&&old.length===parts.length&&parts.every((p,j)=>p===old[j]))continue;
+    for(let j=0;j<parts.length;j++){b.setMatrixAt(j,renderer.partMatrix(parts[j]));b.setColorAt(j,renderer.instanceColor(parts[j],'world'));}
+    b.count=parts.length;b.userData.blenderSelection=parts;
+    if(parts.length){
+     b.instanceMatrix.clearUpdateRanges();b.instanceMatrix.addUpdateRange(0,parts.length*16);b.instanceMatrix.needsUpdate=true;
+     b.instanceColor.clearUpdateRanges();b.instanceColor.addUpdateRange(0,parts.length*3);b.instanceColor.needsUpdate=true;
+    }
+   }
+  }
   for(const batch of renderer.worldBatches){
+   if(batch.userData.blenderPair)continue;
    const p=batch.userData.parts?.[0];if(!p||p.blenderMesh)continue;
    const sphere=batch.boundingSphere;if(!sphere)continue;
    const distance=Math.max(0,sphere.center.distanceTo(renderer.camera.position)-sphere.radius*.7);

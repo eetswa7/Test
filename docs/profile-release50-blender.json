@@ -1,0 +1,444 @@
+{
+  "scope": "Real authored asset scene counts and container CPU only. No physical iPhone FPS claim.",
+  "downloadBytes": 11580547,
+  "meshes": 223,
+  "weapons": [
+    {
+      "weapon": "Kestrel AR",
+      "before": {
+        "draws": 12,
+        "triangles": 15720
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10940
+      }
+    },
+    {
+      "weapon": "Bastion 7",
+      "before": {
+        "draws": 13,
+        "triangles": 15036
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10220
+      }
+    },
+    {
+      "weapon": "Raptor C",
+      "before": {
+        "draws": 13,
+        "triangles": 14252
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 9880
+      }
+    },
+    {
+      "weapon": "Vesper 9",
+      "before": {
+        "draws": 13,
+        "triangles": 13024
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 9300
+      }
+    },
+    {
+      "weapon": "Lynx PDW",
+      "before": {
+        "draws": 13,
+        "triangles": 12000
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 8444
+      }
+    },
+    {
+      "weapon": "Breach 12",
+      "before": {
+        "draws": 15,
+        "triangles": 10904
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 8848
+      }
+    },
+    {
+      "weapon": "Tempest S",
+      "before": {
+        "draws": 14,
+        "triangles": 15616
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 11048
+      }
+    },
+    {
+      "weapon": "Longbow M",
+      "before": {
+        "draws": 19,
+        "triangles": 17504
+      },
+      "after": {
+        "draws": 13,
+        "triangles": 12700
+      }
+    },
+    {
+      "weapon": "Warden D",
+      "before": {
+        "draws": 15,
+        "triangles": 15972
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 11312
+      }
+    },
+    {
+      "weapon": "Atlas L",
+      "before": {
+        "draws": 16,
+        "triangles": 16468
+      },
+      "after": {
+        "draws": 10,
+        "triangles": 11788
+      }
+    },
+    {
+      "weapon": "Sable P",
+      "before": {
+        "draws": 12,
+        "triangles": 10912
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 7240
+      }
+    },
+    {
+      "weapon": "Dire 50",
+      "before": {
+        "draws": 12,
+        "triangles": 10528
+      },
+      "after": {
+        "draws": 9,
+        "triangles": 7024
+      }
+    },
+    {
+      "weapon": "Field blade",
+      "before": {
+        "draws": 11,
+        "triangles": 4656
+      },
+      "after": {
+        "draws": 2,
+        "triangles": 3672
+      }
+    },
+    {
+      "weapon": "Harrow B3",
+      "before": {
+        "draws": 14,
+        "triangles": 15464
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10748
+      }
+    },
+    {
+      "weapon": "Marten 45",
+      "before": {
+        "draws": 12,
+        "triangles": 14432
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 9908
+      }
+    },
+    {
+      "weapon": "Mako 7",
+      "before": {
+        "draws": 15,
+        "triangles": 15276
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10548
+      }
+    },
+    {
+      "weapon": "Peregrine 6",
+      "before": {
+        "draws": 13,
+        "triangles": 15848
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10964
+      }
+    },
+    {
+      "weapon": "Osprey S",
+      "before": {
+        "draws": 14,
+        "triangles": 13100
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 9152
+      }
+    },
+    {
+      "weapon": "Bison 12",
+      "before": {
+        "draws": 14,
+        "triangles": 10780
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 8304
+      }
+    },
+    {
+      "weapon": "Talon 338",
+      "before": {
+        "draws": 17,
+        "triangles": 17504
+      },
+      "after": {
+        "draws": 13,
+        "triangles": 12700
+      }
+    },
+    {
+      "weapon": "Rampart 556",
+      "before": {
+        "draws": 15,
+        "triangles": 14976
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10916
+      }
+    },
+    {
+      "weapon": "Spectre SD",
+      "before": {
+        "draws": 14,
+        "triangles": 13136
+      },
+      "after": {
+        "draws": 9,
+        "triangles": 9432
+      }
+    },
+    {
+      "weapon": "Krait R",
+      "before": {
+        "draws": 13,
+        "triangles": 9824
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 7076
+      }
+    },
+    {
+      "weapon": "Swift 93",
+      "before": {
+        "draws": 12,
+        "triangles": 10720
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 7132
+      }
+    },
+    {
+      "weapon": "Storm 68",
+      "before": {
+        "draws": 13,
+        "triangles": 15332
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10860
+      }
+    },
+    {
+      "weapon": "Needle 57",
+      "before": {
+        "draws": 15,
+        "triangles": 13292
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 10256
+      }
+    },
+    {
+      "weapon": "Jackal 12",
+      "before": {
+        "draws": 14,
+        "triangles": 12708
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 9556
+      }
+    },
+    {
+      "weapon": "Sentinel 762",
+      "before": {
+        "draws": 17,
+        "triangles": 16672
+      },
+      "after": {
+        "draws": 10,
+        "triangles": 12216
+      }
+    },
+    {
+      "weapon": "Heron S",
+      "before": {
+        "draws": 14,
+        "triangles": 12424
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 8880
+      }
+    },
+    {
+      "weapon": "Paladin 45",
+      "before": {
+        "draws": 12,
+        "triangles": 10912
+      },
+      "after": {
+        "draws": 8,
+        "triangles": 7240
+      }
+    }
+  ],
+  "maps": [
+    {
+      "map": "OLD QUARTER",
+      "worldBatches": 144,
+      "worldTriangles": 106448,
+      "actorMedianMs": 0.322,
+      "actorP95Ms": 0.701
+    },
+    {
+      "map": "FOUNDRY",
+      "worldBatches": 90,
+      "worldTriangles": 38462,
+      "actorMedianMs": 0.298,
+      "actorP95Ms": 0.506
+    },
+    {
+      "map": "DUSTLINE",
+      "worldBatches": 170,
+      "worldTriangles": 87136,
+      "actorMedianMs": 0.25,
+      "actorP95Ms": 0.444
+    },
+    {
+      "map": "RELAY",
+      "worldBatches": 176,
+      "worldTriangles": 64166,
+      "actorMedianMs": 0.278,
+      "actorP95Ms": 0.448
+    },
+    {
+      "map": "BREAKWATER",
+      "worldBatches": 107,
+      "worldTriangles": 55662,
+      "actorMedianMs": 0.232,
+      "actorP95Ms": 0.284
+    },
+    {
+      "map": "CITADEL",
+      "worldBatches": 165,
+      "worldTriangles": 62188,
+      "actorMedianMs": 0.281,
+      "actorP95Ms": 0.559
+    },
+    {
+      "map": "SWITCHYARD",
+      "worldBatches": 132,
+      "worldTriangles": 65412,
+      "actorMedianMs": 0.245,
+      "actorP95Ms": 3.367
+    },
+    {
+      "map": "CANOPY",
+      "worldBatches": 161,
+      "worldTriangles": 63080,
+      "actorMedianMs": 0.251,
+      "actorP95Ms": 0.35
+    },
+    {
+      "map": "FROSTLINE",
+      "worldBatches": 170,
+      "worldTriangles": 88516,
+      "actorMedianMs": 0.438,
+      "actorP95Ms": 2.292
+    },
+    {
+      "map": "IRON QUARRY",
+      "worldBatches": 166,
+      "worldTriangles": 74168,
+      "actorMedianMs": 0.265,
+      "actorP95Ms": 0.467
+    },
+    {
+      "map": "SKYBRIDGE",
+      "worldBatches": 159,
+      "worldTriangles": 76428,
+      "actorMedianMs": 0.236,
+      "actorP95Ms": 0.376
+    },
+    {
+      "map": "MONSOON",
+      "worldBatches": 160,
+      "worldTriangles": 87110,
+      "actorMedianMs": 0.228,
+      "actorP95Ms": 0.248
+    },
+    {
+      "map": "EMBERWORKS",
+      "worldBatches": 175,
+      "worldTriangles": 87348,
+      "actorMedianMs": 0.23,
+      "actorP95Ms": 0.333
+    },
+    {
+      "map": "CROSSFIRE DISTRICT",
+      "worldBatches": 175,
+      "worldTriangles": 124398,
+      "actorMedianMs": 0.237,
+      "actorP95Ms": 0.321
+    },
+    {
+      "map": "BLACKSITE",
+      "worldBatches": 170,
+      "worldTriangles": 117382,
+      "actorMedianMs": 0.416,
+      "actorP95Ms": 0.451
+    }
+  ]
+}

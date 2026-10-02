@@ -395,3 +395,71 @@ unused segments are removed when rebuilding a smaller export. The packaged
 runtime bytes remain identical after the source fix. Fresh checks pass all 238
 regressions, 58 JavaScript modules, 23 shader variants and the 99-file offline
 installation. Source evidence is in `docs/validation-release49-source.json`.
+
+
+## Release 50: complete Blender art library and native level source
+
+Blender now supplies the primary scene meshes and nine runtime atlases. The
+223-mesh library includes shaped/ventilated weapon sections, merged smooth hand
+rigs, operator equipment, native facades and machinery, detailed tree crowns,
+terrain and props. The editable source includes all 15 metre-scale map assemblies.
+Colour, normal and physical atlases plus foliage, sky and effects come from
+Cycles bakes, then lossless verified texture compression.
+
+Identical hands share geometry across weapons. The default rifle reduces from
+12 to 8 batches and from 15,720 to 10,940 triangles. Runtime art totals about
+11.04 MiB. Facade dressing removes redundant components; the original collision,
+controls, combat, modes, sound and saves remain intact. These are scene counts,
+not physical iPhone timings. Browser evidence is in
+`docs/validation-release50-browser.json` and counts in
+`docs/profile-release50-blender.json`.
+
+Validation: 240/240 automated checks pass, 28/28 material shader variants compile on Mesa GLES, and Chromium software WebGL2 rendered all 15 maps and 30 weapon rigs with no browser errors. The Release 50 service worker cached 116 entries and successfully loaded and deployed a match offline. Native source inspection confirmed 15 map collections, 10,108 objects and all nine packed bake images.
+
+## Release 51: complete art integration and per-tree detail
+
+Every tree retains a Blender mesh at all distances. Per-instance near/far
+selection uses hysteresis and updates only changed batches. Unchanged trees
+produce no instance-buffer upload, and both levels retain conservative bounds.
+The source library's exact texture axes use unnormalised bytes instead of
+floats, reducing those CPU and GPU streams by 75% without quantisation error.
+
+Mixed facade glazing bypasses masonry albedo and bump response while retaining
+the single shared draw. Primary geometry fails visibly if an authored mesh is
+missing, and particles, decals and contact stamps use the native Blender quad.
+
+Verification: 242/242 regressions and 59-module packaged/offline checks pass.
+Software WebGL2 renders all 15 maps, all 30 weapons with attachments and reloads,
+and scoped aiming without errors. Release 51 caches 116 files and deploys a
+match with the browser offline. These checks do not measure physical iPhone FPS.
+
+
+## Release 52: physical machining and compact native vertex data
+
+Native Blender modelling now uses longitudinal receiver sections, metre-scale
+edge bevels, weighted machined normals, and fuller conifer/broadleaf leaves.
+Existing animation anchors and all collision/weapon contracts are preserved.
+The representative rifle uses 8 batches and 12,468 triangles versus the original
+12 batches and 15,720 triangles.
+
+The native export's colour and physical scalar streams use core glTF normalised
+16-bit attributes, saving 4,194,296 bytes. The maximum scalar error is below
+0.00000763. Positions, normals, texture coordinates and indices remain byte-exact
+during packing. Weighted-normal seam sharing plus compact streams reduce the
+unpacked library from Release 50's 30.10 MiB to 17.02 MiB. The complete runtime
+art download is 10.92 MiB. These are data and scene counts, not device timings.
+
+Geometry iteration can restore the exact previous packed bakes and editable
+shader graphs, then atomically save the new native project. Full material
+builds retain the original native Cycles baking workflow.
+
+Verification: all 243 regressions, 60-module packaged checks and all 28 Mesa
+GLES shader variants pass. Software WebGL2 renders all 15 maps and all 30 weapon
+rigs with attachments, reloads and scoped aiming without errors. The 116-entry
+Release 52 service-worker installation deploys a match offline. Physical iPhone
+GPU timing and thermal endurance remain unmeasured.
+
+
+The standalone native source is verified with all 15 levels, nine packed bakes,
+no linked data and no embedded scripts. Its segmented source reconstructs the
+editable Blender project byte-for-byte.

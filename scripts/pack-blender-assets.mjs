@@ -2,16 +2,23 @@ import {readFile,writeFile,readdir,rm} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {writeParts} from './asset-parts.mjs';
+import {spawnSync} from 'node:child_process';
+import {compactBlenderGLB} from './compact-blender-library.mjs';
+const compressed=spawnSync(process.env.PYTHON_BIN??'python3',['scripts/compress-blender-textures.py'],{stdio:'inherit'});
+if(compressed.status!==0)process.exit(compressed.status??1);
 const root='dist/assets/blender',name='breachline-library.glb';
-const raw=await readFile(`${root}/${name}`),packed=gzipSync(raw,{level:9,mtime:0});
+const native=await readFile(`${root}/${name}`),compact=compactBlenderGLB(native),raw=compact.buffer,packed=gzipSync(raw,{level:9,mtime:0});
 await writeFile(`${root}/${name}.gz`,packed);
 const manifest=JSON.parse(await readFile(`${root}/manifest.json`,'utf8'));
+manifest.geometryPacking=compact.stats;
 for(const f of await readdir(root))if(/\.part\d+\.bin$/.test(f))await rm(`${root}/${f}`);
 manifest.files=await writeParts(packed,`${root}/breachline-library`);
 const libraryFiles=manifest.files.map(f=>`blender/${f.path}`),bakedFiles={};
 manifest.library={parts:manifest.files.map(f=>f.path),bytes:packed.length,unpackedBytes:raw.length,sha256:createHash('sha256').update(packed).digest('hex')};
-for(const [key,filename] of Object.entries({surfaceNormal:'surfaces-normal',surfaceORM:'surfaces-orm',weaponNormal:'weapons-normal',weaponORM:'weapons-orm'})){
- const parts=await writeParts(await readFile(`${root}/${filename}.png`),`${root}/${filename}`);
+for(const [key,filename] of Object.entries({surfaces:'surfaces-albedo',weapon:'weapons-albedo',leaves:'foliage',horizon:'sky',effects:'effects',surfaceNormal:'surfaces-normal',surfaceORM:'surfaces-orm',weaponNormal:'weapons-normal',weaponORM:'weapons-orm'})){
+ const image=await readFile(`${root}/${filename}.webp`);
+ if(image.length<32||image.toString('ascii',0,4)!=='RIFF'||image.toString('ascii',8,12)!=='WEBP')throw Error(`Incomplete Blender texture: ${filename}`);
+ const parts=await writeParts(image,`${root}/${filename}`);
  manifest.files.push(...parts);bakedFiles[key]=parts.map(f=>`blender/${f.path}`);
 }
 await writeFile('dist/js/blender-files.js',`// Generated lossless asset segments. Rebuild with npm run assets:blender.\nexport const LIBRARY_FILES=${JSON.stringify(libraryFiles)};\nexport const BAKED_FILES=${JSON.stringify(bakedFiles)};\n`);
@@ -20,4 +27,4 @@ await writeFile(`${root}/manifest.json`,JSON.stringify(manifest,null,2)+'\n');
 const source=await readFile('authoring/blender/breachline-assets.blend');
 const sourceParts=await writeParts(source,'authoring/blender/source/breachline-assets');
 await writeFile('authoring/blender/source/manifest.json',JSON.stringify({bytes:source.length,sha256:createHash('sha256').update(source).digest('hex'),files:sourceParts},null,2)+'\n');
-console.log(`Packed Blender library: ${(raw.length/1048576).toFixed(2)} -> ${(packed.length/1048576).toFixed(2)} MiB, lossless.`);
+console.log(`Packed Blender library: ${(raw.length/1048576).toFixed(2)} -> ${(packed.length/1048576).toFixed(2)} MiB; lossless gzip, 16-bit material precision.`);

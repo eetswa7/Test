@@ -306,12 +306,13 @@ def manufactured_vertex(v,p,key):
 sys.path.insert(0,str(SOURCE))
 from art_geometry import author_shared,hero_part
 manifest['props']=author_shared(globals())
-manifest['artRevision']=2
+manifest['artRevision']=3
 manifest['authorship']='Original Blender mesh authoring and native Cycles colour/normal/physical bakes'
 
 
 # Build complete weapon cores, preserving movable component names. Each group is
 # welded for a single indexed draw and inherits the exact existing joint matrix.
+hand_shape_cache={}
 for weapon in INPUT['weapons']:
     record={'name':weapon['name'],'coreCount':weapon['coreCount'],'handCount':len(weapon.get('hands',[]))}
     for section,source_parts in (('groups',weapon['parts']),('hands',weapon.get('hands',[]))):
@@ -334,12 +335,26 @@ for weapon in INPUT['weapons']:
             start=len(vertices);vertices.extend(matrix@(q if designed else manufactured_vertex(q,p,key)) for q in v)
             triangles.extend(tuple(i+start for i in tri) for tri in t)
             colours.extend([tuple(linear(x) for x in p.get('color',(.2,.2,.2)))]*len(v))
-            physical.extend([(p.get('rough',.6),p.get('metal',0))]*len(v))
+            coated=p.get('metal',0)>.45 and max(p.get('color',(1,1,1)))<.21
+            physical.extend([(p.get('rough',.6),.24 if coated else p.get('metal',0))]*len(v))
         ao=cavity(vertices,triangles,.18)
         local=[inverse@p for p in vertices]
         colours=[tuple(x*ao[i] for x in c) for i,c in enumerate(colours)]
         name=f"weapon_{weapon['id']}_{section}_{gi}"
-        object_mesh(name,local,triangles,colours,bake=False,physical=physical)
+        if section=='hands':
+            # Identical poses share GPU/source geometry across the arsenal.
+            # Quantisation is below 0.01 mm at the real hand scale.
+            signature=hashlib.sha256(json.dumps([[tuple(round(v,4) for v in p) for p in local],triangles,[tuple(round(v,3) for v in c) for c in colours],physical]).encode()).hexdigest()
+            if signature in hand_shape_cache:name=hand_shape_cache[signature]
+            else:
+                obj=object_mesh(name,local,triangles,colours,bake=False,physical=physical)
+                for poly in obj.data.polygons:poly.use_smooth=True
+                hand_shape_cache[signature]=name
+        else:
+            obj=object_mesh(name,local,triangles,colours,bake=False,physical=physical)
+            for poly in obj.data.polygons:poly.use_smooth=True
+            normals=obj.modifiers.new('Machined surface normals','WEIGHTED_NORMAL')
+            normals.mode='FACE_AREA_WITH_ANGLE';normals.keep_sharp=True;normals.weight=50
         # Welded vertices share indexed buffers; glTF splits only true UV/normal seams.
         definitions.append({'mesh':name,'anchor':anchor['index'],'tag':signature,
                             'finishTile':0,'rough':.5,'metal':.5,'tile':-1,
@@ -457,11 +472,32 @@ def bake_details(name,columns,hero=False):
 
 
 from materials import bake_atlas,bake_auxiliary
-bake_atlas(scene,OUT,'surfaces',4)
-bake_atlas(scene,OUT,'weapons',2,True)
-bake_auxiliary(scene,OUT,'foliage',2,'foliage')
-bake_auxiliary(scene,OUT,'sky',1,'clouds')
-bake_auxiliary(scene,OUT,'effects',2,'effects')
+if '--reuse-bakes' in sys.argv:
+    # Geometry iteration restores the exact previously baked pixels and their
+    # editable shader graphs from our native source, without rebaking imagery.
+    previous=SOURCE/'breachline-assets.blend'
+    if not previous.exists():raise RuntimeError('Restore the native source before using --reuse-bakes')
+    baked_names=['surfaces-albedo','surfaces-normal','surfaces-orm',
+                 'weapons-albedo','weapons-normal','weapons-orm','foliage','sky','effects']
+    with bpy.data.libraries.load(str(previous),link=False) as (source,target):
+        if not all(n in source.images for n in baked_names):raise RuntimeError('Incomplete cached native bakes')
+        target.images=baked_names.copy()
+        target.objects=[n for n in source.objects if n.endswith(' / baking')]
+    for obj in target.objects:
+        scene.collection.objects.link(obj);obj.hide_render=True;obj.hide_set(True)
+    for name in baked_names:
+        image=bpy.data.images[name]
+        if not image.packed_file:raise RuntimeError('Cached bake is not packed: '+name)
+        data=bytes(image.packed_file.data)
+        if data[:8]!=b'\x89PNG\r\n\x1a\n':raise RuntimeError('Cached bake is not PNG: '+name)
+        (OUT/(name+'.png')).write_bytes(data);image.use_fake_user=True
+    print('REUSED_NATIVE_BAKES: nine exact packed images and editable shader graphs',flush=True)
+else:
+    bake_atlas(scene,OUT,'surfaces',4)
+    bake_atlas(scene,OUT,'weapons',2,True)
+    bake_auxiliary(scene,OUT,'foliage',2,'foliage')
+    bake_auxiliary(scene,OUT,'sky',1,'clouds')
+    bake_auxiliary(scene,OUT,'effects',2,'effects')
 
 bpy.ops.object.select_all(action='DESELECT')
 for obj in mesh_assets.values():obj.select_set(True)
@@ -483,7 +519,7 @@ for physical in (False,True):
         l.new(separate.outputs[0],bsdf.inputs['Roughness'])
         invert=n.new('ShaderNodeMath');invert.operation='SUBTRACT';invert.inputs[0].default_value=1;l.new(separate.outputs[1],invert.inputs[1]);l.new(invert.outputs[0],bsdf.inputs['Metallic'])
     for name,obj in mesh_assets.items():
-        if name.startswith('weapon_')==physical:obj.data.materials.append(material)
+        if bool(obj.data.uv_layers.get('BreachMaterial'))==physical:obj.data.materials.append(material)
 
 # A gallery makes the editable source useful immediately when opened in Blender.
 for i,(name,obj) in enumerate(mesh_assets.items()):
@@ -507,8 +543,27 @@ scene['gameplay']='Rig transforms and collision are owned by Release 48 simulati
 scene['regenerate']='npm run assets:blender'
 scene['normal_maps']='Cycles tangent-normal bake from independent surface height graphs'
 scene['source_texture_license']='Original BREACHLINE textures'
+levels=bpy.data.collections.new('Complete levels / metres');scene.collection.children.link(levels)
+for info in INPUT['maps']:
+    collection=bpy.data.collections.new(f"Map {info['id']:02d} / {info['name']}");levels.children.link(collection)
+    collection['map_id']=info['id'];collection['collision']='Original simulation, unchanged';collection['sun']=info['sun']
+    for i,p in enumerate(info.get('parts',[])):
+        original=mesh_assets.get(p['kind']+'__near')
+        if not original:raise RuntimeError('Missing full-level Blender asset: '+p['kind'])
+        obj=bpy.data.objects.new(f"{p['surface']} / {i:04d}",original.data);collection.objects.link(obj)
+        transform=Matrix([p['matrix'][j:j+4] for j in range(0,16,4)]).transposed()
+        obj.matrix_world=conversion@transform@conversion.inverted()
+        obj.color=(*([1,1,1] if p['authoredColour'] else p['material']['color']),1)
+        obj['surface']=p['surface'];obj['texture_tile']=p['material']['pattern']-1
+    collection.hide_viewport=True;collection.hide_render=True
+scene['levels']='All 15 complete level assemblies are in Complete levels / metres. Enable one collection to inspect it.'
 scene.world.color=(.22,.22,.22)
-bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'breachline-assets.blend'),compress=True)
+source_path=SOURCE/'breachline-assets.blend'
+source_staging=SOURCE/'breachline-assets.staging.blend'
+# Appending cached bake graphs keeps their library open until Blender exits.
+# Save to a separate file, then replace atomically after a successful save.
+bpy.ops.wm.save_as_mainfile(filepath=str(source_staging),compress=True)
+source_staging.replace(source_path)
 for file in sorted(OUT.iterdir()):
     if file.suffix in ('.glb','.png'):
         manifest['files'].append({'path':file.name,'bytes':file.stat().st_size,'sha256':hashlib.sha256(file.read_bytes()).hexdigest()})

@@ -26,13 +26,16 @@ def hero_part(p, base):
     if p.get('mesh') in ('cylinder','tube','sphere'):
         return base[p['mesh']]
     if p.get('tag')=='magazine' and p['h']>.045 and p['w']>.035:
-        return rectangular_profile([(-.5,.43,.48),(-.32,.47,.5),(.23,.5,.48),(.5,.46,.42)])
+        return machined_edges(p,rectangular_profile([(-.5,.43,.48),(-.32,.47,.5),(.23,.5,.48),(.5,.46,.42)]))
     if p['w']>.035 and p['h']>.10 and p['d']<.13 and p['y']<-.05:
-        return rectangular_profile([(-.5,.47,.45),(-.36,.5,.49),(.16,.43,.46),(.5,.37,.38)])
+        return machined_edges(p,rectangular_profile([(-.5,.47,.45),(-.36,.5,.49),(.16,.43,.46),(.5,.37,.38)]))
     if p['w']>.045 and p['h']>.04 and p['d']>.15 and abs(p['x'])<.015:
         # Octagonal machined receivers and ventilated handguards have broad
         # planar faces, narrow edge facets and tapered end collars.
-        g=rectangular_profile([(-.5,.43,.5),(-.30,.5,.5),(.29,.5,.48),(.5,.34,.44)])
+        # Receiver profiles run along the actual barrel axis. Broad planar
+        # machined faces stay distinct from the narrow rounded edge highlights.
+        v,t=rectangular_profile([(-.5,.42,.40),(-.43,.48,.47),(-.27,.50,.50),(.32,.48,.50),(.5,.39,.40)])
+        g=([Vector((q.x,-q.z,q.y)) for q in v],t)
         if p['z']<-.13:
             # Native Boolean slots provide actual open side vents, rather than
             # painting black rectangles on the silhouette.
@@ -48,8 +51,27 @@ def hero_part(p, base):
             evaluated=bpy.data.meshes.new_from_object(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()));evaluated.calc_loop_triangles()
             g=([v.co.copy() for v in evaluated.vertices],[tuple(t.vertices) for t in evaluated.loop_triangles])
             bpy.data.meshes.remove(evaluated);bpy.data.objects.remove(obj,do_unlink=True)
-        return g
+        return machined_edges(p,g,1 if p['z']<-.13 else 2)
     return None
+
+
+def machined_edges(p,geometry,segments=1):
+    """Native bevels in metres, independent of the component's aspect ratio."""
+    dims=Vector((p['w'],p['h'],p['d']));v,t=geometry
+    mesh=bpy.data.meshes.new('Manufactured part / physical blank')
+    mesh.from_pydata([tuple(q[i]*dims[i] for i in range(3)) for q in v],[],t);mesh.update()
+    obj=bpy.data.objects.new('Manufactured part / edge machining',mesh)
+    bpy.context.scene.collection.objects.link(obj)
+    bevel=obj.modifiers.new('Physical edge radius','BEVEL')
+    bevel.width=min(.0009,min(dims)*.045);bevel.segments=segments
+    bevel.limit_method='ANGLE';bevel.angle_limit=.52;bevel.use_clamp_overlap=True
+    evaluated=bpy.data.meshes.new_from_object(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()))
+    evaluated.calc_loop_triangles()
+    result=([Vector(tuple(q.co[i]/dims[i] for i in range(3))) for q in evaluated.vertices],
+            [tuple(q.vertices) for q in evaluated.loop_triangles])
+    bpy.data.meshes.remove(evaluated);bpy.data.objects.remove(obj,do_unlink=True)
+    if mesh.users==0:bpy.data.meshes.remove(mesh)
+    return result
 
 
 def author_shared(api):
@@ -170,6 +192,55 @@ def author_shared(api):
     sleeve=lathe([(-.5,.40,.38),(-.42,.44,.42),(-.22,.50,.46),(-.02,.47,.50),(.17,.50,.47),(.34,.45,.43),(.5,.36,.36)],18,folds=.10)
     rot=Matrix.Rotation(math.pi/2,3,'X')
     register('sleeve_z',([rot@v for v in sleeve[0]],sleeve[1]),sphere(10,6),True)
+    # Complete, opaque leaf geometry avoids the large crossed-card silhouettes
+    # and overlapping transparent canopy layers of the previous world kit.
+    def crown(kind,far=False):
+        vertices=[];triangles=[];colours=[]
+        def leaf(a,b,width,tint):
+            direction=b-a;side=direction.cross(Vector((0,1,0)))
+            if side.length<.0001:side=Vector((1,0,0))
+            side.normalize();mid=a.lerp(b,.53)+Vector((0,.009,0));i=len(vertices)
+            vertices.extend((a,mid+side*width,b,mid-side*width));triangles.extend(((i,i+1,i+2),(i,i+2,i+3)))
+            colours.extend([tuple(api['linear'](c) for c in tint)]*4)
+        if kind=='palm':
+            arms=7 if far else 10;pairs=9 if far else 17
+            for arm in range(arms):
+                angle=arm/arms*math.tau;out=Vector((math.sin(angle),0,math.cos(angle)))
+                cross=Vector((out.z,0,-out.x));reach=.38+.08*math.sin(arm*2.1)
+                for j in range(pairs):
+                    t=(j+.7)/(pairs+.8);a=out*(t*reach)+Vector((0,.22-.40*t*t,0))
+                    span=.075*(math.sin(t*math.pi)**.5)
+                    for sign in (-1,1):
+                        b=a+cross*(span*sign)+out*.035+Vector((0,-.025,0))
+                        leaf(a,b,.025 if far else .018,(.29+arm%3*.016,.40+arm%3*.014,.17))
+                leaf(Vector((0,.22,0)),out*reach+Vector((0,-.18,0)),.009,(.36,.40,.16))
+            for arm in range(4):
+                angle=arm/4*math.tau;leaf(Vector((0,.18,0)),Vector((math.sin(angle)*.14,.48,math.cos(angle)*.14)),.042,(.37,.46,.20))
+        elif kind=='conifer':
+            levels=5 if far else 8;arms=6 if far else 9;pairs=4 if far else 7
+            for row in range(levels):
+                height=-.47+row/levels*.91;radius=(.52-height)*.46
+                for arm in range(arms):
+                    angle=arm/arms*math.tau+row*.77;out=Vector((math.sin(angle),0,math.cos(angle)));cross=Vector((out.z,0,-out.x))
+                    for j in range(pairs):
+                        t=(j+1)/pairs;a=out*(t*radius)+Vector((0,height-.07*t,0))
+                        for sign in (-1,1):
+                            b=a+out*.07+cross*(.047*(1-t*.6)*sign)+Vector((0,.015,0))
+                            snow=max(0,(height-.03)*1.6);base=(.17,.25,.13)
+                            tint=tuple(base[i]*(1-snow)+(.82,.88,.84)[i]*snow for i in range(3));leaf(a,b,.033 if far else .024,tint)
+        else:
+            branches=12 if far else 28;leaves=4 if far else 8
+            for branch in range(branches):
+                angle=branch*2.399963;h=-.24+(branch*.618%1)*.55;radius=.18+.22*(branch*.414%1)
+                center=Vector((math.sin(angle)*radius,h,math.cos(angle)*radius))
+                for j in range(leaves):
+                    a=center+Vector((math.sin(j*2.39)*.055,math.cos(j*1.81)*.04,math.cos(j*2.39)*.055))
+                    b=a+Vector((math.sin(angle+j*.8)*.13,.028,math.cos(angle+j*.8)*.13))
+                    leaf(a,b,.060 if far else .043,(.19+(j%3)*.025,.29+(j%3)*.02,.12))
+        return vertices,triangles,colours
+    register('palm_crown',crown('palm'),crown('palm',True))
+    register('tree_crown',crown('broadleaf'),crown('broadleaf',True))
+    register('conifer',crown('conifer'),crown('conifer',True))
     # Explicit Blender billboard mesh is shared by particles, decals and sprites.
     v=[Vector((-.5,-.5,0)),Vector((.5,-.5,0)),Vector((.5,.5,0)),Vector((-.5,.5,0))]
     register('billboard',(v,[(0,1,2),(0,2,3)]))

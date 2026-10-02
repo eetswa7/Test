@@ -12,14 +12,15 @@ void main() {
   gl_Position=projectionMatrix*centre;
 }`;
 export const billboardFragment = `
+uniform sampler2D uBreachEffects;
 varying vec2 vUv; varying vec3 vTint; varying float vAlpha; varying float vKind;
 void main(){
   vec2 p=vUv*2.0-1.0; float radius=length(p);
   float edge=1.0-smoothstep(.22,1.0,radius);
-  float wisps=.78+.22*sin(p.x*13.0+sin(p.y*11.0))*sin(p.y*16.0+p.x*7.0);
-  float a=edge*vAlpha; if(vKind<.5)a*=wisps;
+  vec4 stamp=texture2D(uBreachEffects,vUv*.5+vec2(vKind>1.5?.5:0.0,.5));
+  float a=stamp.a*vAlpha;
   if(a<.012)discard;
-  vec3 c=vTint;
+  vec3 c=vTint*stamp.rgb;
   if(vKind>1.5)c=mix(vTint,vec3(2.8,2.2,1.3),pow(max(0.0,1.0-radius),4.0));
   gl_FragColor=vec4(c,a);
   #include <tonemapping_fragment>
