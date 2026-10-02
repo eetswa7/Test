@@ -1,6 +1,7 @@
-import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=52';
+import {distance,direction,angleDelta,clamp,rayBox} from './math.js?v=53';
 export const ROLES=[{name:'Rifleman',weapon:0,variants:[0,13,16,2,24],range:19},{name:'Rusher',weapon:3,variants:[3,14,17,21,25],range:9},{name:'Shotgunner',weapon:5,variants:[5,6,18,26],range:7},{name:'Marksman',weapon:8,variants:[8,15,19,28],range:37},{name:'Heavy',weapon:9,variants:[9,20,27],range:28},{name:'Elite',weapon:1,variants:[1,16,21],range:22}];
 export const DIFFICULTY={recruit:{reaction:.85,accuracy:.115,speed:.9},regular:{reaction:.48,accuracy:.065,speed:1},veteran:{reaction:.25,accuracy:.033,speed:1.06}};
+const GUN_RANGE={RIFLE:20,SMG:11,SHOTGUN:7,SNIPER:37,MARKSMAN:31,LMG:26,PISTOL:12,MELEE:1.3};
 function nearestTag(bot,rules){
  let best=null,cost=Infinity;
  for(const tag of rules.tags){
@@ -69,7 +70,7 @@ export function updateBot(bot,dt,e){
    const dx=target.x-bot.x,dz=target.z-bot.z,n=Math.max(.1,Math.hypot(dx,dz)),side=bot.id%2?1:-1;
    bot.goal={x:bot.x-dz/n*side*2.5,y:bot.y,z:bot.z+dx/n*side*2.5};bot.state='flank';
   }else if(target){
-   const preferred=bot.weapon.def.id===12?1.3:Math.min(ROLES[bot.role].range,bot.weapon.range*.9),d=distance(bot,target),side=bot.id%2?1:-1;
+   const preferred=bot.weapon.def.id===12?1.3:Math.min(e.rules.mode.id==='gun'?GUN_RANGE[bot.weapon.def.kind]:ROLES[bot.role].range,bot.weapon.range*.9),d=distance(bot,target),side=bot.id%2?1:-1;
    if(d<preferred*.45){bot.goal={x:bot.x-(target.x-bot.x)*.45,y:bot.y,z:bot.z-(target.z-bot.z)*.45};bot.state='retreat';}
    else if(d>preferred*1.25){const flank=bot.weapon.def.id===12?0:Math.min(5,preferred*.25);bot.goal={x:target.x+Math.cos(bot.yaw)*side*flank,y:target.y,z:target.z+Math.sin(bot.yaw)*side*flank};bot.state='flank';}
    else{bot.goal={x:bot.x+Math.cos(bot.yaw)*side*1.8,y:bot.y,z:bot.z+Math.sin(bot.yaw)*side*1.8};bot.state='engage';}
@@ -94,7 +95,7 @@ export function updateBot(bot,dt,e){
   const p=bot.path[bot.pathIndex],dx=p.x-bot.x,dz=p.z-bot.z,n=Math.hypot(dx,dz);
   if(n<.35&&Math.abs(p.y-bot.y)<.4)bot.pathIndex++;
   else{
-   const speed=(bot.weapon.def.kind==='MELEE'&&target?5.5:bot.state==='evade'?5.8:bot.state==='engage'?1.8:bot.role===1?4.5:3.4)*e.difficulty.speed;
+   const speed=(bot.weapon.def.kind==='MELEE'&&target?5.5:bot.state==='evade'?5.8:bot.state==='engage'?1.8:bot.role===1?4.5:3.4)*e.difficulty.speed*bot.weapon.mobility;
    let sx=dx/Math.max(.01,n),sz=dz/Math.max(.01,n);
    // Soft avoidance keeps allies from occupying the same doorway or firing line.
    for(const other of e.actors){if(other===bot||other.dead||Math.abs(other.y-bot.y)>1.6)continue;

@@ -12,7 +12,7 @@ import {fixture as rendererFixture} from './renderer-fixture.mjs';
 
 test('new primary and sidearm slots save with stable old IDs and a complete Gun Game ladder',()=>{
  assert.equal(WEAPONS.length,30);assert.deepEqual(SECONDARY_IDS,[10,11,22,23,29]);
- assert.equal(GUN_ORDER.length,WEAPONS.length);assert.equal(new Set(GUN_ORDER).size,WEAPONS.length);assert.equal(GUN_ORDER.at(-1),12);
+ assert.equal(GUN_ORDER.length,WEAPONS.length-1);assert.equal(new Set(GUN_ORDER).size,WEAPONS.length-1);assert.equal(GUN_ORDER.at(-1),22);
  let text='';const storage={getItem:()=>text,setItem:(key,value)=>text=value};
  for(const id of PRIMARY_IDS){const store=new SaveStore(storage);store.data.loadout.primary=id;store.data.loadout.secondary=22;store.persist();const loaded=new SaveStore(storage);assert.equal(loaded.data.loadout.primary,id);assert.equal(loaded.data.loadout.secondary,22);}
  assert.equal(sanitizeLoadout({primary:19,secondary:23}).secondary,23);

@@ -1,9 +1,10 @@
-import {MODES} from './modes.js?v=52';
-import {MAPS} from './maps.js?v=52';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=52';
-import {clamp,distance} from './math.js?v=52';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=52';
-import {identityFor,canIdentify} from './combat-identity.js?v=52';
+import {MODES} from './modes.js?v=53';
+import {MAPS} from './maps.js?v=53';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=53';
+import {ATTACHMENT_SPECS} from './attachments.js?v=53';
+import {clamp,distance} from './math.js?v=53';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=53';
+import {identityFor,canIdentify} from './combat-identity.js?v=53';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -14,7 +15,7 @@ export class Interface {
   $('mode-select').innerHTML=MODES.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');$('mode-select').value=this.app.config.mode;
   $('mode-select').onchange=()=>{this.app.config.mode=$('mode-select').value;this.modeDetail();};this.modeDetail();$('map-count').textContent=`01 / ${String(MAPS.length).padStart(2,'0')}`;
   $('map-selector').innerHTML=MAPS.map(m=>`<button class="map-card ${m.id===this.app.config.map?'active':''}" data-map="${m.id}" aria-label="Select ${m.name}"><span>${m.tag}</span><strong>${m.name}</strong></button>`).join('');
-  for(const b of document.querySelectorAll('[data-map]'))b.onclick=()=>{const id=Number(b.dataset.map);this.app.config.map=id;for(const c of document.querySelectorAll('[data-map]'))c.classList.toggle('active',c===b);$('map-count').textContent=`${String(id+1).padStart(2,'0')} / ${String(MAPS.length).padStart(2,'0')}`;$('selected-map-label').textContent=MAPS[id].name;$('selected-map-type').textContent=`${MAPS[id].tag} / ${MAPS[id].location.toUpperCase()}`;this.app.previewMap(id);this.app.audio.ui();};
+  for(const b of document.querySelectorAll('[data-map]'))b.onclick=()=>{const id=Number(b.dataset.map);this.app.config.map=id;for(const c of document.querySelectorAll('[data-map]'))c.classList.toggle('active',c===b);$('map-count').textContent=`${String(id+1).padStart(2,'0')} / ${String(MAPS.length).padStart(2,'0')}`;$('selected-map-label').textContent=MAPS[id].name;$('selected-map-type').textContent=`${MAPS[id].tag} / ${MAPS[id].location.toUpperCase()}`;this.modeDetail();this.app.previewMap(id);this.app.audio.ui();};
   $('difficulty').onchange=()=>{this.app.config.difficulty=$('difficulty').value;};$('deploy').onclick=()=>this.app.start();
   for(const b of document.querySelectorAll('[data-page]'))b.onclick=()=>this.setPage(b.dataset.page);
   $('settings-top').onclick=()=>this.setPage('settings');document.querySelector('.wordmark').onclick=e=>{e.preventDefault();this.setPage('play');const now=Date.now();this.taps=now-this.lastTap<500?this.taps+1:1;this.lastTap=now;if(this.taps===5){this.taps=0;this.developer();}};
@@ -27,14 +28,17 @@ export class Interface {
   window.addEventListener('keydown',e=>{if(e.code==='Escape'&&this.app.playing){e.preventDefault();if(this.app.game.paused)this.app.resume();else this.app.pause();}if(e.code==='F3'){e.preventDefault();this.developer();}if(e.code==='Tab'&&this.app.playing){e.preventDefault();this.app.pause();}});
  }
  persist(){this.store.persist();$('save-status').textContent=this.store.error?'SAVE UNAVAILABLE':'PROGRESS SAVED ON THIS DEVICE';if(this.store.error)this.toast('Progress could not be saved. Browser storage may be full.');}
- modeDetail(){$('mode-detail').textContent=MODES.find(m=>m.id===this.app.config.mode).description;}
+ modeDetail(){const mode=MODES.find(m=>m.id===this.app.config.mode),size=MAPS[this.app.config.map].teamSize??4;let text=mode.description;if(mode.teams)text=text.includes('4 vs 4')?text.replace('4 vs 4',`${size} vs ${size}`):`${size} vs ${size}. ${text}`;$('mode-detail').textContent=text;}
  setPage(page){this.page=page;for(const b of document.querySelectorAll('[data-page]'))b.classList.toggle('active',b.dataset.page===page);for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===`${page}-page`);this.app.audio.ui();if(page==='career')this.refreshCareer();if(page==='loadout'){this.renderWeapons();this.app.previewWeapon();}}
  renderWeapons(){const loadout=this.store.data.loadout,chosen=loadout[this.slot],w=new Weapon(chosen,this.slot==='primary'?loadout:{}),d=w.def;for(const b of document.querySelectorAll('[data-slot]'))b.classList.toggle('active',b.dataset.slot===this.slot);
   $('weapon-list').innerHTML=WEAPONS.filter(d=>this.slot==='primary'?PRIMARY_IDS.includes(d.id):d.kind==='PISTOL').map(d=>`<button class="weapon-row ${d.id===chosen?'active':''} ${this.store.unlocked(d)?'':'locked'}" data-weapon="${d.id}"><span>${d.name}</span><small>${this.store.unlocked(d)?d.kind:`LV ${d.unlock}`}</small></button>`).join('');
   for(const b of document.querySelectorAll('[data-weapon]'))b.onclick=()=>{const id=+b.dataset.weapon;if(!this.store.unlocked(WEAPONS[id])){this.toast(`Unlocks at operator level ${WEAPONS[id].unlock}.`);return;}loadout[this.slot]=id;this.persist();this.renderWeapons();this.app.previewWeapon();this.app.audio.ui();};
   $('weapon-class').textContent=d.kind;$('weapon-name').textContent=d.name;$('weapon-unlock').textContent=`${this.store.data.weaponXP[d.id]??0} WEAPON XP · ${d.burst?`${d.burst}-ROUND BURST`:d.automatic?'AUTOMATIC':d.shellReload?'PUMP ACTION':d.kind==='SNIPER'?'BOLT ACTION':d.revolver?'REVOLVER':'SEMI AUTOMATIC'}`;
-  $('weapon-stats').innerHTML=[['DAMAGE',`${d.damage}${d.pellets>1?` × ${d.pellets}`:''}`,''],['FIRE RATE',d.rpm,'RPM'],['MAGAZINE',w.capacity,''],['RANGE',Math.round(w.range),'m'],['RELOAD',w.reloadTime.toFixed(2),'s'],['ADS',Math.round(w.adsTime*1000),'ms']].map(([name,v,unit])=>`<div class="stat"><span>${name}</span><strong>${v}</strong> <small>${unit}</small></div>`).join('');
-  for(const key of Object.keys(ATTACHMENTS)){const el=$(`${key}-select`);el.value=loadout[key];el.disabled=this.slot!=='primary'||key==='barrel'&&d.integralSuppressor;if(key==='barrel'&&d.integralSuppressor)el.value='1';}$('equipment-select').value=loadout.equipment;
+  const base=new Weapon(chosen),change=(value,plain)=>`${value>=plain?'+':''}${Math.round((value/plain-1)*100)}%`;
+  $('weapon-stats').innerHTML=[['DAMAGE',`${w.damage(0).toFixed(1).replace(/\.0$/,'')}${d.pellets>1?` × ${d.pellets}`:''}`,''],['FIRE RATE',d.rpm,'RPM'],['MAGAZINE',w.capacity,''],['RANGE',Math.round(w.range),'m'],['RELOAD',w.reloadTime.toFixed(2),'s'],['ADS',Math.round(w.adsTime*1000),'ms'],['RECOIL',change(w.recoil,base.recoil),''],['HIP CONE',change(w.spread(0,true,false),base.spread(0,true,false)),''],['MOVEMENT',change(w.mobility,base.mobility),'']].map(([name,v,unit])=>`<div class="stat"><span>${name}</span><strong>${v}</strong> <small>${unit}</small></div>`).join('');
+  const effects=[];
+  for(const key of Object.keys(ATTACHMENTS)){const el=$(`${key}-select`),index=w.attachments[key];el.value=index;el.disabled=this.slot!=='primary'||key==='barrel'&&d.integralSuppressor;for(const option of el.options){const spec=ATTACHMENT_SPECS[key][Number(option.value)];option.disabled=!!spec.kinds&&!spec.kinds.includes(d.kind);}const spec=ATTACHMENT_SPECS[key][index];el.title=spec.description;if(index)effects.push(`<p><strong>${esc(spec.name)}</strong>: ${esc(spec.description)}</p>`);}$('equipment-select').value=loadout.equipment;
+  $('attachment-effects').innerHTML=this.slot==='primary'?effects.join('')||'<p>Select attachments to specialise this weapon.</p>':'';
  }
  renderSettings(){
   const slider=(key,name,min,max,step)=>`<label class="setting"><span>${name}<output id="out-${key}">${this.settings[key]}</output></span><input type="range" data-setting="${key}" min="${min}" max="${max}" step="${step}" value="${this.settings[key]}" aria-label="${name}"></label>`;

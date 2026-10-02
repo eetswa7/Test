@@ -309,7 +309,7 @@ function addOptic(b,w){
  const {box,tube,cyl}=b,id=w.def.id;
  if(id===12)return;
  const short=w.def.kind==='PISTOL',y=short?.03:.06;
- if(w.optic===3||w.def.kind==='SNIPER'||id===7){
+ if([3,5,6].includes(w.optic)||w.def.kind==='SNIPER'||id===7){
   for(const z of [-.074,.067]){box(0,.116,z,.046,.047,.031,METAL);tube(0,.188,z,.079,.026,METAL);}
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);
   for(const z of [-.171,.137])tube(0,.188,z,.094,.01,EDGE);
@@ -323,8 +323,8 @@ function addOptic(b,w){
    box(Math.cos(a)*.04,.188+Math.sin(a)*.04,-.202,.004,.004,.003,EDGE,'',{roll:a});
   }
   cyl(0,.24,-.025,.035,.027,RUBBER,'',{pitch:0});cyl(.048,.188,-.025,.031,.031,RUBBER,'',{pitch:0,roll:Math.PI/2});
- }else if(w.optic===1||w.optic===2){
-  const prism=w.optic===2,wide=prism?.10:.082,z=short?-.013:.017;
+ }else if([1,2,4].includes(w.optic)){
+  const prism=w.optic===2,wide=w.optic===4?.115:prism?.10:.082,z=short?-.013:.017;
   box(0,.12,z,wide+.008,.026,prism?.07:.045,METAL);
   for(const s of [-1,1])box(s*wide*.5,.169,z,.01,.072,prism?.042:.022,METAL);
   box(0,.208,z,wide+.009,.009,prism?.042:.022,METAL);box(wide*.62,.14,z,.019,.02,.033,RUBBER);
@@ -342,15 +342,21 @@ function addMuzzle(b,w){
  if(w.def.id===12)return;
  const {box,tube}=b,z=b.profile.barrel,y=w.def.kind==='PISTOL'?.03:.06,short=w.def.kind==='PISTOL';
  if(w.barrel===1){tube(0,y,z-.063,short?.047:.059,.16,METAL);for(const dz of [-.133,.003])tube(0,y,z+dz,short?.05:.063,.013,EDGE);}
- else if(w.barrel===2){tube(0,y,z-.018,short?.036:.047,.066,EDGE);for(const s of [-1,1])for(let i=0;i<3;i++)box(s*(short?.019:.024),y,z+.001-i*.018,.002,.015,.009,RUBBER);}
+ else if(w.barrel===2||w.barrel===5){tube(0,y,z-.018,short?.036:.047,.066,EDGE);for(const s of [-1,1])for(let i=0;i<3;i++)box(s*(short?.019:.024),y,z+.001-i*.018,.002,.015,.009,RUBBER);}
+ else if(w.barrel===3){tube(0,y,z-.065,.034,.16,METAL);tube(0,y,z-.146,.043,.025,EDGE);}
+ else if(w.barrel===6){tube(0,y,z-.04,.049,.10,METAL);tube(0,y,z-.089,.055,.017,EDGE);}
  else{tube(0,y,z,short?.032:w.def.kind==='SHOTGUN'?.045:.043,short?.014:.032,METAL);if(!short)for(const s of [-1,1])box(s*.022,y,z-.004,.002,.019,.014,RUBBER);}
 }
 function addAttachments(b,w){
  if(['PISTOL','MELEE'].includes(w.def.kind))return;
  const {box,cyl}=b,z=b.profile.support,width=b.profile.width;
- if(w.grip===1){box(0,-.109,z,.039,.15,.052,POLY);box(0,-.181,z,.043,.016,.057,RUBBER);}
+ if(w.grip===1||w.grip===5||w.grip===8){box(0,-.109,z,.039,w.grip===8?.075:.15,.052,POLY,'',{pitch:w.grip===5?.55:0});box(0,-.181,z,.043,.016,.057,RUBBER);}
  if(w.grip===2){box(width*.66,.015,z,.035,.035,.088,METAL);cyl(width*.66,.015,z-.046,.021,.009,RUBBER);}
- if(w.grip===4){for(const q of b.parts)if(q.tag==='magazine'&&q.y<-.11){q.y-=.033;q.h*=1.12;}}
+ if(w.grip===6){box(0,.032,b.profile.grip+.16,.068,.051,.09,RUBBER);}
+ if(w.grip===7)for(const side of [-1,1])box(side*.075,-.12,z-.04,.017,.23,.018,METAL,'',{roll:side*-.5});
+ if(w.grip===4||w.magazine===2){for(const q of b.parts)if(q.tag==='magazine'&&q.y<-.11){q.y-=.033;q.h*=1.12;}}
+ if(w.magazine===1)box(width*.6,-.165,b.profile.grip-.045,.009,.055,.07,RUBBER);
+ if(w.magazine===3){cyl(0,-.20,b.profile.grip-.065,.16,.085,METAL,'magazine',{roll:Math.PI/2});}
 }
 function addHands(b,w){
  const {box}=b,id=w.def.id,pr=b.profile,z=pr.grip,short=w.def.kind==='PISTOL';
@@ -386,7 +392,7 @@ export function weaponModel(w){
 }
 export function muzzlePosition(w){
  const profile=PROFILES[w.def.id]??PROFILES[0];
- return {x:0,y:w.def.kind==='PISTOL'?.03:.06,z:profile.barrel-(w.barrel===1?.146:w.barrel===2?.052:.02)};
+ return {x:0,y:w.def.kind==='PISTOL'?.03:.06,z:profile.barrel-(w.barrel===1?.146:w.barrel===3?.16:w.barrel===6?.10:w.barrel===2||w.barrel===5?.052:.02)};
 }
 function smooth(a,b,t){t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t);}
 export function animateWeaponParts(parts,w,p,time){

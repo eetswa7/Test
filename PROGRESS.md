@@ -1,3 +1,13 @@
+# Release 53: gun finale, impactful attachments and 8 vs 8
+
+- Gun Game now advances through 29 unique firearms and ends on the Krait R.
+- Expanded optics, barrels and handling; independent magazine and ammunition slots.
+- Attachment effects feed recoil, lateral kick, spread, zoom, movement, reloads,
+  damage, penetration, bot hearing and visual models, with loadout trade-offs shown.
+- Crossfire District and Blacksite use 8 operators per team in all team modes,
+  with additional collision-safe starting positions. Free-for-all rosters remain 8.
+- Combat/attachment and model/aim checks: 16 passed.
+
 # Release 44: iOS frame pacing, deployment preparation and combat feedback
 
 - Replaced elapsed-since-last-draw gating with a running render deadline. Synthetic

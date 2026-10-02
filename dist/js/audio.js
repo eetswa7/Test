@@ -1,4 +1,4 @@
-import {WEAPONS} from './weapons.js?v=52';
+import {WEAPONS} from './weapons.js?v=53';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -90,7 +90,7 @@ export class AudioSystem {
    const d=Math.hypot(dx,dy,dz),own=e.source===0,volume=own||!e.position?1:clamp(1/(1+d*d*.004)-.015,0,.85);
    const pan=e.position?Math.sin(Math.atan2(dx,-dz)-game.player.yaw):0;
    switch(e.type){
-    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:own});if(own)this.haptic(8);break;
+    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72)*(e.loudness??1),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:own});if(own)this.haptic(8);break;
     case 'step':case 'land':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST'),land=e.type==='land';const sound=hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(land?.65:own?.28:.48)*(e.value??1),pan,rate:land?.76:.91+Math.random()*.16,distance:d,important:land&&own});if(land&&own)this.haptic(Math.round(8+12*(e.value??0)));}break;
     case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d});}break;
     case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true});if(d<14)this.haptic(30);break;

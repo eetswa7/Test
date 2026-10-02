@@ -1,14 +1,14 @@
-import {Game,emptyInput} from './engine.js?v=52';
-import {Renderer} from './three-renderer.js?v=52';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=52';
-import {TouchInput} from './input.js?v=52';
-import {AudioSystem} from './audio.js?v=52';
-import {SaveStore} from './save.js?v=52';
-import {Interface,$} from './ui.js?v=52';
-import {Weapon} from './weapons.js?v=52';
-import {opticMagnification} from './aim.js?v=52';
-import {FramePacer} from './frame-pacer.js?v=52';
-import {updateAimAssist} from './aim-assist.js?v=52';
+import {Game,emptyInput} from './engine.js?v=53';
+import {Renderer} from './three-renderer.js?v=53';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=53';
+import {TouchInput} from './input.js?v=53';
+import {AudioSystem} from './audio.js?v=53';
+import {SaveStore} from './save.js?v=53';
+import {Interface,$} from './ui.js?v=53';
+import {Weapon} from './weapons.js?v=53';
+import {opticMagnification} from './aim.js?v=53';
+import {FramePacer} from './frame-pacer.js?v=53';
+import {updateAimAssist} from './aim-assist.js?v=53';
 
 export class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;this.framePacer=new FramePacer();

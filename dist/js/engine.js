@@ -1,12 +1,12 @@
-import {Arena,MAPS} from './maps.js?v=52';
-import {Navigation} from './navigation.js?v=52';
-import {SpawnDirector} from './spawns.js?v=52';
-import {MatchRules} from './modes.js?v=52';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=52';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=52';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=52';
-import {traceBullet} from './ballistics.js?v=52';
-import {beginVault,advanceVault} from './traversal.js?v=52';
+import {Arena,MAPS} from './maps.js?v=53';
+import {Navigation} from './navigation.js?v=53';
+import {SpawnDirector} from './spawns.js?v=53';
+import {MatchRules} from './modes.js?v=53';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=53';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=53';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=53';
+import {traceBullet} from './ballistics.js?v=53';
+import {beginVault,advanceVault} from './traversal.js?v=53';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -25,9 +25,10 @@ export class Game {
   this.arena=new Arena(this.config.map);this.nav=new Navigation(this.arena);this.spawner=new SpawnDirector(this.arena,this.nav);this.rules=new MatchRules(this.config.mode,this.arena);this.random=rng(seed);this.difficulty=DIFFICULTY[this.config.difficulty]??DIFFICULTY.regular;
   this.time=0;this.paused=false;this.events=[];this.grenades=[];this.smokes=[];this.actors=[];this.shots=0;this.hits=0;this.headshots=0;this.weaponKills={};this.debug={god:false,ammo:false};this.damageYaw=0;this.lastKiller='';this.saved=false;
   this.actors.push(new Actor(0,0,0,this.config.loadout));
+  this.teamSize=this.rules.mode.teams?(this.arena.info.teamSize??4):4;
   // Cosmetic/loadout variety has its own stream, keeping spawn safety and
   // simulation randomness stable as the weapon catalogue grows.
-  for(let i=1;i<8;i++){const role=(i-1)%6,variants=ROLES[role].variants,primary=this.rules.mode.id==='gun'?variants[0]:variants[Math.floor(arsenalRandom()*variants.length)];this.actors.push(new Actor(i,i<4?0:1,role,{primary}));}
+  for(let i=1;i<this.teamSize*2;i++){const role=(i-1)%6,variants=ROLES[role].variants,primary=this.rules.mode.id==='gun'?variants[0]:variants[Math.floor(arsenalRandom()*variants.length)];this.actors.push(new Actor(i,i<this.teamSize?0:1,role,{primary}));}
   this.player=this.actors[0];
   if(this.rules.mode.id==='gun')for(const a of this.actors)a.weapons=[new Weapon(GUN_ORDER[0]),new Weapon(10)];
   this.resetRound();
@@ -77,7 +78,7 @@ export class Game {
    if(input.crouch){if(p.sprinting&&p.grounded&&n>.2&&p.slideCooldown<=0){p.sliding=true;p.slideLeft=.72;p.slideCooldown=1.25;p.crouched=true;p.sprinting=false;p.slideX=forwardX;p.slideZ=forwardZ;this.emit('slide',{source:p.id});}else if(!p.sliding){if(!p.crouched)p.crouched=true;else if(!this.arena.collides({...p,y:p.y+.03},.31,1.77))p.crouched=false;}}
    if(input.jump&&p.crouched&&!this.arena.collides({...p,y:p.y+.03},.31,1.77)){p.crouched=false;p.sliding=false;p.slideLeft=0;}
    let adsTarget=input.ads&&!p.sprinting&&!p.sliding&&!p.vault&&!p.weapon.reloadLeft&&!p.switchLeft?1:0;p.ads=lerp(p.ads,adsTarget,clamp(dt/p.weapon.adsTime*3,0,1));
-   const maxSpeed=p.crouched?2.15:p.sprinting?6.1:4.1,speed=(p.sliding?2.8+3.7*p.slideLeft/.72:maxSpeed)*(p.weapon.def.kind==='LMG'?.88:1)*lerp(1,.6,p.ads);
+   const maxSpeed=p.crouched?2.15:p.sprinting?6.1:4.1,speed=(p.sliding?2.8+3.7*p.slideLeft/.72:maxSpeed)*(p.weapon.def.kind==='LMG'?.88:1)*p.weapon.mobility*lerp(1,.6,p.ads);
    const dx=p.sliding?p.slideX*speed:forwardX*speed,dz=p.sliding?p.slideZ*speed:forwardZ*speed;
    p.coyote=p.grounded?.09:Math.max(0,p.coyote-dt);p.jumpBuffer=input.jump?.12:Math.max(0,p.jumpBuffer-dt);
    if(p.jumpBuffer>0&&p.coyote>0&&!p.crouched&&!p.vault){
@@ -123,11 +124,11 @@ export class Game {
     const b=contact.block;this.emit('impact',{position:contact.position,surface:b.surface,normal:this.impactNormal(contact.position,b),value:d.kind==='SHOTGUN'?2:4,penetrated:contact.penetrated});
     if(b.breakable){b.hp-=d.damage;if(b.hp<=0&&!b.destroyed){b.destroyed=true;this.explode({...b,owner:a.id,kind:'frag'},5.5,90);}}
    }
-   if(i===0)this.emit('shot',{position:origin,end:impact,source:a.id,weapon:d.id,suppressed:w.barrel===1,indoor:this.arena.indoors(a)});
+   if(i===0)this.emit('shot',{position:origin,end:impact,source:a.id,weapon:d.id,suppressed:w.suppressed,loudness:w.ammunition===3?.7:w.barrel===5?1.15:1,indoor:this.arena.indoors(a)});
   }
-  if(a.id===0){this.shots++;if(anyHit){this.hits++;this.emit('hit',{headshot:head});}const r=w.recoil*lerp(1,.65,a.ads)*(a.crouched?.78:1);const nextPitch=clamp(a.pitch+r,-1.48,1.48);a.recoilPitch+=nextPitch-a.pitch;a.pitch=nextPitch;a.yaw+=Math.sin(w.shotIndex*1.73+d.id)*r*.45;a.visualKick+=r*2.5;}
+  if(a.id===0){this.shots++;if(anyHit){this.hits++;this.emit('hit',{headshot:head});}const r=w.recoilFor(a.ads,a.crouched,Math.hypot(a.vx,a.vz)<.6);const nextPitch=clamp(a.pitch+r,-1.48,1.48);a.recoilPitch+=nextPitch-a.pitch;a.pitch=nextPitch;a.yaw+=Math.sin(w.shotIndex*1.73+d.id)*r*.45*w.horizontalRecoil;a.visualKick+=r*2.5;}
   a.lastShot=this.time;w.sinceShot=0;w.shotIndex++;
-  for(const other of this.actors)if(other.id!==a.id&&!other.dead&&this.rules.enemies(a,other)&&distance(a,other)<(w.barrel===1?12:44)&&other.target===null){other.lastKnown={x:a.x,y:a.y,z:a.z};other.memory=5;other.state='investigate';}
+  for(const other of this.actors)if(other.id!==a.id&&!other.dead&&this.rules.enemies(a,other)&&distance(a,other)<w.hearingRadius&&other.target===null){other.lastKnown={x:a.x,y:a.y,z:a.z};other.memory=5;other.state='investigate';}
   return true;
  }
  impactNormal(p,b){let axis='x',sign=1,min=Infinity;for(const k of ['x','y','z']){const h=b[k==='x'?'w':k==='y'?'h':'d']/2,d=Math.abs(Math.abs(p[k]-b[k])-h);if(d<min){min=d;axis=k;sign=p[k]>b[k]?1:-1;}}return{x:axis==='x'?sign:0,y:axis==='y'?sign:0,z:axis==='z'?sign:0};}
@@ -173,6 +174,6 @@ export class Game {
   this.emit('explosion',{position:{x:g.x,y:g.y,z:g.z},value:radius});const owner=this.actors.find(a=>a.id===g.owner)??null;
   for(const a of this.actors){let d=Math.hypot(a.x-g.x,a.y+.8-g.y,a.z-g.z);if(a.dead||d>radius)continue;if(!this.arena.visible({...g,y:g.y+.2},{x:a.x,y:a.y+.8,z:a.z}))continue;this.damage(a,damage*(1-d/radius),owner,false);}
  }
- spawnBot(){if(this.actors.length>=12)return;const id=this.actors.length,a=new Actor(id,1,id%6);this.actors.push(a);this.spawn(a);}
+ spawnBot(){if(this.actors.length>=Math.max(12,this.teamSize*2))return;const id=this.actors.length,a=new Actor(id,1,id%6);this.actors.push(a);this.spawn(a);}
  result(){const p=this.player,r=this.rules,win=r.winner>=0&&(r.mode.teams?r.winner===p.team:r.winner===p.id);return{win,draw:r.winner===-1,kills:p.kills,deaths:p.deaths,headshots:this.headshots,accuracy:this.shots?Math.round(this.hits/this.shots*100):0,xp:100+p.kills*100+this.headshots*25+(win?350:0),streak:p.bestStreak,weaponKills:{...this.weaponKills},time:this.time};}
 }

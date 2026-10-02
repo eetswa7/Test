@@ -53,5 +53,5 @@ test('six added firearms have distinct models, sound profiles, save IDs and prog
   assert(model.some(p=>p.tag==='magazine')&&model.muzzle.z<-.15);assert(audio.buffers.has('shot'+id));assert(GUN_ORDER.includes(id));
   assert.equal(sanitizeLoadout(id===29?{secondary:id}:{primary:id})[id===29?'secondary':'primary'],id);
  }
- assert.equal(signatures.size,6);assert.equal(new Set(GUN_ORDER).size,WEAPONS.length);assert.equal(GUN_ORDER.at(-1),12);
+ assert.equal(signatures.size,6);assert.equal(new Set(GUN_ORDER).size,WEAPONS.length-1);assert.equal(GUN_ORDER.at(-1),22);
 });

@@ -1,12 +1,12 @@
-import {GUN_ORDER} from './weapons.js?v=52';
-import {distance} from './math.js?v=52';
+import {GUN_ORDER} from './weapons.js?v=53';
+import {distance} from './math.js?v=53';
 
 export const MODES = [
  {id:'tdm',name:'TEAM DEATHMATCH',short:'TDM',description:'4 vs 4. First team to 40 eliminations.',limit:40,time:360,teams:true},
  {id:'ffa',name:'FREE FOR ALL',short:'FFA',description:'Every operator for themselves. First to 20.',limit:20,time:360,teams:false},
  {id:'sabotage',name:'SABOTAGE',short:'SAB',description:'Plant or defuse. One life per round. First to 4 rounds.',limit:4,time:110,teams:true},
  {id:'domination',name:'DOMINATION',short:'DOM',description:'Capture A, B and C. Hold them to reach 150 points.',limit:150,time:480,teams:true},
- {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} weapons. One elimination per tier. Finish with the blade.`,limit:GUN_ORDER.length,time:GUN_ORDER.length*30,teams:false},
+ {id:'gun',name:'GUN GAME',short:'GUN',description:`${GUN_ORDER.length} guns. One elimination per tier. Final gun: Krait R revolver.`,limit:GUN_ORDER.length,time:900,teams:false},
  {id:'hardpoint',name:'HARDPOINT',short:'HARD',description:'Hold the rotating zone. Contested zones score nothing. First to 150.',limit:150,time:480,teams:true},
  {id:'confirmed',name:'KILL CONFIRMED',short:'KC',description:'Collect enemy tags to score. Recover allied tags to deny. First to 30.',limit:30,time:420,teams:true},
  {id:'ctf',name:'CAPTURE THE FLAG',short:'CTF',description:'Steal the enemy flag, carry it home, and keep your own flag safe. First to 3 captures.',limit:3,time:480,teams:true},
@@ -23,6 +23,8 @@ export const FLAG_RETURN_SECONDS = 25;
 export class MatchRules {
  constructor(mode,arena) {
   this.mode=MODES.find(m=>m.id===mode)||MODES[0];
+  // The expanded arenas need travel time as well as one kill per firearm.
+  if(this.mode.id==='gun'&&arena.info.size>=58)this.mode={...this.mode,time:1350};
   this.time=this.mode.time;this.scores=[0,0];this.phase='playing';this.round=1;this.roundWait=0;
   this.winner=null;this.roundWinner=null;this.message='';this.planted=false;this.bombTime=35;
   this.bombSite=-1;this.tick=0;

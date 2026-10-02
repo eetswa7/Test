@@ -1,6 +1,12 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 52.** 30 weapons, 15 maps and 11 modes.
+**Latest checkpoint: Release 53.** 30 weapons, 15 maps and 11 modes.
+
+Release 53 removes the knife from Gun Game: all 29 firearms progress to a final
+Krait R revolver elimination. The two expanded arenas now field 8 vs 8 in
+every team mode. Five independent attachment slots offer 31 choices, with
+visible build comparisons and actual effects on recoil, aim, movement, reloads,
+capacity, range, damage, penetration and the distance bots hear shots.
 
 Blender supplies the complete primary 3D library and nine visual texture atlases.
 This checkpoint adds shaped and ventilated weapons, merged animated hands,

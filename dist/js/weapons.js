@@ -1,4 +1,6 @@
-import {clamp,lerp} from './math.js?v=52';
+import {clamp,lerp} from './math.js?v=53';
+import {ATTACHMENTS,attachmentIndex,attachmentProfile} from './attachments.js?v=53';
+export {ATTACHMENTS} from './attachments.js?v=53';
 // All distances are metres. Rates and timings drive the simulation, models and audio.
 const specs=[
  ['Kestrel AR','RIFLE',29,700,30,2.2,.019,.016,42,.19,1,true,1],
@@ -35,20 +37,25 @@ const specs=[
 export const WEAPONS=specs.map((s,id)=>{const[name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock]=s;return{id,name,kind,damage,rpm,magazine,reload,recoil,spread,range,ads,pellets,automatic,unlock,burst:id===13?3:id===16?2:0,shellReload:id===5||id===18,integralSuppressor:id===21,revolver:id===22,interval:60/rpm};});
 export const PRIMARY_IDS=WEAPONS.filter(w=>!['PISTOL','MELEE'].includes(w.kind)).map(w=>w.id);
 export const SECONDARY_IDS=WEAPONS.filter(w=>w.kind==='PISTOL').map(w=>w.id);
-export const GUN_ORDER=[0,1,2,13,16,3,4,14,17,21,5,6,18,9,20,24,25,26,27,28,15,8,7,19,10,29,11,23,22,12];
-export const ATTACHMENTS={optic:['Iron sights','Reflex','Prism sight','4× optic'],barrel:['Standard barrel','Suppressor','Compensator'],handling:['Standard grip','Foregrip','Laser','Light stock','Extended magazine']};
-export const defaultLoadout=()=>({primary:0,secondary:10,optic:1,barrel:0,handling:0,equipment:'frag'});
-export function sanitizeLoadout(v={}){if(!v||typeof v!=='object')v={};const d=defaultLoadout();for(const k of ['primary','secondary','optic','barrel','handling'])if(Number.isFinite(v[k]))d[k]=Math.round(v[k]);d.primary=PRIMARY_IDS.includes(d.primary)?d.primary:clamp(d.primary,0,9);d.secondary=SECONDARY_IDS.includes(d.secondary)?d.secondary:clamp(d.secondary,10,11);d.optic=clamp(d.optic,0,3);d.barrel=clamp(d.barrel,0,2);d.handling=clamp(d.handling,0,4);d.equipment=['frag','smoke','flash'].includes(v.equipment)?v.equipment:'frag';return d;}
+export const GUN_ORDER=[0,1,2,13,16,3,4,14,17,21,5,6,18,9,20,24,25,26,27,28,15,8,7,19,10,29,11,23,22];
+export const defaultLoadout=()=>({primary:0,secondary:10,optic:1,barrel:0,handling:0,magazine:0,ammo:0,equipment:'frag'});
+export function sanitizeLoadout(v={}){if(!v||typeof v!=='object')v={};const d=defaultLoadout();for(const k of ['primary','secondary'])if(Number.isFinite(v[k]))d[k]=Math.round(v[k]);d.primary=PRIMARY_IDS.includes(d.primary)?d.primary:clamp(d.primary,0,9);d.secondary=SECONDARY_IDS.includes(d.secondary)?d.secondary:clamp(d.secondary,10,11);for(const key of Object.keys(ATTACHMENTS))d[key]=attachmentIndex(key,v[key]??d[key],WEAPONS[d.primary].kind);d.equipment=['frag','smoke','flash'].includes(v.equipment)?v.equipment:'frag';return d;}
 export class Weapon {
- constructor(id,loadout={}){this.def=WEAPONS[Number.isFinite(id)?clamp(Math.floor(id),0,WEAPONS.length-1):0];this.optic=loadout.optic??(this.def.kind==='SNIPER'?3:0);this.barrel=this.def.integralSuppressor?1:loadout.barrel??0;this.grip=loadout.handling??0;this.ammo=this.capacity;this.reserve=this.capacity*5;this.cooldown=0;this.burstRemaining=0;this.reloadLeft=0;this.reloadStartedEmpty=false;this.sinceShot=10;this.shotIndex=0;}
- get capacity(){return this.def.magazine+(this.grip===4?Math.max(2,Math.floor(this.def.magazine/3)):0);}
- get recoil(){const climb=this.def.automatic?lerp(.92,1.12,clamp(this.shotIndex/9,0,1)):1;return this.def.recoil*climb*(this.barrel===2?.72:1)*(this.grip===1?.8:1);}
- get adsTime(){return this.def.ads*(this.grip===3?.75:1)*(this.grip===4?1.15:1)*(this.optic===3?1.2:1);}
- get reloadTime(){const empty=this.reloadStartedEmpty&&!this.def.shellReload&&!this.def.revolver?(this.def.kind==='LMG'?.38:this.def.kind==='SNIPER'?.28:.18):0;return (this.def.reload+empty)*(this.grip===4?1.15:1);}
- get range(){return this.def.range*(this.barrel===1?.85:1);}
+ constructor(id,loadout={}){this.def=WEAPONS[Number.isFinite(id)?clamp(Math.floor(id),0,WEAPONS.length-1):0];const selection={};for(const key of Object.keys(ATTACHMENTS))selection[key]=attachmentIndex(key,loadout[key]??(key==='optic'&&this.def.kind==='SNIPER'?3:0),this.def.kind);if(this.def.integralSuppressor)selection.barrel=1;this.optic=selection.optic;this.barrel=selection.barrel;this.grip=selection.handling;this.magazine=selection.magazine;this.ammunition=selection.ammo;this.attachments=selection;this.modifiers=attachmentProfile(selection,this.def.kind);this.ammo=this.capacity;this.reserve=this.capacity*5;this.cooldown=0;this.burstRemaining=0;this.reloadLeft=0;this.reloadStartedEmpty=false;this.sinceShot=10;this.shotIndex=0;}
+ get capacity(){return Math.max(1,Math.round(this.def.magazine*this.modifiers.capacity));}
+ get recoil(){const climb=this.def.automatic?lerp(.92,1.12,clamp(this.shotIndex/9,0,1)):1;return this.def.recoil*climb*this.modifiers.recoil;}
+ recoilFor(ads,crouched,stationary){return this.recoil*lerp(1,.65,ads)*(crouched?.78:1)*(crouched&&stationary?this.modifiers.bracedRecoil:1);}
+ get horizontalRecoil(){return this.modifiers.horizontal;}
+ get mobility(){return this.modifiers.mobility;}
+ get suppressed(){return this.barrel===1;}
+ get hearingRadius(){return 44*this.modifiers.noise;}
+ get penetration(){return this.modifiers.penetration;}
+ get adsTime(){return this.def.ads*this.modifiers.ads;}
+ get reloadTime(){const empty=this.reloadStartedEmpty&&!this.def.shellReload&&!this.def.revolver?(this.def.kind==='LMG'?.38:this.def.kind==='SNIPER'?.28:.18):0;return (this.def.reload+empty)*this.modifiers.reload;}
+ get range(){return this.def.range*this.modifiers.range;}
  reload(){if(this.reloadLeft>0||this.ammo>=this.capacity||this.reserve<=0||this.def.id===12)return false;this.burstRemaining=0;this.reloadStartedEmpty=this.ammo===0;this.reloadLeft=this.reloadTime;return true;}
  update(dt){this.cooldown=Math.max(0,this.cooldown-dt);this.sinceShot+=dt;if(this.sinceShot>.4)this.shotIndex=0;if(this.reloadLeft<=0)return false;this.reloadLeft-=dt;if(this.reloadLeft>0)return false;const n=Math.min(this.def.shellReload?1:this.capacity-this.ammo,this.reserve);this.ammo+=n;this.reserve-=n;this.reloadLeft=this.def.shellReload&&this.ammo<this.capacity&&this.reserve>0?this.reloadTime:0;return true;}
- damage(d,part='body'){return this.def.damage*lerp(1,.48,clamp((d-this.range)/(this.range*1.1),0,1))*(part==='head'?(this.def.kind==='SNIPER'?2:1.9):part==='leg'?.75:1);}
- spread(ads,moving,crouched){return this.def.spread*lerp(1,this.def.kind==='SNIPER'?.003:.16,ads)*(moving?1.45:1)*(crouched?.72:1)*(this.grip===2?.74:1)*(this.sinceShot>.35&&!moving?.45:1)*(this.def.automatic?1+clamp((this.shotIndex-2)/12,0,.38):1);}
+ damage(d,part='body'){return this.def.damage*this.modifiers.damage*lerp(1,.48,clamp((d-this.range)/(this.range*1.1),0,1))*(part==='head'?(this.def.kind==='SNIPER'?2:1.9)*this.modifiers.head:part==='leg'?.75:1);}
+ spread(ads,moving,crouched){return this.def.spread*lerp(1,this.def.kind==='SNIPER'?.003:.16,ads)*lerp(this.modifiers.hip,this.modifiers.aim,ads)*(moving?1.45*this.modifiers.moving:1)*(crouched?.72:1)*(crouched&&!moving?this.modifiers.bracedSpread:1)*(this.sinceShot>.35&&!moving?.45:1)*(this.def.automatic?1+clamp((this.shotIndex-2)/12,0,.38):1);}
  reset(){this.burstRemaining=0;this.ammo=this.capacity;this.reserve=this.capacity*5;this.reloadLeft=0;this.reloadStartedEmpty=false;this.cooldown=0;this.shotIndex=0;this.sinceShot=10;}
 }

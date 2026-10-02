@@ -1,34 +1,34 @@
-import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=52';
-import {patchBlenderMaterial} from './blender-material.js?v=52';
-import {blenderWorld} from './blender-world.js?v=52';
-import {operatorMuzzle} from './operator-detail.js?v=52';
-import {updateWeaponClearance} from './weapon-clearance.js?v=52';
-import {WEAPONS} from './weapons.js?v=52';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=52';
-import {patchAtmosphere} from './atmosphere.js?v=52';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=52';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=52';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=52';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=52';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=52';
-import {DecalSystem} from './decal-system.js?v=52';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=52';
-import {LightingField} from './lighting-field.js?v=52';
-import {RoomLights} from './room-lights.js?v=52';
-import {waterMaterial,patchWater} from './water-material.js?v=52';
-import {visualGroundHeight} from './surface-placement.js?v=52';
-import {patchSurfaceDetail} from './material-detail.js?v=52';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=52';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=52';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=52';
+import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=53';
+import {patchBlenderMaterial} from './blender-material.js?v=53';
+import {blenderWorld} from './blender-world.js?v=53';
+import {operatorMuzzle} from './operator-detail.js?v=53';
+import {updateWeaponClearance} from './weapon-clearance.js?v=53';
+import {WEAPONS} from './weapons.js?v=53';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=53';
+import {patchAtmosphere} from './atmosphere.js?v=53';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=53';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=53';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=53';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=53';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=53';
+import {DecalSystem} from './decal-system.js?v=53';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=53';
+import {LightingField} from './lighting-field.js?v=53';
+import {RoomLights} from './room-lights.js?v=53';
+import {waterMaterial,patchWater} from './water-material.js?v=53';
+import {visualGroundHeight} from './surface-placement.js?v=53';
+import {patchSurfaceDetail} from './material-detail.js?v=53';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=53';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=53';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=53';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=52';
-import { actorModel, material, part } from './geometry.js?v=52';
-import { ridgeMesh, ridgeTint } from './meshes.js?v=52';
-import { loadImages } from './textures.js?v=52';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=52';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=52';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=52';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=53';
+import { actorModel, material, part } from './geometry.js?v=53';
+import { ridgeMesh, ridgeTint } from './meshes.js?v=53';
+import { loadImages } from './textures.js?v=53';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=53';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=53';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=53';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -810,7 +810,7 @@ export class Renderer {
 
   prepareWeapon(game, aspect, menu) {
     const p = game.player, w = p.weapon;
-    const key = `${w.def.id}/${w.optic}/${w.barrel}/${w.grip}`;
+    const key = `${w.def.id}/${w.optic}/${w.barrel}/${w.grip}/${w.magazine}/${w.ammunition}`;
     if (key !== this.weaponKey) {
       this.weaponKey = key; this.weaponParts = weaponModel(w);this.blenderWeaponGroups=this.blenderAssets?.weaponGroups(this.weaponParts,w.def.id);this.blenderHandGroups=this.blenderAssets?.handGroups(this.weaponParts,w.def.id); this.clearDynamic(this.weaponBatches);
     }

@@ -1,16 +1,16 @@
-import {clamp,lerp,angleDelta} from './math.js?v=52';
+import {clamp,lerp,angleDelta} from './math.js?v=53';
 
 // Rendering, HUD and input share the same optic definition. Never put an opaque
 // first-person scope model in front of the magnified world camera.
-export const isScoped=w=>w.def.kind==='SNIPER'||w.def.id===7||w.optic===3;
-export const opticMagnification=w=>isScoped(w)?4:1.35;
+export const isScoped=w=>w.def.kind==='SNIPER'||w.def.id===7||[3,5,6].includes(w.optic);
+export const opticMagnification=w=>w.optic===6?6:w.optic===5?2.5:isScoped(w)?4:w.optic===2?2:w.optic===4?1.6:1.35;
 export function aimFov(horizontalDegrees,weapon,ads=0){
  const hip=horizontalDegrees*Math.PI/180;
  return lerp(hip,2*Math.atan(Math.tan(hip/2)/opticMagnification(weapon)),clamp(ads,0,1));
 }
 export const verticalFov=(horizontal,aspect)=>2*Math.atan(Math.tan(horizontal/2)/aspect);
 export const scopeVisible=p=>!p.dead&&isScoped(p.weapon)&&p.ads>.62;
-export const sightHeight=w=>isScoped(w)?.188:w.optic===1||w.optic===2?.169:.119;
+export const sightHeight=w=>isScoped(w)?.188:[1,2,4].includes(w.optic)?.169:.119;
 
 // A small, damped sprint lens change. ADS and reduced-motion keep their exact lens.
 export function movementFov(state,actor,horizontal,dt,enabled=true){
