@@ -1,12 +1,12 @@
-import {Arena,MAPS} from './maps.js?v=54';
-import {Navigation} from './navigation.js?v=54';
-import {SpawnDirector} from './spawns.js?v=54';
-import {MatchRules} from './modes.js?v=54';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=54';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=54';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=54';
-import {traceBullet} from './ballistics.js?v=54';
-import {beginVault,advanceVault} from './traversal.js?v=54';
+import {Arena,MAPS} from './maps.js?v=55';
+import {Navigation} from './navigation.js?v=55';
+import {SpawnDirector} from './spawns.js?v=55';
+import {MatchRules} from './modes.js?v=55';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=55';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=55';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=55';
+import {traceBullet} from './ballistics.js?v=55';
+import {beginVault,advanceVault} from './traversal.js?v=55';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
@@ -175,5 +175,5 @@ export class Game {
   for(const a of this.actors){let d=Math.hypot(a.x-g.x,a.y+.8-g.y,a.z-g.z);if(a.dead||d>radius)continue;if(!this.arena.visible({...g,y:g.y+.2},{x:a.x,y:a.y+.8,z:a.z}))continue;this.damage(a,damage*(1-d/radius),owner,false);}
  }
  spawnBot(){if(this.actors.length>=Math.max(12,this.teamSize*2))return;const id=this.actors.length,a=new Actor(id,1,id%6);this.actors.push(a);this.spawn(a);}
- result(){const p=this.player,r=this.rules,win=r.winner>=0&&(r.mode.teams?r.winner===p.team:r.winner===p.id);return{win,draw:r.winner===-1,kills:p.kills,deaths:p.deaths,headshots:this.headshots,accuracy:this.shots?Math.round(this.hits/this.shots*100):0,xp:100+p.kills*100+this.headshots*25+(win?350:0),streak:p.bestStreak,weaponKills:{...this.weaponKills},time:this.time};}
+ result(){const p=this.player,r=this.rules,win=r.winner>=0&&(r.mode.teams?r.winner===p.team:r.winner===p.id);return{mode:r.mode.id,map:this.config.map,difficulty:this.config.difficulty,win,draw:r.winner===-1,kills:p.kills,deaths:p.deaths,headshots:this.headshots,accuracy:this.shots?Math.round(this.hits/this.shots*100):0,xp:100+p.kills*100+this.headshots*25+(win?350:0),streak:p.bestStreak,weaponKills:{...this.weaponKills},time:this.time};}
 }

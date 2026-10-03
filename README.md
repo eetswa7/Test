@@ -1,6 +1,19 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 54.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 55.** 30 weapons, 16 maps and 11 modes.
+
+Release 55 adds a device-local record of the last 12 completed matches to the
+Career page. Each result retains its map, mode, difficulty, completion date,
+duration, eliminations/deaths, accuracy, headshots, best streak and XP. A recent
+victories and K/D summary helps track form across sessions. Older saves preserve
+progression and begin recording new results; previous matches are not reconstructed.
+
+Release 55 verification: 261/261 regressions and 62-module packaged/offline
+checks pass. Chromium software WebGL2 checked the Career page at 667×375,
+844×390, 390×844 and 1280×720 without horizontal overflow or browser errors.
+Opening the results screen twice records one match. Evidence is in
+[docs/validation-release55-browser.json](docs/validation-release55-browser.json).
+Physical iPhone testing remains unperformed.
 
 Release 54 adds a playable Nuketown recreation with two accessible two-storey
 houses, rear yards and balconies, the school bus, an open moving truck and

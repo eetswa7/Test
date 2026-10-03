@@ -1,10 +1,10 @@
-import {MODES} from './modes.js?v=54';
-import {MAPS} from './maps.js?v=54';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=54';
-import {ATTACHMENT_SPECS} from './attachments.js?v=54';
-import {clamp,distance} from './math.js?v=54';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=54';
-import {identityFor,canIdentify} from './combat-identity.js?v=54';
+import {MODES} from './modes.js?v=55';
+import {MAPS} from './maps.js?v=55';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=55';
+import {ATTACHMENT_SPECS} from './attachments.js?v=55';
+import {clamp,distance} from './math.js?v=55';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=55';
+import {identityFor,canIdentify} from './combat-identity.js?v=55';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -49,7 +49,12 @@ export class Interface {
    if(key==='gyro'&&value){const ok=await this.app.input.enableGyro();if(!ok){el.checked=false;this.settings.gyro=false;this.toast('Motion access was unavailable. You can still aim by swiping.');this.persist();return;}}
    this.settings[key]=value;if(key==='controlProfile'){this.settings.layout={};this.app.input.reset();}if($(`out-${key}`))$(`out-${key}`).textContent=value;this.app.input.layout();if(key==='quality'){if(this.app.renderer.resetQuality)this.app.renderer.resetQuality();else{this.app.renderer.quality=this.app.renderer.chooseQuality();this.app.renderer.renderScale=1;}}if(key==='volume'&&this.app.audio.master)this.app.audio.master.gain.value=value;this.persist();};
  }
- refreshCareer(){const d=this.store.data,l=this.store.level;$('level-badge').textContent=String(l).padStart(2,'0');$('career-xp').textContent=`${d.xp.toLocaleString()} XP`;$('career-stats').innerHTML=[['MATCHES',d.matches],['VICTORIES',d.wins],['ELIMINATIONS',d.kills],['BEST STREAK',d.bestStreak]].map(([k,v])=>`<div class="career-stat"><strong>${v}</strong><span>${k}</span></div>`).join('');$('progress-label').textContent=`LEVEL ${l} · ${d.xp} / ${this.store.nextXP} XP`;$('xp-progress').style.width=`${(d.xp-(l-1)**2*450)/(this.store.nextXP-(l-1)**2*450)*100}%`;}
+ refreshCareer(){const d=this.store.data,l=this.store.level;$('level-badge').textContent=String(l).padStart(2,'0');$('career-xp').textContent=`${d.xp.toLocaleString()} XP`;$('career-stats').innerHTML=[['MATCHES',d.matches],['VICTORIES',d.wins],['ELIMINATIONS',d.kills],['BEST STREAK',d.bestStreak]].map(([k,v])=>`<div class="career-stat"><strong>${v}</strong><span>${k}</span></div>`).join('');$('progress-label').textContent=`LEVEL ${l} · ${d.xp} / ${this.store.nextXP} XP`;$('xp-progress').style.width=`${(d.xp-(l-1)**2*450)/(this.store.nextXP-(l-1)**2*450)*100}%`;this.renderMatchHistory();}
+ renderMatchHistory(){const history=this.store.data.matchHistory??[],wins=history.filter(r=>r.outcome==='win').length,kills=history.reduce((n,r)=>n+r.kills,0),deaths=history.reduce((n,r)=>n+r.deaths,0);
+  $('recent-form').textContent=history.length?`${history.length} recent ${history.length===1?'match':'matches'} · ${wins} ${wins===1?'victory':'victories'} · ${deaths?(kills/deaths).toFixed(2):kills} K/D`:'Complete a match to start your record. Your last 12 results stay on this device.';
+  const duration=seconds=>`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+  $('match-history-list').innerHTML=history.map(r=>{const date=r.completedAt?new Date(r.completedAt):null,mode=MODES.find(m=>m.id===r.mode);return `<article class="match-record"><div class="match-record-heading"><strong class="match-outcome ${r.outcome}">${r.outcome==='win'?'VICTORY':r.outcome==='draw'?'DRAW':'DEFEAT'}</strong><span>${date?`<time datetime="${date.toISOString()}">${esc(date.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}))}</time>`:'Date unavailable'}</span></div><h4>${esc(MAPS[r.map].name)} <span>· ${esc(mode.short)}</span></h4><p class="match-context">${esc(r.difficulty.toUpperCase())} · ${duration(r.time)}</p><dl class="match-record-stats">${[['K / D',`${r.kills} / ${r.deaths}`],['ACCURACY',`${r.accuracy}%`],['HEADSHOTS',r.headshots],['BEST STREAK',r.streak],['XP',`+${r.xp}`]].map(([label,value])=>`<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl></article>`;}).join('');
+ }
  play(){this.identityClock=0;this.identityMarkers.clear();$('combat-labels').replaceChildren();const teams=this.app.game.rules.mode.teams;$('team-blue-label').textContent=teams?'ALLIES ◆':'YOU';$('team-red-label').textContent=teams?'ENEMIES ▼':'LEADER';this.app.input.mode=this.app.game.rules.mode.id;show('menu',false);show('hud',true);show('touch-layer',true);show('pause-button',true);show('modal',false);document.body.classList.add('playing');this.feed=[];$('killfeed').replaceChildren();$('radar-map').textContent=MAPS[this.app.config.map].name;$('hud-mode').textContent=MODES.find(m=>m.id===this.app.config.mode).name;this.app.input.layout();this.app.orientation();}
  menu(){this.app.input.mode=null;show('hud',false);show('touch-layer',false);show('pause-button',false);show('modal',false);show('rotation-hint',false);show('menu',true);document.body.classList.remove('playing');this.refreshCareer();}
  modal(title,caption,body,buttons){$('modal-title').textContent=title;$('modal-caption').textContent=caption;$('modal-content').innerHTML=body;$('modal-actions').replaceChildren();for(const [label,fn,primary]of buttons){const b=document.createElement('button');b.textContent=label;b.className=primary?'primary-button':'secondary-button';b.onclick=fn;$('modal-actions').append(b);}show('modal',true);$('modal-actions').firstElementChild?.focus();}

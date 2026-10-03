@@ -503,3 +503,24 @@ GPU timing and thermal endurance remain unmeasured.
 The standalone native source is verified with all 15 levels, nine packed bakes,
 no linked data and no embedded scripts. Its segmented source reconstructs the
 editable Blender project byte-for-byte.
+
+
+## Release 55: recent match record
+
+Career retains the last 12 completed matches, newest first, with map, mode,
+difficulty, completion date, duration, K/D, accuracy, headshots, best streak and
+XP. Recent victories and aggregate K/D show form. Storage stays device-local,
+bounded, and compatible with existing saves. Invalid historical metadata is
+discarded or clamped without resetting progression. History remains readable
+in memory if persistent storage is unavailable.
+
+Verification: 261/261 regressions, including six new history checks, and the
+62-module packaged/offline validation pass. Chromium software WebGL2 checked
+four mobile/desktop sizes without horizontal overflow or page errors and
+confirmed that repeated result presentation records a single match. Browser
+evidence is in `docs/validation-release55-browser.json`. No physical iPhone
+performance or hardware validation is claimed.
+
+The GitHub checkpoint is ready. Sites publication was not performed because
+the hosting skill's required bundled `site-workflow.mjs` helper is unavailable
+in this environment. The existing hosted version is unchanged.

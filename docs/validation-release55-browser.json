@@ -1,0 +1,48 @@
+{
+  "browser": "Chromium software WebGL2",
+  "layouts": [
+    {
+      "width": 667,
+      "height": 375,
+      "cards": 2,
+      "summary": "2 recent matches · 1 victory · 1.75 K/D",
+      "scrollable": true,
+      "noHorizontalOverflow": true,
+      "cardInside": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "cards": 2,
+      "summary": "2 recent matches · 1 victory · 1.75 K/D",
+      "scrollable": true,
+      "noHorizontalOverflow": true,
+      "cardInside": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "cards": 2,
+      "summary": "2 recent matches · 1 victory · 1.75 K/D",
+      "scrollable": true,
+      "noHorizontalOverflow": true,
+      "cardInside": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "cards": 2,
+      "summary": "2 recent matches · 1 victory · 1.75 K/D",
+      "scrollable": true,
+      "noHorizontalOverflow": true,
+      "cardInside": true
+    }
+  ],
+  "resultScreenDeduplication": {
+    "matches": 1,
+    "history": 1,
+    "outcome": "win"
+  },
+  "pageErrors": [],
+  "physicalDeviceTested": false
+}
