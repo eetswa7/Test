@@ -1,19 +1,20 @@
-import {Game,emptyInput} from './engine.js?v=55';
-import {Renderer} from './three-renderer.js?v=55';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=55';
-import {TouchInput} from './input.js?v=55';
-import {AudioSystem} from './audio.js?v=55';
-import {SaveStore} from './save.js?v=55';
-import {Interface,$} from './ui.js?v=55';
-import {Weapon} from './weapons.js?v=55';
-import {opticMagnification} from './aim.js?v=55';
-import {FramePacer} from './frame-pacer.js?v=55';
-import {updateAimAssist} from './aim-assist.js?v=55';
+import {Game,emptyInput} from './engine.js?v=56';
+import {Renderer} from './three-renderer.js?v=56';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=56';
+import {TouchInput} from './input.js?v=56';
+import {AudioSystem} from './audio.js?v=56';
+import {SaveStore} from './save.js?v=56';
+import {Interface,$} from './ui.js?v=56';
+import {Weapon} from './weapons.js?v=56';
+import {opticMagnification} from './aim.js?v=56';
+import {FramePacer} from './frame-pacer.js?v=56';
+import {BenchmarkController} from './benchmark.js?v=56';
+import {updateAimAssist} from './aim-assist.js?v=56';
 
 export class Application {
  constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;this.framePacer=new FramePacer();
   try{this.renderer=new Renderer($('world'),this.store.data.settings);}catch(error){console.warn('WebGL renderer unavailable:',error.message);const fresh=$('world').cloneNode();$('world').replaceWith(fresh);this.renderer=new CompatibilityRenderer(fresh,this.store.data.settings);}
-  this.game=new Game(this.config,{seed:881});this.renderer.setArena(this.game.arena);this.audio=new AudioSystem(this.store.data.settings);this.input=new TouchInput($('world'),$('touch-layer'),this.store.data.settings);this.ui=new Interface(this);this.controllerHUD=false;
+  this.game=new Game(this.config,{seed:881});this.renderer.setArena(this.game.arena);this.audio=new AudioSystem(this.store.data.settings);this.input=new TouchInput($('world'),$('touch-layer'),this.store.data.settings);this.benchmark=new BenchmarkController(this);this.ui=new Interface(this);this.benchmark.bindUI();this.controllerHUD=false;
   window.addEventListener('pointerdown',()=>{this.controllerHUD=false;this.touchUntil=performance.now()+750;document.body.classList.remove('controller-active');},{capture:true,passive:true});
   if(this.renderer.compatibility)this.ui.toast('Compatibility graphics enabled. WebGL is unavailable in this browser.');
   this.isTouch=new URLSearchParams(location.search).get('controls')==='touch'||matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;document.body.classList.toggle('desktop',!this.isTouch);
@@ -38,11 +39,11 @@ export class Application {
  }
  pause(){if(!this.playing||this.game.rules.phase==='finished')return;this.game.paused=true;this.input.active=false;this.input.reset();this.aimAssistState={};this.pending=emptyInput();document.exitPointerLock?.();this.audio.pause();this.ui.pause();}
  resume(){if(!this.playing)return;this.ui.closeModal();this.input.reset();this.input.active=true;this.game.paused=false;this.last=0;this.accumulator=0;this.audio.start();if(!this.isTouch)this.lockMouse();this.orientation();}
- toMenu(){this.playing=false;this.game.paused=true;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.menu();this.audio.start();this.wakeLock?.release();this.previewWeapon();}
+ toMenu(){if(this.benchmark?.stress){void this.benchmark.stop('stress_cancelled');return;}this.playing=false;this.game.paused=true;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.menu();this.audio.start();this.wakeLock?.release();this.previewWeapon();}
  previewMap(id){if(this.playing)return;this.game=new Game({...this.config,map:id},{seed:881});this.renderer.setArena(this.game.arena);}
  previewWeapon(){if(this.playing)return;const slot=this.ui?.slot??'primary',id=this.store.data.loadout[slot];this.game.player.weapons[0]=new Weapon(id,slot==='primary'?this.store.data.loadout:{});this.game.player.slot=0;this.renderer.weaponKey='';}
  frame(now){requestAnimationFrame(this.frame);if(document.hidden||this.renderer.lost)return;const activeMatch=this.playing&&!this.game.paused&&this.game.rules.phase!=='finished',frameRate=activeMatch?this.store.data.settings.frameRate===30?30:60:this.playing?10:30;if(!this.last)this.framePacer.reset();if(!this.framePacer.accept(now,frameRate))return;const elapsed=this.last?Math.max(.001,(now-this.last)/1000):1/60,dt=Math.min(.08,elapsed);this.last=now;if(this.starting)return;
-  const cpuStart=performance.now();
+  const cpuStart=performance.now();if(this.benchmark?.enabled)this.benchmark.beginFrame(now,activeMatch);
   this.input.controller.poll();
   const pad=this.input.controller;
   if(!pad.connected&&this.controllerHUD){this.controllerHUD=false;document.body.classList.remove('controller-active');}
@@ -53,13 +54,13 @@ export class Application {
   if(!this.playing||this.game.paused||this.game.rules.phase==='finished')this.ui.controllerMenu(this.input.controller);
   if(this.playing&&!this.game.paused&&this.game.rules.phase!=='finished'){
    this.input.aimAssistGain=this.isTouch?updateAimAssist(this.aimAssistState??(this.aimAssistState={}),this.game,dt,this.store.data.settings.aimAssist!==false):1;
-   this.input.crouched=this.game.player.crouched;this.input.scopeScale=1/Math.sqrt(opticMagnification(this.game.player.weapon));const next=this.input.sample(dt);this.pending.mx=next.mx;this.pending.mz=next.mz;this.pending.lx+=next.lx;this.pending.ly+=next.ly;for(const key of ['fire','ads','sprint','interact','repeatFire','autoReload'])this.pending[key]=next[key];for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]||=next[key];
-   this.accumulator=Math.min(.1,this.accumulator+dt);let steps=0;while(this.accumulator>=1/60&&steps++<6){this.game.update(1/60,this.pending);this.accumulator-=1/60;this.pending.lx=this.pending.ly=0;for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]=false;}
-   this.renderer.events(this.game.events,this.game);this.audio.events(this.game.events,this.game);this.ui.events(this.game.events);this.game.events.length=0;this.ui.update(dt);
+   this.input.crouched=this.game.player.crouched;this.input.scopeScale=1/Math.sqrt(opticMagnification(this.game.player.weapon));const next=this.benchmark?.stress?emptyInput():this.input.sample(dt);this.pending.mx=next.mx;this.pending.mz=next.mz;this.pending.lx+=next.lx;this.pending.ly+=next.ly;for(const key of ['fire','ads','sprint','interact','repeatFire','autoReload'])this.pending[key]=next[key];for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]||=next[key];
+   this.accumulator=Math.min(.1,this.accumulator+dt);let steps=0;while(this.accumulator>=1/60&&steps++<6){this.game.update(1/60,this.benchmark?.stressInput()??this.pending);this.accumulator-=1/60;this.pending.lx=this.pending.ly=0;for(const key of ['firePressed','jump','crouch','reload','swap','grenade','melee'])this.pending[key]=false;}
+   if(this.benchmark?.enabled)this.benchmark.events(this.game.events);this.renderer.events(this.game.events,this.game);this.audio.events(this.game.events,this.game);this.ui.events(this.game.events);this.game.events.length=0;this.ui.update(dt);
   }else if(!this.playing)this.game.time+=dt;
-  this.renderer.render(this.game,dt,!this.playing,elapsed);if(this.playing&&!this.game.paused)this.ui.updateIdentities(dt);
-  this.renderer.recordFrame?.(performance.now()-cpuStart,elapsed,activeMatch);
-  if(this.playing&&this.game.rules.phase==='finished'&&!this.resultShown){this.resultShown=true;this.wakeLock?.release();this.wakeLock=null;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.results();}
+  const rendered=this.renderer.render(this.game,dt,!this.playing,elapsed);if(this.playing&&!this.game.paused)this.ui.updateIdentities(dt);
+  const cpuMs=performance.now()-cpuStart;this.renderer.recordFrame?.(cpuMs,elapsed,activeMatch);if(this.benchmark?.enabled)this.benchmark.endFrame(now,cpuMs,rendered,activeMatch);
+  if(this.playing&&!this.benchmark?.stress&&this.game.rules.phase==='finished'&&!this.resultShown){this.resultShown=true;this.wakeLock?.release();this.wakeLock=null;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.results();}
  }
 }
 

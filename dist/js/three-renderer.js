@@ -1,34 +1,34 @@
-import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=55';
-import {patchBlenderMaterial} from './blender-material.js?v=55';
-import {blenderWorld} from './blender-world.js?v=55';
-import {operatorMuzzle} from './operator-detail.js?v=55';
-import {updateWeaponClearance} from './weapon-clearance.js?v=55';
-import {WEAPONS} from './weapons.js?v=55';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=55';
-import {patchAtmosphere} from './atmosphere.js?v=55';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=55';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=55';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=55';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=55';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=55';
-import {DecalSystem} from './decal-system.js?v=55';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=55';
-import {LightingField} from './lighting-field.js?v=55';
-import {RoomLights} from './room-lights.js?v=55';
-import {waterMaterial,patchWater} from './water-material.js?v=55';
-import {visualGroundHeight} from './surface-placement.js?v=55';
-import {patchSurfaceDetail} from './material-detail.js?v=55';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=55';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=55';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=55';
+import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=56';
+import {patchBlenderMaterial} from './blender-material.js?v=56';
+import {blenderWorld} from './blender-world.js?v=56';
+import {operatorMuzzle} from './operator-detail.js?v=56';
+import {updateWeaponClearance} from './weapon-clearance.js?v=56';
+import {WEAPONS} from './weapons.js?v=56';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=56';
+import {patchAtmosphere} from './atmosphere.js?v=56';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=56';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=56';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=56';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=56';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=56';
+import {DecalSystem} from './decal-system.js?v=56';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=56';
+import {LightingField} from './lighting-field.js?v=56';
+import {RoomLights} from './room-lights.js?v=56';
+import {waterMaterial,patchWater} from './water-material.js?v=56';
+import {visualGroundHeight} from './surface-placement.js?v=56';
+import {patchSurfaceDetail} from './material-detail.js?v=56';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=56';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=56';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=56';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=55';
-import { actorModel, material, part } from './geometry.js?v=55';
-import { ridgeMesh, ridgeTint } from './meshes.js?v=55';
-import { loadImages } from './textures.js?v=55';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=55';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=55';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=55';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=56';
+import { actorModel, material, part } from './geometry.js?v=56';
+import { ridgeMesh, ridgeTint } from './meshes.js?v=56';
+import { loadImages } from './textures.js?v=56';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=56';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=56';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=56';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -877,12 +877,13 @@ export class Renderer {
     this.shadowDraws=0;
     const renderStart=performance.now();this.profiler?.begin();
     this.renderer.info.reset(); this.renderer.setRenderTarget(null); this.renderer.clear(true, true, false);
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);this.renderPasses=1;
     // A magnified optic sees only the world scene. The shared HUD draws the clear reticle.
-    if (!p.dead && (menu || !scopeVisible(p))) this.renderWeapon(game, aspect, menu);
+    if (!p.dead && (menu || !scopeVisible(p))) {this.renderWeapon(game, aspect, menu);this.renderPasses++;}
     this.profiler?.end();if(this.profiler)this.profiler.renderCpuMs=performance.now()-renderStart;
     if(this.shadowDraws)this.lastShadowDraws=this.shadowDraws;
     this.drawCalls = this.renderer.info.render.calls;this.triangles=this.renderer.info.render.triangles??0;this.shaderPrograms=this.renderer.info.programs?.length??0;
+    return true;
   }
 
   project(point) {

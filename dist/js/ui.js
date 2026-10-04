@@ -1,10 +1,10 @@
-import {MODES} from './modes.js?v=55';
-import {MAPS} from './maps.js?v=55';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=55';
-import {ATTACHMENT_SPECS} from './attachments.js?v=55';
-import {clamp,distance} from './math.js?v=55';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=55';
-import {identityFor,canIdentify} from './combat-identity.js?v=55';
+import {MODES} from './modes.js?v=56';
+import {MAPS} from './maps.js?v=56';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=56';
+import {ATTACHMENT_SPECS} from './attachments.js?v=56';
+import {clamp,distance} from './math.js?v=56';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=56';
+import {identityFor,canIdentify} from './combat-identity.js?v=56';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -60,7 +60,7 @@ export class Interface {
  modal(title,caption,body,buttons){$('modal-title').textContent=title;$('modal-caption').textContent=caption;$('modal-content').innerHTML=body;$('modal-actions').replaceChildren();for(const [label,fn,primary]of buttons){const b=document.createElement('button');b.textContent=label;b.className=primary?'primary-button':'secondary-button';b.onclick=fn;$('modal-actions').append(b);}show('modal',true);$('modal-actions').firstElementChild?.focus();}
  closeModal(){show('modal',false);}
  scoreboard(){const g=this.app.game,id=g.rules.mode.id,key=id==='ctf'?'captures':id==='hill'?'hillScore':id==='gun'?'gunStage':id==='confirmed'?'confirms':null,heading=id==='ctf'?'CAP':id==='hill'?'HILL':id==='gun'?'TIER':id==='confirmed'?'CONF':id==='elimination'?'STATUS':'',actors=g.actors.slice().sort((a,b)=>(key?(b[key]??0)-(a[key]??0):0)||b.kills-a.kills);return `<table><thead><tr><th>OPERATOR</th><th>TEAM</th>${heading?`<th>${heading}</th>`:''}<th>K</th><th>D</th></tr></thead><tbody>${actors.map(a=>`<tr class="${identityFor(a,g.player,g.rules).key}"><td>${a.name}</td><td>${identityFor(a,g.player,g.rules).label}</td>${heading?`<td>${id==='elimination'?a.dead?'DOWN':'ALIVE':id==='gun'?`${Math.min(GUN_ORDER.length,a.gunStage+1)}/${GUN_ORDER.length}`:a[key]??0}</td>`:''}<td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</tbody></table>`;}
- pause(){this.modal('MATCH PAUSED',this.app.game.rules.mode.name,this.scoreboard(),[['RESUME',()=>this.app.resume(),true],['RESTART',()=>this.app.start()],['MAIN MENU',()=>this.app.toMenu()]]);}
+ pause(){this.modal('MATCH PAUSED',this.app.game.rules.mode.name,this.scoreboard(),[['RESUME',()=>this.app.resume(),true],['RESTART',()=>this.app.start()],['MAIN MENU',()=>this.app.toMenu()],...(this.app.benchmark?[[this.app.benchmark.enabled?'BENCHMARK OFF':'BENCHMARK ON',()=>this.app.benchmark.toggle(!this.app.benchmark.enabled).then(()=>this.pause()).catch(e=>this.toast(e.message))]]:[])]);}
  results(){const g=this.app.game,r=g.result();if(!g.saved){this.store.finish(r);g.saved=true;}this.refreshCareer();this.modal(r.draw?'DRAW':r.win?'VICTORY':'DEFEAT',g.rules.mode.name,`<div class="result-overview"><div><strong>${r.kills}</strong><span>ELIMINATIONS</span></div><div><strong>${r.deaths}</strong><span>DEATHS</span></div><div><strong>${r.accuracy}%</strong><span>ACCURACY</span></div><div><strong>${r.headshots}</strong><span>HEADSHOTS</span></div></div>${this.scoreboard()}<div class="result-xp">+ ${r.xp} XP</div>`,[['PLAY AGAIN',()=>this.app.start(),true],['MAIN MENU',()=>this.app.toMenu()]]);}
  editLayout(){this.app.input.reset();show('menu',false);show('touch-layer',true);show('edit-bar',true);this.app.input.editing=true;$('touch-layer').classList.add('editing');this.app.input.layout();this.app.orientation();}
  installHelp(){this.modal('ONE TOUCH TO DEPLOY','HOME SCREEN',`<p>On iPhone, open this game in <strong>Safari</strong>. Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>. If shown, keep <strong>Open as Web App</strong> enabled.</p><p>Launch from the new Breachline icon and turn your phone sideways. Let the game load once before trying it offline. Your loadout and career are saved on this device.</p>`,[['GOT IT',()=>this.closeModal(),true]]);}
