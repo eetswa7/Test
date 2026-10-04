@@ -1,4 +1,4 @@
-import {BAKED_FILES} from './blender-files.js?v=56';
+import {BAKED_FILES} from './blender-files.js?v=57';
 export const TEXTURE_FILES=Object.values(BAKED_FILES).flat();
 export async function loadImages(){
  const baked=await Promise.all(Object.entries(BAKED_FILES).map(async([key,files])=>{

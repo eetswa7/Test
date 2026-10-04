@@ -4,10 +4,9 @@ import {TimingStats,bounds,bucket} from '../dist/js/benchmark-stats.js';
 import {LIMITS,browserInfo,BenchmarkRecorder} from '../dist/js/benchmark-recorder.js';
 import {GraphicsProfiler} from '../dist/js/graphics-profiler.js';
 import {BenchmarkStore} from '../dist/js/benchmark-store.js';
-import {BenchmarkUploader,endpointURL} from '../dist/js/benchmark-upload.js';
 import {StressSequence,STRESS_SCENARIO} from '../dist/js/benchmark-stress.js';
 import {Game} from '../dist/js/engine.js';
-import {validateReport} from '../server/benchmark/validation.js';
+import {validateReport} from '../scripts/benchmark-validation.mjs';
 import {fakeGame,graphics,render,makeRecorder,reportFixture} from './benchmark-fixture.mjs';
 
 test('histograms report counted cadence and label percentile/1% estimates consistently',()=>{
@@ -37,11 +36,10 @@ test('GPU samples carry the query issue context and disjoint queries never reach
  let ready=false,disjoint=false;const ext={GPU_DISJOINT_EXT:1,TIME_ELAPSED_EXT:2},gl={QUERY_RESULT_AVAILABLE:3,QUERY_RESULT:4,getExtension:()=>ext,getParameter:()=>disjoint,createQuery:()=>({}),beginQuery(){},endQuery(){},deleteQuery(){},getQueryParameter(q,p){return p===3?ready:4000000;}};
  const p=new GraphicsProfiler(gl),got=[];let tag={context_id:1,phase:0};p.tagProvider=()=>({...tag});p.sampleListener=(ms,t)=>got.push([ms,t]);for(let i=0;i<12;i++){p.begin();p.end();}tag={context_id:2,phase:1};ready=true;p.begin();p.end();assert.equal(got.length,1);assert.deepEqual(got[0],[4,{context_id:1,phase:0}]);ready=false;for(let i=0;i<12;i++){p.begin();p.end();}disjoint=true;p.begin();ready=true;p.begin();assert.equal(got.length,1);assert.equal(p.queryTags.size,0);
 });
-test('queued failures survive reload and only verified acknowledgements change upload state',async()=>{
- const store=new BenchmarkStore(undefined);await store.open();const messages=[],auth={endpoint:'https://worker.example',credential:'cert',privateKey:(await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},false,['sign','verify'])).privateKey};store.memory.set('auth',auth);store.put=async(k,v)=>store.memory.set(k,structuredClone(v));let attempts=0;const report=reportFixture();
- const date=report.session.started_at,path=`benchmarks/${date.slice(0,4)}/${date.slice(5,7)}/${report.session.id}.json`;
- const uploader=new BenchmarkUploader(store,s=>messages.push(s),async()=>{attempts++;if(attempts===1)throw Error('offline');return new Response(JSON.stringify({session_id:report.session.id,path,commit_sha:attempts===2?'invalid':'a'.repeat(40)}),{status:200});});uploader.kick=()=>{};await uploader.queue(report);await uploader.flush();let row=await store.get('report:'+report.session.id);assert.equal(row.state,'pending');assert.equal(row.attempts,1);row.next_attempt=0;await store.put('report:'+report.session.id,row);const reloaded=new BenchmarkUploader(store,s=>messages.push(s),uploader.fetcher);reloaded.kick=()=>{};await reloaded.flush();row=await store.get('report:'+report.session.id);assert.equal(row.state,'pending');assert.equal(row.attempts,2);row.next_attempt=0;await store.put('report:'+report.session.id,row);await reloaded.flush();row=await store.get('report:'+report.session.id);assert.equal(row.state,'uploaded');assert(messages.some(s=>s.startsWith('Upload Failed')));assert(messages.some(s=>s.startsWith('Upload Successful')));assert.equal(attempts,3);
- assert.throws(()=>endpointURL('http://worker.example'));assert.throws(()=>endpointURL('https://user:secret@worker.example'));
+test('local reports remain exportable after storage failure and session IDs are not overwritten',async()=>{
+ const store=new BenchmarkStore(undefined),report=reportFixture();await store.open();await assert.rejects(store.saveReport(report));assert.equal((await store.list('report:')).length,1);assert.equal((await store.get('report:'+report.session.id)).report.session.id,report.session.id);
+ const altered=structuredClone(report);altered.activity.shots++;await store.saveReport(altered);assert.equal((await store.get('report:'+report.session.id)).report.activity.shots,report.activity.shots);
+ await store.remove('report:'+report.session.id);assert.equal((await store.list('report:')).length,0);
 });
 test('scripted input and visual workloads repeat without consuming simulation randomness',()=>{
  const a=new StressSequence(),b=new StressSequence(),ga=new Game({map:0},{seed:STRESS_SCENARIO.seed}),gb=new Game({map:0},{seed:STRESS_SCENARIO.seed});for(let i=0;i<10800;i++){assert.deepEqual(a.input(ga),b.input(gb));ga.events.length=0;gb.events.length=0;}assert(a.done);assert.equal(a.effectCounts.explosions,30);assert.equal(a.effectCounts.smokes,10);assert.equal(ga.random(),gb.random());assert.equal(ga.debug.god,false);assert.equal(ga.debug.ammo,false);assert.equal(ga.shots,0);

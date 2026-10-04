@@ -1,4 +1,4 @@
-import {clamp} from './math.js?v=56';
+import {clamp} from './math.js?v=57';
 
 export function poseSegment(q,ax,ay,az,bx,by,bz){
  const x=ax-bx,y=ay-by,z=az-bz,l=Math.hypot(x,y,z)||1;

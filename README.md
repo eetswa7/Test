@@ -1,15 +1,19 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 56.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 57.** 30 weapons, 16 maps and 11 modes.
 
-## Release 56: performance benchmark infrastructure
+## Release 57: local benchmark recording and JSON export
 
-Settings now includes Benchmark Mode, a recording watermark, JSON export, automatic
-upload setup, pending-report retries and an optional isolated scripted stress test.
-Graphics and gameplay are preserved. [Setup and measurement definitions](docs/BENCHMARK.md)
-explain the separate server deployment and one-time iPhone pairing. The authenticated
-upload backend is implemented but requires server secrets and production verification.
-Real reports will be stored under [benchmarks/](benchmarks/).
+Enable Benchmark Mode in Settings, play, turn it off, then export the saved JSON
+and attach it in ChatGPT for analysis. Reports remain on the device. Saved sessions,
+a recording watermark and the separate scripted stress test are available without
+account setup. Graphics and gameplay are preserved. See
+[measurement definitions and export instructions](docs/BENCHMARK.md).
+
+Release 57 verification: all 273 automated tests and the 70-module packaged checks
+pass. Desktop browser checks verified saved-report migration, JSON downloads,
+reload recovery and offline export, with no report network requests or page errors.
+These checks are not iPhone performance data.
 
 Release 55 adds a device-local record of the last 12 completed matches to the
 Career page. Each result retains its map, mode, difficulty, completion date,

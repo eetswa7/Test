@@ -1,8 +1,8 @@
-import {BENCHMARK_SCHEMA,LIMITS,RAW_COLUMNS,CONDITIONS} from '../../dist/js/benchmark-recorder.js';
-import {BENCHMARK_METHODOLOGY} from '../../dist/js/benchmark-methodology.js';
-import {STRESS_SCENARIO} from '../../dist/js/benchmark-stress.js';
-import {MAPS} from '../../dist/js/maps.js';
-import {MODES} from '../../dist/js/modes.js';
+import {BENCHMARK_SCHEMA,LIMITS,RAW_COLUMNS,CONDITIONS} from '../dist/js/benchmark-recorder.js';
+import {BENCHMARK_METHODOLOGY} from '../dist/js/benchmark-methodology.js';
+import {STRESS_SCENARIO} from '../dist/js/benchmark-stress.js';
+import {MAPS} from '../dist/js/maps.js';
+import {MODES} from '../dist/js/modes.js';
 
 const fail=path=>{throw new Error(`Invalid benchmark field: ${path}`);};
 const number=(min=0,max=1e12)=>(v,p)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<min||v>max)fail(p);return v;};
@@ -31,7 +31,7 @@ const renderSample=object({elapsed_ms:numeric,context_id:contextID,alive_players
 const reportSpec=object({
  schema:enumeration([BENCHMARK_SCHEMA]),
  session:object({id:string(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/,36),kind:enumeration(['gameplay','scripted']),started_at:iso,ended_at:iso,duration_ms:numeric,active_duration_ms:number(0,7201000),warmup_per_match_ms:enumeration([15000]),reason:enumeration(['toggle_off','checkpoint','recovered_checkpoint','duration_limit','stress_complete','stress_cancelled','stress_match_finished']),interrupted:boolean,pause_count:count,scenario}),
- build:object({release:string(/^\d{1,6}$/,6),commit:nullable(sha),source_commit:sha,content_sha256:digest,commit_resolution:enumeration(['pending_server_verification','deployment_environment','verified_repository_history'])}),
+ build:object({release:string(/^\d{1,6}$/,6),commit:nullable(sha),source_commit:sha,content_sha256:digest,commit_resolution:string(/^[a-z_]+$/,64)}),
  environment:object({browser:enumeration(['Safari','Chromium','Firefox','unavailable']),browser_version:nullable(string(/^\d{1,4}(\.\d{1,4})?$/,9)),device_family:enumeration(['iPhone','iPad','unavailable']),device_model:object({status:enumeration(['unavailable']),reason:()=> 'Safari does not reliably expose the hardware model'}),os:enumeration(['iOS','macOS','Android','Windows','unavailable'])}),
  renderer:object({backend:enumeration(['WebGL2','Canvas2D']),vendor:genericRenderer,renderer:genericRenderer,version:genericRenderer,shading_language:genericRenderer}),
  methodology:(v,p)=>{if(!v||Object.keys(v).some(k=>!Object.hasOwn(BENCHMARK_METHODOLOGY,k)))fail(p);return BENCHMARK_METHODOLOGY;},

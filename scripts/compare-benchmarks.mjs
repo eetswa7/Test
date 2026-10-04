@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
-import {validateReport} from '../server/benchmark/validation.js';
+import {validateReport} from './benchmark-validation.mjs';
 import {TimingStats,round} from '../dist/js/benchmark-stats.js';
 
 export function groups(report){

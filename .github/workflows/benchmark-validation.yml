@@ -18,4 +18,3 @@ jobs:
           node-version: '24'
       - run: npm test
       - run: npm run check
-      - run: node --check server/benchmark/worker.js

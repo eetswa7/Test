@@ -1,13 +1,12 @@
-# Real device benchmark reports
+# Benchmark report format
 
-Authenticated reports are created here as `YYYY/MM/<random-session-uuid>.json`.
-The UUID identifies a recording, not a device. Every file is immutable; historical
-results are never replaced. Session `kind` separates `gameplay` and `scripted`.
+Breachline saves reports on the device and exports each session as a JSON file
+from Settings. Attach those files in ChatGPT for analysis. This optional directory
+can hold manually archived real reports; the game does not write to it.
 
-No iPhone benchmark data has been recorded as part of implementing this system.
-Synthetic unit-test clocks and cloud-browser checks belong in `tests/` or `docs/`,
-never here. Neither cloud-browser FPS nor a desktop mobile viewport is iPhone FPS.
+Keep `breachline.benchmark.v1` reports intact. Compare gameplay and scripted stress
+sessions separately, with matching maps, graphics, caps and gameplay conditions.
+Warm-up measurements are separate. Synthetic fixtures and desktop browser checks
+are not iPhone baseline data and do not belong here.
 
-Read `docs/BENCHMARK.md` for one-time setup, definitions and comparisons. Later,
-ChatGPT can list this directory through GitHub, retrieve reports, and compare
-individual recordings without transferring files through the conversation.
+See [export instructions and measurement definitions](../docs/BENCHMARK.md).

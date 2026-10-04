@@ -1,216 +1,125 @@
-# Benchmark Mode, release 56
+# Benchmark Mode, release 57
 
-This release adds measurement infrastructure. Rendering quality, geometry,
-assets, weapons, physics, simulation, AI and existing optimisations are preserved.
-The offline module graph and cache advance together to release 56.
-
-## Use after initial setup
-
-1. Open the updated game in Safari on your iPhone in landscape.
+1. Open Breachline in Safari on your iPhone in landscape.
 2. Settings > Benchmark Mode ON.
-3. Deploy and play normally, including different maps/modes if desired, for about
-   10 minutes. A top-right indicator shows recording, active time and current FPS.
-4. Pause > BENCHMARK OFF, or return to Settings and switch it off.
+3. Play normally for about 10 minutes, on any map, weapon or game mode.
+4. Pause > BENCHMARK OFF, or switch it off in Settings.
+5. Settings > EXPORT JSON. Attach the downloaded file in ChatGPT for analysis.
 
-The report is saved locally before upload. `Upload Successful` means the server
-acknowledged a GitHub report commit. `Upload Failed` means it was retained and a
-retry is pending, or setup/storage needs attention. Uploads are deferred during
-active gameplay. Retry and export controls are in Settings. Reopening the game,
-returning online or stopping another session resumes pending uploads.
+Recording, saving and export work locally, including offline. No additional
+account or setup is needed. The small top-right indicator shows recording,
+active time and current FPS. Graphics, assets, gameplay and existing settings
+are preserved.
 
-Recording is OFF after reload. Pauses, menus, loading and hidden pages do not
-produce gameplay frame measurements. An interrupted recording recovers its most
-recent checkpoint, marked `interrupted`; up to 60 seconds before an abrupt crash
-may be absent. Safari storage eviction/clearing and private browsing cannot be
-guaranteed against. Storage errors are shown and the latest report stays available
-for export while the page remains open. Pending reports are never pruned. To
-prevent unbounded queues, 20 pending recordings must be uploaded before
-starting more. Ten acknowledged reports remain locally available.
+## Saved reports
 
-## One-time automatic upload setup
+Turning recording off saves the complete JSON on the device. Settings' saved
+benchmark selector lets you export previous sessions independently. Twenty
+reports can be retained; when full, export a report and use REMOVE SAVED REPORT
+to free a slot. Removal requires a confirmation. Reports are never silently
+pruned, and initiating a download does not remove its saved copy.
 
-The release-56 game has been deployed to
-`https://breachline.eetswa.chatgpt.site`, retaining owner-private access. The Sites
-deployment succeeded on 2026-10-04 UTC. The upload Worker and iPhone pairing are
-still incomplete: the available Cloudflare CLI is not authenticated and the
-connected GitHub app does not provide a server-side GitHub token. Pairing must
-run in Safari on the target iPhone, where the non-extractable signing key lives.
+The separate benchmark database preserves existing measurements during this
+update and removes obsolete setup records. Career progress and settings remain
+in their existing storage. Recording is OFF after reload. An interrupted session
+recovers its last 60-second checkpoint, marked `interrupted`. Up to 60 seconds
+before an abrupt crash may be absent. Safari storage eviction/clearing and private
+browsing can lose local data, so export each recording you intend to keep.
+Storage errors are shown; the latest report stays exportable while the page
+remains open. Menus, pauses, loading and hidden pages do not create gameplay frames.
 
-The existing host is static. GitHub credentials must not be put in the static
-game, service worker, URL, repository, local storage or browser setup form.
-The repository implements a Cloudflare Worker with one SQLite Durable Object,
-but deploying that service and supplying its server secrets requires your account.
-The service has **not** been deployed or verified against live GitHub credentials
-by this implementation. Unit tests mock GitHub's HTTP responses; they are not a
-claim that production uploads work.
+## Build provenance and format
 
-1. Create a Cloudflare Workers project and deploy the code from
-   `server/benchmark/wrangler.jsonc`. From the repository root, use the official
-   Wrangler CLI and sign in. `BENCHMARK_ALLOWED_ORIGIN` is configured for the existing
-   host, `https://breachline.eetswa.chatgpt.site`. Change it only if you play at a different
-   HTTPS origin, with no path or trailing slash. Keep the repository
-   fixed to `eetswa7/Test`; `BENCHMARK_BRANCH` defaults to `main`.
-2. Create a fine-grained GitHub token restricted to **only eetswa7/Test**, with
-   repository **Contents: Read and write**. No administration, workflows or account
-   permissions are needed. Use an expiry you can maintain; a GitHub App installation
-   token can also be supplied by server-side operational tooling. Branch protection
-   must allow this credential to create report commits. Never disable protection
-   broadly to make uploads work; use a permitted dedicated results branch if needed.
-3. Set three **Worker secrets**, using Wrangler's interactive prompts:
+Reports retain the `breachline.benchmark.v1` schema, unique random session ID,
+release, timestamps, duration, graphics/map contexts and raw sampled observations.
+They omit player names, full user agents, account details, device identifiers,
+coordinates and unmasked GPU fingerprinting. Safari's exact hardware model is
+unavailable; the test device is known to you externally as an iPhone 16 Pro.
 
-   ```sh
-   npx wrangler secret put BENCHMARK_GITHUB_TOKEN --config server/benchmark/wrangler.jsonc
-   npx wrangler secret put BENCHMARK_AUTH_SECRET --config server/benchmark/wrangler.jsonc
-   npx wrangler secret put BENCHMARK_PAIRING_CODE --config server/benchmark/wrangler.jsonc
-   npx wrangler deploy --config server/benchmark/wrangler.jsonc
-   ```
+`scripts/benchmark-build.mjs` hashes all distributed files except its own manifest.
+For a committed build it records the source revision that contains those files,
+with `commit_resolution: source_commit`. A subsequent manifest-only commit does
+not change the recorded game code or content fingerprint. For uncommitted local
+code the commit is null and the fingerprint is retained, labelled
+`content_fingerprint`; no commit identifier is invented.
 
-   `BENCHMARK_AUTH_SECRET` must contain at least 32 characters of cryptographically
-   random secret material. `BENCHMARK_PAIRING_CODE` must contain at least 24 random
-   characters and is consumed for one browser key. Generate them in a password
-   manager. Do not paste secrets into chat, committed files or command arguments.
-4. Publish the pushed release-56 `dist/` to your existing static game host using
-   its normal deployment process. Pushes to GitHub do not independently prove that
-   a separate host has deployed the new game. Keep the existing audience/access.
-5. On the iPhone, Settings > UPLOAD SETUP: enter the deployed Worker's HTTPS base
-   URL and the **one-time pairing code**, then Pair This Browser. Do not enter the
-   GitHub token. Use the same Safari origin thereafter. A non-extractable P-256
-   signing key and a public certificate are retained in IndexedDB. The code is
-   cleared from the form. No third-party cookies are required.
-6. Record a short real test and turn recording off. Confirm `Upload Successful`
-   and the new JSON file under `benchmarks/YYYY/MM/` in GitHub. Open the file and
-   verify `session.id`, schema, release, `build.commit`, context and actual sample
-   counts. This is the production verification step. Then record the 10-minute
-   baseline. Do not call the deployment verified until the real file exists.
-
-If the pairing response is lost, entering the same code again with the retained
-pending key recovers its certificate. A different browser/key requires a fresh
-one-time code set on the Worker. Rotating `BENCHMARK_AUTH_SECRET` revokes existing
-certificates. Rotating only the pairing code keeps paired browsers working.
-Clearing Safari's storage also requires a fresh pairing code.
-
-The Worker CORS allowlist accepts exactly one game origin. Unknown keys are
-rejected throughout the report. Requests require a signed certificate, proof of
-its private key and a fresh timestamp; changing the report breaks its signature.
-Reports never include keys/certificates, tokens, account names, player names,
-coordinates, IP addresses, full user-agent strings, device IDs or advertising IDs.
-Only generic masked WebGL strings are read; unmasked GPU fingerprinting is not
-used. Safari does not reliably reveal the exact iPhone model, so the JSON marks
-that unavailable. You know that your test device is an iPhone 16 Pro externally.
-Worker body size and pairing/upload rates are bounded. A singleton Durable Object
-serialises GitHub writes, and receipts plus create-only paths make retries
-idempotent across process restarts and lost responses. An existing different
-report is never overwritten. Origin checks are additional defence, not a
-replacement for authentication.
-
-## Build provenance
-
-Before each source checkpoint:
+Release procedure:
 
 ```sh
-node scripts/release.mjs 56
-node scripts/benchmark-build.mjs
+node scripts/release.mjs 57
 npm test
 npm run check
+# Commit and push the game source, then stamp its committed revision:
+node scripts/benchmark-build.mjs
+# Commit and push the generated manifest, then publish the same dist/ files.
 ```
 
-`benchmark-build.mjs` hashes all distributed files except its own manifest. It
-records the source commit used to produce the build. Static source cannot embed
-the SHA of a commit that has not been created yet. Accordingly a local report's
-`build.commit` is null with `pending_server_verification`. The upload server
-matches the content fingerprint and release to the committed manifest's history
-and supplies the actual repository commit. It refuses an unrecognised build.
-The server searches the most recent 100 manifest commits; recordings from older
-builds require an operational lookup/backfill of the `build:<fingerprint>` cache
-or manual export. A deployment build with `GITHUB_SHA` can stamp that SHA directly;
-uploads still verify it through repository history. Content fingerprints remain
-useful offline and prevent incorrectly using the latest repository HEAD as the
-identifier of a stale cached game.
-
-## What the measurements mean
+## Measurements
 
 | Field | Meaning |
 | --- | --- |
-| Average FPS | Count divided by the sum of active submitted-render intervals. Exact from the collected intervals. |
+| Average FPS | Count divided by the sum of actual submitted-render intervals. Exact from the observed intervals, after the game's FPS cap. |
 | Median FPS / 1% low | Histogram estimates. 1% low is the reciprocal of the mean of the slowest ceil(1%) intervals. |
-| Frame-time percentiles | Fixed histogram estimates: 0.125 ms bins below 64 ms, 0.5 ms below 256 ms, 2 ms below 512 ms, exponential bins above. All frames contribute, including long stalls. |
-| CPU frame | Main-thread wall time for input, simulation, events, HUD and renderer submission. Does not represent CPU utilisation. |
-| CPU render | Existing profiler's wall time around world/viewmodel render submission. Does not include all renderer preparation. Canvas fallback reports it unavailable. |
-| GPU | Fresh, unsmoothed asynchronous WebGL2 timer results from the existing every-12-frame query schedule. The query's original context and warm-up phase accompany it. Unsupported and disjoint results remain unavailable. No blocking waits, `gl.finish()` or GPU readback. |
-| Draw calls, triangles, textures, geometries | Three.js counters sampled once per second after the frame. Texture counts are allocated objects, not bytes. Canvas draw operations are a separate field; no fake WebGL counts. |
-| Main rendering passes | Instrumented world/viewmodel calls. Shadow draw calls are separate; total shadow pass count remains unavailable. |
-| Memory | Existing owned-texture byte estimate and optional `performance.memory` JS heap estimate. Not process memory or total VRAM. Safari normally provides no heap value. |
-| Resolution / graphics | Actual framebuffer dimensions, browser DPR, rendering scale, configured and renderer caps, requested/effective quality, FOV and camera-motion setting. DRS adjustments create distinct contexts. |
-| Combat and environment | Observed event counters; overlapping gunfight/explosion/movement/smoke/interior/dead labels. Population and interior checks are sampled at 1 Hz. No personal player details. |
-| Long-session change | First/last thirds of steady-play windows; an estimate with confounders. Not a thermal-throttling detector. Temperature/battery/refresh rate remain unavailable. |
-| Raw observations | Bounded, uniformly selected reservoir of 4,096 actual frame observations, sorted by time, plus up to 4,096 sampled GPU results. Histograms include all observed frames even after raw storage fills. |
+| Frame percentiles | Estimates from fixed histograms: 0.125 ms bins below 64 ms, 0.5 ms below 256 ms, 2 ms below 512 ms, exponential bins above. All observed frames contribute, including long stalls. |
+| CPU frame / render | Main-thread wall time for input, simulation, HUD and renderer submission; existing profiler render time is separately reported. These do not establish CPU utilisation. Canvas render timing is unavailable. |
+| GPU | Existing asynchronous WebGL2 timer queries every 12 rendered frames, tagged with their issue context/phase. Unsupported and disjoint samples remain unavailable; no blocking waits or GPU readback. |
+| Rendering | Three.js draw calls, triangles, textures and geometries sampled at 1 Hz. Main world/viewmodel calls and shadow draw calls are separate; total shadow passes remain unavailable. Canvas draw operations have their own field. |
+| Memory | Owned-texture byte estimate and optional JS heap estimate, clearly labelled. Process memory, total VRAM, temperature, battery and display refresh rate are unavailable. |
+| Graphics / resolution | Actual framebuffer, DPR, scale, requested/effective quality, configured/effective caps, FOV and motion. Dynamic resolution changes create separate contexts. |
+| Gameplay | Map, mode, difficulty, population and observed combat counts. Overlapping movement/gunfight/explosion/smoke/interior/dead labels describe steady play. Interior/population are checked at 1 Hz. |
+| Extended gameplay | First/last thirds of steady windows estimate degradation. Changes in maps, settings, combat and resolution are confounders; this does not establish thermal throttling. |
+| Raw frames | Uniform reservoir of 4,096 actual observations, sorted by time, and up to 4,096 GPU samples. The independent benchmark RNG does not alter simulation randomness. |
 
-Each match has 15 active seconds of warm-up; steady data is separate. Frames that
-cross the warm-up boundary use the phase at interval start. Pausing primes the
-clock on resume instead of measuring a hidden-page gap as a render stall. A
-significant spike exceeds max(50 ms, twice the FPS-cap budget); a stutter exceeds
-1.5 frame budgets. Safari requestAnimationFrame/render submission cannot prove
-that every frame was displayed by the screen compositor.
+Each match has 15 active seconds of warm-up, separate from steady measurements.
+Intervals crossing that boundary use their starting phase. A significant spike
+exceeds max(50 ms, twice the effective cap budget); a stutter exceeds 1.5 budgets.
+Pausing primes the clock on resume rather than counting a background gap as a stall.
+Safari rendering cadence cannot prove every frame was displayed by the compositor.
 
-Limits: 64 map/settings contexts, 720 timeline windows and rendering samples,
-512 transitions and spikes, and two active hours per recording. Overflow is
-counted and labelled. Raw reservoirs are independent of the game's RNG. All
-frame statistics include timing overhead; `instrumentation` reports measured
-recorder overhead and checkpoint processing. No statistics sorting or network
-requests run per frame. Disabled mode attaches no GPU listener and does no frame
-recording; pending uploads can still finish while idle.
+Limits: 64 contexts, 720 timeline/render samples, 512 transitions/spikes and two
+active hours. Overflow is counted and labelled. Global histograms include all
+frames even after raw storage fills. Statistics include the recorder's overhead;
+`instrumentation` reports timing overhead and checkpoint costs. Disabled recording
+attaches no GPU listener and collects no frame data. JSON formatting runs only
+when saving a checkpoint, finalising or explicitly exporting.
 
-## Repeatable stress test
+## Optional repeatable stress test
 
-Start from the menu with normal recording OFF and press AUTOMATED STRESS TEST.
-It creates a separate seeded TDM simulation on the selected map, difficulty and
-loadout. The original game object is retained and restored when the test ends or
-is cancelled. Career progress is not awarded. The original AI/physics/weapon
-behaviour runs unchanged. The fixed-step input sequence covers warm-up, camera
-sweeps, movement, combat, then actual rendering of scripted cosmetic events.
-These scripted effects are clearly declared workloads, not fabricated FPS data.
-The sequence is 180 simulation seconds; slow devices take longer in wall time.
-Match completion can end it early, which is explicitly marked incomplete.
-Pausing/backgrounding suspends it. OFF or Main Menu cancels it safely.
+From the menu with recording OFF, press AUTOMATED STRESS TEST. A separate seeded
+TDM simulation uses the selected map/difficulty/loadout, with fixed-step camera
+sweeps, movement, combat and actual scripted cosmetic rendering effects. Its JSON
+is labelled `scripted`, separate from normal `gameplay` data. The original game
+object is restored after completion/cancellation; career progress is not awarded.
+AI, physics and weapons retain their normal behaviour.
 
-Compare matching scenario version, seed, map, difficulty, loadout, cap and graphics.
-Do not combine scripted and manually played sessions. The real simulation can
-branch on gameplay outcomes; check completion/ticks/activity before comparison.
+The sequence is 180 simulation seconds, so slower devices take longer in wall
+time. Match completion can end it early and is marked incomplete. Backgrounding
+or pausing suspends it. STOP TEST cancels it safely. Scripted effects are declared
+workloads, never fabricated frame measurements. Compare matching scenario,
+seed, completion, ticks, loadout, map, difficulty, cap and graphics.
 
-## Comparisons and validation
+## Analysis and checks
+
+Attach the exported JSON files in ChatGPT. Reports can be analysed independently
+or compared between releases. The offline comparison tool excludes warm-up and
+matches map, mode, population, quality, caps, framebuffer, DPR, scale and FOV:
 
 ```sh
 node scripts/compare-benchmarks.mjs baseline.json candidate.json
-node --test tests/benchmark.test.mjs tests/benchmark-server.test.mjs
+npm test
+npm run check
+node scripts/check-benchmark-browser.mjs
 ```
 
-The comparison command keeps recordings independent, excludes warm-up, and
-matches contexts by map, mode, population, quality, cap, framebuffer, DPR, scale
-and FOV. It reports FPS, frame percentiles, percentage changes, unmatched contexts
-and cap-limited results. Assess context combat/timeline data as well. A steady
-60 FPS cap does not establish how much additional graphical load the device can
-handle. Use multiple matching sessions and consistent test conditions for that.
+A cap-limited result does not reveal unused graphical headroom. Review combat
+conditions, activity and timeline alongside averages, and compare multiple
+sessions with similar conditions.
 
-Implementation tests use synthetic timestamps and mocked GitHub HTTP responses.
-They verify statistics, bounded buffers, privacy validation, unsupported metrics,
-signature rejection, pairing, CORS, retry state, immutable history, serial writes
-and restarts. They are not real-device benchmarks.
-
-Release-56 validation passed all 279 Node tests, the 72-module/asset/offline checks,
-and a Wrangler deployment dry run. The desktop Chromium browser check exercised
-the toggle/watermark, real rendered-frame recording, report validation, failed-upload
-retention, reload recovery, offline startup and isolated stress-test cancellation.
-Its metadata is in `docs/validation-release56-benchmark-browser.json`; software
-WebGL and a mobile viewport do not represent iPhone performance or Safari validation.
-No test report was placed in `benchmarks/`, and live GitHub uploads remain unverified.
-
-To repeat the browser check with Playwright installed, run
-`node scripts/check-benchmark-browser.mjs`. Optional `BENCHMARK_TEST_BROWSER`
-selects a local Chromium executable; `BENCHMARK_TEST_ORIGIN` selects an existing
-preview, otherwise the script starts and stops its own preview server.
-
-Primary API references: [GitHub Contents API](https://docs.github.com/en/rest/repos/contents),
-[WebGL timer queries](https://developer.mozilla.org/en-US/docs/Web/API/EXT_disjoint_timer_query),
-[CryptoKey extractability](https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/extractable),
-[Durable Objects](https://developers.cloudflare.com/durable-objects/api/state/),
-and [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/).
+Unit-test clocks are synthetic. Desktop Chromium browser checks use software
+WebGL and a mobile viewport; they validate recording, local storage, actual JSON
+downloads, reload recovery, migration and offline startup. Neither represents
+actual iPhone/Safari performance. Browser-check metadata is in
+`docs/validation-release57-benchmark-browser.json`. No synthetic reports are stored
+under `benchmarks/`. Optional `BENCHMARK_TEST_BROWSER` selects a local Chromium
+executable; `BENCHMARK_TEST_ORIGIN` selects an existing preview, otherwise the
+browser check starts and stops its own local preview.

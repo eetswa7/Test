@@ -1,25 +1,24 @@
-import {Game,emptyInput} from './engine.js?v=56';
-import {BenchmarkRecorder,browserInfo,rendererInfo,graphicsSnapshot,LIMITS} from './benchmark-recorder.js?v=56';
-import {BenchmarkStore} from './benchmark-store.js?v=56';
-import {BenchmarkUploader} from './benchmark-upload.js?v=56';
-import {StressSequence,STRESS_SCENARIO} from './benchmark-stress.js?v=56';
-import {BENCHMARK_BUILD} from './benchmark-build.js?v=56';
-import {TimingStats,round} from './benchmark-stats.js?v=56';
+import {Game,emptyInput} from './engine.js?v=57';
+import {BenchmarkRecorder,browserInfo,rendererInfo,graphicsSnapshot,LIMITS} from './benchmark-recorder.js?v=57';
+import {BenchmarkStore,SAVED_REPORT_LIMIT} from './benchmark-store.js?v=57';
+import {downloadBenchmark} from './benchmark-export.js?v=57';
+import {StressSequence,STRESS_SCENARIO} from './benchmark-stress.js?v=57';
+import {BENCHMARK_BUILD} from './benchmark-build.js?v=57';
+import {TimingStats,round} from './benchmark-stats.js?v=57';
 
 export class BenchmarkController {
  constructor(app){
-  this.app=app;this.enabled=false;this.saving=false;this.store=new BenchmarkStore();this.uploader=new BenchmarkUploader(this.store,message=>this.notify(message));this.uploader.playing=()=>this.app.playing&&!this.app.game.paused;this.nextHUD=0;this.nextCheckpoint=0;this.overhead=new TimingStats();
-  this.ready=this.restore().catch(e=>this.notify(`Benchmark storage unavailable: ${e.message}. Manual export is available.`));
-  globalThis.addEventListener?.('online',()=>this.uploader.kick());
+  this.app=app;this.enabled=false;this.saving=false;this.store=new BenchmarkStore();this.reports=new Map();this.latestReport=null;this.nextHUD=0;this.nextCheckpoint=0;this.overhead=new TimingStats();
+  this.ready=this.restore().catch(e=>{this.notify(`Benchmark storage unavailable: ${e.message}. Export JSON before closing Safari.`);return this.refreshReports().catch(()=>{});});
   globalThis.addEventListener?.('pagehide',()=>{this.recorder?.pause('page_hidden');this.checkpoint();});
-  globalThis.document?.addEventListener('visibilitychange',()=>{if(document.hidden){this.recorder?.pause('page_hidden');this.checkpoint();}else this.uploader.kick();});
+  globalThis.document?.addEventListener('visibilitychange',()=>{if(document.hidden){this.recorder?.pause('page_hidden');this.checkpoint();}});
  }
  notify(message){this.app.ui?.toast(message);const el=document.getElementById('benchmark-status');if(el)el.textContent=message;}
- async restore(){await this.store.open();const active=await this.store.get('active');if(active){active.session.interrupted=true;active.session.reason='recovered_checkpoint';await this.uploader.queue(active);await this.store.remove('active');}this.uploader.kick();}
+ async restore(){await this.store.open();const active=await this.store.get('active');if(active){active.session.interrupted=true;active.session.reason='recovered_checkpoint';this.latestReport=active;await this.store.saveReport(active);await this.store.remove('active');}await this.refreshReports();}
  async toggle(value){if(this.saving)return;if(value)await this.start();else await this.stop();this.syncUI();}
  async start(kind='gameplay',scenario=null){
   if(this.enabled)return;await this.ready;
-  const pending=(await this.store.list('report:')).filter(r=>r.value.state!=='uploaded');if(pending.length>=20)throw new Error('Upload pending reports before starting another benchmark; manual export keeps a backup');
+  if((await this.store.list('report:')).length>=SAVED_REPORT_LIMIT)throw new Error('Saved benchmarks are full. Export a report, then remove it from saved sessions to make space.');
   this.recorder=new BenchmarkRecorder({build:BENCHMARK_BUILD,environment:browserInfo(),renderer:rendererInfo(this.app.renderer),kind,scenario});this.recorder.gpuSupported=!!this.app.renderer.profiler?.extension;
   this.enabled=true;this.overhead.reset();this.checkpointMax=0;this.nextCheckpoint=performance.now()+60000;this.nextHUD=0;this.graphics=null;this.latestStats=null;
   const profiler=this.app.renderer.profiler;if(profiler){profiler.sampleListener=(ms,tag)=>{const t=performance.now();this.recorder?.gpuSample(ms,tag);this.overheadExtra=(this.overheadExtra??0)+performance.now()-t;};profiler.tagProvider=()=>{const t=performance.now(),tag=this.gpuTag();this.overheadExtra=(this.overheadExtra??0)+performance.now()-t;return tag;};}
@@ -33,8 +32,8 @@ export class BenchmarkController {
    if(this.checkpointPromise)await this.checkpointPromise;
    const report=recorder.report({reason});report.instrumentation={cpu_overhead_ms:this.overhead.summary(),checkpoint_period_ms:60000,checkpoint_max_ms:round(this.checkpointMax??0),raw_observations:report.raw.samples.length};
    if(this.stress)report.session.scenario={...report.session.scenario,completed:this.stress.done,simulation_ticks:this.stress.tick,effect_counts:this.stress.effectCounts};
-   this.uploader.latest=report;try{await this.uploader.queue(report);await this.store.remove('active');}catch(e){this.notify('Upload Failed: browser storage could not save this report. Export JSON before closing Safari.');}
-   if(this.stress)this.restoreStress();if(this.store.persistent)this.notify('Benchmark saved. Upload pending.');this.uploader.kick();
+   this.latestReport=report;this.reports.set(report.session.id,report);let saved=false;try{await this.store.saveReport(report);await this.store.remove('active');saved=true;}catch(e){this.notify('Browser storage could not save this report. Export JSON before closing Safari.');}
+   if(this.stress)this.restoreStress();await this.refreshReports(report.session.id);if(saved)this.notify('Benchmark saved on this device. Export JSON and attach it in ChatGPT.');
   }finally{this.saving=false;this.syncUI();}
  }
  beginFrame(now,active){
@@ -75,15 +74,24 @@ export class BenchmarkController {
   const toggle=document.getElementById('benchmark-toggle');if(toggle){toggle.checked=this.enabled;toggle.disabled=this.saving;}
   document.getElementById('benchmark-watermark')?.classList.toggle('hidden',!this.enabled);
   const stress=document.getElementById('benchmark-stress');if(stress)stress.disabled=this.enabled||this.app.playing||this.saving;
+  for(const id of ['benchmark-export','benchmark-remove']){const button=document.getElementById(id);if(button)button.disabled=this.enabled||this.saving||!this.reports.size;}
+  const select=document.getElementById('benchmark-report');if(select)select.disabled=this.enabled||this.saving||!this.reports.size;
+ }
+ async refreshReports(selectedID=null){
+  const rows=(await this.store.list('report:').catch(()=>[...this.reports.values()].map(report=>({value:{report}})))).sort((a,b)=>b.value.report.session.started_at.localeCompare(a.value.report.session.started_at));this.reports=new Map(rows.map(r=>[r.value.report.session.id,r.value.report]));if(this.latestReport&&!this.reports.has(this.latestReport.session.id))this.reports.set(this.latestReport.session.id,this.latestReport);
+  const select=document.getElementById('benchmark-report');if(select){const chosen=selectedID??select.value;select.replaceChildren();for(const [id,report]of this.reports){const option=document.createElement('option');option.value=id;option.textContent=`${new Date(report.session.started_at).toLocaleString()} · ${report.session.kind==='scripted'?'Stress test':'Gameplay'} · ${Math.round(report.session.active_duration_ms/1000)}s`;select.appendChild(option);}if(this.reports.has(chosen))select.value=chosen;select.disabled=this.enabled||!this.reports.size;}
+  this.syncUI();
+ }
+ exportSelected(){const selected=document.getElementById('benchmark-report')?.value,report=this.reports.get(selected)??this.latestReport??this.reports.values().next().value;downloadBenchmark(report);this.notify('Benchmark JSON ready. Attach the file in ChatGPT.');}
+ removeSelected(){
+  const id=document.getElementById('benchmark-report')?.value;if(!this.reports.has(id))return;
+  this.app.ui.modal('REMOVE SAVED BENCHMARK','LOCAL REPORT','<p>This removes the selected report from this browser. Export its JSON first if you want to keep it.</p>',[['REMOVE REPORT',async()=>{try{await this.store.remove('report:'+id);if(this.latestReport?.session.id===id)this.latestReport=null;this.app.ui.closeModal();await this.refreshReports();this.notify('Saved report removed.');}catch(e){this.notify(e.message);}},true],['CANCEL',()=>this.app.ui.closeModal()]]);
  }
  bindUI(){
   const toggle=document.getElementById('benchmark-toggle');if(!toggle)return;toggle.onchange=()=>this.toggle(toggle.checked).catch(e=>{this.notify(e.message);this.syncUI();});
   document.getElementById('benchmark-stress').onclick=()=>this.startStress().catch(e=>this.notify(e.message));
-  document.getElementById('benchmark-export').onclick=()=>this.uploader.exportLatest().catch(e=>this.notify(e.message));
-  document.getElementById('benchmark-retry').onclick=async()=>{try{for(const row of await this.store.list('report:'))if(row.value.state!=='uploaded'){row.value.next_attempt=0;await this.store.put(row.key,row.value);}this.uploader.kick();}catch(e){this.notify(e.message);}};
-  document.getElementById('benchmark-setup').onclick=async()=>{
-   const endpoint=await this.uploader.configuredEndpoint();this.app.ui.modal('BENCHMARK UPLOAD SETUP','ONE-TIME PAIRING','<label class="field-label">Upload endpoint<input id="benchmark-endpoint" type="url" placeholder="https://your-worker.workers.dev" autocomplete="off"></label><label class="field-label">One-time pairing code<input id="benchmark-code" type="password" autocomplete="off"></label><p>The signing key stays in this browser. GitHub credentials stay on the server.</p>',[['PAIR THIS BROWSER',async()=>{const code=document.getElementById('benchmark-code').value;document.getElementById('benchmark-code').value='';try{const url=document.getElementById('benchmark-endpoint').value;const pending=await this.store.get('pairing');if(pending?.endpoint===url.replace(/\/$/,''))await this.uploader.finishPairing(code,pending);else await this.uploader.pair(url,code);this.app.ui.closeModal();this.notify('Upload setup complete. Reports will upload automatically.');}catch(e){this.notify(e.message);}},true],['CANCEL',()=>this.app.ui.closeModal()]]);document.getElementById('benchmark-endpoint').value=endpoint;
-  };
+  document.getElementById('benchmark-export').onclick=()=>{try{this.exportSelected();}catch(e){this.notify(e.message);}};
+  document.getElementById('benchmark-remove').onclick=()=>this.removeSelected();
   this.syncUI();
  }
 }

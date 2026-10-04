@@ -1,10 +1,10 @@
-import {MODES} from './modes.js?v=56';
-import {MAPS} from './maps.js?v=56';
-import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=56';
-import {ATTACHMENT_SPECS} from './attachments.js?v=56';
-import {clamp,distance} from './math.js?v=56';
-import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=56';
-import {identityFor,canIdentify} from './combat-identity.js?v=56';
+import {MODES} from './modes.js?v=57';
+import {MAPS} from './maps.js?v=57';
+import {WEAPONS,ATTACHMENTS,Weapon,PRIMARY_IDS,GUN_ORDER} from './weapons.js?v=57';
+import {ATTACHMENT_SPECS} from './attachments.js?v=57';
+import {clamp,distance} from './math.js?v=57';
+import {scopeVisible,isScoped,opticMagnification} from './aim.js?v=57';
+import {identityFor,canIdentify} from './combat-identity.js?v=57';
 export const $=id=>document.getElementById(id);
 const show=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
