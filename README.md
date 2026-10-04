@@ -1,6 +1,15 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 55.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 56.** 30 weapons, 16 maps and 11 modes.
+
+## Release 56: performance benchmark infrastructure
+
+Settings now includes Benchmark Mode, a recording watermark, JSON export, automatic
+upload setup, pending-report retries and an optional isolated scripted stress test.
+Graphics and gameplay are preserved. [Setup and measurement definitions](docs/BENCHMARK.md)
+explain the separate server deployment and one-time iPhone pairing. The authenticated
+upload backend is implemented but requires server secrets and production verification.
+Real reports will be stored under [benchmarks/](benchmarks/).
 
 Release 55 adds a device-local record of the last 12 completed matches to the
 Career page. Each result retains its map, mode, difficulty, completion date,

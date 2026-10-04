@@ -1,7 +1,8 @@
-import {FrameStats,TimingStats,round} from './benchmark-stats.js';
+import {BENCHMARK_METHODOLOGY} from './benchmark-methodology.js?v=56';
+import {FrameStats,TimingStats,round} from './benchmark-stats.js?v=56';
 
 export const BENCHMARK_SCHEMA='breachline.benchmark.v1';
-export const LIMITS=Object.freeze({contexts:64,raw:4096,windows:3600,spikes:512,transitions:512,gpu:4096,activeSeconds:7200});
+export const LIMITS=Object.freeze({contexts:64,raw:4096,windows:720,spikes:512,transitions:512,gpu:4096,activeSeconds:7200});
 export const RAW_COLUMNS=['elapsed_ms','frame_ms','cpu_frame_ms','cpu_render_ms','context_id','condition_mask','phase'];
 export const CONDITIONS=['movement','gunfight','explosion','smoke','indoors','player_dead'];
 export function browserInfo(nav=globalThis.navigator??{}){
@@ -14,7 +15,7 @@ export function rendererInfo(r){
  return info;
 }
 export function graphicsSnapshot(r,settings){
- return {requested_quality:settings.quality??'auto',effective_quality:r.appliedQuality||r.quality||'unavailable',frame_cap:settings.frameRate===30?30:60,render_scale:round(r.renderScale??1),width:r.canvas?.width??r.width??0,height:r.canvas?.height??r.height??0,device_pixel_ratio:round(globalThis.devicePixelRatio??1),fov:settings.fov??80,camera_motion:settings.motion!==false,dynamic_resolution:!r.compatibility,reason:r.qualityController?.reason??null};
+ return {requested_quality:settings.quality??'auto',effective_quality:r.appliedQuality||r.quality||'unavailable',frame_cap:settings.frameRate===30?30:60,effective_frame_cap:r.compatibility?30:settings.frameRate===30?30:60,render_scale:round(r.renderScale??1),width:r.canvas?.width??r.width??0,height:r.canvas?.height??r.height??0,device_pixel_ratio:round(globalThis.devicePixelRatio??1),fov:settings.fov??80,camera_motion:settings.motion!==false,dynamic_resolution:!r.compatibility,reason:r.qualityController?.reason??null};
 }
 const contextKey=(game,graphics)=>[game.config.map,game.config.mode,game.config.difficulty,game.actors.length,...Object.values(graphics).slice(0,-1)].join('|');
 const memoryInfo=()=>{
@@ -44,6 +45,8 @@ export class BenchmarkRecorder {
   return context;
  }
  record({now,cpuMs,renderCpuMs=null,game,graphics,render={},memory=null}){
+  // rAF's timestamp can precede a session created later in the same task.
+  if(now<this.start)return false;
   // A boundary primes the clock. Never insert the game's synthetic first dt.
   if(this.game!==game){this.pause('match_changed');this.game=game;this.gameplayMs=0;this.nextPopulation=0;}
   if(this.last===null){this.ensureContext(game,graphics,now);this.last=now;return false;}
@@ -52,19 +55,19 @@ export class BenchmarkRecorder {
   const phase=this.gameplayMs<this.warmupMs?0:1;if(phase!==this.lastPhase)this.flushWindow(now-elapsed);this.lastPhase=phase;this.gameplayMs+=elapsed;this.activeMs+=elapsed;
   if(now>=this.nextPopulation){const alive=game.actors.reduce((n,a)=>n+!a.dead,0);this.population={alive_players:alive,alive_bots:alive-!game.player.dead,indoors:!!game.arena.indoors(game.player),grenades:game.grenades.length,smokes:game.smokes.length,weapon:game.player.weapon.def.id};this.nextPopulation=now+1000;this.renderSamples.push({elapsed_ms:round(now-this.start),context_id:context?.id??-1,...this.population,...render,memory:memory??memoryInfo()});if(this.renderSamples.length>LIMITS.windows)this.renderSamples=this.renderSamples.filter((_,i)=>i%2===0);}
   const mask=(Math.hypot(game.player.vx,game.player.vz)>.3?1:0)|(now<this.gunUntil?2:0)|(now<this.explosionUntil?4:0)|(game.smokes.length?8:0)|(this.population?.indoors?16:0)|(game.player.dead?32:0);
-  this.phaseStats[phase].add(elapsed,cpuMs,renderCpuMs,graphics.frame_cap);(context?.stats[phase]??this.overflowStats).add(elapsed,cpuMs,renderCpuMs,graphics.frame_cap);
+  this.phaseStats[phase].add(elapsed,cpuMs,renderCpuMs,graphics.effective_frame_cap??graphics.frame_cap);(context?.stats[phase]??this.overflowStats).add(elapsed,cpuMs,renderCpuMs,graphics.effective_frame_cap??graphics.frame_cap);
   // Conditions are overlapping labels, and describe steady gameplay only.
-  if(phase)for(let i=0;i<CONDITIONS.length;i++)if(mask&(1<<i))this.conditionStats[i].add(elapsed,cpuMs,renderCpuMs,graphics.frame_cap);
+  if(phase)for(let i=0;i<CONDITIONS.length;i++)if(mask&(1<<i))this.conditionStats[i].add(elapsed,cpuMs,renderCpuMs,graphics.effective_frame_cap??graphics.frame_cap);
   if(this.windowStart===null)this.windowStart=now-elapsed;
-  this.window.add(elapsed,cpuMs,renderCpuMs,graphics.frame_cap);
+  this.window.add(elapsed,cpuMs,renderCpuMs,graphics.effective_frame_cap??graphics.frame_cap);
   const row=[round(now-this.start),round(elapsed),round(cpuMs),round(renderCpuMs),context?.id??-1,mask,phase];
   this.rawSeen++;if(this.raw.length<LIMITS.raw)this.raw.push(row);else{this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;const index=Math.floor(this.randomState/4294967296*this.rawSeen);if(index<LIMITS.raw)this.raw[index]=row;}
-  if(elapsed>Math.max(50,2000/graphics.frame_cap)){if(this.spikes.length<LIMITS.spikes)this.spikes.push({elapsed_ms:row[0],frame_ms:row[1],context_id:row[4],condition_mask:mask,phase});else this.dropped.spikes++;}
+  if(elapsed>Math.max(50,2000/(graphics.effective_frame_cap??graphics.frame_cap))){if(this.spikes.length<LIMITS.spikes)this.spikes.push({elapsed_ms:row[0],frame_ms:row[1],context_id:row[4],condition_mask:mask,phase});else this.dropped.spikes++;}
   if(now-this.windowStart>=1000)this.flushWindow(now);
   return this.activeMs>=LIMITS.activeSeconds*1000;
  }
  gpuSample(ms,tag){if(!tag||!Number.isFinite(ms)||ms<=0)return;this.phaseStats[tag.phase].gpu.add(ms);const context=this.contexts[tag.context_id];context?.stats[tag.phase].gpu.add(ms);if(this.gpuRaw.length<LIMITS.gpu)this.gpuRaw.push([round(tag.elapsed_ms),round(ms),tag.context_id,tag.phase]);else this.dropped.gpu++;}
- gpuTag(now){return this.last!==null?{elapsed_ms:now-this.start,context_id:this.currentContext?.id??-1,phase:this.gameplayMs<this.warmupMs?0:1}:null;}
+ gpuTag(now){return this.last!==null&&now>=this.start?{elapsed_ms:now-this.start,context_id:this.currentContext?.id??-1,phase:this.gameplayMs<this.warmupMs?0:1}:null;}
  flushWindow(now){if(!this.window.frame.count)return;this.windows.push({start_ms:round(this.windowStart-this.start),end_ms:round(now-this.start),context_id:this.currentContext?.id??-1,phase:this.lastPhase,...this.window.summary(false)});this.window=new FrameStats();this.windowStart=null;if(this.windows.length>LIMITS.windows){this.windows=this.windows.filter((_,i)=>i%2===0);this.windowDecimated=true;}}
  report({now=performance.now(),reason='toggle_off',interrupted=false}={}){
   this.flushWindow(now);
@@ -73,8 +76,8 @@ export class BenchmarkRecorder {
   const mean=rows=>{const n=rows.reduce((s,w)=>s+w.frame_time.count,0);return n?rows.reduce((s,w)=>s+w.frame_time.mean_ms*w.frame_time.count,0)/n:null;};
   const early=mean(measuredWindows.slice(0,third)),late=mean(measuredWindows.slice(-third));
   return {schema:BENCHMARK_SCHEMA,session:{id:this.id,kind:this.kind,started_at:this.startedAt,ended_at:new Date().toISOString(),duration_ms:round(now-this.start),active_duration_ms:round(this.activeMs),warmup_per_match_ms:this.warmupMs,reason,interrupted,pause_count:this.pauseCount,scenario:this.scenario},build:this.build,environment:this.environment,renderer:this.renderer,
-   methodology:{fps:'render submission cadence after the game FPS cap, not proof of displayed frames',average_fps:'1000 * frame count / sum of active rendered frame intervals',percentiles:'estimates from fixed histograms: 0.125 ms bins below 64 ms, 0.5 ms below 256 ms, 2 ms below 512 ms, powers of two above',low_1_percent:'1000 / estimated mean of the slowest ceil(1% of frames), using bucket means at the boundary',cpu:'measured JS main-thread wall time for update, events, HUD and render submission; not utilisation or GPU time',gpu:'measured asynchronous existing WebGL2 timer queries every 12 rendered frames; disjoint results rejected',memory:'JS heap and owned texture bytes are estimates when exposed; process memory, VRAM, battery and temperature unavailable',raw:'uniform reservoir of rendered frame observations; independent benchmark RNG, no simulation RNG changes',conditions:'overlapping steady-play labels; shots: 1 second, explosions: 2 seconds, indoors/population sampled once per second',spike:'frame interval > max(50 ms, twice the configured frame budget)',stutter:'frame interval > 1.5 times the configured frame budget',warmup:'first 15 active seconds of each match; background/menu/loading excluded; resume primes the frame clock',histogram:'sparse rows [bucket index, frame count, sum_ms]; see benchmark-stats.js for bin bounds'},
-   availability:{cpu_frame:{status:summary.steady.cpu_frame.count||summary.warmup.cpu_frame.count?'measured':'unavailable'},gpu:{status:summary.steady.gpu.count||summary.warmup.gpu.count?'measured':'unavailable',supported:this.gpuSupported??false},js_heap:{status:this.renderSamples.some(s=>s.memory.status==='estimate')?'estimate':'unavailable'},texture_bytes:{status:this.renderSamples.some(s=>s.texture_bytes_estimate!==null)?'estimate':'unavailable'},process_memory:{status:'unavailable'},vram:{status:'unavailable'},temperature:{status:'unavailable'},display_refresh_rate:{status:'unavailable'}},
+   methodology:BENCHMARK_METHODOLOGY,
+   availability:{cpu_frame:{status:summary.steady.cpu_frame.count||summary.warmup.cpu_frame.count?'measured':'unavailable'},gpu:{status:summary.steady.gpu.count||summary.warmup.gpu.count?'measured':'unavailable',supported:this.gpuSupported??false},js_heap:{status:this.renderSamples.some(s=>s.memory.status==='estimate')?'estimate':'unavailable'},texture_bytes:{status:this.renderSamples.some(s=>Number.isFinite(s.texture_bytes_estimate))?'estimate':'unavailable'},process_memory:{status:'unavailable'},vram:{status:'unavailable'},temperature:{status:'unavailable'},display_refresh_rate:{status:'unavailable'}},
    summary,contexts:this.contexts.map(c=>({...c,stats:{warmup:c.stats[0].summary(),steady:c.stats[1].summary()}})),conditions:CONDITIONS.map((name,i)=>({name,stats:this.conditionStats[i].summary(false)})),timeline:this.windows,render_samples:this.renderSamples,transitions:this.transitions,spikes:this.spikes,activity:this.counters,
    raw:{columns:RAW_COLUMNS,seen:this.rawSeen,samples:[...this.raw].sort((a,b)=>a[0]-b[0]),gpu_columns:['elapsed_ms','gpu_ms','context_id','phase'],gpu_samples:this.gpuRaw},
    degradation:{early_mean_frame_ms:round(early),late_mean_frame_ms:round(late),change_percent:round(early&&late?(late/early-1)*100:null),status:measuredWindows.length>=30?'estimate':'insufficient_data',note:'Uncontrolled maps, settings, combat and DRS can explain change; this does not establish thermal throttling'},

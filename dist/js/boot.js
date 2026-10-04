@@ -8,11 +8,11 @@ function version(worker){
 async function activateRelease(){
  if(!('serviceWorker'in navigator)||!window.isSecureContext)return;
  const workers=navigator.serviceWorker;
- if(await version(workers.controller)===RELEASE){workers.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});return;}
+ if(await version(workers.controller)===RELEASE){workers.register('./sw.js?v=56',{updateViaCache:'none'}).catch(()=>{});return;}
  let timer;
  const installation=(async()=>{
   let registration;
-  try{registration=await workers.register('./sw.js',{updateViaCache:'none'});await registration.update();}
+  try{registration=await workers.register('./sw.js?v=56',{updateViaCache:'none'});await registration.update();}
   catch(error){if(!workers.controller)return;throw error;}
   const until=Date.now()+25000;
   while(Date.now()<until){

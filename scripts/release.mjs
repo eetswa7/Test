@@ -6,7 +6,7 @@ import {BLENDER_FILES} from '../dist/js/blender-assets.js';
 const release=process.argv[2];if(!/^[1-9]\d*$/.test(release??''))throw new Error('Pass a numeric release');
 const root=resolve('dist'),modules=(await readdir(`${root}/js`)).filter(n=>n.endsWith('.js')).sort();
 for(const name of ['index.html',...modules.map(n=>`js/${n}`)]){
- const path=`${root}/${name}`;let text=await readFile(path,'utf8');text=text.replace(/\?v=\d+/g,`?v=${release}`).replace(/const RELEASE='\d+'/g,`const RELEASE='${release}'`);await writeFile(path,text);
+ const path=`${root}/${name}`;let text=await readFile(path,'utf8');text=text.replace(/\?v=\d+/g,`?v=${release}`).replace(/const RELEASE='\d+'/g,`const RELEASE='${release}'`).replace(/(['"]\.\/[^?'"\n]+\.js)(['"])/g,`$1?v=${release}$2`);await writeFile(path,text);
 }
 const assets=[...TEXTURE_FILES,...BLENDER_FILES];
 const shell=['./','./index.html','./style.css','./icon.svg','./icon-192.png','./icon-512.png','./manifest.webmanifest',...modules.map(n=>`./js/${n}`),'./vendor/three.module.min.js','./vendor/three.core.min.js','./vendor/gzip.js',...assets.map(n=>`./assets/${n}`)];

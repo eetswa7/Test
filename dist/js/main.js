@@ -60,6 +60,7 @@ export class Application {
   }else if(!this.playing)this.game.time+=dt;
   const rendered=this.renderer.render(this.game,dt,!this.playing,elapsed);if(this.playing&&!this.game.paused)this.ui.updateIdentities(dt);
   const cpuMs=performance.now()-cpuStart;this.renderer.recordFrame?.(cpuMs,elapsed,activeMatch);if(this.benchmark?.enabled)this.benchmark.endFrame(now,cpuMs,rendered,activeMatch);
+  if(this.benchmark?.stress&&this.game.rules.phase==='finished')void this.benchmark.stop('stress_match_finished');
   if(this.playing&&!this.benchmark?.stress&&this.game.rules.phase==='finished'&&!this.resultShown){this.resultShown=true;this.wakeLock?.release();this.wakeLock=null;this.input.active=false;this.input.reset();document.exitPointerLock?.();this.ui.results();}
  }
 }

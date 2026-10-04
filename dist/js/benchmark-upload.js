@@ -1,5 +1,5 @@
-import {bytes,base64url,digest,signatureMessage} from './benchmark-crypto.js';
-import {BENCHMARK_CONFIG} from './benchmark-config.js';
+import {bytes,base64url,digest,signatureMessage} from './benchmark-crypto.js?v=56';
+import {BENCHMARK_CONFIG} from './benchmark-config.js?v=56';
 
 export function endpointURL(value){const url=new URL(value);if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)throw new Error('Use an HTTPS endpoint URL without credentials');return url.origin+url.pathname.replace(/\/$/,'');}
 export class BenchmarkUploader {
@@ -30,12 +30,13 @@ export class BenchmarkUploader {
   this.busy=true;let next=Infinity;
   try{
    const rows=await this.store.list('report:'),auth=await this.auth();
-   for(const {key,value:item}of rows){if(item.state==='uploaded')continue;if(item.next_attempt>Date.now()){next=Math.min(next,item.next_attempt);continue;}
+   for(const {key,value:item}of rows){if(item.state==='uploaded')continue;if(this.playing()){next=Math.min(next,Date.now()+10000);break;}if(item.next_attempt>Date.now()){next=Math.min(next,item.next_attempt);continue;}
     if(!auth){this.notify('Upload Failed: setup required. Report retained on this device.');break;}
     try{
      const reportJSON=JSON.stringify(item.report),hash=await digest(reportJSON),timestamp=Date.now(),signature=base64url(await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},auth.privateKey,bytes(signatureMessage(auth.credential,timestamp,hash))));
      const response=await this.request(auth.endpoint+'/upload',{credential:auth.credential,timestamp,signature,report_json:reportJSON});let result;try{result=await response.json();}catch{throw new Error('Invalid upload response');}
-     if(!response.ok||result.session_id!==item.report.session.id||!result.commit_sha||!result.path?.startsWith('benchmarks/'))throw new Error(result.error??`Upload failed (${response.status})`);
+     const id=item.report.session.id,date=item.report.session.started_at,expectedPath=`benchmarks/${date.slice(0,4)}/${date.slice(5,7)}/${id}.json`;
+     if(!response.ok||result.session_id!==id||!/^[a-f\d]{40}$/.test(result.commit_sha??'')||result.path!==expectedPath)throw new Error(result.error??`Upload failed (${response.status})`);
      item.state='uploaded';item.receipt={commit_sha:result.commit_sha,path:result.path,duplicate:!!result.duplicate};item.uploaded_at=Date.now();await this.store.put(key,item);this.notify('Upload Successful: benchmark saved to GitHub.');
     }catch(e){item.attempts++;item.next_attempt=Date.now()+Math.min(3600000,5000*2**Math.min(10,item.attempts-1));await this.store.put(key,item);next=Math.min(next,item.next_attempt);this.notify(`Upload Failed: ${e.name==='AbortError'?'request timed out':e.message}. Report retained; retry queued.`);}
    }
@@ -43,6 +44,6 @@ export class BenchmarkUploader {
    const uploaded=(await this.store.list('report:')).filter(r=>r.value.state==='uploaded').sort((a,b)=>(b.value.uploaded_at??0)-(a.value.uploaded_at??0));for(const row of uploaded.slice(10))await this.store.remove(row.key);
   }finally{this.busy=false;if(Number.isFinite(next))this.kick(Math.max(1000,next-Date.now()));}
  }
- async exportLatest(){const rows=await this.store.list('report:'),report=this.latest??rows.sort((a,b)=>b.value.report.session.started_at.localeCompare(a.value.report.session.started_at))[0]?.value.report;if(!report)throw new Error('No benchmark report is available');const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download=`breachline-${report.session.id}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+ async exportLatest(){let report=this.latest;if(!report){const rows=await this.store.list('report:');report=rows.sort((a,b)=>b.value.report.session.started_at.localeCompare(a.value.report.session.started_at))[0]?.value.report;}if(!report)throw new Error('No benchmark report is available');const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download=`breachline-${report.session.id}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
  async configuredEndpoint(){return (await this.auth())?.endpoint??BENCHMARK_CONFIG.endpoint??'';}
 }
