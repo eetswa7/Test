@@ -4,7 +4,7 @@
   "compatibility_date": "2026-10-04",
   "workers_dev": true,
   "vars": {
-    "BENCHMARK_ALLOWED_ORIGIN": "https://replace-with-the-exact-game-origin.invalid",
+    "BENCHMARK_ALLOWED_ORIGIN": "https://breachline.eetswa.chatgpt.site",
     "BENCHMARK_BRANCH": "main"
   },
   "durable_objects": {

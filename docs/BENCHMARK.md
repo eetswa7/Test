@@ -29,6 +29,13 @@ starting more. Ten acknowledged reports remain locally available.
 
 ## One-time automatic upload setup
 
+The release-56 game has been deployed to
+`https://breachline.eetswa.chatgpt.site`, retaining owner-private access. The Sites
+deployment succeeded on 2026-10-04 UTC. The upload Worker and iPhone pairing are
+still incomplete: the available Cloudflare CLI is not authenticated and the
+connected GitHub app does not provide a server-side GitHub token. Pairing must
+run in Safari on the target iPhone, where the non-extractable signing key lives.
+
 The existing host is static. GitHub credentials must not be put in the static
 game, service worker, URL, repository, local storage or browser setup form.
 The repository implements a Cloudflare Worker with one SQLite Durable Object,
@@ -39,9 +46,9 @@ claim that production uploads work.
 
 1. Create a Cloudflare Workers project and deploy the code from
    `server/benchmark/wrangler.jsonc`. From the repository root, use the official
-   Wrangler CLI, sign in, and edit `BENCHMARK_ALLOWED_ORIGIN` to the exact HTTPS
-   origin where you play, with no path or trailing slash. For example, the existing
-   host's origin is `https://breachline.eetswa.chatgpt.site`. Keep the repository
+   Wrangler CLI and sign in. `BENCHMARK_ALLOWED_ORIGIN` is configured for the existing
+   host, `https://breachline.eetswa.chatgpt.site`. Change it only if you play at a different
+   HTTPS origin, with no path or trailing slash. Keep the repository
    fixed to `eetswa7/Test`; `BENCHMARK_BRANCH` defaults to `main`.
 2. Create a fine-grained GitHub token restricted to **only eetswa7/Test**, with
    repository **Contents: Read and write**. No administration, workflows or account
