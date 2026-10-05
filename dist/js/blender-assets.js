@@ -1,8 +1,8 @@
-import {blenderKind} from './blender-kind.js?v=59';
+import {blenderKind} from './blender-kind.js?v=60';
 export {blenderKind};
 import * as THREE from '../vendor/three.module.min.js';
-import {installMetricUV} from './surface-uv.js?v=59';
-import {LIBRARY_FILES} from './blender-files.js?v=59';
+import {installMetricUV} from './surface-uv.js?v=60';
+import {LIBRARY_FILES} from './blender-files.js?v=60';
 
 export const BLENDER_FILES=[...LIBRARY_FILES,'blender/manifest.json'];
 const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};

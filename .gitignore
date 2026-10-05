@@ -9,6 +9,7 @@ dist/assets/blender/breachline-library.glb.gz
 dist/assets/blender/*.png
 dist/assets/blender/*.webp
 authoring/blender/__pycache__/
+authoring/audio/__pycache__/
 authoring/blender/breachline-assets.blend
 authoring/blender/rig-input.json
 dist/assets/production/*.btex

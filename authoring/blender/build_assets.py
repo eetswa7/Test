@@ -308,7 +308,9 @@ from art_geometry import author_shared,hero_part
 manifest['props']=author_shared(globals())
 from production_assets import author_production
 manifest['props']+=author_production(globals())
-manifest['artRevision']=4
+from hero_models import author_heroes
+manifest['props']+=author_heroes(globals())
+manifest['artRevision']=5
 manifest['authorship']='Original Blender mesh authoring and native Cycles colour/normal/physical bakes'
 
 
@@ -326,13 +328,25 @@ for weapon in INPUT['weapons']:
         inverse=anchor_matrix.inverted()
         vertices=[];triangles=[];colours=[];physical=[]
         for p in parts:
+            authored_hand_colors=None;authored_hand_physical=None
             key='cylinder' if p.get('mesh')=='cylinder' else 'tube' if p.get('mesh')=='tube' else 'sphere' if p.get('mesh')=='sphere' else 'flat' if p.get('mesh')=='cube' else 'box'
-            designed=hero_part(p,BASE)
+            designed=hero_part(p,BASE,weapon)
             if section=='hands':
                 hand_kind=('sleeve_z' if p['d']>p['h'] else 'limb') if p.get('tile')==9 and max(p['d'],p['h'])>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
                 if hand_kind:
                     mesh=mesh_assets[hand_kind+'__near'].data;mesh.calc_loop_triangles()
                     designed=([conversion.inverted()@v.co for v in mesh.vertices],[tuple(t.vertices) for t in mesh.loop_triangles])
+                    # Preserve the modelled cuff, stitch and palm materials in
+                    # the welded moving hand, rather than repainting it grey.
+                    layer=mesh.color_attributes.get('BakedColourAO');rm=mesh.uv_layers.get('BreachMaterial')
+                    if layer:
+                        authored_hand_colors=[None]*len(mesh.vertices)
+                        authored_hand_physical=[(.85,0)]*len(mesh.vertices)
+                        for loop in mesh.loops:
+                            authored_hand_colors[loop.vertex_index]=tuple(layer.data[loop.index].color[:3])
+                            if rm:
+                                q=rm.data[loop.index].uv
+                                authored_hand_physical[loop.vertex_index]=(q.x,1-q.y)
             v,t=designed or BASE[key];matrix=Matrix([p['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
             start=len(vertices);vertices.extend(matrix@(q if designed else manufactured_vertex(q,p,key)) for q in v)
             triangles.extend(tuple(i+start for i in tri) for tri in t)
@@ -340,10 +354,11 @@ for weapon in INPUT['weapons']:
             if section=='groups':
                 colour=tuple(max(.32 if p.get('metal',0)>.45 else .25,x) for x in colour)
             else:
-                colour=tuple(max(.44 if max(p['h'],p['d'])>.15 else .48,x) for x in colour)
-            colours.extend([tuple(linear(x) for x in colour)]*len(v))
+                colour=tuple(max(.36 if max(p['h'],p['d'])>.15 else .30,x) for x in colour)
+            tint=tuple(linear(x) for x in colour)
+            colours.extend([tuple(x*y for x,y in zip(c,tint)) for c in authored_hand_colors] if authored_hand_colors else [tint]*len(v))
             coated=p.get('metal',0)>.45 and max(p.get('color',(1,1,1)))<.21
-            physical.extend([(p.get('rough',.6),.24 if coated else p.get('metal',0))]*len(v))
+            physical.extend(authored_hand_physical or [(p.get('rough',.6),.24 if coated else p.get('metal',0))]*len(v))
         ao=cavity(vertices,triangles,.18)
         local=[inverse@p for p in vertices]
         colours=[tuple(x*ao[i] for x in c) for i,c in enumerate(colours)]
@@ -511,10 +526,15 @@ bpy.ops.object.select_all(action='DESELECT')
 for obj in mesh_assets.values():obj.select_set(True)
 bpy.context.view_layer.objects.active=next(iter(mesh_assets.values()))
 glb=OUT/'breachline-library.glb'
-bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,
-                          export_yup=True,export_apply=True,export_materials='NONE',
-                          export_normals=True,export_texcoords=True,export_colors=True,
-                          export_extras=True,export_animations=False)
+export_options=dict(filepath=str(glb),export_format='GLB',use_selection=True,
+                    export_yup=True,export_apply=True,export_materials='NONE',
+                    export_normals=True,export_texcoords=True,
+                    export_extras=True,export_animations=False)
+export_properties=bpy.ops.export_scene.gltf.get_rna_type().properties
+if 'export_vertex_color' in export_properties:
+    export_options.update(export_vertex_color='ACTIVE',export_active_vertex_color_when_no_material=True)
+else:export_options['export_colors']=True
+bpy.ops.export_scene.gltf(**export_options)
 
 # Source materials display baked colour and physical response inside Blender.
 for physical in (False,True):
@@ -552,6 +572,8 @@ scene['regenerate']='npm run assets:blender'
 scene['normal_maps']='Cycles tangent-normal bake from independent surface height graphs'
 scene['source_texture_license']='Original BREACHLINE textures'
 levels=bpy.data.collections.new('Complete levels / metres');scene.collection.children.link(levels)
+from level_materials import LevelMaterials
+level_materials=LevelMaterials()
 for info in INPUT['maps']:
     collection=bpy.data.collections.new(f"Map {info['id']:02d} / {info['name']}");levels.children.link(collection)
     collection['map_id']=info['id'];collection['collision']='Original simulation, unchanged';collection['sun']=info['sun']
@@ -562,6 +584,7 @@ for info in INPUT['maps']:
         transform=Matrix([p['matrix'][j:j+4] for j in range(0,16,4)]).transposed()
         obj.matrix_world=conversion@transform@conversion.inverted()
         obj.color=(*([1,1,1] if p['authoredColour'] else p['material']['color']),1)
+        level_materials.assign(obj,p)
         obj['surface']=p['surface'];obj['texture_tile']=p['material']['pattern']-1;obj['breakable']=p.get('breakable',False)
     collection.hide_viewport=True;collection.hide_render=True
 scene['levels']='All 16 complete level assemblies are in Complete levels / metres. Enable one collection to inspect it.'

@@ -8,7 +8,7 @@ const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwr
 const stage=process.argv[2]??'current',origin=process.env.ART_TEST_ORIGIN??'http://127.0.0.1:4173';
 const server=process.env.ART_TEST_ORIGIN?null:spawn(process.execPath,['scripts/preview.mjs','--port','4173'],{stdio:['ignore','pipe','pipe']});
 if(server)await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(String(d).includes('preview ready'))resolve();});server.on('error',reject);server.on('exit',c=>{if(c)reject(Error('Preview failed'));});});
-const browser=await chromium.launch({headless:true,executablePath:process.env.ART_TEST_BROWSER,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const browser=await chromium.launch({headless:true,executablePath:process.env.ART_TEST_BROWSER,args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const page=await browser.newPage({viewport:{width:1280,height:600},deviceScaleFactor:1,serviceWorkers:'block'}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 await page.route('**/__art',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><style>html,body{margin:0;overflow:hidden}canvas{width:100vw;height:100vh;display:block}</style><canvas id="view"></canvas>'}));
@@ -25,6 +25,8 @@ const shots=[
  {name:'blacksite-approach',map:14,x:0,z:27,yaw:0,pitch:.02},
  {name:'blacksite-interior',map:14,x:0,z:9,yaw:0,pitch:0},
  {name:'blacksite-yard',map:14,x:-31,z:25,yaw:-.12,pitch:0},
+ {name:'blacksite-oblique',map:14,x:12,z:30,yaw:.40,pitch:-.015},
+ {name:'blacksite-services',map:14,x:-10,z:6,yaw:-.95,pitch:0},
  {name:'weapon-close',map:14,x:0,z:27,yaw:0,pitch:0,weapon:1},
  {name:'operator-close',map:14,x:0,z:27,yaw:0,pitch:0,operator:true},
  {name:'combat',map:14,x:0,z:27,yaw:0,pitch:0,operator:true,combat:true},
@@ -45,10 +47,14 @@ try{
    if(shot.reload){p.weapon.ammo=0;p.weapon.reload();p.weapon.reloadLeft=p.weapon.reloadTime*.40;}
    if(shot.combat){p.weapon.sinceShot=.018;renderer.events([{type:'shot',source:0,weapon:0,position:g.eye(p),end:{x:2,y:1.2,z:21},suppressed:false},{type:'impact',surface:'steel',position:{x:2,y:.8,z:21},normal:{x:0,y:0,z:1}}],g);}
    await renderer.prepareMatch(g);
-   for(let i=0;i<8;i++)renderer.render(g,1/60,!!shot.menu);
-   return {map:g.arena.info.name,draws:renderer.drawCalls,triangles:renderer.triangles,shadowDraws:renderer.lastShadowDraws,textureEstimateBytes:renderer.textureMemory,programs:renderer.shaderPrograms,geometryCount:renderer.blenderAssets.geometries.size};
+   // Let projected-size LOD and camera lighting settle after every teleport.
+   // Force one scheduled shadow update for comparable complete-frame counts.
+   for(let i=0;i<24;i++)renderer.render(g,1/60,!!shot.menu);
+   renderer.shadowClock=1;renderer.render(g,1/60,!!shot.menu);
+   const world=renderer.worldBatches.filter(b=>b.count>0);
+   return {map:g.arena.info.name,draws:renderer.drawCalls,triangles:renderer.triangles,shadowDraws:renderer.lastShadowDraws,textureEstimateBytes:renderer.textureMemory,programs:renderer.shaderPrograms,geometryCount:renderer.blenderAssets.geometries.size,activeWorldBatches:world.length,selectedWorldTriangles:world.reduce((n,b)=>n+b.count*(b.geometry.index?.count??b.geometry.getAttribute('position').count)/3,0)};
   },shot);
-  await page.screenshot({path:'test-results/'+stage+'/'+shot.name+'.png'});results.push({name:shot.name,...stats});console.log(shot.name,JSON.stringify(stats));
+  await page.screenshot({path:'test-results/'+stage+'/'+shot.name+'.png',timeout:120000});results.push({name:shot.name,...stats});console.log(shot.name,JSON.stringify(stats));
  }
  await writeFile('test-results/'+stage+'/scene-counts.json',JSON.stringify({kind:'software_WebGL_visual_validation',actual_iphone_data:false,errors,results},null,2)+'\n');
  if(errors.length)throw Error(errors.join('\n'));

@@ -1,0 +1,42 @@
+{
+  "scope": "Retained native geometry attribute/index storage estimate, including metric UV attributes. Not browser process memory, driver allocation, live GPU use, Safari memory limit or physical iPhone measurement.",
+  "actual_iphone_data": false,
+  "meshes": 318,
+  "compressedLibraryBytes": 11124909,
+  "decodedLibraryBytes": 34943496,
+  "retainedGeometryBufferBytes": 39828064,
+  "largest": [
+    {
+      "name": "building_urban__near",
+      "bytes": 1213200
+    },
+    {
+      "name": "building_desert__near",
+      "bytes": 909592
+    },
+    {
+      "name": "weapon_9_groups_0",
+      "bytes": 489060
+    },
+    {
+      "name": "weapon_20_groups_0",
+      "bytes": 486742
+    },
+    {
+      "name": "vehicle_sedan__near",
+      "bytes": 477432
+    },
+    {
+      "name": "weapon_26_groups_0",
+      "bytes": 466424
+    },
+    {
+      "name": "weapon_27_groups_0",
+      "bytes": 457982
+    },
+    {
+      "name": "weapon_6_groups_0",
+      "bytes": 455566
+    }
+  ]
+}

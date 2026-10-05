@@ -1,133 +1,248 @@
-"""Original offline sound design. No sampled commercial weapons or game assets.
+"""Deterministic original sound production, with no third-party samples.
 
-Each pressure transient, action mechanism, debris grain and acoustic tail is
-rendered to PCM, mastered, then encoded as AAC for native Safari decoding.
-The editable design and deterministic seeds are the source of every asset.
+Editable weapon voicing, pressure waveforms, band-limited turbulence, granular
+foley and short modal mechanical contacts are rendered offline. Gameplay only
+plays decoded AAC buffers; none of these filters run in the game audio thread.
 """
 from pathlib import Path
-import concurrent.futures, hashlib, json, math, subprocess, tempfile, wave
+import concurrent.futures, hashlib, json, math, shutil, subprocess, tempfile, wave
 import numpy as np
 from scipy.signal import butter, sosfilt
 
-RATE=44100
-root=Path('dist/assets/audio');root.mkdir(parents=True,exist_ok=True)
-work=Path(tempfile.mkdtemp(prefix='breachline-sound-'))
-weapons=json.loads(Path('authoring/audio/weapons.json').read_text())
-sounds=[]
+RATE = 44100
+root = Path('dist/assets/audio'); root.mkdir(parents=True, exist_ok=True)
+work = Path(tempfile.mkdtemp(prefix='breachline-sound-'))
+weapons = json.loads(Path('authoring/audio/weapons.json').read_text())
+voicing = json.loads(Path('authoring/audio/weapon-voicing.json').read_text())
+sounds = []
 
-def filtered(x,hz,mode='lowpass',order=2):
-    return sosfilt(butter(order,hz,fs=RATE,btype=mode,output='sos'),x)
+def filtered(x, hz, mode='lowpass', order=2):
+    return sosfilt(butter(order, hz, fs=RATE, btype=mode, output='sos'), x)
 
-def impulse(t,rng,start,weight=1,tone=2200,decay=95):
-    u=t-start;mask=(u>=0);u=np.maximum(u,0)
-    n=rng.normal(0,1,len(t));impact=filtered(n,min(12000,tone*3),'lowpass')
-    body=np.sin(math.tau*tone*u)+.38*np.sin(math.tau*tone*1.437*u)+.18*np.sin(math.tau*tone*2.11*u)
-    return mask*weight*(impact*.26+body*.34)*np.exp(-u*decay)*(1-np.exp(-u*2200))
+def noise(rng, count, hz, mode='bandpass'):
+    x = filtered(rng.normal(0, 1, count), hz, mode)
+    return x / max(.05, np.std(x))
 
-def register(key,variant,x):
-    # 70 Hz headroom protects phone speakers; preserve useful low-mid punch.
-    x=filtered(x,48,'highpass');x=np.tanh(x*.95)
-    peak=np.max(np.abs(x))
-    if peak>.001:x=x*.91/max(.91,peak)
-    x[:90]*=np.linspace(0,1,90);x[-330:]*=np.linspace(1,0,330)
-    sounds.append((key,variant,x.astype(np.float32)))
+def envelope(t, start, attack, decay):
+    u = np.maximum(0, t-start)
+    return (t >= start) * (1-np.exp(-u/attack)) * np.exp(-u/decay)
 
-def shot(w,variant,suppressed=False):
-    seed=72317+w['id']*1289+variant*3989+int(suppressed)*1921
-    rng=np.random.default_rng(seed);kind=w['kind'];duration=.74 if kind in ('SNIPER','SHOTGUN','LMG') else .59
-    t=np.arange(int(RATE*duration))/RATE;n=rng.normal(0,1,len(t))
-    if kind=='MELEE':
-        envelope=np.sin(np.minimum(1,t/.19)*math.pi)**2*(t<.19)
-        register(('suppressed' if suppressed else 'shot')+str(w['id']),variant,filtered(n,3300)*envelope*.45+impulse(t,rng,.08,.26,2700,110));return
-    bass={'RIFLE':135,'SMG':190,'SHOTGUN':83,'SNIPER':73,'MARKSMAN':107,'LMG':118,'PISTOL':210}[kind]*(.88+(w['id']%7)*.035)
-    pressure=(np.sin(math.tau*bass*(t+.002*(1-np.exp(-t*160))))+.34*np.sin(math.tau*bass*1.56*t))*np.exp(-t*(35 if kind in ('SMG','PISTOL') else 19))
-    crack=filtered(n,[1300,11700],'bandpass')*np.exp(-t*310)*(1-np.exp(-t*5200))
-    chamber=filtered(n,1500)*np.exp(-t*35)*1.8
-    air=filtered(n,[260,4200],'bandpass')*np.exp(-t*26)*(1-np.exp(-t*260))
-    x=pressure*(.18 if suppressed else .58)+crack*(.13 if suppressed else .62)+chamber*(.28 if suppressed else .62)+air*(.08 if suppressed else .25)
-    # Locked-breech opening, return spring and metallic closure are separate
-    # transients, rather than one repeating pitched noise burst.
-    x+=impulse(t,rng,.019+.003*variant,.27,2800+w['id']*47,150)
-    x+=impulse(t,rng,.043,.14,4800+w['id']*33,95)
-    if w['shellReload'] or kind=='SNIPER':
-        x+=impulse(t,rng,.27,.27,940,72)+impulse(t,rng,.49,.42,1850,100)
-    elif kind!='PISTOL':x+=impulse(t,rng,.17+variant*.014,.06,4200,70)
-    # Sparse, decorrelated outdoor early returns. They read as a gunshot tail,
-    # without convolving every source with a long response during gameplay.
-    dry=x.copy()
-    for seconds,gain in ((.039,.16),(.077,.115),(.129,.075),(.21,.033)):
-        delay=int(seconds*RATE);tail=filtered(dry[:-delay],2300/(1+seconds*4));x[delay:]+=tail*gain*(.4 if suppressed else 1)
-    x+=filtered(n,1900)*np.exp(-np.maximum(0,t-.035)*13)*(t>.035)*(.022 if suppressed else .065)
-    register(('suppressed' if suppressed else 'shot')+str(w['id']),variant,x)
+def contact(t, rng, start, weight=1, tone=2200, decay=.016, hardness=.65):
+    """A noisy contact with quiet inharmonic modes, rather than a pitched beep."""
+    u = np.maximum(0, t-start)
+    x = noise(rng, len(t), [max(65, tone*.12), min(16000, tone*3.1)])
+    modes = sum(np.sin(math.tau*tone*f*u + rng.random()*math.tau)*g
+                for f, g in ((1,.12),(1.431,.06),(2.173,.035)))
+    return weight * envelope(t, start, .00035, decay) * (x*hardness + modes)
 
-for w in weapons:
-    for variant in range(3):shot(w,variant)
-    for variant in range(2):shot(w,variant,True)
-    rng=np.random.default_rng(8849+w['id']*193)
-    duration=max(.22,w['reload']*.91);t=np.arange(int(RATE*duration))/RATE
-    if w['shellReload']:
-        x=impulse(t,rng,.019,.3,1180,50)+impulse(t,rng,.20,.57,2230,120)
+def granular(t, rng, start, span, grains, weight, band, decay=.004):
+    x = np.zeros(len(t))
+    for i in range(grains):
+        x += contact(t, rng, start+rng.random()*span,
+                     weight*rng.uniform(.45,1), rng.uniform(*band),
+                     decay*rng.uniform(.55,1.4), .72)
+    return x
+
+def register(key, variant, x):
+    # The 48 Hz roll-off protects phone speaker headroom without removing
+    # low-mid punch. A 0.15 ms entrance preserves firearm attack transients.
+    x = np.tanh(filtered(x, 48, 'highpass')*.79)
+    peak = np.max(np.abs(x))
+    if peak > .9: x *= .9/peak
+    edge = min(len(x)//2, int(RATE*.00015)); x[:edge] *= np.linspace(0,1,edge)
+    x[-int(RATE*.012):] *= np.linspace(1,0,int(RATE*.012))
+    if not np.all(np.isfinite(x)): raise ValueError('Nonfinite PCM '+key)
+    sounds.append((key, variant, x.astype(np.float32)))
+
+def shot(w, variant, suppressed=False):
+    rng = np.random.default_rng(72317+w['id']*1289+variant*3989+int(suppressed)*1921)
+    p = voicing[str(w['id'])]; kind = w['kind']
+    duration = p['duration']; t = np.arange(int(RATE*duration))/RATE
+    key = ('suppressed' if suppressed else 'shot')+str(w['id'])
+    if kind == 'MELEE':
+        register(key, variant, noise(rng,len(t),[280,5000])*envelope(t,.015,.055,.065)*.13
+                 + contact(t,rng,.07,.07,1700,.009)); return
+    # A single bipolar muzzle pressure front avoids the audible synthesized
+    # bass note used in the previous bank. Low-band turbulence gives it mass.
+    width = .38/p['pressureHz'] * rng.uniform(.96,1.04)
+    pressure = (1-2*t/width)*np.exp(-t/width)*(1-np.exp(-t/.00010))
+    body = noise(rng,len(t),[75,p['pressureHz']*3.8])*envelope(t,0,.00025,p['blastMs']/1000)
+    crack = noise(rng,len(t),[p['crackHz']*.56,min(15000,p['crackHz']*2.8)])*envelope(t,0,.00008,.0018)
+    air = noise(rng,len(t),[420,5500])*envelope(t,.002,.0007,p['blastMs']/1700)
+    if suppressed:
+        # Short, low-passed gas release; mechanical identity stays audible.
+        x = pressure*p['body']*.12 + body*p['body']*.06 + filtered(crack,3400)*.033 + filtered(air,2700)*.025
+        x += noise(rng,len(t),[300,1700])*envelope(t,.001,.001,.015)*.045
     else:
-        x=impulse(t,rng,duration*.105,.20,3500,140)+impulse(t,rng,duration*.18,.44,1050,85)
-        x+=impulse(t,rng,duration*.61,.30,720,65)+impulse(t,rng,duration*.72,.64,1690,125)
-        x+=filtered(rng.normal(0,1,len(t)),[220,2600],'bandpass')*.038*np.sin(t/duration*math.pi)**2
-        if w['kind']=='LMG':x+=impulse(t,rng,duration*.40,.38,3100,55)+impulse(t,rng,duration*.85,.44,1020,100)
-        if w['revolver']:x+=impulse(t,rng,duration*.36,.22,5100,30)
+        x = pressure*p['body']*.57 + body*p['body']*.22 + crack*p['crack']*.37 + air*.10
+    action = p['action']; delay = p['actionDelay']+rng.uniform(-.0018,.0018)
+    x += contact(t,rng,delay,p['actionWeight'],p['actionHz'],.008)
+    if action in ('roller','closed','slide','belt','gas'):
+        x += contact(t,rng,delay+.021,p['actionWeight']*.66,p['actionHz']*.63,.012)
+        # Ejection/chamber closure are part of the recording, never extra voices.
+        x += granular(t,rng,delay+.069,.027,3,.006,(2800,6200),.006)
+    if action == 'belt':
+        x += granular(t,rng,.039,.038,5,.021,(1600,3900),.008)
+    if action == 'pump':
+        x += noise(rng,len(t),[430,3700])*envelope(t,.22,.018,.025)*.038
+        x += contact(t,rng,.24,.14,1300,.017)+contact(t,rng,.43,.19,1850,.010)
+    if action == 'bolt':
+        x += contact(t,rng,.27,.11,850,.012)
+        x += noise(rng,len(t),[380,3100])*envelope(t,.30,.015,.035)*.03
+        x += contact(t,rng,.50,.13,1400,.010)
+    if action == 'revolver':
+        x += contact(t,rng,.034,.045,2100,.006)
+    dry = x.copy()
+    # Quiet, irregular baked exterior returns. Shared runtime room acoustics
+    # add interior identity without adding a convolution node per shot.
+    for seconds,gain in ((.048,.080),(.092,.045),(.163,.025)):
+        seconds += rng.uniform(-.007,.007); delay = int(seconds*RATE)
+        x[delay:] += filtered(dry[:-delay],2300)*gain*(.18 if suppressed else 1)
+    x += noise(rng,len(t),[260,3500])*envelope(t,.010,.006,p['tail'])*(.006 if suppressed else .018)
+    register(key,variant,x)
+
+def actions(w):
+    rng = np.random.default_rng(8849+w['id']*193); p = voicing[str(w['id'])]
+    duration = max(.22,w['reload']*.91); t = np.arange(int(RATE*duration))/RATE
+    metal = p['actionHz']; plastic = metal*.42
+    if w['shellReload']:
+        x = contact(t,rng,.020,.10,plastic,.015)+contact(t,rng,.20,.16,metal,.008)
+        x += noise(rng,len(t),[300,2600])*envelope(t,.10,.015,.035)*.025
+    else:
+        x = contact(t,rng,duration*.105,.09,metal,.006)
+        x += contact(t,rng,duration*.18,.14,plastic,.013)
+        # Local friction strokes produce handling instead of continuous hiss.
+        for start,span in ((.19,.065),(.52,.13),(.68,.04)):
+            x += noise(rng,len(t),[260,3400])*envelope(t,duration*start,.012,span)*.017
+        x += contact(t,rng,duration*.61,.09,plastic*.71,.015)
+        x += contact(t,rng,duration*.72,.20,metal*.71,.010)
+        if w['kind']=='LMG':
+            x += contact(t,rng,duration*.40,.13,metal*.92,.014)
+            x += granular(t,rng,duration*.49,duration*.10,12,.012,(1500,3900),.006)
+            x += contact(t,rng,duration*.85,.17,metal*.51,.012)
+        if w['revolver']:
+            x += granular(t,rng,duration*.36,.08,6,.034,(2900,5700),.004)
+            x += contact(t,rng,duration*.81,.13,metal,.012)
     register('reload'+str(w['id']),0,x)
-    for key,duration,tone in (('seat',.19,1100),('rack',.28,2400)):
-        t=np.arange(int(RATE*duration))/RATE
-        x=impulse(t,rng,.009,.42,tone+w['id']*27,90)
-        if key=='rack':x+=impulse(t,rng,.105,.64,1390+w['id']*18,95)+filtered(rng.normal(0,1,len(t)),4200)*.045*np.sin(np.minimum(1,t/.11)*math.pi)*(t<.11)
+    for key,duration in (('seat',.19),('rack',.28)):
+        t = np.arange(int(RATE*duration))/RATE
+        x = contact(t,rng,.008,.18,metal*.56,.010)
+        if key=='rack':
+            x += noise(rng,len(t),[400,3900])*envelope(t,.025,.012,.025)*.06
+            x += contact(t,rng,.105,.23,metal,.008)
         register(key+str(w['id']),0,x)
 
-# Granular boot foley: heel strike, toe roll, then irregular grit contacts.
-for surface in ('Hard','Gravel','Soft','Snow','Quarry','Metal','Water'):
-    for variant in range(4):
-        rng=np.random.default_rng(19371+variant*997+sum(map(ord,surface)))
-        t=np.arange(int(RATE*.31))/RATE;n=rng.normal(0,1,len(t))
-        x=filtered(n,700)*np.exp(-t*26)*.62+impulse(t,rng,.007,.25,230,48)+impulse(t,rng,.071,.12,380,55)
-        if surface in ('Gravel','Quarry'):
-            for i in range(12):x+=impulse(t,rng,.024+rng.random()*.14,.025+rng.random()*.045,2400+rng.random()*2900,140)
-        if surface=='Hard':x+=impulse(t,rng,.018,.24,1200,110)
-        if surface=='Metal':x+=impulse(t,rng,.016,.21,2300,21)+impulse(t,rng,.042,.10,3900,35)
-        if surface=='Soft':x=filtered(x,1500)*.74+n*.025*np.exp(-t*16)
-        if surface=='Snow':x=filtered(x,1900)*.65+filtered(n,[1800,6500],'bandpass')*.15*np.exp(-t*14)
-        if surface=='Water':x=filtered(x,900)*.5+filtered(n,[600,6900],'bandpass')*.29*np.exp(-t*14)*(1-np.exp(-t*110))
-        register('step'+surface,variant,x)
+for w in weapons:
+    for variant in range(4): shot(w,variant)
+    for variant in range(3): shot(w,variant,True)
+    actions(w)
+
+# Weight transfer, sole compression, toe scuff and individual surface contacts.
+# Material layers receive independent noise, timing and pitch on all five takes.
+for surface in ('Hard','Gravel','Soft','Snow','Quarry','Metal','Water','Wood'):
+    for variant in range(5):
+        rng = np.random.default_rng(19371+variant*997+sum(map(ord,surface)))
+        t = np.arange(int(RATE*.34))/RATE
+        heel = rng.uniform(.004,.010); toe = rng.uniform(.058,.089)
+        x = noise(rng,len(t),[75,390])*envelope(t,heel,.0015,.018)*.10
+        x += noise(rng,len(t),[120,680])*envelope(t,toe,.003,.020)*.045
+        if surface=='Hard':
+            x += contact(t,rng,heel,.072,1050,.005)+contact(t,rng,toe,.037,1350,.007)
+            x += noise(rng,len(t),[600,3600])*envelope(t,.10,.015,.023)*.009
+        elif surface in ('Gravel','Quarry'):
+            x += granular(t,rng,.014,.15,22 if surface=='Gravel' else 13,.022,(1300,6000),.004)
+            x += noise(rng,len(t),[300,3700])*envelope(t,.024,.010,.05)*.023
+            if surface=='Quarry': x += contact(t,rng,toe,.07,550,.013)
+        elif surface=='Soft':
+            x = filtered(x,900)*.80
+            x += noise(rng,len(t),[150,2200])*envelope(t,.022,.012,.049)*.031
+            x += granular(t,rng,.05,.08,7,.010,(500,1600),.009)
+        elif surface=='Snow':
+            x = filtered(x,1000)*.8
+            crunch = noise(rng,len(t),[900,7800])
+            modulation = .38+.62*np.abs(filtered(rng.normal(0,1,len(t)),90))*5
+            x += crunch*modulation*envelope(t,.018,.007,.067)*.042
+            x += granular(t,rng,.022,.12,18,.011,(1600,5200),.003)
+        elif surface=='Metal':
+            x += contact(t,rng,heel,.085,1900,.018)
+            x += sum(np.sin(math.tau*f*t)*envelope(t,heel,.001,decay)*.008
+                     for f,decay in ((370,.05),(831,.032),(1717,.026)))
+            x += noise(rng,len(t),[430,2900])*envelope(t,toe,.002,.022)*.02
+        elif surface=='Water':
+            x = filtered(x,800)*.45
+            x += noise(rng,len(t),[420,6200])*envelope(t,.013,.007,.066)*.08
+            x += granular(t,rng,.068,.14,11,.017,(1100,5900),.007)
+        elif surface=='Wood':
+            x += contact(t,rng,heel,.045,360,.021)+contact(t,rng,toe,.022,710,.013)
+            x += noise(rng,len(t),[230,2000])*envelope(t,.080,.012,.025)*.016
+        register('step'+surface,variant,x*1.5)
 
 for surface in ('Metal','Stone','Wood','Glass','Water'):
-    for variant in range(3):
-        rng=np.random.default_rng(39987+variant*1301+sum(map(ord,surface)));t=np.arange(int(RATE*.42))/RATE
-        x=impulse(t,rng,.003,.49,1800+variant*171,95)
+    for variant in range(4):
+        rng = np.random.default_rng(39987+variant*1301+sum(map(ord,surface)))
+        t = np.arange(int(RATE*.48))/RATE
+        x = contact(t,rng,.001,.24,2600+variant*211,.006)
         if surface=='Metal':
-            x+=sum(np.sin(math.tau*f*t)*np.exp(-t*(17+i*4))*.095 for i,f in enumerate((3190,4870,6910)))
+            # Short inharmonic ring and falling fragments, no sustained chime.
+            x += sum(np.sin(math.tau*f*t)*envelope(t,.002,.0002,.021+i*.004)*.015
+                     for i,f in enumerate((2491,3847,5729)))
+            x += granular(t,rng,.022,.092,5,.026,(1700,5200),.005)
         elif surface=='Stone':
-            x+=filtered(rng.normal(0,1,len(t)),3900)*np.exp(-t*25)*.17
-            for i in range(6):x+=impulse(t,rng,.028+i*.021,.045,2700+i*311,90)
-        elif surface=='Wood':x=filtered(x,3600)+impulse(t,rng,.012,.34,480,55)
+            x += noise(rng,len(t),[180,4700])*envelope(t,.001,.0004,.020)*.081
+            x += granular(t,rng,.020,.13,16,.020,(1300,4300),.004)
+        elif surface=='Wood':
+            x = filtered(x,2700)
+            x += noise(rng,len(t),[100,750])*envelope(t,.002,.0007,.017)*.07
+            x += granular(t,rng,.008,.06,8,.022,(650,2300),.006)
         elif surface=='Glass':
-            for i in range(14):x+=impulse(t,rng,.006+i*.017,.038,3200+rng.random()*6700,60)
-        else:x=filtered(rng.normal(0,1,len(t)),[900,7200],'bandpass')*.32*np.exp(-t*17)
-        register('impact'+surface,variant,x)
+            x += noise(rng,len(t),[1700,14000])*envelope(t,.002,.0003,.006)*.105
+            x += granular(t,rng,.010,.24,28,.022,(2200,7500),.012)
+        else:
+            x = noise(rng,len(t),[650,7000])*envelope(t,.002,.003,.049)*.115
+            x += granular(t,rng,.05,.16,12,.018,(1500,6200),.006)
+        register('impact'+surface,variant,x*1.45)
 
-for variant in range(3):
-    rng=np.random.default_rng(998731+variant*3877);t=np.arange(int(RATE*1.65))/RATE;n=rng.normal(0,1,len(t))
-    x=filtered(n,1400)*np.exp(-t*7)*1.25+np.sin(math.tau*(53+variant*4)*t)*np.exp(-t*6)*.8
-    x+=filtered(n,[1900,11500],'bandpass')*np.exp(-t*160)*.6
-    x+=filtered(n,400)*np.exp(-t*3.4)*.74
-    for i in range(13):x+=impulse(t,rng,.12+i*.065,.065*(1-i/17),1500+rng.random()*2200,80)
+for variant in range(4):
+    rng = np.random.default_rng(998731+variant*3877)
+    t = np.arange(int(RATE*1.55))/RATE
+    front = (1-t/.005)*np.exp(-t/.005)*(1-np.exp(-t/.0001))
+    x = front*.63+noise(rng,len(t),[90,1400])*envelope(t,0,.0003,.092)*.31
+    x += noise(rng,len(t),[1900,12500])*envelope(t,0,.0001,.006)*.20
+    # Stochastic rolling pressure and delayed debris replace one 53 Hz note.
+    x += noise(rng,len(t),[75,460])*envelope(t,.023,.005,.25)*.16
+    x += noise(rng,len(t),[300,3100])*envelope(t,.032,.014,.16)*.06
+    x += granular(t,rng,.085,.71,28,.035,(700,4300),.008)
     register('explosion',variant,x)
 
 def encode(sound):
-    key,variant,x=sound;name=key+'-'+str(variant);wav=work/(name+'.wav');aac=work/(name+'.m4a')
-    with wave.open(str(wav),'wb') as f:f.setnchannels(1);f.setsampwidth(2);f.setframerate(RATE);f.writeframes((x*32767).astype('<i2').tobytes())
-    subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(wav),'-c:a','aac','-b:a','160k','-movflags','+faststart',str(aac)],check=True)
-    return (key,variant,aac.read_bytes(),{'duration':len(x)/RATE,'pcmPeak':float(np.max(np.abs(x))),'pcmRms':float(np.sqrt(np.mean(x*x)))})
+    key,variant,x = sound; name = key+'-'+str(variant)
+    wav = work/(name+'.wav'); aac = work/(name+'.m4a')
+    with wave.open(str(wav),'wb') as f:
+        f.setnchannels(1); f.setsampwidth(2); f.setframerate(RATE)
+        f.writeframes((x*32767).astype('<i2').tobytes())
+    subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(wav),
+                    '-c:a','aac','-b:a','160k','-movflags','+faststart',str(aac)],check=True)
+    spectrum = np.abs(np.fft.rfft(x))**2
+    centroid = np.sum(np.fft.rfftfreq(len(x),1/RATE)*spectrum)/max(1e-9,np.sum(spectrum))
+    metrics = {'duration':len(x)/RATE,'pcmPeak':float(np.max(np.abs(x))),
+               'pcmRms':float(np.sqrt(np.mean(x*x))), 'spectralCentroidHz':float(centroid),
+               'attackRms':float(np.sqrt(np.mean(x[:int(RATE*.020)]**2)))}
+    return key,variant,aac.read_bytes(),metrics
 
-index={};data=bytearray()
-with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-    for key,variant,encoded,metrics in pool.map(encode,sounds):
-        index.setdefault(key,[]).append({'offset':len(data),'bytes':len(encoded),'variant':variant,**metrics});data.extend(encoded)
-(root/'sound-bank.bin').write_bytes(data)
-(root/'manifest.json').write_text(json.dumps({'schema':1,'codec':'AAC-LC in M4A','sampleRate':RATE,'originalDesign':True,'license':'Original Breachline project assets; no third-party samples','sounds':index,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()},indent=2)+'\n')
-print('Original audio library',len(sounds),'recordings',len(data),'bytes',flush=True)
+index = {}; data = bytearray()
+try:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        for key,variant,encoded,metrics in pool.map(encode,sounds):
+            index.setdefault(key,[]).append({'offset':len(data),'bytes':len(encoded),
+                                             'variant':variant,**metrics})
+            data.extend(encoded)
+    (root/'sound-bank.bin').write_bytes(data)
+    (root/'manifest.json').write_text(json.dumps({
+        'schema':2,'codec':'AAC-LC in M4A','sampleRate':RATE,'originalDesign':True,
+        'license':'Original Breachline project assets; no third-party samples',
+        'production':'Pressure-front and turbulence voicing; granular material foley',
+        'sounds':index,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()
+    },indent=2)+'\n')
+    print('Original audio library',len(sounds),'recordings',len(data),'bytes',flush=True)
+finally:
+    shutil.rmtree(work)

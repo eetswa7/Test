@@ -1,38 +1,164 @@
-// Art-only dressing. Every playable collider and destructible stays owned by Arena.
+// Presentation is built from the authoritative Arena. No art operation adds a
+// collider, changes a firing aperture, or moves an objective/navigation route.
+const industrialTag=/INDUSTRIAL|REFINERY|DOCKYARD|RAIL|TROPICAL/;
+
+/** Recover the actual holes in a room wall at a requested height. Matching the
+ * collider segments matters: Blacksite's open windows must never become glass,
+ * and a facade kit must not narrow an existing doorway. */
+export function wallOpenings(arena,roof,axis,sign,height=.7){
+ const normal=axis==='z'?'z':'x',along=axis==='z'?'x':'z';
+ const span=(axis==='z'?roof.w:roof.d)-.6,depth=(axis==='z'?roof.d:roof.w)-.6;
+ const edge=roof[normal]+sign*depth/2,centre=roof[along];
+ const segments=arena.blocks.filter(p=>!p.roof&&!p.ground&&!p.destroyed&&
+  (axis==='z'?p.d:p.w)<=.7&&Math.abs(p[normal]-edge)<.05&&
+  p.y-p.h/2<height&&p.y+p.h/2>height&&
+  Math.abs(p[along]-centre)<span/2+.05).map(p=>{
+   const width=axis==='z'?p.w:p.d;
+   return [Math.max(-span/2,p[along]-centre-width/2),Math.min(span/2,p[along]-centre+width/2)];
+  }).sort((a,b)=>a[0]-b[0]);
+ if(!segments.length)return [];
+ let end=-span/2;const openings=[];
+ for(const [left,right]of segments){
+  if(left-end>.35)openings.push({axis,sign,edge,at:centre+(end+left)/2,width:left-end});
+  end=Math.max(end,right);
+ }
+ if(span/2-end>.35)openings.push({axis,sign,edge,at:centre+(end+span/2)/2,width:span/2-end});
+ return openings;
+}
+
 export function productionWorld(arena,parts){
- const id=arena.info.id,size=arena.info.size,industrial=/INDUSTRIAL|REFINERY|DOCKYARD|RAIL|TROPICAL/.test(arena.info.tag);
+ const id=arena.info.id,size=arena.info.size,industrial=industrialTag.test(arena.info.tag);
  const visual=(p,extra)=>Object.assign(Object.create(p),{blenderPrepared:null,...extra});
- const result=parts.map(p=>{const ground=!!(p.ground||!p.roof&&p.h<.10&&p.y<.30&&p.w>1.5&&p.d>1.5&&p.surface!=='water');return visual(p,{productionGround:ground,...(ground&&(industrial||id===14)&&(p.tile===14||p.surface==='tiles')?{surface:'concrete',tile:0,color:[.94,.96,.94],productionEpoxy:true,rough:.72}:{})});});
- const add=(x,y,z,w,h,d,kind,extra={})=>result.push({x,y,z,w,h,d,surface:'steel',tile:-1,blenderKind:kind,blenderColour:true,...extra});
- // Trusses follow existing roof spans and stay above operator head clearance.
- // The Blacksite hall is deliberately dressed more densely than small cabins.
- for(const roof of arena.blocks.filter(p=>p.roof&&!p.destroyed&&p.h<1&&p.w>5&&p.d>5)){
-  if(!industrial&&id!==14&&id!==3&&id!==2)continue;
-  const underside=roof.y-roof.h*.5,span=Math.max(4,roof.w-.8),depth=Math.max(4,roof.d-.8);
-  if(underside<3.4)continue;
-  for(const fraction of [-.30,0,.30])add(roof.x,underside-.48,roof.z+depth*fraction,span,.83,.22,'roof_truss');
-  const frame=arena.blocks.filter(p=>!p.roof&&p.h>2&&p.w>3&&p.d<.75&&Math.abs(p.z-roof.z)<depth*.56&&Math.abs(p.x-roof.x)<span*.65);
-  for(const wall of frame.slice(0,id===14?8:3)){
-   const outward=wall.z>roof.z?1:-1;
-   add(wall.x,1.72,wall.z-outward*(wall.d*.5+.07),Math.min(1.9,wall.w*.55),1.12,.16,'switchgear',{yaw:outward>0?0:Math.PI});
+ const result=parts.map(p=>{
+  const ground=!!(p.ground||!p.roof&&p.h<.10&&p.y<.30&&p.w>1.5&&p.d>1.5&&p.surface!=='water');
+  const epoxy=ground&&(industrial||id===14)&&(p.tile===14||p.surface==='tiles');
+  return visual(p,{productionGround:ground,...(epoxy?{surface:'concrete',tile:0,color:[.91,.94,.91],productionEpoxy:true,rough:.72}:{})});
+ });
+ // Authored material diversity is inside each merged native mesh. Identical
+ // pieces share one draw batch; colour variants remain per-instance attributes.
+ const add=(x,y,z,w,h,d,kind,extra={},source)=>{
+  const p={x,y,z,w,h,d,surface:'steel',tile:-1,blenderKind:kind,blenderColour:true,
+   productionArt:true,productionRole:kind,...extra};
+  const part=source?Object.assign(Object.create(source),p):p;
+  result.push(part);return part;
+ };
+ const floor=(x,z,w,d,surface='concrete',extra={},source)=>add(x,.036,z,w,.006,d,'surface',{
+  mesh:'surface',surface,tile:surface==='concrete'?0:surface==='gravel'?7:4,
+  blenderColour:false,color:[.95,.96,.94],productionGround:true,surfaceLayer:3,
+  rough:.92,...extra},source);
+ const frame=(hole,bottom,clearance,kind,source)=>{
+  const width=hole.width/.60,height=clearance/(kind==='aperture_frame'?.76:.88);
+  const y=kind==='aperture_frame'?bottom+clearance/2:bottom+height/2;
+  const x=hole.axis==='z'?hole.at:hole.edge,z=hole.axis==='z'?hole.edge:hole.at;
+  const yaw=hole.axis==='z'?(hole.sign>0?Math.PI:0):(hole.sign>0?-Math.PI/2:Math.PI/2);
+  return add(x,y,z,width,height,.43,kind,{yaw,productionOpening:{
+   x:hole.axis==='z'?hole.at:hole.edge,z:hole.axis==='z'?hole.edge:hole.at,
+   axis:hole.axis,width:hole.width,bottom,top:bottom+clearance
+  }},source);
+ };
+ const rooms=arena.info.authoredDressing?[]:arena.blocks.filter(p=>p.roof&&p.room&&!p.destroyed&&p.w>5&&p.d>5);
+ for(const roof of rooms){
+  const ceiling=roof.y-roof.h/2,w=roof.w-.6,d=roof.d-.6;
+  const mainHall=ceiling>4.4&&(industrial||id===3||id===14);
+  // Concrete shoulders and recessed drainage establish the construction's
+  // footprint. They are centimetre-level finishes, never decorative cover.
+  for(const sign of [-1,1]){
+   floor(roof.x,roof.z+sign*(d/2+.75),w+2.0,1.1,'concrete',{},roof);
+   floor(roof.x+sign*(w/2+.75),roof.z,1.1,d,'concrete',{},roof);
+   if(industrial||id===14)add(roof.x,.042,roof.z+sign*(d/2+1.32),w+.4,.024,.22,'drain_channel',{},roof);
   }
+  // The native U-shaped entry assembly overlaps the SOLID wall wings. Its
+  // empty centre is sized from the exact existing opening and free clearance.
+  for(const axis of ['x','z'])for(const sign of [-1,1]){
+   for(const hole of wallOpenings(arena,roof,axis,sign)){
+    const centre={x:hole.axis==='z'?hole.at:hole.edge,z:hole.axis==='z'?hole.edge:hole.at};
+    const lintel=arena.blocks.filter(p=>!p.roof&&!p.ground&&
+     Math.abs(p.x-centre.x)<.06&&Math.abs(p.z-centre.z)<.06&&p.y-p.h/2>.5)
+     .sort((a,b)=>(a.y-a.h/2)-(b.y-b.h/2))[0];
+    if(!lintel||hole.width>5.2)continue;
+    const clearance=lintel.y-lintel.h/2;
+    if(clearance<2.0)continue;
+    frame(hole,0,clearance,'doorway_surround',roof);
+   }
+  }
+  // Combat-room windows remain unglazed. The four-sided bolted reveal frames
+  // the real sill-to-lintel gap; it carries no pane or collision proxy.
+  const aperture=arena.blocks.some(p=>p.aperture&&!p.house&&
+   Math.abs(p.x-roof.x)<w/2+.3&&Math.abs(p.z-roof.z)<d/2+.3);
+  if(aperture)for(const axis of ['x','z'])for(const sign of [-1,1]){
+   for(const hole of wallOpenings(arena,roof,axis,sign,1.4)){
+    if(wallOpenings(arena,roof,axis,sign).some(p=>Math.abs(p.at-hole.at)<.1))continue;
+    if(hole.width>3.0)continue;
+    const x=axis==='z'?hole.at:hole.edge,z=axis==='z'?hole.edge:hole.at;
+    const pieces=arena.blocks.filter(p=>!p.roof&&Math.abs(p.x-x)<.06&&Math.abs(p.z-z)<.06);
+    const sill=pieces.filter(p=>p.y+p.h/2<1.4).sort((a,b)=>(b.y+b.h/2)-(a.y+a.h/2))[0];
+    const lintel=pieces.filter(p=>p.y-p.h/2>1.4).sort((a,b)=>(a.y-a.h/2)-(b.y-b.h/2))[0];
+    if(sill&&lintel)frame(hole,sill.y+sill.h/2,lintel.y-lintel.h/2-sill.y-sill.h/2,'aperture_frame',roof);
+   }
+  }
+  if(mainHall){
+   const span=Math.max(4,w-.8),depth=Math.max(4,d-.8);
+   for(const fraction of [-.30,0,.30])add(roof.x,ceiling-.48,roof.z+depth*fraction,span,.83,.22,'roof_truss',{},roof);
+   // Visible industrial service systems frame the ceiling rather than adding
+   // floor clutter. Even the lowest component remains above head clearance.
+   for(const sign of [-1,1]){
+    add(roof.x+sign*(w/2-1),ceiling-.85,roof.z,d-1,.25,.62,'cable_tray',{yaw:Math.PI/2},roof);
+    add(roof.x,ceiling-.94,roof.z+sign*(d/2-1.05),w-2,.52,.72,'pipe_rack',{},roof);
+   }
+  }
+  // Mechanical roof units sit over walls/roofs and have modelled fan shrouds,
+  // coils and duct connections. No placeholder tower is placed in a lane.
+  if(industrial||id===3||id===8||id===10||id===14){
+   if(mainHall){
+    // Near the roof edge, these change the silhouette from real player-height
+    // approach cameras. Units buried at the middle of a flat roof are hidden.
+    for(const sign of [-1,1]){
+     add(roof.x+sign*w*.34,roof.y+roof.h/2+.72,roof.z+d/2-1.8,3.0,1.44,2.0,'rooftop_hvac',{},roof);
+     add(roof.x+sign*w*.34,roof.y+roof.h/2+.23,roof.z+d/2-3.45,1.05,.46,2.0,'duct_run',{yaw:Math.PI/2},roof);
+    }
+   }else add(roof.x-w*.25,roof.y+roof.h/2+.47,roof.z+d*.22,2.25,.94,1.55,'rooftop_hvac',{},roof);
+  }
+  // A service cabinet is mounted only on a verified solid wall wing. This
+  // avoids the previous placement across a room's window or doorway.
+  const wall=arena.blocks.find(p=>!p.roof&&!p.ground&&p.h>2.4&&p.w>2.5&&p.d<.7&&
+   Math.abs(p.z-(roof.z+d/2))<.05&&Math.abs(p.x-roof.x)<w/2);
+  if(wall&&(industrial||id===14))add(wall.x,1.63,wall.z-wall.d/2-.10,1.15,1.08,.19,'switchgear',{},wall);
  }
  for(const lamp of arena.decor.filter(p=>p.surface==='white'&&p.emissive>.5&&p.y>2.5))
-  add(lamp.x,lamp.y+.035,lamp.z,Math.max(.38,lamp.w+.14),.14,Math.max(.48,lamp.d+.14),'light_fixture');
- // Landmarks outside the arena give each skyline believable scale, without
- // placing decorative cover or an invisible obstruction in combat lanes.
+  add(lamp.x,lamp.y+.035,lamp.z,Math.max(.38,lamp.w+.14),.14,Math.max(.48,lamp.d+.14),'light_fixture',{},lamp);
+ // Detailed landmarks beyond the arena preserve the playable footprint while
+ // giving the skyline an industrial scale and a clear identity.
  if(industrial){
-  for(const [x,z,h]of [[-size-9,-size*.45,24+id%4*3],[size+12,size*.4,18+id%3*4]]){
+  for(const [x,z,h]of [[-size-9,-size*.45,24+id%4*3],[size+12,size*.4,18+id%3*4]])
    add(x,h*.5,z,3.4,h,3.4,'cooling_stack',{landscape:true});
-  }
  }
  if(id===14){
-  // Existing control hall retains its four entrances and open-window ballistics.
-  for(const sign of [-1,1])for(const x of [-10,10])add(x,4.35,sign*10.55,2.35,.72,.23,'vent',{yaw:sign<0?Math.PI:0});
-  for(const sign of [-1,1])add(0,4.48,sign*11.245,3.25,.78,.10,'site_sign_14',{yaw:sign<0?Math.PI:0});
+  // Restricted facility service yards: broad coherent material areas make the
+  // hall, elevated routes and container flanks read as one designed location.
+  for(const sign of [-1,1]){
+   floor(sign*23,0,6.4,24,'concrete');
+   floor(sign*43,sign*30,17,18,'gravel',{color:[.74,.77,.72]});
+   for(const x of [-10,10])add(x,4.35,sign*11.24,2.35,.72,.23,'vent',{yaw:sign<0?0:Math.PI});
+   add(0,4.48,sign*11.245,3.25,.78,.10,'site_sign_14',{yaw:sign<0?Math.PI:0});
+   // Closed maintenance bays are ON the solid upper hall facade. Their bases
+   // sit above the open windows and cannot obstruct the window sightline.
+   for(const x of [-13.75,13.75])add(x,3.72,sign*11.23,1.9,1.65,.13,'loading_shutter',{yaw:sign>0?Math.PI:0});
+  }
+  for(const x of [-10,10])for(const z of [-5,5]){
+   const generator=arena.blocks.find(p=>p.x===x&&p.z===z&&p.surface==='dark'&&p.h===2.3);
+   if(!generator)continue;
+   floor(x,z,3.6,4.0,'concrete',{productionEpoxy:true},generator);
+   add(x,2.30,z,3.05,.42,.6,'pipe_rack',{},generator);
+  }
+  // Distant switchyard architecture gives the perimeter real industrial mass;
+  // it stays outside the original boundary wall and does not act as cover.
+  for(const sign of [-1,1]){
+   add(sign*(size+11),5.1,sign*9,12,10.2,23,'building_industrial',{surface:'concrete',tile:0,landscape:true,blenderColour:false,color:[.82,.88,.85]});
+   add(sign*25,4.4,sign*(size+8),25,8.8,10,'building_industrial',{surface:'concrete',tile:0,landscape:true,blenderColour:false,color:[.79,.85,.82]});
+  }
  }else{
   const wall=arena.blocks.find(p=>!p.roof&&p.h>3&&p.w>5&&p.d<.65);
-  if(wall)add(wall.x,Math.min(wall.y+wall.h*.3,3.7),wall.z+wall.d*.5+.04,Math.min(2.4,wall.w*.7),.57,.07,'site_sign_'+id);
+  if(wall)add(wall.x,Math.min(wall.y+wall.h*.3,3.7),wall.z+wall.d*.5+.04,Math.min(2.4,wall.w*.7),.57,.07,'site_sign_'+id,{},wall);
  }
  return result;
 }

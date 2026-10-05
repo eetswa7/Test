@@ -7,15 +7,21 @@ export function environmentRadiance(info,width=512,height=256,clouds=null){
   const sky=new THREE.Color().setRGB(...info.sky,THREE.SRGBColorSpace),fog=new THREE.Color().setRGB(...info.fog,THREE.SRGBColorSpace);
   const overcast=info.weather==='overcast'||info.weather==='rain',azimuth=Math.atan2(sun.z,sun.x);
   const skyChannels=[sky.r,sky.g,sky.b],fogChannels=[fog.r,fog.g,fog.b];
-  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-    const latitude=((y+.5)/height-.5)*Math.PI,longitude=((x+.5)/width-.5)*Math.PI*2;
-    const dy=Math.sin(latitude),dx=Math.cos(latitude)*Math.cos(longitude),dz=Math.cos(latitude)*Math.sin(longitude);
+  // Longitude and cloud addressing stay identical along a column. Precompute
+  // them once; avoid six trigonometric calls and temporary RGB arrays per pixel.
+  const longitudes=Array.from({length:width},(_,x)=>{
+    const longitude=((x+.5)/width-.5)*Math.PI*2;
+    return {cos:Math.cos(longitude),sin:Math.sin(longitude),cloudUV:((longitude-azimuth)/(Math.PI*2)+1.5)%1};
+  }),cloudRGB=[0,0,0];
+  for(let y=0;y<height;y++){
+   const latitude=((y+.5)/height-.5)*Math.PI,dy=Math.sin(latitude),radial=Math.cos(latitude);
+   const horizon=Math.pow(1-Math.abs(dy),3),ground=dy<0,elevation=latitude/(Math.PI/2);
+   for(let x=0;x<width;x++){
+    const column=longitudes[x],dx=radial*column.cos,dz=radial*column.sin;
     const dot=dx*sun.x+dy*sun.y+dz*sun.z,solar=overcast?Math.exp((dot-1)*12)*.28:Math.exp((dot-1)*1200)*22;
-    const horizon=Math.pow(1-Math.abs(dy),3),ground=dy<0;
     const i=(y*width+x)*4;
-    const longitudeUV=((longitude-azimuth)/(Math.PI*2)+1.5)%1;
-    const elevation=latitude/(Math.PI/2),cloud=clouds&&dy>0?sampleCloud(clouds,longitudeUV,elevation):0;
-    const photographed=clouds?.rgba&&dy>0?sampleCloudColor(clouds,longitudeUV,elevation):null;
+    const cloud=clouds&&dy>0?sampleCloud(clouds,column.cloudUV,elevation):0;
+    const photographed=clouds?.rgba&&dy>0?sampleCloudColor(clouds,column.cloudUV,elevation,cloudRGB):null;
     const brightness=photographed?(photographed[0]*.2126+photographed[1]*.7152+photographed[2]*.0722)/255:.72;
     const cloudShade=Math.max(.20,Math.min(1,Math.pow(brightness,1.45)*1.1));
     const cover=overcast?.45+cloud*.5:cloud*.9;
@@ -24,6 +30,7 @@ export function environmentRadiance(info,width=512,height=256,clouds=null){
       if(!ground)base=base*(1-cover)+(cloudShade*(overcast?.78:1)+horizon*.06)*[1,.98,.94][c]*cover;
       pixels[i+c]=THREE.DataUtils.toHalfFloat(base+solar*[1,.86,.66][c]);
     }pixels[i+3]=THREE.DataUtils.toHalfFloat(1);
+   }
   }return {pixels,width,height};
 }
 export class EnvironmentProbes {
@@ -34,6 +41,8 @@ export class EnvironmentProbes {
     texture.minFilter=texture.magFilter=THREE.LinearFilter;
     texture.mapping=THREE.EquirectangularReflectionMapping;texture.colorSpace=THREE.LinearSRGBColorSpace;texture.needsUpdate=true;
     const target=this.generator.fromEquirectangular(texture);this.sky?.dispose();this.sky=texture;this.target?.dispose();this.target=target;
+    // All rooms share this authored probe. Reuse it across map transitions.
+    if(this.interior)return target;
     const room=interiorRadiance();
     const source=new THREE.DataTexture(room.pixels,room.width,room.height,THREE.RGBAFormat,THREE.HalfFloatType);
     source.mapping=THREE.EquirectangularReflectionMapping;source.needsUpdate=true;
@@ -77,10 +86,11 @@ export function cloudMask(image){
  }
  return {data,rgba,width:canvas.width,height:canvas.height};
 }
-export function sampleCloudColor(mask,u,elevation){
+export function sampleCloudColor(mask,u,elevation,result=[0,0,0]){
  const x=(1-Math.abs(u*2-1))*(mask.width-1),y=(1-elevation)*(mask.height-1),ix=Math.floor(x),iy=Math.floor(y);
  const fx=x-ix,fy=y-iy,at=(a,b,c)=>mask.rgba[(Math.min(mask.height-1,Math.max(0,b))*mask.width+Math.min(mask.width-1,Math.max(0,a)))*4+c];
- return [0,1,2].map(c=>(at(ix,iy,c)*(1-fx)+at(ix+1,iy,c)*fx)*(1-fy)+(at(ix,iy+1,c)*(1-fx)+at(ix+1,iy+1,c)*fx)*fy);
+ for(let c=0;c<3;c++)result[c]=(at(ix,iy,c)*(1-fx)+at(ix+1,iy,c)*fx)*(1-fy)+(at(ix,iy+1,c)*(1-fx)+at(ix+1,iy+1,c)*fx)*fy;
+ return result;
 }
 export function sampleCloud(mask,u,elevation){
  // Mirror at the wrap seam and zenith, avoiding texture seams and pole pinching.

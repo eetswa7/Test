@@ -1,4 +1,4 @@
-import {AUDIO_BANK,AUDIO_PARTS} from './audio-files.js?v=59';
+import {AUDIO_BANK,AUDIO_PARTS} from './audio-files.js?v=60';
 
 export async function loadSoundLibrary(context,onSound){
  const chunks=new Array(AUDIO_PARTS.length);let next=0;
@@ -6,7 +6,7 @@ export async function loadSoundLibrary(context,onSound){
   while(next<AUDIO_PARTS.length){const i=next++,file=AUDIO_PARTS[i],response=await fetch(new URL('../assets/'+file,import.meta.url));if(!response.ok)throw Error('Could not load '+file);chunks[i]=new Uint8Array(await response.arrayBuffer());}
  }));
  const bytes=new Uint8Array(chunks.reduce((n,c)=>n+c.length,0));let offset=0;
- for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
+ for(let i=0;i<chunks.length;i++){bytes.set(chunks[i],offset);offset+=chunks[i].length;chunks[i]=null;}
  if(bytes.length!==AUDIO_BANK.bytes)throw Error('Incomplete sound library');
  // Decode the first variation of every gun before additional variations and
  // foley. Two native decoder tasks at a time keep menu interaction responsive.
@@ -37,6 +37,7 @@ export function footstepSurface(arena,position){
  for(const f of arena.visualFloorCells?.get(`${Math.floor(position.x/8)}/${Math.floor(position.z/8)}`)??[])consider(f.part);
  for(const p of arena.nearby?.(position)??[])consider(p);
  if(selected==='water')return 'Water';
+ if(selected==='wood')return 'Wood';
  if(['steel','dark','blue','rust','brass'].includes(selected))return 'Metal';
  if(['concrete','asphalt','plaster','stone','limestone','tiles'].includes(selected))return 'Hard';
  if(['grass','moss','dirt','sand'].includes(selected))return 'Soft';
@@ -49,8 +50,9 @@ export function roomAcoustics(arena,position){
  if(!position)return null;
  let selected=null;
  for(const roof of arena.nearby?.(position)??arena.blocks??[]){
-  if(!roof.roof||roof.destroyed||position.y>=roof.y-roof.h*.5||
-    Math.abs(position.x-roof.x)>=roof.w*.5||Math.abs(position.z-roof.z)>=roof.d*.5)continue;
+  if(!roof.roof||roof.destroyed||position.y>=roof.y-roof.h*.5)continue;
+  const c=Math.cos(roof.yaw??0),s=Math.sin(roof.yaw??0),x=position.x-roof.x,z=position.z-roof.z;
+  if(Math.abs(c*x-s*z)>=roof.w*.5||Math.abs(s*x+c*z)>=roof.d*.5)continue;
   if(!selected||roof.y<selected.y)selected=roof;
  }
  if(selected)return selected.w*selected.d*Math.max(1,selected.y-selected.h*.5)>450?'hall':'room';

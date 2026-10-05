@@ -326,9 +326,15 @@ function addOptic(b,w){
  }else if([1,2,4].includes(w.optic)){
   const prism=w.optic===2,wide=w.optic===4?.115:prism?.10:.082,z=short?-.013:.017;
   box(0,.12,z,wide+.008,.026,prism?.07:.045,METAL);
-  for(const s of [-1,1])box(s*wide*.5,.169,z,.01,.072,prism?.042:.022,METAL);
-  box(0,.208,z,wide+.009,.009,prism?.042:.022,METAL);box(wide*.62,.14,z,.019,.02,.033,RUBBER);
-  if(prism){box(0,.204,z-.03,wide,.012,.06,METAL);box(-wide*.5,.17,z-.028,.01,.07,.061,METAL);box(wide*.5,.17,z-.028,.01,.07,.061,METAL);}
+  // One manufactured open housing has a rounded crown, recessed optical
+  // aperture and physical wall thickness. The .169 sight ray remains clear.
+  // A tube is also an open, aligned fallback in the compatibility renderer.
+  box(0,.173,z,wide+.016,prism?.061:.034,.084,METAL,'',{mesh:'tube',pitch:Math.PI/2,blenderKind:'optic_hood'});
+  box(wide*.61,.14,z,.019,.02,.033,RUBBER);
+  for(const side of [-1,1]){
+   box(side*(wide*.51),.127,z+.002,.009,.011,.024,EDGE);
+   cyl(side*(wide*.60),.15,z+.002,.012,.011,EDGE,'',{pitch:0,roll:Math.PI/2});
+  }
  }else{
   const front=(id===4?-.228:b.profile.barrel+.046),rear=short?.073:id===4?.116:.082;
   // Open-notch rear, fine front post: the exact .119 ray remains unobstructed.

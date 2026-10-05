@@ -1,9 +1,9 @@
-# Blender art source — Release 58
+# Blender art source
 
 Run `npm run source:blender` to reconstruct the SHA-256-checked
 `breachline-assets.blend`. The source includes the editable indexed asset kit,
 all 30 weapon rigs, all 16 complete level assemblies, native material graphs,
-four original diffuse input sheets, nine material/auxiliary atlas bakes and
+six original diffuse input sheets, nine material/auxiliary atlas bakes and
 16 packed ground-lighting bakes. Enable a hidden level collection to inspect it.
 The source archive is about 138 MiB; it is authoring data, not a runtime download.
 
@@ -29,7 +29,8 @@ npm run profile:blender
 ```
 
 `BLENDER_BIN` and `PYTHON_BIN` select installed executables. Native modelling is
-in `build_assets.py`, `art_geometry.py` and `production_assets.py`; material
+in `build_assets.py`, `art_geometry.py`, `production_assets.py`,
+`environment_models.py` and `hero_models.py`; material
 construction and Cycles bakes are in `materials.py` and `bake_lighting.py`.
 `export-blender-input.mjs` extracts exact live weapon transforms and visual map
 assemblies. Rebuilding regenerates the saved project, so incorporate manual
@@ -51,7 +52,7 @@ inside merged moving groups. Near/far meshes, instancing and spatial batching
 remain live. The operator animation system uses rigid articulated pieces with
 IK and blending, rather than deforming skinned human meshes.
 
-The four input sheets in `textures/` are original AI-generated diffuse artwork.
+The six input sheets in `textures/` are original AI-generated diffuse artwork.
 They are not photographs or photogrammetry scans. Native Blender graphs add
 microstructure, roughness and approximate relief derived from source luminance.
 Cycles bakes 4096 px surface and hero atlases. Runtime crops provide 1024 px
@@ -59,7 +60,9 @@ world maps and up to 2048 px hero maps, each with normal and packed ORM data.
 ASTC uses 6×6 albedo, 4×4 normal and 8×8 physical blocks with complete mip chains.
 WebP fallbacks use 512 px world maps and up to 1024 px hero maps.
 
-`bake_lighting.py` runs actual 32-sample Cycles diffuse direct/indirect baking
+`level_materials.py` assigns the actual architectural reflectance, tint and
+emission to each editable level instance. Blender display colours alone do not
+participate in light transport. `bake_lighting.py` runs actual 32-sample Cycles diffuse direct/indirect baking
 for each 512 px ground plane. RGBM range 6 preserves linear radiance. The floor
 uses that bake; walls sample an approximate ground bounce, while actors and
 raised surfaces retain live lighting. This is not complete per-surface lightmapping.

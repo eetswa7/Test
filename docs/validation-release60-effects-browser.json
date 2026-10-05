@@ -1,0 +1,27 @@
+{
+  "kind": "software_WebGL_effect_validation",
+  "actual_iphone_data": false,
+  "errors": [],
+  "draws": 1,
+  "triangles": 124,
+  "particles": 62,
+  "webgl2": true,
+  "loadingWarmup": [
+    {
+      "forceFallback": false,
+      "uploads": 84,
+      "enabledDuringWarmup": false,
+      "loaded": true,
+      "compressed": true,
+      "textureEstimateBytes": 82736235
+    },
+    {
+      "forceFallback": true,
+      "uploads": 84,
+      "enabledDuringWarmup": false,
+      "loaded": true,
+      "compressed": false,
+      "textureEstimateBytes": 124611243
+    }
+  ]
+}

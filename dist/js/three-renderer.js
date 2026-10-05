@@ -1,42 +1,42 @@
-import {loadProductionTextures} from './production-textures.js?v=59';
-import {ProductionLighting} from './production-lighting.js?v=59';
-import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=59';
-import {patchBlenderMaterial} from './blender-material.js?v=59';
-import {blenderWorld} from './blender-world.js?v=59';
-import {operatorMuzzle} from './operator-detail.js?v=59';
-import {updateWeaponClearance} from './weapon-clearance.js?v=59';
-import {WEAPONS} from './weapons.js?v=59';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=59';
-import {patchAtmosphere} from './atmosphere.js?v=59';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=59';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=59';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=59';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=59';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=59';
-import {DecalSystem} from './decal-system.js?v=59';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=59';
-import {LightingField} from './lighting-field.js?v=59';
-import {RoomLights} from './room-lights.js?v=59';
-import {waterMaterial,patchWater} from './water-material.js?v=59';
-import {visualGroundHeight} from './surface-placement.js?v=59';
-import {patchSurfaceDetail} from './material-detail.js?v=59';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=59';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=59';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=59';
+import {loadProductionTextures,stageTextureUploads} from './production-textures.js?v=60';
+import {ProductionLighting} from './production-lighting.js?v=60';
+import {objectiveBannerTexture,patchObjectiveBanner} from './objective-banner.js?v=60';
+import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=60';
+import {patchBlenderMaterial} from './blender-material.js?v=60';
+import {blenderWorld} from './blender-world.js?v=60';
+import {operatorMuzzle,operatorWeaponMount,nativeOperatorWeapon} from './operator-detail.js?v=60';
+import {updateWeaponClearance} from './weapon-clearance.js?v=60';
+import {WEAPONS} from './weapons.js?v=60';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=60';
+import {patchAtmosphere} from './atmosphere.js?v=60';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=60';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=60';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=60';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=60';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=60';
+import {DecalSystem} from './decal-system.js?v=60';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=60';
+import {LightingField} from './lighting-field.js?v=60';
+import {RoomLights} from './room-lights.js?v=60';
+import {waterMaterial,patchWater} from './water-material.js?v=60';
+import {visualGroundHeight} from './surface-placement.js?v=60';
+import {patchSurfaceDetail} from './material-detail.js?v=60';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=60';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=60';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=60';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=59';
-import { actorModel, material, part } from './geometry.js?v=59';
-import { ridgeMesh, ridgeTint } from './meshes.js?v=59';
-import { loadImages } from './textures.js?v=59';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=59';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=59';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=59';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=60';
+import { actorModel, material, part } from './geometry.js?v=60';
+import { ridgeMesh, ridgeTint } from './meshes.js?v=60';
+import { loadImages } from './textures.js?v=60';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=60';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=60';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=60';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
 const RAD = Math.PI / 180;
 const FAR_ACTOR_PARTS = new Set([0,1,2,3,4,5,6,7,8,10,11,14,15,16,17,20,21]);
-const IDLE_FRAME = () => new Promise(resolve => setTimeout(resolve, 0));
 
 // The gameplay model remains engine independent. Only this module owns Three.js.
 export function isFriendly(game, actor) {
@@ -109,8 +109,10 @@ export class Renderer {
     // fixtures supply their own kit; the game allocates no duplicate mesh kit.
     this.geometry = {};
     this.materials = new Map(); this.depthMaterials = new Map(); this.textures = []; this.partData = new WeakMap();
+    this.bannerTexture=objectiveBannerTexture();this.textures.push(this.bannerTexture);
     this.worldBatches = []; this.actorBatches = new Map(); this.weaponBatches = new Map();
     this.matrix = new THREE.Matrix4(); this.parentMatrix = new THREE.Matrix4();
+    this.operatorWeaponMatrix=new THREE.Matrix4();this.operatorWeaponLocal=new THREE.Matrix4();this.operatorWeaponPose={};
     this.localMatrix = new THREE.Matrix4(); this.rawMatrix = new Float32Array(16);
     this.color = new THREE.Color(); this.target = new THREE.Vector3(); this.projected = new THREE.Vector4();
     this.worldVP = new THREE.Matrix4(); this.eye = { x: 0, y: 2, z: 0 }; this.cameraY = null;
@@ -169,15 +171,13 @@ export class Renderer {
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
     this.scene.environmentIntensity = .88; this.weaponScene.environmentIntensity = 1.35;
     this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.environmentProbes?.sky,this.environmentProbes?.interior?.texture,this.lightingField?.texture.value]);
-    this.loaded = true;
     if (this.arena) this.buildWorld();
     this.applyQuality();
     // Upload generated textures while the loading screen can still yield.
-    if(this.renderer.initTexture)for(let i=0;i<this.textures.length;i++){
-      this.renderer.initTexture(this.textures[i]);if(i%6===5)await IDLE_FRAME();
-    }
+    await stageTextureUploads(this.renderer,this.textures);
     // Use the supported asynchronous shader warmup path when available.
     if (this.renderer.compileAsync) await this.renderer.compileAsync(this.scene, this.camera);
+    this.loaded = true;
     return this;
   }
 
@@ -215,28 +215,31 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    if(p.objectiveBanner)return `${category}/objective-banner-v1`;
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.operatorWeapon?'operator-weapon':'general'}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon'||p.operatorWeapon ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
     const key = this.materialKey(p, category);
     if (this.materials.has(key)) return this.materials.get(key);
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
-    const finish = category === 'weapon' && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
+    const hero=category==='weapon'||p.operatorWeapon;
+    const finish = hero && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
     const options = { dithering: true, color: 0xffffff, vertexColors:!!this.blenderAssets?.key(p,category)||['ridge','conifer','strata'].includes(p.mesh), roughness: p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
-      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .27 : p.productionGround?.20:.48,
-        category === 'weapon' ? .27 : p.productionGround?.20:.48), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
+      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(hero ? .27 : p.productionGround?.20:.48,
+        hero ? .27 : p.productionGround?.20:.48), envMapIntensity: hero ? 1.15 : .65 };
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if(p.blenderWind)Object.assign(options,{side:THREE.DoubleSide,roughness:1,metalness:0});
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
     const mat = water ? waterMaterial(options) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
+    if(p.objectiveBanner){mat.map=this.bannerTexture??(this.bannerTexture=objectiveBannerTexture());mat.roughness=.92;mat.metalness=0;mat.emissiveIntensity=0;}
     // Per-instance dimensions give architecture a consistent material scale.
     if (!leaf && maps && (category === 'world' || finish)) {
-      mat.onBeforeCompile = shader => patchMetricUV(shader,category==='weapon'?18:.7);
+      mat.onBeforeCompile = shader => patchMetricUV(shader,hero?18:.7);
       const patchUV=mat.onBeforeCompile;
       mat.onBeforeCompile=shader=>{
         patchUV(shader);
@@ -262,7 +265,7 @@ export class Renderer {
           `);
         }
       };
-      mat.customProgramCacheKey = () => category === 'weapon' ? 'weapon-metric-uv-v3' : 'world-metric-uv-v4';
+      mat.customProgramCacheKey = () => hero ? 'weapon-metric-uv-v3' : 'world-metric-uv-v4';
     }
     if (leaf) {
       this.patchWind(mat);
@@ -288,7 +291,11 @@ export class Renderer {
     // Cache by the actual shader interface. World bounce, actor lighting and
     // the viewmodel use different uniforms even when their Three defines match.
     // Epoxy's diffuse patch also differs from ordinary concrete.
-    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v1':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v1`;
+    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v2':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v2`;
+    if(p.objectiveBanner){const before=mat.onBeforeCompile,key=mat.customProgramCacheKey();
+      mat.onBeforeCompile=shader=>{before(shader);patchObjectiveBanner(shader,this.windTime??{value:0});};
+      mat.customProgramCacheKey=()=>key+'/objective-textile-v1';
+    }
     this.materials.set(key, mat); return mat;
   }
 
@@ -314,7 +321,7 @@ export class Renderer {
     if(category==='actor'&&p.surface==='fabric')return this.color.setRGB(.68+c[0]*.32,.68+c[1]*.32,.68+c[2]*.32,THREE.SRGBColorSpace);
     if(category==='actor'&&p.surface==='rubber')return this.color.setRGB(.20+c[0]*.8,.20+c[1]*.8,.20+c[2]*.8,THREE.SRGBColorSpace);
     // Architectural textures contain their own albedo; retain a light tint rather than multiplying it twice.
-    if (category === 'weapon' && m.finishTile >= 0) return this.color.setRGB(
+    if ((category === 'weapon'||p.operatorWeapon) && m.finishTile >= 0) return this.color.setRGB(
       .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
     const brighten = category === 'world' && m.pattern > 0 && !p.color;
     this.color.setRGB(brighten ? .85 + c[0] * .15 : c[0],
@@ -350,7 +357,7 @@ export class Renderer {
       // Two-triangle floor finishes are cheap to submit together; retain spatial
       // chunks for 3D architecture where frustum culling saves substantial work.
       const cell=this.arena.info.size>50?48:32;
-      const chunk = p.ground ? 'ground' : mesh==='surface'?'surface':`${Math.floor(p.x / cell)}/${Math.floor(p.z / cell)}`;
+      const chunk = p.ground ? 'ground' : p.mesh==='surface'?'surface':`${Math.floor(p.x / cell)}/${Math.floor(p.z / cell)}`;
       const key = `${chunk}/${mesh}/${materialKey}`;
       if (!bins.has(key)) bins.set(key, []); bins.get(key).push(p);
     }
@@ -576,6 +583,7 @@ export class Renderer {
     const effect = this.effects[this.effectCursor++ % (QUALITY[this.quality] ?? QUALITY.medium).effects];
     effect.x = position.x; effect.y = position.y; effect.z = position.z;
     effect.kind = kind; effect.r = color[0]; effect.g = color[1]; effect.b = color[2];
+    effect.seed = (this.effectCursor * .61803398875) % 1;
     effect.size = size; effect.life = effect.max = life; effect.vx = vx; effect.vy = vy; effect.vz = vz;
   }
 
@@ -605,7 +613,7 @@ export class Renderer {
           tint,water?.038:.018+Math.random()*.016,.16+Math.random()*.24,
           n.x*1.1+(Math.random()-.5)*1.7,n.y*1.1+Math.random()*1.5,n.z*1.1+(Math.random()-.5)*1.7);
         if(!glass&&!water)this.particle(p,0,wood?[.45,.33,.21]:[.47,.46,.43],.11,.6,n.x*.15,.22+n.y*.15,n.z*.15);
-        if(!water)this.decalSystem?.add(p,n,steel,n.y>.9?visualGroundHeight(this.arena,p.x,p.z,p.y):p.y);
+        if(!water)this.decalSystem?.add(p,n,event.surface,n.y>.9?visualGroundHeight(this.arena,p.x,p.z,p.y):p.y);
       } else if (event.type === 'blood') {
         for (let i = 0; i < Math.min(6, event.value ?? 4); i++) this.particle(p, 1, [.27, .025, .016], .035, .28,
           (Math.random() - .5) * 1.5, Math.random(), (Math.random() - .5) * 1.5);
@@ -648,7 +656,7 @@ export class Renderer {
       const age = 1 - e.life / e.max, soft = e.kind < .5;
       const size = e.size * (soft ? 2 + age * 4 : 2);
       count = this.writeBillboard(count, e.x, e.y, e.z, size, e.kind === 3 ? size * .35 : size,
-        e.r, e.g, e.b, Math.min(1, e.life * 7) * (soft ? .28 : 1), e.kind);
+        e.r, e.g, e.b, Math.min(1, e.life * 7) * (soft ? .28 : 1), e.kind + ((e.seed ?? 0) + age * (soft ? .07 : .55)) % 1);
     }
     for (const smoke of game.smokes) {
       const radius = Math.min(5.2, smoke.age * 4), alpha = Math.min(.8, smoke.age) * clamp((16 - smoke.age) / 3, 0, 1);
@@ -658,9 +666,10 @@ export class Renderer {
       for (let i = 0; i < layers; i++) { const angle = i * 2.399 + smoke.age * .07;
         count = this.writeBillboard(count, smoke.x + Math.sin(angle) * radius * .34,
           smoke.y + 1.25 + i % 3 * .48, smoke.z + Math.cos(angle) * radius * .34,
-          radius * 1.7, 3.7, .38, .41, .40, opacity, 0); }
+          radius * 1.7, 3.7, .38, .41, .40, opacity, (i * .381966 + smoke.age * .008) % 1); }
     }
-    for(const p of weatherParticles(this,game.time??0))count=this.writeBillboard(count,p.x,p.y,p.z,p.sizeX,p.sizeY,...p.color,p.alpha,p.kind);
+    this.weatherField??={active:[],slots:Array.from({length:36},()=>({color:[0,0,0]}))};
+    for(const p of weatherParticles(this,game.time??0,this.weatherField))count=this.writeBillboard(count,p.x,p.y,p.z,p.sizeX,p.sizeY,...p.color,p.alpha,p.kind+(p.yaw/(Math.PI*2)+1)%1);
     count=ambientDust(this,count,game.time??0);
     this.fxMesh.geometry.instanceCount = count;
     if (count) for (const attr of this.fxAttributeList) {
@@ -689,14 +698,23 @@ export class Renderer {
       if (a.dead && death >= 1) continue;
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
       const identity = identityFor(a, player, game.rules), parts = actorModel(a, game.time, identity);
+      const nativeRange=this.quality==='low'?7:12;
+      a.nativeWeaponVisible=!!this.blenderAssets&&actorDistance<(a.nativeWeaponVisible?nativeRange*1.18:nativeRange*.92);
       for (let i = 0; i < parts.length; i++) {
         const q = parts[i]; let color;
         if(this.blenderAssets){q.blenderBodyIndex=i<a.operatorBodyCount?i:undefined;q.blenderFar=distant;}
-        if (q.hidden || distant && !FAR_ACTOR_PARTS.has(i) && !q.actorFar) continue;
+        if (q.hidden || a.nativeWeaponVisible&&q.carried || distant && !FAR_ACTOR_PARTS.has(i) && !q.actorFar) continue;
         // Navy/cyan versus warm charcoal/crimson is stable after sides switch and in FFA.
         if (q.surface === 'fabric') color = q.operatorNeutral ? q.color ?? [.65,.64,.52] : identity.cloth;
         if (q.surface === 'white' || q.teamBand) color = identity.band;
         this.addDynamic(this.actorBatches, this.scene, q, 'actor', this.parentMatrix, color);
+      }
+      if(a.nativeWeaponVisible){
+        const groups=nativeOperatorWeapon(a,this.blenderAssets,game.time),mount=operatorWeaponMount(a,this.operatorWeaponPose);
+        compose(this.rawMatrix,mount.x,mount.y,mount.z,1,1,1,0,mount.pitch,0);this.operatorWeaponLocal.fromArray(this.rawMatrix);
+        this.operatorWeaponMatrix.multiplyMatrices(this.parentMatrix,this.operatorWeaponLocal);
+        for(const q of groups)if(!q.hidden)this.addDynamic(this.actorBatches,this.scene,q,'actor',this.operatorWeaponMatrix);
+        for(const q of a.nativeWeaponAccessories)if(!q.hidden)this.addDynamic(this.actorBatches,this.scene,q,'actor',this.operatorWeaponMatrix);
       }
       // Visible identifiers on both arms and front/back vest; no through-wall outlines.
       const identifiers = a.renderIdentifiers ?? (a.renderIdentifiers = [
@@ -716,7 +734,7 @@ export class Renderer {
       const parts = point.renderParts ?? (point.renderParts = [
         part(point.x, point.y+.035, point.z, 4.7, .025, 4.7, 'dark', { mesh: 'tube', tile: -1, emissive: .18 }),
         part(point.x, point.y+1, point.z, .04, 2, .04, 'steel'),
-        part(point.x + .3, point.y+1.65, point.z, .6, .38, .025, 'white', { tile: -1, emissive: .1 })]);
+        part(point.x + .3, point.y+1.65, point.z, .6, .38, .025, 'white', { tile: 9, rough:.92,objectiveBanner:true })]);
       for (let j = 0; j < parts.length; j++) this.addDynamic(this.actorBatches, this.scene, parts[j], 'actor', null, j === 1 ? undefined : color);
     }
     for (const tag of rules.tags ?? []) {
@@ -731,13 +749,11 @@ export class Renderer {
       const x=carrier?carrier.x+Math.cos(carrier.yaw)*.28:flag.x,z=carrier?carrier.z+Math.sin(carrier.yaw)*.28:flag.z,y=carrier?carrier.y+.65:flag.y,yaw=carrier?.yaw??0;
       const parts=flag.renderParts??(flag.renderParts=[
         part(x,y+.88,z,.075,1.76,.075,'steel',{mesh:'cylinder',tile:-1}),
-        part(x+.31,y+1.43,z,.68,.43,.045,'fabric',{tile:-1,emissive:.12}),
-        part(x+.31,y+1.43,z,.10,.43,.06,'white',{tile:-1}),
-        part(x+.31,y+1.25,z,.43,.055,.065,'dark',{tile:-1})
+        part(x+.31,y+1.43,z,.68,.43,.025,'white',{tile:9,rough:.92,objectiveBanner:true})
       ]);
       parts[0].x=x;parts[0].y=y+.88;parts[0].z=z;
       const flap=yaw+Math.sin(game.time*4+flag.team*2)*.13;
-      for(const q of parts.slice(1)){q.x=x+.31*Math.cos(yaw);q.y=y+(q===parts[3]?1.25:1.43);q.z=z+.31*Math.sin(yaw);q.yaw=flap;}
+      for(const q of parts.slice(1)){q.x=x+.31*Math.cos(yaw);q.y=y+1.43;q.z=z+.31*Math.sin(yaw);q.yaw=flap;}
       const color=flag.team===player.team?FRIEND:ENEMY;
       for(let i=0;i<parts.length;i++)this.addDynamic(this.actorBatches,this.scene,parts[i],'actor',null,i===1?color:undefined);
     }

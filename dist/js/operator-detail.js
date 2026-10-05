@@ -1,6 +1,6 @@
-import {weaponModel,muzzlePosition} from './weapon-models.js?v=59';
-import {clamp} from './math.js?v=59';
-import {poseSegment} from './actor-pose.js?v=59';
+import {weaponModel,muzzlePosition,animateWeaponParts} from './weapon-models.js?v=60';
+import {clamp} from './math.js?v=60';
+import {poseSegment} from './actor-pose.js?v=60';
 
 const templates=new Map(),MAX_TEMPLATES=32;
 function template(w){
@@ -10,7 +10,8 @@ function template(w){
  const pieces=model.filter(p=>!p.hidden&&!/hand/i.test(p.tag??'')&&p.surface!=='glass'&&volume(p)>minVolume)
   .sort((a,b)=>volume(b)-volume(a)).slice(0,24);
  const grip=model.find(p=>p.tag==='rightHand'),support=model.find(p=>p.tag==='supportHand'||p.tag==='pumpHand');
- const result={key,pieces,grip:grip??{x:.027,y:-.112,z:.1},support:support??grip,muzzle:model.muzzle};
+ const magazine=model.filter(p=>p.tag==='magazine').sort((a,b)=>volume(b)-volume(a))[0],bolt=model.find(p=>p.tag==='bolt');
+ const result={key,pieces,grip:grip??{x:.027,y:-.112,z:.1},support:support??grip,magazine,bolt,muzzle:model.muzzle};
  if(templates.size>=MAX_TEMPLATES)templates.delete(templates.keys().next().value);
  templates.set(key,result);return result;
 }
@@ -56,6 +57,38 @@ function arm(parts,upperIndex,foreIndex,handIndex,side,target,duck){
 function mount(out,p,c,s,y,recoil,dy=0,dz=0){
  const py=p.y+dy,pz=p.z+dz;out.x=.075+p.x;out.y=y+py*c-pz*s;out.z=-.23+py*s+pz*c+recoil;return out;
 }
+function smooth(a,b,value){const t=clamp((value-a)/(b-a),0,1);return t*t*(3-2*t);}
+function magazineTravel(w,r,out){
+ const drop=smooth(.10,.28,r)*(1-smooth(.65,.83,r));
+ if(w.def.id===4){out.x=-drop*.07;out.y=drop*.155;out.z=0;}
+ else{out.x=-drop*.045;out.y=-drop*(w.def.kind==='LMG'?.23:.29);out.z=drop*.035;}
+ return out;
+}
+export function operatorWeaponMount(actor,out={}){
+ const w=actor.weapon,duck=actor.animDuck??(actor.crouched?.5:0);
+ out.pitch=clamp(actor.pitch??0,-.65,.65)+Math.exp(-w.sinceShot*20)*.025;
+ out.x=.075;out.y=1.30-duck+(actor.operatorSettle??0);
+ out.z=-.23+Math.exp(-w.sinceShot*22)*.027;return out;
+}
+export function nativeOperatorWeapon(actor,assets,time){
+ const key=actor.carriedTemplate.key;
+ if(actor.nativeWeaponKey!==key||actor.nativeWeaponLibrary!==assets){
+  actor.nativeWeaponKey=key;actor.nativeWeaponLibrary=assets;
+  const parts=actor.nativeWeaponParts=weaponModel(actor.weapon);
+  actor.nativeWeaponGroups=assets.weaponGroups(parts,actor.weapon.def.id);
+  // The authored cores keep their exact original local joint matrices. Optics,
+  // muzzle devices and attachments remain under the same mounting transform.
+  actor.nativeWeaponAccessories=parts.slice(parts.coreCount).filter(p=>!/^(rightHand|supportHand|pumpHand)$/.test(p.tag??''));
+  for(const q of [...actor.nativeWeaponGroups,...actor.nativeWeaponAccessories])q.operatorWeapon=true;
+ }
+ animateWeaponParts(actor.nativeWeaponParts,actor.weapon,actor,time);
+ for(const group of actor.nativeWeaponGroups){
+  const anchor=actor.nativeWeaponParts[group.anchor];
+  group.x=anchor.x;group.y=anchor.y;group.z=anchor.z;group.w=anchor.w;group.h=anchor.h;group.d=anchor.d;
+  group.yaw=anchor.yaw;group.pitch=anchor.pitch;group.roll=anchor.roll;group.hidden=anchor.hidden;
+ }
+ return actor.nativeWeaponGroups;
+}
 export function poseOperator(actor,duck){
  const w=actor.weapon;
  if(actor.carriedWeapon!==w||actor.carriedOptic!==w.optic||actor.carriedBarrel!==w.barrel||actor.carriedGrip!==w.grip){
@@ -70,15 +103,32 @@ export function poseOperator(actor,duck){
  }
  const t=actor.carriedTemplate,pose=actor.operatorPose??(actor.operatorPose={right:{},left:{}});
  const pitch=clamp(actor.pitch??0,-.65,.65)+Math.exp(-w.sinceShot*20)*.025,c=Math.cos(pitch),s=Math.sin(pitch);
- const recoil=Math.exp(-w.sinceShot*22)*.027,mountY=1.30-duck,react=clamp(actor.hitReact??0,0,.16);
+ const recoil=Math.exp(-w.sinceShot*22)*.027,mountY=1.30-duck,react=clamp(actor.hitReact??0,0,.16),r=w.reloadLeft>0?clamp(1-w.reloadLeft/w.reloadTime,0,1):0;
+ const travel=pose.magazineTravel??(pose.magazineTravel={});magazineTravel(w,r,travel);
  for(let i=actor.operatorBodyCount;i<actor.renderParts.length;i++){
   const q=actor.renderParts[i],base=actor.renderBase[i];let dy=0,dz=0;
-  if(base.tag==='magazine'&&w.reloadLeft>0){const r=1-w.reloadLeft/w.reloadTime;dy=-Math.sin(clamp(r/.75,0,1)*Math.PI)*.20;}
+  if(base.tag==='magazine'&&w.reloadLeft>0){dy=travel.y;dz=travel.z;}
   if(base.tag==='pump')dz=Math.exp(-Math.abs(w.sinceShot-.23)*18)*.07;
-  mount(q,base,c,s,mountY,recoil,dy,dz);q.pitch=(base.pitch??0)+pitch;q.hidden=false;
+  mount(q,base,c,s,mountY,recoil,dy,dz);if(base.tag==='magazine'&&w.reloadLeft>0)q.x+=travel.x;q.pitch=(base.pitch??0)+pitch;q.hidden=false;
  }
  mount(pose.right,t.grip,c,s,mountY,recoil);mount(pose.left,t.support??t.grip,c,s,mountY,recoil);
- if(w.reloadLeft>0){const reach=Math.sin((1-w.reloadLeft/w.reloadTime)*Math.PI);pose.left.y-=reach*.12;pose.left.z+=reach*.12;}
+ if(w.reloadLeft>0){
+  const target=pose.reloadTarget??(pose.reloadTarget={}),local=pose.reloadLocal??(pose.reloadLocal={});
+  const reach=smooth(.04,.21,r)*(1-smooth(.85,.99,r));
+  if(w.def.shellReload||w.def.id===5){
+   local.x=-.06;local.y=-.135-Math.sin(r*Math.PI)*.10;local.z=.018+Math.sin(r*Math.PI)*.055;
+  }else if(t.magazine){
+   local.x=t.magazine.x-.025+travel.x;local.y=t.magazine.y-.035+travel.y;local.z=t.magazine.z+.018+travel.z;
+  }else{local.x=-.035;local.y=-.16;local.z=.045;}
+  // The support hand holds the travelling magazine, then returns to the
+  // fore-end; empty reloads finish at the actual charging-handle position.
+  if(t.bolt&&w.reloadStartedEmpty!==false){
+   const rack=smooth(.79,.86,r)*(1-smooth(.93,.99,r));
+   local.x+=(t.bolt.x-.025-local.x)*rack;local.y+=(t.bolt.y-local.y)*rack;local.z+=(t.bolt.z-local.z)*rack;
+  }
+  mount(target,local,c,s,mountY,recoil);
+  pose.left.x+=(target.x-pose.left.x)*reach;pose.left.y+=(target.y-pose.left.y)*reach;pose.left.z+=(target.z-pose.left.z)*reach;
+ }
  arm(actor.renderParts,15,17,19,1,pose.right,duck);arm(actor.renderParts,14,16,18,-1,pose.left,duck);
  // Local impact recoil is presentation only; it never moves collision or aim.
  if(react>0)for(let i=6;i<actor.renderParts.length;i++){

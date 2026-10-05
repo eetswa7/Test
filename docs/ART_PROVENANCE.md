@@ -1,8 +1,8 @@
-# Release 58 asset provenance
+# BREACHLINE asset provenance
 
 | Asset | Source and production | Attribution |
 | --- | --- | --- |
-| Architecture, ground, equipment and natural diffuse sheets | Original artwork generated for Breachline with OpenAI ImageGen; four retained PNG inputs | No third-party asset pack used |
+| Architecture, ground, equipment and natural diffuse sheets | Original artwork generated for Breachline with OpenAI ImageGen; four retained PNG inputs plus original road-surface and weapon-steel replacement sheets | No third-party asset pack used |
 | Physical texture maps | Native Blender shader graphs and Cycles bakes; source luminance supplies approximate macro relief | Editable source in `authoring/blender` |
 | Environment, weapon and operator meshes | Original native modelling in the repository's Blender definitions; exported with their existing gameplay rig contracts | Editable definitions and packed `.blend` retained |
 | Ground irradiance | Cycles baking of the native level assemblies, 32 samples, direct and indirect diffuse, RGBM encoding | Editable baking script and packed images retained |

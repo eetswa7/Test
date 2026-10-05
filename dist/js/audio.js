@@ -1,5 +1,5 @@
-import {WEAPONS} from './weapons.js?v=59';
-import {loadSoundLibrary,footstepSurface,roomAcoustics} from './audio-library.js?v=59';
+import {WEAPONS} from './weapons.js?v=60';
+import {loadSoundLibrary,footstepSurface,roomAcoustics} from './audio-library.js?v=60';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -14,7 +14,7 @@ const SHOTS=[
 ];
 function randomStream(seed){let n=seed>>>0;return()=>{n^=n<<13;n^=n>>>17;n^=n<<5;return(n>>>0)/2147483648-1;};}
 export class AudioSystem {
- constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.variations=new Map();this.variationCursor=new Map();this.voicePriority=new WeakMap();this.voices=0;this.active=new Set();this.hapticAt=0;this.muted=false;}
+ constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.variations=new Map();this.variationLast=new Map();this.voicePriority=new WeakMap();this.voices=0;this.active=new Set();this.hapticAt=0;this.muted=false;}
  async start(){try{
   if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C({latencyHint:'interactive'});this.master=this.context.createGain();this.master.gain.value=this.settings.volume;if(this.context.createDynamicsCompressor){this.limiter=this.context.createDynamicsCompressor();this.limiter.threshold.value=-7;this.limiter.knee.value=5;this.limiter.ratio.value=5;this.limiter.attack.value=.003;this.limiter.release.value=.12;this.master.connect(this.limiter);this.limiter.connect(this.context.destination);}else this.master.connect(this.context.destination);this.build();this.makeRoom();}
   if(this.context.state==='suspended')await this.context.resume();this.muted=false;
@@ -33,10 +33,10 @@ export class AudioSystem {
    const duration=Math.max(.31,Math.min(.92,5.5/decay));
    for(const suppressed of [false,true])synth(`${suppressed?'suppressed':'shot'}${id}`,duration,(t,n,low)=>{
     const crack=(n-low)*Math.exp(-t*(suppressed?390:210))*(suppressed?.21:.82);
-    const phase=6.283185*bass*(t+.0028*(1-Math.exp(-t*95)));
-    const pressure=(Math.sin(phase)*.72+Math.sin(phase*1.63)*.17+Math.sin(phase*2.39)*.08)*Math.exp(-t*decay)*weight*(suppressed?.40:.81);
-    const blast=(low*2.8+(n-low)*.11)*Math.exp(-t*decay*.83)*weight*(suppressed?.24:.89);
-    const mech=t>.027?Math.sin((t-.027)*mechanical*6.283185)*Math.exp(-(t-.027)*155)*.075:0;
+    const width=.38/bass,u=t/width;
+    const pressure=(1-2*u)*Math.exp(-u)*(1-Math.exp(-t*10000))*weight*(suppressed?.18:1.1);
+    const blast=(low*2.8+(n-low)*.11)*Math.exp(-t*decay*1.35)*weight*(suppressed?.15:.89);
+    const mech=t>.027?((n-low)*.11+Math.sin((t-.027)*mechanical*6.283185)*.018)*Math.exp(-(t-.027)*155):0;
     const shell=t>.135&&WEAPONS[id].kind!=='SNIPER'?(n-low)*Math.exp(-(t-.135)*195)*.022:0;
     // Pump and bolt closures follow the same animation timing, below the initial blast.
     const open=(WEAPONS[id].shellReload||WEAPONS[id].kind==='SNIPER')&&t>.14?(n-low)*Math.exp(-(t-.14)*100)*.058:0;
@@ -58,13 +58,18 @@ export class AudioSystem {
   synth('stepSoft',.17,(t,n,low)=>low*Math.exp(-t*23)*.47+Math.sin(t*450)*Math.exp(-t*43)*.053);
   synth('stepSnow',.23,(t,n,low)=>low*1.08*Math.exp(-t*19)+(n-low)*(.18*Math.exp(-t*70)+.05*Math.exp(-t*10))+Math.sin(t*1910+Math.sin(t*18)*.018)*Math.exp(-t*38)*.035,7183);
   synth('stepQuarry',.20,(t,n,low)=>(n-low)*.18*Math.exp(-t*76)+low*.52*Math.exp(-t*26)+Math.sin(t*4021)*Math.exp(-t*46)*.047,1949);
+  synth('stepWood',.20,(t,n,low)=>low*Math.exp(-t*30)*.65+(n-low)*Math.exp(-t*100)*.07,5371);
+  synth('stepMetal',.22,(t,n,low)=>low*Math.exp(-t*29)*.56+(n-low)*Math.exp(-t*80)*.10,9109);
+  synth('stepWater',.26,(t,n,low)=>low*Math.exp(-t*27)*.24+(n-low)*Math.exp(-t*18)*.13*(1-Math.exp(-t*250)),1237);
   synth('impactMetal',.28,(t,n,low)=>(n-low)*Math.exp(-t*160)*.24+(Math.sin(t*9420)+Math.sin(t*15437)*.42)*Math.exp(-t*36)*.10);
   synth('impactStone',.20,(t,n,low)=>n*Math.exp(-t*95)*.21+low*Math.exp(-t*24)*.23);
   synth('impactWood',.18,(t,n,low)=>low*Math.exp(-t*47)*.34+Math.sin(t*3370)*Math.exp(-t*84)*.10);
+  synth('impactGlass',.28,(t,n,low)=>(n-low)*Math.exp(-t*28)*.13,7907);
+  synth('impactWater',.24,(t,n,low)=>(n-low)*Math.exp(-t*22)*.16*(1-Math.exp(-t*500)),1097);
   synth('click',.07,(t,n,low)=>(n-low)*Math.exp(-t*95)*.22);
   synth('hit',.085,t=>(Math.sin(t*6.283185*1710)+Math.sin(t*6.283185*2330)*.3)*Math.exp(-t*59)*.13);
   synth('kill',.19,t=>(Math.sin(t*6.283185*1210)+Math.sin(t*6.283185*1815)*.55)*Math.exp(-t*22)*.12);
-  synth('explosion',1.5,(t,n,low)=>low*Math.exp(-t*3.7)*2.6+Math.sin(t*6.283185*43)*Math.exp(-t*6)*.43+(n-low)*Math.exp(-t*69)*.31);
+  synth('explosion',1.5,(t,n,low)=>low*Math.exp(-t*4.2)*2.6+(1-t/.005)*Math.exp(-t/.005)*.6+(n-low)*Math.exp(-t*160)*.38);
   synth('hurt',.18,(t,n,low)=>low*Math.exp(-t*22)*.79);
   synth('whoosh',.24,(t,n,low)=>(low*.65+n*.09)*Math.sin(t/.24*Math.PI)*.30);
  }
@@ -74,11 +79,11 @@ export class AudioSystem {
   // halls. The longer hall tail stays quieter than the direct action sounds.
   this.rooms=new Map();
   for(const [name,duration,decay,wet,taps] of [
-   ['room',.42,16,.18,[[.013,.34],[.027,.23],[.047,.16],[.079,.08]]],
-   ['hall',.88,8,.14,[[.025,.28],[.055,.23],[.096,.18],[.151,.10],[.213,.06]]]
+   ['room',.36,19,.16,[[.009,.30],[.021,-.21],[.039,.14],[.067,-.07]]],
+   ['hall',.72,10,.12,[[.023,.27],[.049,-.20],[.089,.16],[.139,-.09],[.207,.05]]]
   ]){
    const response=c.createBuffer(2,Math.ceil(c.sampleRate*duration),c.sampleRate),noise=randomStream(name==='room'?52378:71149);
-   for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);let low=0;for(let i=0;i<a.length;i++){const t=i/c.sampleRate;low+=.19*(noise()-low);a[i]=t<.012?0:low*Math.exp(-t*decay)*.21;}for(const [t,g]of taps)a[Math.round((t+ch*.0017)*c.sampleRate)]+=g;}
+   for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);let low=0;for(let i=0;i<a.length;i++){const t=i/c.sampleRate;low+=(.21/(1+t*11))*(noise()-low);a[i]=t<.008?0:low*Math.exp(-t*decay)*.15;}for(const [t,g]of taps)a[Math.round((t+ch*.0017)*c.sampleRate)]+=g;}
    const node=c.createConvolver(),gain=c.createGain();node.buffer=response;gain.gain.value=wet;node.connect(gain);gain.connect(this.master);this.rooms.set(name,{node,gain});
   }
   this.room=this.rooms.get('room').node;this.roomGain=this.rooms.get('room').gain;
@@ -89,9 +94,12 @@ export class AudioSystem {
   // or hit cue needs the last voice. Cleanup remains idempotent on native end.
   if(important&&this.voices>=24)for(const tail of this.active)if(!this.voicePriority.get(tail)){try{tail.stop();}catch{}tail.onended?.();break;}
   if(this.voices>=(important?24:16))return;
-  const variants=this.variations.get(key),cursor=this.variationCursor.get(key)??0;
-  const buffer=variants?.[cursor%variants.length]??this.buffers.get(key);if(!buffer)return;
-  this.variationCursor.set(key,cursor+1);
+  // Native decode publishes incrementally. Only select ready takes, and avoid
+  // immediately repeating one; sustained automatic fire has no short loop.
+  const variants=this.variations.get(key)?.filter(Boolean),last=variants?.indexOf(this.variationLast.get(key))??-1;
+  const take=variants?.length>1?(last<0?0:(last+1+Math.floor(Math.random()*(variants.length-1)))%variants.length):0;
+  const buffer=variants?.[take]??this.buffers.get(key);if(!buffer)return;
+  this.variationLast.set(key,buffer);
   const source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;source.playbackRate.value=clamp(rate,.65,1.6);gain.gain.value=clamp(volume,0,1.4);
   let filter=null,panner=null;
   if((distance>14||occluded)&&c.createBiquadFilter){filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=occluded?Math.max(600,1600/(1+distance*.018)):Math.max(1200,10500/(1+distance*.045));filter.Q.value=.45;source.connect(filter);filter.connect(gain);}else source.connect(gain);

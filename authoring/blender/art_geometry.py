@@ -21,39 +21,10 @@ def rectangular_profile(rings):
     return verts,tris
 
 
-def hero_part(p, base):
-    """Replace the large block silhouettes while keeping exact rig transforms."""
-    if p.get('mesh') in ('cylinder','tube','sphere'):
-        return base[p['mesh']]
-    if p.get('tag')=='magazine' and p['h']>.045 and p['w']>.035:
-        return machined_edges(p,rectangular_profile([(-.5,.43,.48),(-.32,.47,.5),(.23,.5,.48),(.5,.46,.42)]))
-    if p['w']>.035 and p['h']>.10 and p['d']<.13 and p['y']<-.05:
-        return machined_edges(p,rectangular_profile([(-.5,.47,.45),(-.36,.5,.49),(.16,.43,.46),(.5,.37,.38)]))
-    if p['w']>.045 and p['h']>.04 and p['d']>.15 and abs(p['x'])<.015:
-        # Octagonal machined receivers and ventilated handguards have broad
-        # planar faces, narrow edge facets and tapered end collars.
-        # Receiver profiles run along the actual barrel axis. Broad planar
-        # machined faces stay distinct from the narrow rounded edge highlights.
-        v,t=rectangular_profile([(-.5,.42,.40),(-.43,.48,.47),(-.27,.50,.50),(.32,.48,.50),(.5,.39,.40)])
-        g=([Vector((q.x,-q.z,q.y)) for q in v],t)
-        if p['z']<-.13 or p['h']>.06:
-            # Native Boolean slots provide actual open side vents, rather than
-            # painting black rectangles on the silhouette.
-            verts,tris=g;mesh=bpy.data.meshes.new('Handguard / manufacturing blank')
-            mesh.from_pydata([tuple(v) for v in verts],[],tris);mesh.update()
-            obj=bpy.data.objects.new('Handguard / machining',mesh);bpy.context.scene.collection.objects.link(obj)
-            cuts=[((0,.08,-.29+i*.28),(1.25,.20,.13)) for i in range(3)] if p['z']<-.13 else [((.485,.13,-.09),(.20,.27,.28)),((-.49,-.08,.23),(.09,.13,.12))]
-            for i,(position,size) in enumerate(cuts):
-                bpy.ops.mesh.primitive_cube_add(size=1,location=position)
-                cut=bpy.context.object;cut.scale=size
-                mod=obj.modifiers.new(('Through vent ' if p['z']<-.13 else 'Receiver pocket ')+str(i),'BOOLEAN');mod.operation='DIFFERENCE';mod.solver='EXACT';mod.object=cut
-                bpy.context.view_layer.objects.active=obj
-                bpy.ops.object.modifier_apply(modifier=mod.name);bpy.data.objects.remove(cut,do_unlink=True)
-            evaluated=bpy.data.meshes.new_from_object(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()));evaluated.calc_loop_triangles()
-            g=([v.co.copy() for v in evaluated.vertices],[tuple(t.vertices) for t in evaluated.loop_triangles])
-            bpy.data.meshes.remove(evaluated);bpy.data.objects.remove(obj,do_unlink=True)
-        return machined_edges(p,g,1 if p['z']<-.13 else 2)
-    return None
+def hero_part(p, base, weapon=None):
+    """Production hero forms retain the exported component and joint matrices."""
+    from hero_models import weapon_component
+    return weapon_component(p, base, weapon)
 
 
 def machined_edges(p,geometry,segments=1):

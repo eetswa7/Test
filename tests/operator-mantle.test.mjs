@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {Game} from '../dist/js/engine.js';
 import {Weapon,WEAPONS} from '../dist/js/weapons.js';
 import {actorModel} from '../dist/js/geometry.js';
-import {operatorMuzzle} from '../dist/js/operator-detail.js';
+import {operatorMuzzle,operatorWeaponMount,nativeOperatorWeapon} from '../dist/js/operator-detail.js';
+import {muzzlePosition} from '../dist/js/weapon-models.js';
+import {compose,multiply,identity} from '../dist/js/math.js';
 import {updateWeaponClearance} from '../dist/js/weapon-clearance.js';
 import {weaponPose} from '../dist/js/aim.js';
 import {beginVault,advanceVault} from '../dist/js/traversal.js';
@@ -33,6 +35,31 @@ test('muzzle follows equipped weapon, heading and crouch rather than the generic
  assert(long.z<short.z-.2);a.yaw=Math.PI/2;const rotated=operatorMuzzle(a);
  assert(Math.abs(rotated.x+short.z)<1e-9);assert(Math.abs(rotated.z-short.x)<1e-9);
  a.crouched=true;assert.equal(operatorMuzzle(a).y,short.y-.5);
+});
+
+test('native carried rifles keep original joints and their mounted muzzle agrees with ballistics',()=>{
+ const g=new Game({}, {seed:24}),a=g.actors[1],assets={weaponGroups(parts){
+  const groups=new Map();for(let i=0;i<parts.coreCount;i++){
+   const p=parts[i],key=p.tag??'static';if(!groups.has(key))groups.set(key,{...p,anchor:i,blenderMesh:key});
+  }return [...groups.values()];
+ }};
+ const world=identity(),local=identity(),mounted=identity();
+ for(const def of WEAPONS){
+  a.weapons[0]=new Weapon(def.id,{optic:1,barrel:1});a.slot=0;a.yaw=.83;a.pitch=-.27;a.crouched=true;
+  a.animDuck=.5;a.weapon.sinceShot=10;actorModel(a,1);a.operatorSettle=0;
+  const groups=nativeOperatorWeapon(a,assets,1),m=operatorWeaponMount(a),tip=muzzlePosition(a.weapon);
+  compose(world,a.x,a.y,a.z,1,1,1,-a.yaw);compose(local,m.x,m.y,m.z,1,1,1,0,m.pitch);multiply(mounted,world,local);
+  const actual={x:mounted[0]*tip.x+mounted[4]*tip.y+mounted[8]*tip.z+mounted[12],
+   y:mounted[1]*tip.x+mounted[5]*tip.y+mounted[9]*tip.z+mounted[13],
+   z:mounted[2]*tip.x+mounted[6]*tip.y+mounted[10]*tip.z+mounted[14]},expected=operatorMuzzle(a);
+  for(const axis of ['x','y','z'])assert(Math.abs(actual[axis]-expected[axis])<1e-5,`${def.name} ${axis}`);
+  const ammo=a.weapon.ammo;a.weapon.reloadLeft=a.weapon.reloadTime*.45;
+  assert.equal(nativeOperatorWeapon(a,assets,1.1),groups);assert.equal(a.weapon.ammo,ammo);
+  for(const group of groups){
+   const joint=a.nativeWeaponParts[group.anchor];for(const key of ['x','y','z','pitch','roll'])assert.equal(group[key],joint[key]);
+  }
+  assert(a.nativeWeaponAccessories.every(p=>!/^(rightHand|supportHand|pumpHand)$/.test(p.tag??'')));
+ }
 });
 
 test('impact reactions return to the base pose and never accumulate position drift',()=>{

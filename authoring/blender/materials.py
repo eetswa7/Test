@@ -1,8 +1,9 @@
-"""Native Blender material graphs and offline Cycles bakes for the whole game.
+"""Editable Blender PBR graphs and offline Cycles bakes for the whole game.
 
-The colour, normal and packed physical atlases come from the same graphs, so
-stone joints, fabric weave and rust affect light as well as colour. No source
-photographs or runtime canvas painting is required.
+The original diffuse artwork supplies material identity. Relief and physical
+response follow that artwork: a visible mortar joint must not acquire a
+second, unrelated procedural brick joint. Small surface detail is authored in
+physical units, with restrained albedo variation and material-specific roughness.
 """
 import bpy
 import math
@@ -41,97 +42,116 @@ def ramp(n, l, fac, stops):
     l.new(fac, node.inputs[0]); return node.outputs['Color']
 
 
-# Linear-light shader colours. Atlas order retains the existing surface IDs.
-PALETTE = [(.30,.31,.30),(.56,.52,.43),(.47,.42,.32),(.34,.29,.23),
-           (.044,.048,.05),(.24,.18,.11),(.48,.36,.21),(.25,.24,.21),
-           (.28,.30,.31),(.42,.43,.39),(.26,.12,.045),(.28,.105,.038),
-           (.12,.18,.075),(.12,.20,.07),(.44,.40,.32),(.29,.28,.23)]
+# Atlas order is a runtime contract. Ranges are perceptual roughness; millimetre
+# relief is baked into tangent normals, never added to runtime geometry.
+SURFACES = (
+    ('cast concrete',       .87, .065, .014, .24),
+    ('weathered plaster',   .89, .055, .010, .22),
+    ('limestone masonry',   .86, .070, .018, .32),
+    ('fired brick',         .85, .080, .014, .32),
+    ('asphalt aggregate',   .94, .035, .006, .16),
+    ('compacted earth',     .97, .025, .010, .24),
+    ('sand',                .96, .035, .006, .18),
+    ('crushed gravel',      .92, .065, .018, .32),
+    ('worn steel',          .52, .090, .002, .18),
+    ('woven canvas',        .91, .035, .003, .22),
+    ('seasoned timber',     .76, .100, .010, .30),
+    ('oxidised sheet metal',.67, .050, .006, .28),
+    ('forest floor',        .97, .025, .013, .25),
+    ('dry grass',           .96, .030, .010, .24),
+    ('terracotta roof',     .85, .060, .014, .30),
+    ('weathered rock',      .87, .080, .020, .32),
+)
+
+
+def source_artwork(n, l, vector, tile, hero):
+    """Read one source quadrant without sampling a neighbouring material."""
+    art = Path(__file__).parent / 'textures'
+    bank = ('architecture', 'ground', 'equipment', 'natural')[tile // 4] if not hero else 'equipment'
+    # Replacement artwork is used only for its approved first quadrant. The
+    # established soil/wood/fabric artwork keeps its exact source identity.
+    if not hero and tile == 4: bank = 'road-surface'
+    if (not hero and tile == 8) or (hero and tile == 0): bank = 'weapon-steel'
+    image = bpy.data.images.load(str(art / (bank + '.png')), check_existing=True)
+    image.pack(); image.use_fake_user = True
+    tex = n.new('ShaderNodeTexImage'); tex.image = image; tex.extension = 'EXTEND'
+    tex.label = 'Original diffuse artwork / neutral illumination'
+    source_tile = tile % 4 if not hero else (0, 2, 1, 0)[tile]
+    # A half-texel inset matters at the quadrant boundary: the old mapping mixed
+    # beige plaster into concrete edges and gravel into the edge of asphalt.
+    inset = .5 / image.size[0]
+    atlas = n.new('ShaderNodeVectorMath'); atlas.operation = 'MULTIPLY_ADD'
+    atlas.inputs[1].default_value = (.5 - 2 * inset, .5 - 2 * inset, 1)
+    atlas.inputs[2].default_value = (source_tile % 2 * .5 + inset,
+                                   (1 - source_tile // 2) * .5 + inset, 0)
+    l.new(vector, atlas.inputs[0]); l.new(atlas.outputs[0], tex.inputs['Vector'])
+    grey = n.new('ShaderNodeRGBToBW'); l.new(tex.outputs['Color'], grey.inputs[0])
+    return tex.outputs['Color'], grey.outputs[0]
 
 
 def surface_graph(mat, tile, hero=False):
     mat.use_nodes = True; n = mat.node_tree.nodes; l = mat.node_tree.links; n.clear()
     uv = n.new('ShaderNodeUVMap'); uv.uv_map = 'MaterialUV'; vector = uv.outputs[0]
-    macro = noise(n,l,vector,4.1,4,.35); micro = noise(n,l,vector,190 if hero else 110,2)
-    base = (.50,.51,.52) if hero else PALETTE[tile]
-    colour = mix(n,l,macro,(*[c*.68 for c in base],1),(*[c*1.22 for c in base],1))
-    height = math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',macro,.07),math_node(n,l,'MULTIPLY',micro,.025))
-    rough = math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',micro,.12),.74)
-    occlusion = math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',macro,.06),.94)
-    if not hero and tile in (1,2,3,14):
-        brick = n.new('ShaderNodeTexBrick'); l.new(vector,brick.inputs['Vector'])
-        brick.inputs['Scale'].default_value = 4 if tile != 14 else 7
-        brick.inputs['Brick Width'].default_value = .6 if tile != 14 else .5
-        brick.inputs['Row Height'].default_value = .29 if tile != 14 else .5
-        brick.inputs['Mortar Size'].default_value = .011 if tile != 14 else .006
-        brick.inputs['Mortar Smooth'].default_value = .006
-        brick.inputs['Color1'].default_value = (*[c*.91 for c in base],1)
-        brick.inputs['Color2'].default_value = (*[c*1.12 for c in base],1)
-        brick.inputs['Mortar'].default_value = (*[c*.5 for c in base],1)
-        if tile == 14: brick.offset = 0
-        # Plaster exposes a restrained amount of its masonry, not a brick wall.
-        colour = mix(n,l,.22 if tile==1 else .76,colour,brick.outputs['Color'])
-        height = math_node(n,l,'SUBTRACT',height,math_node(n,l,'MULTIPLY',brick.outputs['Fac'],.20))
-        occlusion = math_node(n,l,'SUBTRACT',occlusion,math_node(n,l,'MULTIPLY',brick.outputs['Fac'],.22))
-    if not hero and tile in (0,4,5,6,7,15):
-        cells=n.new('ShaderNodeTexVoronoi');cells.feature='DISTANCE_TO_EDGE'
-        cells.inputs['Scale'].default_value=32 if tile in (0,4) else 19
-        l.new(vector,cells.inputs['Vector'])
-        flecks=ramp(n,l,cells.outputs['Distance'],[(0,(.15,.15,.15)),(.027,(.65,.65,.65)),(.12,(1,1,1))])
-        colour=mix(n,l,.12 if tile in (0,6) else .22,colour,flecks)
-        height=math_node(n,l,'ADD',height,math_node(n,l,'MULTIPLY',cells.outputs['Distance'],.19))
-    if (not hero and tile==10) or (hero and tile==1):
-        stretch=n.new('ShaderNodeVectorMath');stretch.operation='MULTIPLY';stretch.inputs[1].default_value=(2,20,1)
-        l.new(vector,stretch.inputs[0]);grain=noise(n,l,stretch.outputs[0],3.5,4,2)
-        colour=mix(n,l,grain,(*[c*.63 for c in base],1),(*[c*1.30 for c in base],1))
-        height=math_node(n,l,'MULTIPLY',grain,.09);rough=math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',micro,.12),.64)
-    if (not hero and tile==9) or (hero and tile in (2,3)):
-        wave=[]
-        for axis in ('X','Y'):
-            w=n.new('ShaderNodeTexWave');w.wave_type='BANDS';w.bands_direction=axis
-            w.inputs['Scale'].default_value=86;w.inputs['Distortion'].default_value=.4
-            l.new(vector,w.inputs['Vector']);wave.append(w.outputs['Fac'])
-        weave=math_node(n,l,'MULTIPLY',*wave)
-        colour=mix(n,l,math_node(n,l,'MULTIPLY',weave,.09),colour,(.28,.29,.26,1))
-        height=math_node(n,l,'MULTIPLY',weave,.027 if hero else .065)
-        rough=math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',micro,.055),.87)
-    if not hero and tile==11:
-        rust=ramp(n,l,macro,[(.25,(.08,.045,.02)),(.51,(.34,.10,.025)),(.7,(.17,.12,.07))])
-        colour=rust;rough=math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',macro,.14),.76)
-    if not hero and tile in (12,13):
-        colour=mix(n,l,macro,(.055,.08,.025,1),(.18,.26,.095,1))
-    if (not hero and tile==8) or (hero and tile==0):
-        scratches=n.new('ShaderNodeTexWave');scratches.wave_type='BANDS';scratches.bands_direction='Y'
-        scratches.inputs['Scale'].default_value=125;scratches.inputs['Distortion'].default_value=18
-        l.new(vector,scratches.inputs['Vector'])
-        fine=math_node(n,l,'MULTIPLY',scratches.outputs['Fac'],.018)
-        height=math_node(n,l,'ADD',height,fine)
-        rough=math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',micro,.16),.54 if hero else .61)
-    # Original AI-created diffuse artwork is input to Blender's material, as in a
-    # conventional game-art workflow. It is baked with the authored height,
-    # physical response and low-frequency colour into a new runtime atlas.
-    art=Path(__file__).parent/'textures'
-    bank=('architecture','ground','equipment','natural')[tile//4] if not hero else 'equipment'
-    source=art/(bank+'.png')
-    image=bpy.data.images.load(str(source),check_existing=True);image.pack();image.use_fake_user=True
-    tex=n.new('ShaderNodeTexImage');tex.image=image;tex.extension='EXTEND'
-    atlas=n.new('ShaderNodeVectorMath');atlas.operation='MULTIPLY_ADD';cols=2
-    source_tile=tile%4 if not hero else (0,2,1,0)[tile]
-    atlas.inputs[1].default_value=(1/cols,1/cols,1);atlas.inputs[2].default_value=(source_tile%cols/cols,(cols-1-source_tile//cols)/cols,0)
-    l.new(vector,atlas.inputs[0]);l.new(atlas.outputs[0],tex.inputs['Vector'])
-    # Source luminance provides approximate macro relief; native shader detail is
-    # baked at full texel density. Albedo and normals describe the same wear.
-    grey=n.new('ShaderNodeRGBToBW');l.new(tex.outputs['Color'],grey.inputs[0])
-    height=math_node(n,l,'ADD',height,math_node(n,l,'MULTIPLY',grey.outputs[0],.18 if not hero else .025))
-    colour=mix(n,l,.07 if not hero else .12,tex.outputs['Color'],colour)
+    artwork, grey = source_artwork(n, l, vector, tile, hero)
+    micro = noise(n, l, vector, 230 if hero else 180, 2)
+    macro = noise(n, l, vector, 3.4, 2, .12)
     if hero:
-        # Rigid groups contain their own albedo and metallic response. A neutral
-        # finish modulates grain instead of darkening that albedo a second time.
-        colour=mix(n,l,grey.outputs[0],(.58,.58,.58,1),(.91,.91,.91,1))
+        # Vertex colour owns wood, polymer and metal colour in the combined
+        # viewmodel. Near-white texture modulation keeps their finish distinct.
+        colour = mix(n, l, grey, (.78, .78, .78, 1), (.98, .98, .98, 1))
+        if tile == 1:
+            colour = mix(n, l, grey, (.67, .67, .67, 1), (.98, .98, .98, 1))
+        elif tile == 3:
+            # Polymer gets a moulded stipple, not the same cracked steel
+            # photograph stretched across grips, magazines and rail covers.
+            grey = micro
+            colour = mix(n, l, micro, (.84, .84, .84, 1), (.92, .92, .92, 1))
+        centre, variation, distance, strength = (
+            (.72, .065, .0015, .16), (.80, .075, .004, .22),
+            (.91, .035, .002, .20), (.81, .055, .001, .12))[tile]
+        relief = .09 if tile in (1, 2) else .025
+        mat['surface_identity'] = ('machined weapon steel', 'wood furniture', 'tactical fabric', 'moulded polymer')[tile]
+    else:
+        identity, centre, variation, distance, strength = SURFACES[tile]
+        mat['surface_identity'] = identity
+        # Two percent broad colour change breaks uniform repeats without
+        # drowning the authored aggregate/paint in coloured noise.
+        modulation = mix(n, l, macro, (.985, .985, .985, 1), (1.015, 1.015, 1.015, 1))
+        product = n.new('ShaderNodeMixRGB'); product.blend_type = 'MULTIPLY'
+        product.inputs[0].default_value = 1
+        l.new(artwork, product.inputs[1]); l.new(modulation, product.inputs[2]); colour = product.outputs[0]
+        relief = .11 if tile in (0, 1, 4, 5, 6, 8, 9, 11, 13) else .20
+
+    height = math_node(n, l, 'ADD', math_node(n, l, 'MULTIPLY', grey, relief),
+                       math_node(n, l, 'MULTIPLY', micro, .016 if hero else .023))
+    rough = math_node(n, l, 'MINIMUM',
+                      math_node(n, l, 'ADD', centre, math_node(n, l, 'MULTIPLY', micro, variation)), 1)
+    # Cavity AO is deliberately weak. Static lighting supplies broad shadows;
+    # the packed map should only deepen pores and joints by a few percent.
+    cavity = math_node(n, l, 'MAXIMUM', math_node(n, l, 'SUBTRACT', .32, grey), 0)
+    occlusion = math_node(n, l, 'SUBTRACT', 1, math_node(n, l, 'MULTIPLY', cavity, .14 if hero else .22))
+    exposed_metal = 1
+    if not hero and tile == 11:
+        # Rust is a dielectric, while exposed zinc/steel remains metallic.
+        # Derive the mask from the actual orange corrosion in the artwork.
+        rgb = n.new('ShaderNodeSeparateColor'); rgb.mode = 'RGB'; l.new(artwork, rgb.inputs[0])
+        warm = math_node(n, l, 'MAXIMUM', math_node(n, l, 'SUBTRACT', rgb.outputs[0], rgb.outputs[2]), 0)
+        rust = math_node(n, l, 'MINIMUM', math_node(n, l, 'MULTIPLY', warm, 8), 1)
+        rough = math_node(n, l, 'MINIMUM', math_node(n, l, 'ADD', rough, math_node(n, l, 'MULTIPLY', rust, .23)), 1)
+        exposed_metal = math_node(n, l, 'SUBTRACT', 1, math_node(n, l, 'MULTIPLY', rust, .88))
+
     bsdf=n.new('ShaderNodeBsdfPrincipled');l.new(colour,bsdf.inputs['Base Color']);l.new(rough,bsdf.inputs['Roughness'])
-    bump=n.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.25 if hero else .52
-    bump.inputs['Distance'].default_value=.007 if hero else .036;l.new(height,bump.inputs['Height']);l.new(bump.outputs['Normal'],bsdf.inputs['Normal'])
+    if not hero and tile in (8, 11):
+        if hasattr(exposed_metal, 'node'): l.new(exposed_metal, bsdf.inputs['Metallic'])
+        else: bsdf.inputs['Metallic'].default_value = exposed_metal
+    bump=n.new('ShaderNodeBump');bump.inputs['Strength'].default_value=strength
+    bump.inputs['Distance'].default_value=distance;l.new(height,bump.inputs['Height']);l.new(bump.outputs['Normal'],bsdf.inputs['Normal'])
+    bump.label = 'Restrained millimetre relief / colour-aligned wear'
+    mat['relief_distance_metres'] = distance; mat['roughness_centre'] = centre
     output=n.new('ShaderNodeOutputMaterial');l.new(bsdf.outputs[0],output.inputs['Surface'])
-    orm=n.new('ShaderNodeCombineXYZ');l.new(occlusion,orm.inputs[0]);l.new(rough,orm.inputs[1]);l.new(macro,orm.inputs[2])
+    orm=n.new('ShaderNodeCombineXYZ');l.new(occlusion,orm.inputs[0]);l.new(rough,orm.inputs[1])
+    if hasattr(exposed_metal, 'node'): l.new(exposed_metal, orm.inputs[2])
+    else: orm.inputs[2].default_value = exposed_metal
     emit=n.new('ShaderNodeEmission');target=n.new('ShaderNodeTexImage');n.active=target
     return n,l,output,bsdf,emit,target,colour,orm.outputs[0]
 

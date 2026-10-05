@@ -8,8 +8,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 121846,
-      "sha256": "e13156562fa3bf26f69c64d0322c5b5c3de0d09caa7e6f0208013003138e4a11"
+      "fallbackBytes": 132250,
+      "sha256": "eeb069fdf64bc8acc307b15dc4a63aed85950c139a16f588288ce94f02850c11"
     },
     {
       "name": "surfaces-0-normal",
@@ -17,8 +17,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 142086,
-      "sha256": "fcefed81a8d9b875175814ded869458585901ee3adbe800c1ca6c6982c1a5b2a"
+      "fallbackBytes": 14876,
+      "sha256": "ea94429c2301ab604a2e5b7b0d70f32d11f9ef2a4fdb309470a357dcb069ad19"
     },
     {
       "name": "surfaces-0-orm",
@@ -26,8 +26,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186646,
-      "sha256": "0f0a6ddd6b03af5a8e0c0694ffc02a41509e4868d8fc5455d6a131be01c2ed6d"
+      "fallbackBytes": 174662,
+      "sha256": "2765727f7bb4008b9b67b047c2a820efc487407fc9146b781da2d193f7212b92"
     },
     {
       "name": "surfaces-1-albedo",
@@ -35,8 +35,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 116080,
-      "sha256": "4f5c3a45a48ab46fea478bd1c416a08a55fbc6e22ae4e72d1892305a72a02457"
+      "fallbackBytes": 120790,
+      "sha256": "8c6939f606ea190e8113bc7513355a3a9ae7a095b8412ad7c33a8c63bd7ba907"
     },
     {
       "name": "surfaces-1-normal",
@@ -44,8 +44,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 141290,
-      "sha256": "1e228184c41705452ccdf6ec04c7bc28f6ae9c489a0697d70dac62804c2c1944"
+      "fallbackBytes": 6022,
+      "sha256": "a60481f957610afab9f856da7c94b08f6d8b4e99e4c7d991dd807edbcb3bcd62"
     },
     {
       "name": "surfaces-1-orm",
@@ -53,8 +53,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 201410,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "fallbackBytes": 92272,
+      "sha256": "31a5d61c420757a3b5e8e728f17bb2d4f66147032280c3317ccf7b5038dc9f1b"
     },
     {
       "name": "surfaces-2-albedo",
@@ -62,8 +62,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 139728,
-      "sha256": "b55ba625cdcc1f0fbb52f27b1ac2478640f3a71e6b741e178a3d15fc6d5f666d"
+      "fallbackBytes": 147314,
+      "sha256": "e20ecfcc2d03e82057401c46f15e35b299a5d8a2f2388cf0e3f95782e63273a6"
     },
     {
       "name": "surfaces-2-normal",
@@ -71,8 +71,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 149964,
-      "sha256": "6c4454629170ee2781b0acb26065e9f7b64754c946e1fa3763f34ef728b0e8f1"
+      "fallbackBytes": 89844,
+      "sha256": "e5159af8472fada72c0f737032563aea1222e4d0e66e7a2ac6294cd5e27991a6"
     },
     {
       "name": "surfaces-2-orm",
@@ -80,8 +80,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 201410,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "fallbackBytes": 157966,
+      "sha256": "f3abb03030726cdcf233debd3438f771d83e1dceb9c93fe3eff2cc5c6cdcb163"
     },
     {
       "name": "surfaces-3-albedo",
@@ -89,8 +89,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 128872,
-      "sha256": "2af364bae9b6bfda3aadd20c2638dab5cda4aff29fb039af88ca6c834760573c"
+      "fallbackBytes": 141744,
+      "sha256": "b852e4f6c9808e93a5ce2a5756b7869408eb04b2cef0d06101e5ecd5e99958c5"
     },
     {
       "name": "surfaces-3-normal",
@@ -98,8 +98,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 105032,
-      "sha256": "0f14c06c15274681a3d4f690084f13b64bf8820c85083f31e7ad90ab16ee1482"
+      "fallbackBytes": 27602,
+      "sha256": "50b3593d84b08a5509f10a9a007f3d2f0d722a46246a085e92182bc3db173002"
     },
     {
       "name": "surfaces-3-orm",
@@ -107,8 +107,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 201410,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "fallbackBytes": 168446,
+      "sha256": "525e2189ebbf3b2ace7ab51945aca9827580eb19dc182c3fa79d64c43a1263b0"
     },
     {
       "name": "surfaces-4-albedo",
@@ -116,8 +116,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 148844,
-      "sha256": "a729e611e9f34f336063357a997c02b98d87d5d0c6f8fd31091245b9573231a3"
+      "fallbackBytes": 144364,
+      "sha256": "e6f74e7429d645c197ed83857792682d3b72f1d12f1d9bb207547cd309598971"
     },
     {
       "name": "surfaces-4-normal",
@@ -125,8 +125,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 130144,
-      "sha256": "041ca91dcd0841517258e4ddf8b74cdfe1ba12f24c68ac2dc8d5ff8655efd221"
+      "fallbackBytes": 1078,
+      "sha256": "5c12a056751a788c2671c49807b2fe6fd247cfcee6085d44bf5c1a604745dedf"
     },
     {
       "name": "surfaces-4-orm",
@@ -134,8 +134,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186646,
-      "sha256": "0f0a6ddd6b03af5a8e0c0694ffc02a41509e4868d8fc5455d6a131be01c2ed6d"
+      "fallbackBytes": 162362,
+      "sha256": "535cbe80b6667cdc26b675dd652547e53c2287a7b09f05f3cb37480c9feabfea"
     },
     {
       "name": "surfaces-5-albedo",
@@ -143,8 +143,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 146648,
-      "sha256": "032d2e10e838f5e2436164d4c0662faaad3ba680b8efd013051318c3013ab337"
+      "fallbackBytes": 157272,
+      "sha256": "82b3d799f7a2ec1807afee1487dabeda4ad81c6e7f945c8f06e5bc79c25c7e9d"
     },
     {
       "name": "surfaces-5-normal",
@@ -152,8 +152,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 131364,
-      "sha256": "af3b3cf33c86eae9e2b4b78abd901cde63c85164019283c642d676b4f1fa7222"
+      "fallbackBytes": 6036,
+      "sha256": "7c6d7c35c8fdd5b2099c9e560225cb00e98d926e6b1e12c3d13f0a138e9878c3"
     },
     {
       "name": "surfaces-5-orm",
@@ -161,8 +161,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186652,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "fallbackBytes": 159868,
+      "sha256": "780141ff00cedebde210de62a0cd000c796a1b19645d4fb4642f2f6edccbd6a4"
     },
     {
       "name": "surfaces-6-albedo",
@@ -170,8 +170,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 136676,
-      "sha256": "68e2a9c0295567f7adfe0f0f05427a26b601413382faf497fae07959a3c3ac09"
+      "fallbackBytes": 142206,
+      "sha256": "9ad685e2d5c393255f74b12b08b82c1e3fd1fb8984452a8e648d3ce525f3fce1"
     },
     {
       "name": "surfaces-6-normal",
@@ -179,8 +179,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 146204,
-      "sha256": "0ac53860c7cd533173415efbe1ca94adacc638f94944c325c78d198c5c377fb8"
+      "fallbackBytes": 1396,
+      "sha256": "ab5fa069380034407c646f90b680af2b780c8b0c6a3bbf881c3a80da59c5f762"
     },
     {
       "name": "surfaces-6-orm",
@@ -188,8 +188,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186652,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "fallbackBytes": 89588,
+      "sha256": "604bf394eaf0f4ef2fe1c355acda71d58ff73cf4a491520828f0c5fe06160521"
     },
     {
       "name": "surfaces-7-albedo",
@@ -197,8 +197,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 148018,
-      "sha256": "affef06943f4f7afc08645311fb5ce72f732ed7858b3c4870126be6197e94469"
+      "fallbackBytes": 157068,
+      "sha256": "a8184c9d1eaee5db403295e6ae55a366f9e210ccdb7190009c6453930d8acf9f"
     },
     {
       "name": "surfaces-7-normal",
@@ -206,8 +206,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 139304,
-      "sha256": "62c72e378e022076c886a319b30aa19d39c75cbfbecfc1921aa94fc4bfc80ded"
+      "fallbackBytes": 84116,
+      "sha256": "a225101f9b3ae23240b86d9f2290930fbf9a6e22b5c7a3f268d1ceab190ea8d5"
     },
     {
       "name": "surfaces-7-orm",
@@ -215,8 +215,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186652,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "fallbackBytes": 210226,
+      "sha256": "3cb06f1b87a9b18f4718e9010a6ff69a05b81cf581668ebc3beb119a28bd6d3b"
     },
     {
       "name": "surfaces-8-albedo",
@@ -224,8 +224,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 77782,
-      "sha256": "bad903dd291842425b1f06742d84a1653f5888c2b500bea5dad4d0a6df0d23cb"
+      "fallbackBytes": 71030,
+      "sha256": "490a27f527fe4394726f75bf759424bee642ad0afc14006c7cbfd2e937928cf6"
     },
     {
       "name": "surfaces-8-normal",
@@ -233,8 +233,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 110996,
-      "sha256": "0d90bf509ccfd6e26bfd34d4908e50f3c733a5e29310aba0384f1364ccf1fb5d"
+      "fallbackBytes": 656,
+      "sha256": "51d272d2dac8c55e1a1886852f525e26684d5215d021b531dd54c389a3f624ab"
     },
     {
       "name": "surfaces-8-orm",
@@ -242,8 +242,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 198818,
-      "sha256": "ef3e282ef4de8bd91003c79679e81efa7477b5e25a84a03218e3dd6d8c637c53"
+      "fallbackBytes": 125754,
+      "sha256": "c53d7c8bebbfd93cd29eac26910e48bb790addf9fa26cab8a2b7eb97f4c8d8f9"
     },
     {
       "name": "surfaces-9-albedo",
@@ -251,8 +251,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 131452,
-      "sha256": "773fa617c38dce22c15101b84dc8d2683869002e12a2e00b5abb7dcf80b66ec1"
+      "fallbackBytes": 137732,
+      "sha256": "2fc21f2c39c7d512adf29b744fe56cc424c727a3b623927452fde96be4971028"
     },
     {
       "name": "surfaces-9-normal",
@@ -260,8 +260,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 115754,
-      "sha256": "8bd4776a1eeef28f5120bafe05a478c6d867a71f8a0b5c2f2ece2d3019cfc996"
+      "fallbackBytes": 738,
+      "sha256": "c07e68720e2cf1ab54ccb029c61c13847a500dbd37fc9535c8b8f1c6e532b30d"
     },
     {
       "name": "surfaces-9-orm",
@@ -269,8 +269,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 153334,
-      "sha256": "290963784cd37e26e7c4c53751780c4ec3b2e823c1ae46e480a07a126465c7f5"
+      "fallbackBytes": 171532,
+      "sha256": "5a589a24626ffd47135d6e8ba0d3e8274292363aac78eae8cd273d03b5885880"
     },
     {
       "name": "surfaces-10-albedo",
@@ -278,8 +278,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 101200,
-      "sha256": "4821b2fcf90536ad6513040bf7fcb346f4083ff848fcad20e199067c88732249"
+      "fallbackBytes": 106644,
+      "sha256": "6a27c0c05653235f3337aecf7db137967e12fa05e49220caa3e0d70cc7d0445b"
     },
     {
       "name": "surfaces-10-normal",
@@ -287,8 +287,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 111084,
-      "sha256": "9041c1fc47ae3451a16464794e4355e2484241d0a7eba12c9442891ffeca6c7f"
+      "fallbackBytes": 15602,
+      "sha256": "723a6d79d71821fef2927482fb248126827e2b3ca9a88b3910b6eb99e3614eb3"
     },
     {
       "name": "surfaces-10-orm",
@@ -296,8 +296,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186846,
-      "sha256": "5e1f85aad8a2e357153c43de271e578a2b5f4eac89d77fde3e5173392c8ed272"
+      "fallbackBytes": 171010,
+      "sha256": "3fe9c9b346ed89039dfc4931db2ed6dffeb76ee09870e920ca016afe831a1899"
     },
     {
       "name": "surfaces-11-albedo",
@@ -305,8 +305,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 119834,
-      "sha256": "a8ee8553af26a22c633d886fa0cd956544e39d30aea037261157876c7cf2eb72"
+      "fallbackBytes": 124038,
+      "sha256": "89593a639d1c51dd9f0182e4af240df44a9db54881bbb8643a12469a65c63b08"
     },
     {
       "name": "surfaces-11-normal",
@@ -314,8 +314,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 106736,
-      "sha256": "e4861dbd2d2cf3d114562642a6dab0938c3eded65b64c5d96a2285d7d52f45ef"
+      "fallbackBytes": 1404,
+      "sha256": "acead365b1159cc80e35968b4f495f899257bdbf9fc13d24f56ac9a31ce15838"
     },
     {
       "name": "surfaces-11-orm",
@@ -323,8 +323,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 101746,
-      "sha256": "d9328b89f4499f4a76a5f80a0623ea250a4c98947ae1c36f6e9f6a374c0fcc90"
+      "fallbackBytes": 356970,
+      "sha256": "1061de8b79cc2deddc38439d718fa60a03a0452a78a051959964eff02cfcd552"
     },
     {
       "name": "surfaces-12-albedo",
@@ -332,8 +332,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 156712,
-      "sha256": "ebb67c27b4e328e72b4a204e22b1ea626d920c6446517efcb0ca8a5f3762e7d5"
+      "fallbackBytes": 165054,
+      "sha256": "5a05172c80c7361c4568a2a9ac7c3e8522aa63e1d0f2488a2c8a5b05e1720812"
     },
     {
       "name": "surfaces-12-normal",
@@ -341,8 +341,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 120324,
-      "sha256": "767a1fe720cf59ea4ee40ab98d5e5650684b6e2558a27fdf36d1fd26c0f4d867"
+      "fallbackBytes": 33818,
+      "sha256": "b679977994ed2e78ea543fb7e05c4b65c4fe26e2a3a129ed25ffd9dd8ae5f294"
     },
     {
       "name": "surfaces-12-orm",
@@ -350,8 +350,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186660,
-      "sha256": "32d4421a54ca427025a20fa0e63eece1b984947416d1e552c5208a1b360df1f3"
+      "fallbackBytes": 160816,
+      "sha256": "deab561edb636252f868c1c338efa19e8f990eb82ade23c015241b6ab85270fd"
     },
     {
       "name": "surfaces-13-albedo",
@@ -359,8 +359,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 171090,
-      "sha256": "d06fd4b3992c63e48a533f3acf3d13352c574a1755cf5b67ef245a17cc16d13b"
+      "fallbackBytes": 174866,
+      "sha256": "4b5f03900d0bbe993740b531488a6ca2f696642c82e0eca39bba54c8ab446a84"
     },
     {
       "name": "surfaces-13-normal",
@@ -368,8 +368,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 143106,
-      "sha256": "5e7335db6cffcf09370dd14c5e689f29444bc7fc94782179ff2efb6e38b19d92"
+      "fallbackBytes": 13232,
+      "sha256": "5c406d1b7707e4c5a90a99fb7a623489f67748589fc7a525deb3b01c2b76cda3"
     },
     {
       "name": "surfaces-13-orm",
@@ -377,8 +377,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186662,
-      "sha256": "386c47ef8e8892365f6692657110d826839448be956d798bf4c1c98ac9f84f8c"
+      "fallbackBytes": 179666,
+      "sha256": "0d093ae83e7be70a29830178ecc98c0fdd70be4681d0b419730f237591d66807"
     },
     {
       "name": "surfaces-14-albedo",
@@ -386,8 +386,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 109994,
-      "sha256": "81d3fd9bc585ce6c0566e4955ad0b5867048b4ee8c35d27ff3a836859888875f"
+      "fallbackBytes": 121014,
+      "sha256": "60fc33e57f847fd3dcf2ec25dbf2247e941e5227a91e70d05b479410ed9802b8"
     },
     {
       "name": "surfaces-14-normal",
@@ -395,8 +395,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 98302,
-      "sha256": "09bced4cfaea88a7a053897992702eb7d7d066488b63dc071b39201486ae5c4f"
+      "fallbackBytes": 17794,
+      "sha256": "c54d226598c4eb437da515848c79f0f916bfb829f535a6432c2988f2f405465f"
     },
     {
       "name": "surfaces-14-orm",
@@ -404,8 +404,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 201948,
-      "sha256": "79349cf8aa2237be4d62297249911d3b2161075e36f75599cad8e8d65ca95769"
+      "fallbackBytes": 153092,
+      "sha256": "ce55ef6e95859ac2ef813b2057c8376f8526961485e5ada71465b9616646defb"
     },
     {
       "name": "surfaces-15-albedo",
@@ -413,8 +413,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 124562,
-      "sha256": "b3bf6c74696a37837e28df72e4a20ae8e00104b643645a7490b18f8bc4373bfb"
+      "fallbackBytes": 133414,
+      "sha256": "7b957aa0d7cf543dd139f922c976f41956fef8440e0c1f843f8cbac686710075"
     },
     {
       "name": "surfaces-15-normal",
@@ -422,8 +422,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 129218,
-      "sha256": "f142ac8de39b2e607a7039e7270a055d48bb4f283e8c1fa1283ec215c18e8cd3"
+      "fallbackBytes": 74948,
+      "sha256": "c060814ad86fd779b20315e11c1c176d5c93fdbd6564b7fcecac7836c0376ed7"
     },
     {
       "name": "surfaces-15-orm",
@@ -431,8 +431,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 186662,
-      "sha256": "386c47ef8e8892365f6692657110d826839448be956d798bf4c1c98ac9f84f8c"
+      "fallbackBytes": 181750,
+      "sha256": "5799fdd23de5f7657f769bafe3558a10a3d3f29e493212ac11dfecbf0220dd1e"
     },
     {
       "name": "weapons-0-albedo",
@@ -440,8 +440,8 @@
       "block": 6,
       "mips": 12,
       "astcBytes": 2497772,
-      "fallbackBytes": 20462,
-      "sha256": "574cdb56ce8e90da28adc7782ba2bee60871ef300e4c27e4a8fdfa6ee3b9da0b"
+      "fallbackBytes": 8412,
+      "sha256": "9954a485541c85d70539802a5d52455e479ffb5e75ae54027c653fe634b921fd"
     },
     {
       "name": "weapons-0-normal",
@@ -449,8 +449,8 @@
       "block": 4,
       "mips": 12,
       "astcBytes": 5592492,
-      "fallbackBytes": 29548,
-      "sha256": "fb63cc0f14787f6d6312658087a758041d9b8c73e76e4e839a75aba07566b4c8"
+      "fallbackBytes": 2276,
+      "sha256": "a108fc9c340e59c2d94bd86ff16d3f07ddb8684b99e2166d85335b11b111aecc"
     },
     {
       "name": "weapons-0-orm",
@@ -458,8 +458,8 @@
       "block": 8,
       "mips": 12,
       "astcBytes": 1398204,
-      "fallbackBytes": 644210,
-      "sha256": "2ed1e79718a577e7d22c6eea51517fb2e9764f498b110b27600902feaa3f5cc8"
+      "fallbackBytes": 348176,
+      "sha256": "a47e85c2f3d7d1049040b6a81af935effd865f697d4965e03ef77e91dc36b77e"
     },
     {
       "name": "weapons-1-albedo",
@@ -467,8 +467,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 18818,
-      "sha256": "e47c2225e89d561880f2725bff6e1193776e2a464a002fedbd4875f6f43c4227"
+      "fallbackBytes": 16112,
+      "sha256": "4edf52b88eab884f132bdf619664dbb5c594a7079ce65f7183c37c57ae736255"
     },
     {
       "name": "weapons-1-normal",
@@ -476,8 +476,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 1602,
-      "sha256": "cfed1eed5fee5154578ae1c19260efb6b817cade6515352ee5e3bf95bc162acf"
+      "fallbackBytes": 756,
+      "sha256": "b6374ea29910a28d8655c5dafc350d3d2479b9e8c8ea32605d2ca004556f8129"
     },
     {
       "name": "weapons-1-orm",
@@ -485,8 +485,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 194814,
-      "sha256": "cf4c381b133bd9d6cbb200a142a0f83e34188d735b96b78f890821b16dbdf9dc"
+      "fallbackBytes": 146278,
+      "sha256": "48e1a80e1c48f1a2da39abecdd69b829eae7e852ef5e05d592b24ce37e4b0282"
     },
     {
       "name": "weapons-2-albedo",
@@ -494,8 +494,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 27522,
-      "sha256": "cabfdef753202aedef1120597e2abc29191704f3d80f5089ea0902b5d8f3dbff"
+      "fallbackBytes": 12454,
+      "sha256": "a23df87c1472dc459c9cd51d1de8e913d4252a758d1853d4a6adb1ce6380abeb"
     },
     {
       "name": "weapons-2-normal",
@@ -503,8 +503,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 952,
-      "sha256": "ba0e6e6a1dc8e723d800aadc32750e215bd2eaedbcaf5c843598a3909f60ec81"
+      "fallbackBytes": 656,
+      "sha256": "eebe2e90db0443ebeec05a615d7dc142a655e71b7baa1e6f594dd8cce9a4d33c"
     },
     {
       "name": "weapons-2-orm",
@@ -512,8 +512,8 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 162256,
-      "sha256": "cca189fb9cdeedefbd4727a129dda30e8f63041d364c9a4a4aee559b5bcaa6bd"
+      "fallbackBytes": 152046,
+      "sha256": "81bc35537738f20e184ef59a5066608487c40f40f57c4cace36d8e12d4019dc6"
     },
     {
       "name": "weapons-3-albedo",
@@ -521,8 +521,8 @@
       "block": 6,
       "mips": 11,
       "astcBytes": 626344,
-      "fallbackBytes": 6284,
-      "sha256": "fb23395b43c573f70f0e02261698a20a27cde3ca1cf44851373f15b68a957df3"
+      "fallbackBytes": 928,
+      "sha256": "7dc999144fc55d91edf44ba3a89b0ac0d7d6fc89e8f02c04eafdc571b035921d"
     },
     {
       "name": "weapons-3-normal",
@@ -530,8 +530,8 @@
       "block": 4,
       "mips": 11,
       "astcBytes": 1398184,
-      "fallbackBytes": 872,
-      "sha256": "86426b1604c9bfaf1aa34469880505e212a1f3aa60c87679771bbe86ab14d61a"
+      "fallbackBytes": 656,
+      "sha256": "d78ce5c679a82eb982b38ecf9ddc97d87d5d9bdd4a29f01046e78f3a0031c8aa"
     },
     {
       "name": "weapons-3-orm",
@@ -539,710 +539,710 @@
       "block": 8,
       "mips": 11,
       "astcBytes": 349624,
-      "fallbackBytes": 162158,
-      "sha256": "421320c17444dff218933a1ba007d4ac7f8243c664ece363ff6a5c96ab6d0524"
+      "fallbackBytes": 65390,
+      "sha256": "e44fb9034f7cf0a86d8340355d10e02a6765c1712baa4c6c92af0738bf74f123"
     }
   ],
   "astcGpuBytes": 54597356,
-  "fallbackDownloadBytes": 8309898,
+  "fallbackDownloadBytes": 6036082,
   "lightmaps": 16,
   "lightmapEncoding": "linear RGBM range 6",
   "files": [
     {
       "path": "surfaces-0-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "e13156562fa3bf26f69c64d0322c5b5c3de0d09caa7e6f0208013003138e4a11"
+      "sha256": "eeb069fdf64bc8acc307b15dc4a63aed85950c139a16f588288ce94f02850c11"
     },
     {
       "path": "surfaces-0-albedo-webp.part000.bin",
-      "bytes": 121846,
-      "sha256": "5133a5efcf41ae8e90046ea55f6de662cb5c3f64e5d2958dee7c6d6814754431"
+      "bytes": 132250,
+      "sha256": "3c6cb21724f4202f73efcf229c24e2da40a37d03a76c0fde46f83b07479cc7f7"
     },
     {
       "path": "surfaces-0-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "fcefed81a8d9b875175814ded869458585901ee3adbe800c1ca6c6982c1a5b2a"
+      "sha256": "ea94429c2301ab604a2e5b7b0d70f32d11f9ef2a4fdb309470a357dcb069ad19"
     },
     {
       "path": "surfaces-0-normal-webp.part000.bin",
-      "bytes": 142086,
-      "sha256": "b0322393bd8e71d5f556401144abda61dbace48a03b1e054285764b9ec75a8af"
+      "bytes": 14876,
+      "sha256": "8eb11a41bd753ed96eb054eb246838d3c0dbccbacbf254571313b3d5e379a78b"
     },
     {
       "path": "surfaces-0-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "0f0a6ddd6b03af5a8e0c0694ffc02a41509e4868d8fc5455d6a131be01c2ed6d"
+      "sha256": "2765727f7bb4008b9b67b047c2a820efc487407fc9146b781da2d193f7212b92"
     },
     {
       "path": "surfaces-0-orm-webp.part000.bin",
-      "bytes": 186646,
-      "sha256": "75de93a171a28c02ae60e4e293d7c745a45b695652b6d365f8c141c10ef1c46a"
+      "bytes": 174662,
+      "sha256": "590cd087e8303346fa5eef837f92738841b04e6bed24cfa52319dda12be3bae8"
     },
     {
       "path": "surfaces-1-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "4f5c3a45a48ab46fea478bd1c416a08a55fbc6e22ae4e72d1892305a72a02457"
+      "sha256": "8c6939f606ea190e8113bc7513355a3a9ae7a095b8412ad7c33a8c63bd7ba907"
     },
     {
       "path": "surfaces-1-albedo-webp.part000.bin",
-      "bytes": 116080,
-      "sha256": "304cdffd4db7eb4f99292cf0536c74b6f419e3b17bf415abf7a021d4eca37d32"
+      "bytes": 120790,
+      "sha256": "0bfa77ca573e9e673941397ef9dfb50cc851ccfee8b663eec54dbce425854702"
     },
     {
       "path": "surfaces-1-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "1e228184c41705452ccdf6ec04c7bc28f6ae9c489a0697d70dac62804c2c1944"
+      "sha256": "a60481f957610afab9f856da7c94b08f6d8b4e99e4c7d991dd807edbcb3bcd62"
     },
     {
       "path": "surfaces-1-normal-webp.part000.bin",
-      "bytes": 141290,
-      "sha256": "cea2a18dac4d7b78ca15dda78a0f5dd29005cb610d64b9293401f3a7f362e066"
+      "bytes": 6022,
+      "sha256": "93790e774526e8b5abd9aea4e88f05789f7aca4215912c259dcc468d334637a8"
     },
     {
       "path": "surfaces-1-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "sha256": "31a5d61c420757a3b5e8e728f17bb2d4f66147032280c3317ccf7b5038dc9f1b"
     },
     {
       "path": "surfaces-1-orm-webp.part000.bin",
-      "bytes": 201410,
-      "sha256": "14d973cafcfb135fcc3202b4c8942edc39935387355267995faa99cb24ac4e86"
+      "bytes": 92272,
+      "sha256": "dcad473228d16f0ecfb4cf0df57435031b2495f3e11da5a6e9e1933ee2ad4ef6"
     },
     {
       "path": "surfaces-2-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "b55ba625cdcc1f0fbb52f27b1ac2478640f3a71e6b741e178a3d15fc6d5f666d"
+      "sha256": "e20ecfcc2d03e82057401c46f15e35b299a5d8a2f2388cf0e3f95782e63273a6"
     },
     {
       "path": "surfaces-2-albedo-webp.part000.bin",
-      "bytes": 139728,
-      "sha256": "1e13072a2dffe6ca38ab36c5682e8bcd0c4746382214acf1543786ba7260b887"
+      "bytes": 147314,
+      "sha256": "96a191a0c6f28789968776bac7eadccd54f4c09a3faad4c0bc66dfc187ef8920"
     },
     {
       "path": "surfaces-2-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "6c4454629170ee2781b0acb26065e9f7b64754c946e1fa3763f34ef728b0e8f1"
+      "sha256": "e5159af8472fada72c0f737032563aea1222e4d0e66e7a2ac6294cd5e27991a6"
     },
     {
       "path": "surfaces-2-normal-webp.part000.bin",
-      "bytes": 149964,
-      "sha256": "323bcae3ec614f1bad9e82b26afe9f9748a71b14a6964cdd196e1b0ebc3dca4e"
+      "bytes": 89844,
+      "sha256": "abc826727a97d60e602ebe1cf81f4ce6730c0ce64b2d8a032ecedf351eb77fc9"
     },
     {
       "path": "surfaces-2-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "sha256": "f3abb03030726cdcf233debd3438f771d83e1dceb9c93fe3eff2cc5c6cdcb163"
     },
     {
       "path": "surfaces-2-orm-webp.part000.bin",
-      "bytes": 201410,
-      "sha256": "14d973cafcfb135fcc3202b4c8942edc39935387355267995faa99cb24ac4e86"
+      "bytes": 157966,
+      "sha256": "d471db8f181bbbc89255f3c305c0066cb0cf30b8662b3bdbc036d5ac3a1623a1"
     },
     {
       "path": "surfaces-3-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "2af364bae9b6bfda3aadd20c2638dab5cda4aff29fb039af88ca6c834760573c"
+      "sha256": "b852e4f6c9808e93a5ce2a5756b7869408eb04b2cef0d06101e5ecd5e99958c5"
     },
     {
       "path": "surfaces-3-albedo-webp.part000.bin",
-      "bytes": 128872,
-      "sha256": "33c944bb5f09a9f9170183746740d9a63c2ecbe4193114f968ac53cd2a4855d0"
+      "bytes": 141744,
+      "sha256": "f2a0074e6293f51a12f0d6f99f8d1a73a7457787cd696c3d8e2037ca689ad06c"
     },
     {
       "path": "surfaces-3-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "0f14c06c15274681a3d4f690084f13b64bf8820c85083f31e7ad90ab16ee1482"
+      "sha256": "50b3593d84b08a5509f10a9a007f3d2f0d722a46246a085e92182bc3db173002"
     },
     {
       "path": "surfaces-3-normal-webp.part000.bin",
-      "bytes": 105032,
-      "sha256": "890fe91225dfb7a61a3f898c6996dcd2d06b23883f6d5786b939a47f7dfeed3e"
+      "bytes": 27602,
+      "sha256": "927474c687d46393f4f9798edc56c780d0398abd19f29e040e93e1b093f68200"
     },
     {
       "path": "surfaces-3-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "0fcdf4a7f9d11fcc5b55ddbfede02f61f5c6540d8b6af67e63a45f3f33b9d772"
+      "sha256": "525e2189ebbf3b2ace7ab51945aca9827580eb19dc182c3fa79d64c43a1263b0"
     },
     {
       "path": "surfaces-3-orm-webp.part000.bin",
-      "bytes": 201410,
-      "sha256": "14d973cafcfb135fcc3202b4c8942edc39935387355267995faa99cb24ac4e86"
+      "bytes": 168446,
+      "sha256": "8633451ea6938c11613ad9fa0204f763c572bf993b72cc05f2ab9d055275495f"
     },
     {
       "path": "surfaces-4-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "a729e611e9f34f336063357a997c02b98d87d5d0c6f8fd31091245b9573231a3"
+      "sha256": "e6f74e7429d645c197ed83857792682d3b72f1d12f1d9bb207547cd309598971"
     },
     {
       "path": "surfaces-4-albedo-webp.part000.bin",
-      "bytes": 148844,
-      "sha256": "7688abb61912f3729b20048516276beff2e13ba876ab3c6817c8ad8afdde07d5"
+      "bytes": 144364,
+      "sha256": "9ddfb6633c3d788f3b226588f0fd5be2240257988f703bda40573ea33b4e6f0a"
     },
     {
       "path": "surfaces-4-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "041ca91dcd0841517258e4ddf8b74cdfe1ba12f24c68ac2dc8d5ff8655efd221"
+      "sha256": "5c12a056751a788c2671c49807b2fe6fd247cfcee6085d44bf5c1a604745dedf"
     },
     {
       "path": "surfaces-4-normal-webp.part000.bin",
-      "bytes": 130144,
-      "sha256": "8093aa8a0b885f7f85a5e07275b727e44a34eb987a943cb35c9d3c89c0973592"
+      "bytes": 1078,
+      "sha256": "e228faaa528222a6fb2a5a4101f3f5ebb4de443b28f048a4607d56684f17f0d9"
     },
     {
       "path": "surfaces-4-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "0f0a6ddd6b03af5a8e0c0694ffc02a41509e4868d8fc5455d6a131be01c2ed6d"
+      "sha256": "535cbe80b6667cdc26b675dd652547e53c2287a7b09f05f3cb37480c9feabfea"
     },
     {
       "path": "surfaces-4-orm-webp.part000.bin",
-      "bytes": 186646,
-      "sha256": "75de93a171a28c02ae60e4e293d7c745a45b695652b6d365f8c141c10ef1c46a"
+      "bytes": 162362,
+      "sha256": "7148132f9d4f2fe16b5b4608a175e8190afa33ba3949ab6b8ba93191efe4f519"
     },
     {
       "path": "surfaces-5-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "032d2e10e838f5e2436164d4c0662faaad3ba680b8efd013051318c3013ab337"
+      "sha256": "82b3d799f7a2ec1807afee1487dabeda4ad81c6e7f945c8f06e5bc79c25c7e9d"
     },
     {
       "path": "surfaces-5-albedo-webp.part000.bin",
-      "bytes": 146648,
-      "sha256": "10499c0482abba156ea2b479fbb2acfcc8cbebf7133cd691880f0ca88ba9c23f"
+      "bytes": 157272,
+      "sha256": "f546fcfa62c83c7ee30ba0f531b31c60fb0baaf2c28001275fb85c5515bb7294"
     },
     {
       "path": "surfaces-5-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "af3b3cf33c86eae9e2b4b78abd901cde63c85164019283c642d676b4f1fa7222"
+      "sha256": "7c6d7c35c8fdd5b2099c9e560225cb00e98d926e6b1e12c3d13f0a138e9878c3"
     },
     {
       "path": "surfaces-5-normal-webp.part000.bin",
-      "bytes": 131364,
-      "sha256": "4783ebe1c01afe4aaf35d6a270152268eec94ddeff1cfd0095a5c277efdaec8e"
+      "bytes": 6036,
+      "sha256": "3c72d1b6482d8e29058a98780079edd843127fc30817686948f580fc282bc29e"
     },
     {
       "path": "surfaces-5-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "sha256": "780141ff00cedebde210de62a0cd000c796a1b19645d4fb4642f2f6edccbd6a4"
     },
     {
       "path": "surfaces-5-orm-webp.part000.bin",
-      "bytes": 186652,
-      "sha256": "65e2a71f3ac28beea2c5f3096fe0acc8909cf870800efdb8da58164f70bd870e"
+      "bytes": 159868,
+      "sha256": "c5b4e4e27902bca54bd38c009299728eb68c9f9df2ff5d2bbe7d5da0418b9eed"
     },
     {
       "path": "surfaces-6-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "68e2a9c0295567f7adfe0f0f05427a26b601413382faf497fae07959a3c3ac09"
+      "sha256": "9ad685e2d5c393255f74b12b08b82c1e3fd1fb8984452a8e648d3ce525f3fce1"
     },
     {
       "path": "surfaces-6-albedo-webp.part000.bin",
-      "bytes": 136676,
-      "sha256": "fd890cba09c6eea31a77e312f77d87f58c3ece9990bab3f62df47ba53ab35b3f"
+      "bytes": 142206,
+      "sha256": "acd5c3598917ff02ae5c78c364191f1fc94f7de73dc50dff26387f32a87e1e44"
     },
     {
       "path": "surfaces-6-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "0ac53860c7cd533173415efbe1ca94adacc638f94944c325c78d198c5c377fb8"
+      "sha256": "ab5fa069380034407c646f90b680af2b780c8b0c6a3bbf881c3a80da59c5f762"
     },
     {
       "path": "surfaces-6-normal-webp.part000.bin",
-      "bytes": 146204,
-      "sha256": "95a0991b7d3e848f48953b884482f03329e6e2bd4092037887c72607dcb38561"
+      "bytes": 1396,
+      "sha256": "173b4b55c90414e4729c52e7c2e793c30c0a9018f128c8794cc8fc833126526a"
     },
     {
       "path": "surfaces-6-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "sha256": "604bf394eaf0f4ef2fe1c355acda71d58ff73cf4a491520828f0c5fe06160521"
     },
     {
       "path": "surfaces-6-orm-webp.part000.bin",
-      "bytes": 186652,
-      "sha256": "65e2a71f3ac28beea2c5f3096fe0acc8909cf870800efdb8da58164f70bd870e"
+      "bytes": 89588,
+      "sha256": "99b9f49708df9cf78da48a2ff1876bc21e90ad2c3d88c56757d5d2a5e118adf7"
     },
     {
       "path": "surfaces-7-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "affef06943f4f7afc08645311fb5ce72f732ed7858b3c4870126be6197e94469"
+      "sha256": "a8184c9d1eaee5db403295e6ae55a366f9e210ccdb7190009c6453930d8acf9f"
     },
     {
       "path": "surfaces-7-albedo-webp.part000.bin",
-      "bytes": 148018,
-      "sha256": "b4a359ef5480bb1d622eea837fa0dff63b7ce35a1e3c66540e3dca5174d296b4"
+      "bytes": 157068,
+      "sha256": "6fb1e7427ae1580e22d603fe7e133e1537c1bfd502ad865b2da6942aaed4b507"
     },
     {
       "path": "surfaces-7-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "62c72e378e022076c886a319b30aa19d39c75cbfbecfc1921aa94fc4bfc80ded"
+      "sha256": "a225101f9b3ae23240b86d9f2290930fbf9a6e22b5c7a3f268d1ceab190ea8d5"
     },
     {
       "path": "surfaces-7-normal-webp.part000.bin",
-      "bytes": 139304,
-      "sha256": "7c3b295c60aea78180129557dab4746bc885158182189133bd8ff048f7d960e7"
+      "bytes": 84116,
+      "sha256": "b1f785f1243730fb7b27e283047fb5b58688614b87fcd1db3bfcf77dc97189be"
     },
     {
       "path": "surfaces-7-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "929b384dae8dcdea3fc347077b0bc9d20791cb0a7c2823b66e4972834789dcc1"
+      "sha256": "3cb06f1b87a9b18f4718e9010a6ff69a05b81cf581668ebc3beb119a28bd6d3b"
     },
     {
       "path": "surfaces-7-orm-webp.part000.bin",
-      "bytes": 186652,
-      "sha256": "65e2a71f3ac28beea2c5f3096fe0acc8909cf870800efdb8da58164f70bd870e"
+      "bytes": 210226,
+      "sha256": "8849e025d01c57315852a6c8d5f3ef136bd4264daa6c89a2f9b698fbe6f6447f"
     },
     {
       "path": "surfaces-8-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "bad903dd291842425b1f06742d84a1653f5888c2b500bea5dad4d0a6df0d23cb"
+      "sha256": "490a27f527fe4394726f75bf759424bee642ad0afc14006c7cbfd2e937928cf6"
     },
     {
       "path": "surfaces-8-albedo-webp.part000.bin",
-      "bytes": 77782,
-      "sha256": "9a37958245a700612a3f08d4ab4610fdce3b755573cd4fa5252f9c6173def3a5"
+      "bytes": 71030,
+      "sha256": "d39821edeffb0a8f8ee58d2431b94b84dc6fb79a0ded1d0f41355491e0efb174"
     },
     {
       "path": "surfaces-8-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "0d90bf509ccfd6e26bfd34d4908e50f3c733a5e29310aba0384f1364ccf1fb5d"
+      "sha256": "51d272d2dac8c55e1a1886852f525e26684d5215d021b531dd54c389a3f624ab"
     },
     {
       "path": "surfaces-8-normal-webp.part000.bin",
-      "bytes": 110996,
-      "sha256": "6b3a3331e5e96423699759ba8bbbfcd1c7d1a84c6823f88a0211d1d28f9efa13"
+      "bytes": 656,
+      "sha256": "f8c46d07f9710daee3f5fc09b5b4a90596f454f367e8cf4e62d5d3ec57a471d2"
     },
     {
       "path": "surfaces-8-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "ef3e282ef4de8bd91003c79679e81efa7477b5e25a84a03218e3dd6d8c637c53"
+      "sha256": "c53d7c8bebbfd93cd29eac26910e48bb790addf9fa26cab8a2b7eb97f4c8d8f9"
     },
     {
       "path": "surfaces-8-orm-webp.part000.bin",
-      "bytes": 198818,
-      "sha256": "8c2a534c2fbbd67c31a0925096e575d3d03f59a1fe17e42bd8efbcce9de9029e"
+      "bytes": 125754,
+      "sha256": "98bf57d21150a2b566d04824bb74ad72e280aa3fe302a62ff0b07584f0db2042"
     },
     {
       "path": "surfaces-9-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "773fa617c38dce22c15101b84dc8d2683869002e12a2e00b5abb7dcf80b66ec1"
+      "sha256": "2fc21f2c39c7d512adf29b744fe56cc424c727a3b623927452fde96be4971028"
     },
     {
       "path": "surfaces-9-albedo-webp.part000.bin",
-      "bytes": 131452,
-      "sha256": "58de504c818eb4027f37fd5a40d0bde729723d4d3a8595e902ec8c44ac9c72d5"
+      "bytes": 137732,
+      "sha256": "6f2b5ea2c059e27ce69a78bd185643ae35b378ef64ddaab509603b8f15705788"
     },
     {
       "path": "surfaces-9-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "8bd4776a1eeef28f5120bafe05a478c6d867a71f8a0b5c2f2ece2d3019cfc996"
+      "sha256": "c07e68720e2cf1ab54ccb029c61c13847a500dbd37fc9535c8b8f1c6e532b30d"
     },
     {
       "path": "surfaces-9-normal-webp.part000.bin",
-      "bytes": 115754,
-      "sha256": "16f53177344f8f48c7372a1ce95e309f4cacbc9f86d50ed7f605cd80d66a8a94"
+      "bytes": 738,
+      "sha256": "37efc27ce16e172c3e9d1f0687973811625e23dc2c47e4142201f51d8beb1b19"
     },
     {
       "path": "surfaces-9-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "290963784cd37e26e7c4c53751780c4ec3b2e823c1ae46e480a07a126465c7f5"
+      "sha256": "5a589a24626ffd47135d6e8ba0d3e8274292363aac78eae8cd273d03b5885880"
     },
     {
       "path": "surfaces-9-orm-webp.part000.bin",
-      "bytes": 153334,
-      "sha256": "93385059db4f19e6b4dd7f6a72eb9070d9624113cedb057779044720e0c32aeb"
+      "bytes": 171532,
+      "sha256": "6a7d2d6a657d5bd4ea08f87678d4e621888d5a92c6fe505117956d19c525a496"
     },
     {
       "path": "surfaces-10-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "4821b2fcf90536ad6513040bf7fcb346f4083ff848fcad20e199067c88732249"
+      "sha256": "6a27c0c05653235f3337aecf7db137967e12fa05e49220caa3e0d70cc7d0445b"
     },
     {
       "path": "surfaces-10-albedo-webp.part000.bin",
-      "bytes": 101200,
-      "sha256": "caecb3b9d54dd4d47be1052281b46431af1ed5bdb9fc40f6ab9fa66221c8fc19"
+      "bytes": 106644,
+      "sha256": "b82c3f041f0185ed6525b938685e120959a40defec32f4ac13ee20631a89e141"
     },
     {
       "path": "surfaces-10-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "9041c1fc47ae3451a16464794e4355e2484241d0a7eba12c9442891ffeca6c7f"
+      "sha256": "723a6d79d71821fef2927482fb248126827e2b3ca9a88b3910b6eb99e3614eb3"
     },
     {
       "path": "surfaces-10-normal-webp.part000.bin",
-      "bytes": 111084,
-      "sha256": "9c6c6e8082f0db8585d9bfeba75b203b2e2a72577b6acc07d2eedda5bc79a3d6"
+      "bytes": 15602,
+      "sha256": "2d7a7bd1a072b81328fecb113a8bfe1ff02f311cf5577d8abc8b96134cfdeec6"
     },
     {
       "path": "surfaces-10-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "5e1f85aad8a2e357153c43de271e578a2b5f4eac89d77fde3e5173392c8ed272"
+      "sha256": "3fe9c9b346ed89039dfc4931db2ed6dffeb76ee09870e920ca016afe831a1899"
     },
     {
       "path": "surfaces-10-orm-webp.part000.bin",
-      "bytes": 186846,
-      "sha256": "19f95bf795bc1cbd6f3eaa87e0efefbf8a82518bf70da9ae3c53374628cc0ad0"
+      "bytes": 171010,
+      "sha256": "3c38529888a0b63454bc56fbacc895a97500c2de754b8073bda8f949c198ebc3"
     },
     {
       "path": "surfaces-11-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "a8ee8553af26a22c633d886fa0cd956544e39d30aea037261157876c7cf2eb72"
+      "sha256": "89593a639d1c51dd9f0182e4af240df44a9db54881bbb8643a12469a65c63b08"
     },
     {
       "path": "surfaces-11-albedo-webp.part000.bin",
-      "bytes": 119834,
-      "sha256": "ae263d42454b332b467095e77a923992d259f08ecd2d8262095bb64bdcbf0d9d"
+      "bytes": 124038,
+      "sha256": "201fc29fc8fb30db3ab0afbc2463550bd02b728c6352c73ad107bad392676dd4"
     },
     {
       "path": "surfaces-11-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "e4861dbd2d2cf3d114562642a6dab0938c3eded65b64c5d96a2285d7d52f45ef"
+      "sha256": "acead365b1159cc80e35968b4f495f899257bdbf9fc13d24f56ac9a31ce15838"
     },
     {
       "path": "surfaces-11-normal-webp.part000.bin",
-      "bytes": 106736,
-      "sha256": "93250eabb3fbd808989f249ba5dcd9e4ca3a157b4428b7a458092b449a7ebf50"
+      "bytes": 1404,
+      "sha256": "cf84525ccb00393f7640b1d256ddbb63ee29bd940294096311162691608feab2"
     },
     {
       "path": "surfaces-11-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "d9328b89f4499f4a76a5f80a0623ea250a4c98947ae1c36f6e9f6a374c0fcc90"
+      "sha256": "1061de8b79cc2deddc38439d718fa60a03a0452a78a051959964eff02cfcd552"
     },
     {
       "path": "surfaces-11-orm-webp.part000.bin",
-      "bytes": 101746,
-      "sha256": "95076115be1704d2bbd0fe0f2aa8816d11504d042c210723268e76e33eaa342a"
+      "bytes": 356970,
+      "sha256": "d0bceaf37760a7e3c1a36e369a8743b9d5ad84f2b55ca7374a088538799901c2"
     },
     {
       "path": "surfaces-12-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "ebb67c27b4e328e72b4a204e22b1ea626d920c6446517efcb0ca8a5f3762e7d5"
+      "sha256": "5a05172c80c7361c4568a2a9ac7c3e8522aa63e1d0f2488a2c8a5b05e1720812"
     },
     {
       "path": "surfaces-12-albedo-webp.part000.bin",
-      "bytes": 156712,
-      "sha256": "6123cef7fed07ad61bf19646d942167127b7896dc3ecb346ed5c6add5e0f66ed"
+      "bytes": 165054,
+      "sha256": "3387ea365ec8cf70cb4763603c87436aeffef7eaea9135f524b3c283de74f8ef"
     },
     {
       "path": "surfaces-12-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "767a1fe720cf59ea4ee40ab98d5e5650684b6e2558a27fdf36d1fd26c0f4d867"
+      "sha256": "b679977994ed2e78ea543fb7e05c4b65c4fe26e2a3a129ed25ffd9dd8ae5f294"
     },
     {
       "path": "surfaces-12-normal-webp.part000.bin",
-      "bytes": 120324,
-      "sha256": "9aafb3ed6b4c263bc70f7cedcad58525cdcf002a28268c07578bf63c02451b62"
+      "bytes": 33818,
+      "sha256": "45a2785b10bb85880d4c6652a1963d5a7986a55eb62c2c607a0ea6fef28321b2"
     },
     {
       "path": "surfaces-12-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "32d4421a54ca427025a20fa0e63eece1b984947416d1e552c5208a1b360df1f3"
+      "sha256": "deab561edb636252f868c1c338efa19e8f990eb82ade23c015241b6ab85270fd"
     },
     {
       "path": "surfaces-12-orm-webp.part000.bin",
-      "bytes": 186660,
-      "sha256": "5f8983ee59eb6d8d22eda0bfb5cbbe36c225175bcf9c04637d3b54a5a00ddb1d"
+      "bytes": 160816,
+      "sha256": "b5bb4161bbcd110307d0a311c49e772668f25091b0b6294391d38859b51dec27"
     },
     {
       "path": "surfaces-13-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "d06fd4b3992c63e48a533f3acf3d13352c574a1755cf5b67ef245a17cc16d13b"
+      "sha256": "4b5f03900d0bbe993740b531488a6ca2f696642c82e0eca39bba54c8ab446a84"
     },
     {
       "path": "surfaces-13-albedo-webp.part000.bin",
-      "bytes": 171090,
-      "sha256": "a1c67f578bad6a3cd4bdaed7da493ae1fe8e6fc5291a5501379fb34be3c4aef3"
+      "bytes": 174866,
+      "sha256": "1937786fd1030963670289107bf5f3b279a6479dad0d64a1ec876270b9bc9136"
     },
     {
       "path": "surfaces-13-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "5e7335db6cffcf09370dd14c5e689f29444bc7fc94782179ff2efb6e38b19d92"
+      "sha256": "5c406d1b7707e4c5a90a99fb7a623489f67748589fc7a525deb3b01c2b76cda3"
     },
     {
       "path": "surfaces-13-normal-webp.part000.bin",
-      "bytes": 143106,
-      "sha256": "d7ed73b2ad0ce991bfa351c14a1a8aa05acb7a982d34de8379f31e9c75666b98"
+      "bytes": 13232,
+      "sha256": "07d972191b0987acf5e8e79a54c957ff30e906f7b6bc5a518f49e17c1cec6823"
     },
     {
       "path": "surfaces-13-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "386c47ef8e8892365f6692657110d826839448be956d798bf4c1c98ac9f84f8c"
+      "sha256": "0d093ae83e7be70a29830178ecc98c0fdd70be4681d0b419730f237591d66807"
     },
     {
       "path": "surfaces-13-orm-webp.part000.bin",
-      "bytes": 186662,
-      "sha256": "b1c618c9fc4c8465223eeb154dc8ddd5fd0b797daa07569a7c17e22e55f5338d"
+      "bytes": 179666,
+      "sha256": "f45d427570196f36eb61df6b3f98254dc52bb8cfec5a8681107730a83086b439"
     },
     {
       "path": "surfaces-14-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "81d3fd9bc585ce6c0566e4955ad0b5867048b4ee8c35d27ff3a836859888875f"
+      "sha256": "60fc33e57f847fd3dcf2ec25dbf2247e941e5227a91e70d05b479410ed9802b8"
     },
     {
       "path": "surfaces-14-albedo-webp.part000.bin",
-      "bytes": 109994,
-      "sha256": "d461e5431e7c30ed7e5c6c43dedb3b0552056b90d1a4969158a1d5f5d4d79ef6"
+      "bytes": 121014,
+      "sha256": "f6b790bcb657a5ac579b9fca49ef641d6abc09373783612a5c1341ac687e1ec7"
     },
     {
       "path": "surfaces-14-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "09bced4cfaea88a7a053897992702eb7d7d066488b63dc071b39201486ae5c4f"
+      "sha256": "c54d226598c4eb437da515848c79f0f916bfb829f535a6432c2988f2f405465f"
     },
     {
       "path": "surfaces-14-normal-webp.part000.bin",
-      "bytes": 98302,
-      "sha256": "0e0409b1a353b869d1063649131a8ce5709f0ee852f5d72fa1387ac611a92ff2"
+      "bytes": 17794,
+      "sha256": "b98dda834794eabbb8b91bab9246c0f6cf648932dd255a4ac6d0173fed0d9471"
     },
     {
       "path": "surfaces-14-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "79349cf8aa2237be4d62297249911d3b2161075e36f75599cad8e8d65ca95769"
+      "sha256": "ce55ef6e95859ac2ef813b2057c8376f8526961485e5ada71465b9616646defb"
     },
     {
       "path": "surfaces-14-orm-webp.part000.bin",
-      "bytes": 201948,
-      "sha256": "8ee0a01b7f7d153ebe43d6b1c57675010247c301209ba832e7c4eb6fa3dcb4b0"
+      "bytes": 153092,
+      "sha256": "f9eacff21246d83768be971681d95e6a4a5c1cb503f35f35b094f438cc9e0fb2"
     },
     {
       "path": "surfaces-15-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "b3bf6c74696a37837e28df72e4a20ae8e00104b643645a7490b18f8bc4373bfb"
+      "sha256": "7b957aa0d7cf543dd139f922c976f41956fef8440e0c1f843f8cbac686710075"
     },
     {
       "path": "surfaces-15-albedo-webp.part000.bin",
-      "bytes": 124562,
-      "sha256": "374bd01ebe0dce0f3d953d3f3aceb5df479811fe941cacaeb848fe3abe9f2bf5"
+      "bytes": 133414,
+      "sha256": "9d2b4a1f59e0eed1ceca342b00d42e393d8b6aaf37b738d0d924f954511f53d5"
     },
     {
       "path": "surfaces-15-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "f142ac8de39b2e607a7039e7270a055d48bb4f283e8c1fa1283ec215c18e8cd3"
+      "sha256": "c060814ad86fd779b20315e11c1c176d5c93fdbd6564b7fcecac7836c0376ed7"
     },
     {
       "path": "surfaces-15-normal-webp.part000.bin",
-      "bytes": 129218,
-      "sha256": "2f1e5a2793df49efcb7a21c02ddb97c14276383f89171e7e934c93946a1c14e1"
+      "bytes": 74948,
+      "sha256": "17b696a3d20b1f2e37450a3cdab485b72edc89f9f16491120ac0feadd8a712d4"
     },
     {
       "path": "surfaces-15-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "386c47ef8e8892365f6692657110d826839448be956d798bf4c1c98ac9f84f8c"
+      "sha256": "5799fdd23de5f7657f769bafe3558a10a3d3f29e493212ac11dfecbf0220dd1e"
     },
     {
       "path": "surfaces-15-orm-webp.part000.bin",
-      "bytes": 186662,
-      "sha256": "b1c618c9fc4c8465223eeb154dc8ddd5fd0b797daa07569a7c17e22e55f5338d"
+      "bytes": 181750,
+      "sha256": "6e263d7ba7bdbe594bf58725e7389c1dddba581b9e5212276f736aa8e9410b9c"
     },
     {
       "path": "weapons-0-albedo-astc.part000.bin",
       "bytes": 2097150,
-      "sha256": "6ae42655ffc6d7383fa84e10ed54066f0a26aae7cb9e442646f6f899b6e33068"
+      "sha256": "ed50a49dd66ecd0139e7de58137646accd11f15016d543bc312f8f64d95fd5d9"
     },
     {
       "path": "weapons-0-albedo-astc.part001.bin",
       "bytes": 400622,
-      "sha256": "63d9757cbabe28f0f111e7f8da91c47c5d61b5f6b288984f61ea1ee03de068ae"
+      "sha256": "a05faca61ca108f47a9cc86a0b10f5fdc83ca566c7e8acb5eb6eca017a592a03"
     },
     {
       "path": "weapons-0-albedo-webp.part000.bin",
-      "bytes": 20462,
-      "sha256": "e878f83020feb8f913525826c9b8f2920ec748eb7e8c93a2776f9b2e4249d8bb"
+      "bytes": 8412,
+      "sha256": "400b33ac2cfd5b0012cbbff5d2575bfd128df3557432bae56e3c3459fbd183f9"
     },
     {
       "path": "weapons-0-normal-astc.part000.bin",
       "bytes": 2097150,
-      "sha256": "ae340b8e29576f57226b97af524630c9b871d53153f0d91fdf2d47a5fde939a3"
+      "sha256": "fc7b53b2ec6e390cd2e6ffeb9fc4e90bf5e0f5b79d16bc873513e5873d679132"
     },
     {
       "path": "weapons-0-normal-astc.part001.bin",
       "bytes": 2097150,
-      "sha256": "3adb8ecb78828ca02c7c67324f3526d299d4843d84ce3f85c6d59e5c03556aa3"
+      "sha256": "c9f74649e7de404b87ceb72caf3a6893f0a403942cd8ff0959eb702882cc396b"
     },
     {
       "path": "weapons-0-normal-astc.part002.bin",
       "bytes": 1398192,
-      "sha256": "58c8f4a8d3cf0bfefcfc5e2a460461b282d83b4f8731fe938d60245059cca733"
+      "sha256": "498c941792f8160afd001a55c16d747188e2c65be7f80b47e764002542b16eb2"
     },
     {
       "path": "weapons-0-normal-webp.part000.bin",
-      "bytes": 29548,
-      "sha256": "b6bde626544bc9e1f8f58849883b19e7f8e9cf1aa6da0f84fc57aa04e0058e5f"
+      "bytes": 2276,
+      "sha256": "f774cf0bd94a60374dc6bbecd75006320028ec7d2d62a50b2b1bbc01896fa383"
     },
     {
       "path": "weapons-0-orm-astc.part000.bin",
       "bytes": 1398204,
-      "sha256": "2ed1e79718a577e7d22c6eea51517fb2e9764f498b110b27600902feaa3f5cc8"
+      "sha256": "a47e85c2f3d7d1049040b6a81af935effd865f697d4965e03ef77e91dc36b77e"
     },
     {
       "path": "weapons-0-orm-webp.part000.bin",
-      "bytes": 644210,
-      "sha256": "c6be5a9ca82b30d4c4047efd82dd3a7d2dd7b964607ba2a3cd9686fe4b1f3fb8"
+      "bytes": 348176,
+      "sha256": "a2d7a520d9d08a22d257951e47a9a3adc5c3d2e3b01eb19f11b97dd1a136465f"
     },
     {
       "path": "weapons-1-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "e47c2225e89d561880f2725bff6e1193776e2a464a002fedbd4875f6f43c4227"
+      "sha256": "4edf52b88eab884f132bdf619664dbb5c594a7079ce65f7183c37c57ae736255"
     },
     {
       "path": "weapons-1-albedo-webp.part000.bin",
-      "bytes": 18818,
-      "sha256": "4266fe395cf7150ee038b32e90109fe6933034b4b6043d9aef6ed4a75de8c115"
+      "bytes": 16112,
+      "sha256": "d7cfb39c195a8561400ffd0a5069fb3b5e1bf7cf6fa8c4d2672b32aebe77737a"
     },
     {
       "path": "weapons-1-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "cfed1eed5fee5154578ae1c19260efb6b817cade6515352ee5e3bf95bc162acf"
+      "sha256": "b6374ea29910a28d8655c5dafc350d3d2479b9e8c8ea32605d2ca004556f8129"
     },
     {
       "path": "weapons-1-normal-webp.part000.bin",
-      "bytes": 1602,
-      "sha256": "0e040be06ab0b2a1152dddc1e9240d2865f684f8519234d6e103c1e7bda0a035"
+      "bytes": 756,
+      "sha256": "ceccda34576ff9cdcbcb0cc0ac395603efbefedea749d6919dca80cd097b1a86"
     },
     {
       "path": "weapons-1-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "cf4c381b133bd9d6cbb200a142a0f83e34188d735b96b78f890821b16dbdf9dc"
+      "sha256": "48e1a80e1c48f1a2da39abecdd69b829eae7e852ef5e05d592b24ce37e4b0282"
     },
     {
       "path": "weapons-1-orm-webp.part000.bin",
-      "bytes": 194814,
-      "sha256": "c7e663d0658f9996fe24bea563c0bd6eac3686e33ca2182a540ba3fdba55c486"
+      "bytes": 146278,
+      "sha256": "44432d99ae3d39c229c50e65b21ba6edc27593d406ab80be072c29e441d48259"
     },
     {
       "path": "weapons-2-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "cabfdef753202aedef1120597e2abc29191704f3d80f5089ea0902b5d8f3dbff"
+      "sha256": "a23df87c1472dc459c9cd51d1de8e913d4252a758d1853d4a6adb1ce6380abeb"
     },
     {
       "path": "weapons-2-albedo-webp.part000.bin",
-      "bytes": 27522,
-      "sha256": "f09fb6d91d13248a688b0b8587b44137a705cfc9fa7f27ce8bb243f3196e2b62"
+      "bytes": 12454,
+      "sha256": "2d8756dac7510a9b30fc6250b78bc2936c4d7aa52150dac6ba27af0aec5b6a29"
     },
     {
       "path": "weapons-2-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "ba0e6e6a1dc8e723d800aadc32750e215bd2eaedbcaf5c843598a3909f60ec81"
+      "sha256": "eebe2e90db0443ebeec05a615d7dc142a655e71b7baa1e6f594dd8cce9a4d33c"
     },
     {
       "path": "weapons-2-normal-webp.part000.bin",
-      "bytes": 952,
-      "sha256": "845e0c5bbf05f5cb034ed1d8917a6dd7da459b28370a5f548ed6a2c3c5a23ccf"
+      "bytes": 656,
+      "sha256": "f8c46d07f9710daee3f5fc09b5b4a90596f454f367e8cf4e62d5d3ec57a471d2"
     },
     {
       "path": "weapons-2-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "cca189fb9cdeedefbd4727a129dda30e8f63041d364c9a4a4aee559b5bcaa6bd"
+      "sha256": "81bc35537738f20e184ef59a5066608487c40f40f57c4cace36d8e12d4019dc6"
     },
     {
       "path": "weapons-2-orm-webp.part000.bin",
-      "bytes": 162256,
-      "sha256": "65fdc7cd553844e9946082c761363a06e363d22530bcfffbbcfeec09e812f98b"
+      "bytes": 152046,
+      "sha256": "84677888955615295417778e70878f48b00109292cfc84237f825863ad12b37b"
     },
     {
       "path": "weapons-3-albedo-astc.part000.bin",
       "bytes": 626344,
-      "sha256": "fb23395b43c573f70f0e02261698a20a27cde3ca1cf44851373f15b68a957df3"
+      "sha256": "7dc999144fc55d91edf44ba3a89b0ac0d7d6fc89e8f02c04eafdc571b035921d"
     },
     {
       "path": "weapons-3-albedo-webp.part000.bin",
-      "bytes": 6284,
-      "sha256": "08ca68862f37b9683d02dd869aaa22deef8fd985bcc90c30dcb8989f9f642fc2"
+      "bytes": 928,
+      "sha256": "40d925302fe3449625de2b9af7b6ea885c59cf04740c1eb8804c5b3f4681b46e"
     },
     {
       "path": "weapons-3-normal-astc.part000.bin",
       "bytes": 1398184,
-      "sha256": "86426b1604c9bfaf1aa34469880505e212a1f3aa60c87679771bbe86ab14d61a"
+      "sha256": "d78ce5c679a82eb982b38ecf9ddc97d87d5d9bdd4a29f01046e78f3a0031c8aa"
     },
     {
       "path": "weapons-3-normal-webp.part000.bin",
-      "bytes": 872,
-      "sha256": "98a65e5b1e44a55f6e5f28fb485cc7e00a117241000a1334d871da1f9d989956"
+      "bytes": 656,
+      "sha256": "f8c46d07f9710daee3f5fc09b5b4a90596f454f367e8cf4e62d5d3ec57a471d2"
     },
     {
       "path": "weapons-3-orm-astc.part000.bin",
       "bytes": 349624,
-      "sha256": "421320c17444dff218933a1ba007d4ac7f8243c664ece363ff6a5c96ab6d0524"
+      "sha256": "e44fb9034f7cf0a86d8340355d10e02a6765c1712baa4c6c92af0738bf74f123"
     },
     {
       "path": "weapons-3-orm-webp.part000.bin",
-      "bytes": 162158,
-      "sha256": "947e9bf2262eff1380ff8b02c1920de0d218ee1c79ca51259f4e99c0c5dc1cae"
+      "bytes": 65390,
+      "sha256": "63750b520e46e43cbe1270870765c624e74cfc2a2df4ec5468256a64a79d3049"
     },
     {
       "path": "lightmap-0.part000.bin",
-      "bytes": 386374,
-      "sha256": "eef766592ac433b40b036de4e74671f4dae5f494f1243f31088526b4cd94eb70"
+      "bytes": 415384,
+      "sha256": "667fa770fafa448e1c56ee4852c79f21b86a5ae95b958834892ff1f99d6cbad5"
     },
     {
       "path": "lightmap-1.part000.bin",
-      "bytes": 365744,
-      "sha256": "dd8cf357e3be83be66b861986cdaa2e35f96add88e6ece8464e2f7253dd9af29"
+      "bytes": 396690,
+      "sha256": "5c7531c4feeb49669cb54b7e96f8e4faf59a51476ad4c88bebad4fad31c5f017"
     },
     {
       "path": "lightmap-2.part000.bin",
-      "bytes": 420560,
-      "sha256": "cb826d6e94c7ac5606ff6e275a23e0ff38544729e219a8d79d971eabe0df3fc1"
+      "bytes": 449464,
+      "sha256": "d67c0442523502b2fc6fb34a18283edcfc2e66685c1d2ddf7966b3534da6be32"
     },
     {
       "path": "lightmap-3.part000.bin",
-      "bytes": 447344,
-      "sha256": "adeb95ee23bdedd11e9437f1f5c041baee2581bd3c77e2cdaa97869f219d5288"
+      "bytes": 469934,
+      "sha256": "a85f65696313224b1fb65c7923bc0cec24cb3e0ea7aa5291e7a21f7e0e056780"
     },
     {
       "path": "lightmap-4.part000.bin",
-      "bytes": 374656,
-      "sha256": "71f3198e2c896b7252a954db4abf1a11bc50bce855f6ea1d349787dabae86671"
+      "bytes": 405270,
+      "sha256": "83c4e176c831d5bb9367b3cf7f4ae4fafa4295cf0dea664b5b837ae79647a2e2"
     },
     {
       "path": "lightmap-5.part000.bin",
-      "bytes": 394524,
-      "sha256": "b6e935c515f7032cf9754704dd4bfca12d9dd6c28e5a90b4eab45afd0c1e6fbc"
+      "bytes": 442736,
+      "sha256": "a694a36717ced8e7b6e0fc626a7fd6d4e7aedf4d4bfe5ea376248b0b6f375119"
     },
     {
       "path": "lightmap-6.part000.bin",
-      "bytes": 344662,
-      "sha256": "6ac0dae96c7902e60ab9420483980eee71a8bb809a3281eceb501580739c4823"
+      "bytes": 377004,
+      "sha256": "35d1ddce6100b25ec87c548009f68e2a5d4d534e50c95c00e31ef244f341faca"
     },
     {
       "path": "lightmap-7.part000.bin",
-      "bytes": 422088,
-      "sha256": "ba8cc144977c04ce91dc5cf7cf580a743883aaa23cb9a705cf29fdd6e37c6910"
+      "bytes": 457414,
+      "sha256": "f13393b42e131d0ac8c5688f46b5151ba32fe979480baa78227120764bdb1cf6"
     },
     {
       "path": "lightmap-8.part000.bin",
-      "bytes": 350722,
-      "sha256": "9ef216308744272652490de5ca55367216bca392145ec321ad9b276de15b795b"
+      "bytes": 388952,
+      "sha256": "b78214338d3c865774bb56b78f8a51945834cfcdaf7b96f2a76d99af0ec97bd7"
     },
     {
       "path": "lightmap-9.part000.bin",
-      "bytes": 414202,
-      "sha256": "225f2fcc85548c26661e29f88c4c127a43621f8abf680a948939c958ec2401d4"
+      "bytes": 450864,
+      "sha256": "e83c1d064c69c66edf34c041ba28c910e5e7e905f8276899cd219e567a552486"
     },
     {
       "path": "lightmap-10.part000.bin",
-      "bytes": 419132,
-      "sha256": "83542e475e853f7c82ab46e21d2dad6fc040f46e28a2c6784971336fbd8cb8c5"
+      "bytes": 441332,
+      "sha256": "3f0b3b48c763d5ffef620b5f0616d91fd996529a01fd8f13953ec811a0136c38"
     },
     {
       "path": "lightmap-11.part000.bin",
-      "bytes": 398802,
-      "sha256": "3340e610e6713ff9f2155c94a4223f5de69544af285acf02b27f460544db7364"
+      "bytes": 418858,
+      "sha256": "bae54dec6e2f01e0da9739a556963dabf4b4db24b3a78bc36357a5a06c9d57a7"
     },
     {
       "path": "lightmap-12.part000.bin",
-      "bytes": 366102,
-      "sha256": "c13b70ea147f5d77a5d0eaf01008b98abb907f1ef7f2fe7b5b4af72e506b138b"
+      "bytes": 404786,
+      "sha256": "8025b818eb5df93df99311613b1377a6fd20450116add3643f1dc5e588f336ff"
     },
     {
       "path": "lightmap-13.part000.bin",
-      "bytes": 404044,
-      "sha256": "c03661ad0647066b5cc2ee1a69e28eac31e4459fdcada2e1bf9d8bc879034b70"
+      "bytes": 433378,
+      "sha256": "efa879a0f72a998b6a6cd24ff93f4b5cf966c753069fe5f7d7cc0150dd72bdb2"
     },
     {
       "path": "lightmap-14.part000.bin",
-      "bytes": 387362,
-      "sha256": "89d9d60c8fda3656cfb1ac887a95883992219d47466288de4b3392082ab5f30c"
+      "bytes": 401502,
+      "sha256": "202a4094f474b21b2d2d7a4b81b991b78f3bd44a1a23d7f936799ceda7c14d61"
     },
     {
       "path": "lightmap-15.part000.bin",
-      "bytes": 378064,
-      "sha256": "0a55b236f4fe2fbe53e1dc68fc5693a43d59408b9e373d360d6c793f8708390e"
+      "bytes": 409142,
+      "sha256": "ff7008c781185f94ab9d18c914dd2d3676ee0a1aef0482fe657422d31d6ebbcb"
     }
   ],
-  "downloadBytes": 69181636
+  "downloadBytes": 67396148
 }

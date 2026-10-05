@@ -9,6 +9,8 @@ import {Weapon,WEAPONS} from '../dist/js/weapons.js';
 import {readFile} from 'node:fs/promises';
 import {decodeBlenderLibrary,parseBlenderGLB,BlenderAssets} from '../dist/js/blender-assets.js';
 import {readRuntimeLibrary} from './asset-parts.mjs';
+import {billboardVertex,billboardFragment} from '../dist/js/particles.js';
+import {DecalSystem} from '../dist/js/decal-system.js';
 const counts={NUM_DIR_LIGHTS:1,NUM_POINT_LIGHTS:3,NUM_SPOT_LIGHTS:0,NUM_HEMI_LIGHTS:1,NUM_RECT_AREA_LIGHTS:0,NUM_DIR_LIGHT_SHADOWS:1,NUM_POINT_LIGHT_SHADOWS:0,NUM_SPOT_LIGHT_SHADOWS:0,NUM_SPOT_LIGHT_MAPS:0,NUM_SPOT_LIGHT_COORDS:0,NUM_SPOT_LIGHT_SHADOWS_WITH_MAPS:0,NUM_CLIPPING_PLANES:0,UNION_CLIPPING_PLANES:0};
 function expand(s){return s.replace(/#include <([\w_]+)>/g,(_,key)=>{if(!T.ShaderChunk[key])throw Error(key);return expand(T.ShaderChunk[key]);});}
 function finalise(s,lights){s=expand(s);for(const [k,v]of Object.entries(lights))s=s.replace(new RegExp('\\b'+k+'\\b','g'),String(v));return s.replace(/#pragma unroll_loop_start\s+for \( int i = (\d+); i < (\d+); i \+\+ \) \{([\s\S]+?)\}\s+#pragma unroll_loop_end/g,(_,a,b,body)=>Array.from({length:b-a},(_,i)=>body.replace(/\[\s*i\s*\]/g,'[ '+(Number(a)+i)+' ]').replace(/UNROLLED_LOOP_INDEX/g,String(Number(a)+i))).join(''));}
@@ -25,10 +27,11 @@ function shaderVariant(m,name,authored=false){
  const fragment=common+'#define varying in\n#define texture2D texture\n#define textureCube texture\n#define texture2DGradEXT textureGrad\n#define texture2DLodEXT textureLod\n#define gl_FragColor breachOutput\nlayout(location=0) out vec4 breachOutput;\n'+uniforms+T.ShaderChunk.colorspace_pars_fragment+'\nvec4 linearToOutputTexel(vec4 value){return sRGBTransferOETF(value);}\n'+T.ShaderChunk.tonemapping_pars_fragment+'\nvec3 toneMapping(vec3 color){return ACESFilmicToneMapping(color);}\n'+s.fragmentShader;
  return {vertex:finalise(vertex,lights),fragment:finalise(fragment,lights)};
 }
+const unique=new Map();
+if(!process.argv.includes('--effects-only')){
 const data=await readRuntimeLibrary();
 const manifest=JSON.parse(await readFile(new URL('../dist/assets/blender/manifest.json',import.meta.url),'utf8'));
 const assets=new BlenderAssets(parseBlenderGLB(await decodeBlenderLibrary(data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength))),manifest);
-const unique=new Map();
 for(const authored of [false,true]){
  const r=fixture();if(authored){r.blenderAssets=assets;for(const maps of [...r.surfaceMaps,...r.weaponMaps])maps.baked=true;}r.lightingField=new LightingField();
  for(const m of MAPS){const g=new Game({map:m.id},{seed:718});r.arena=g.arena;r.buildWorld();r.updateActors(g);}
@@ -36,6 +39,20 @@ for(const authored of [false,true]){
   const w=new Weapon(def.id),parts=weaponModel(w);
   for(const p of authored?[...assets.weaponGroups(parts,def.id),...parts.slice(parts.coreCount)]:parts)r.makeMaterial(p,'weapon');
  }
+ r.makeMaterial({x:0,y:1,z:0,w:.6,h:.38,d:.025,surface:'white',tile:9,rough:.92,objectiveBanner:true},'actor');
  for(const [name,m]of r.materials){const s=shaderVariant(m,name,authored),key=s.vertex+s.fragment;if(!unique.has(key))unique.set(key,{name:(authored?'blender/':'legacy/')+name,...s});}
 }
+}
+const decal=new DecalSystem(new T.Scene()),decalShader=shaderVariant(decal.mesh.material,'effects/material-impact');
+unique.set('impact',{name:'effects/material-impact',...decalShader});decal.dispose();
+if(process.argv.includes('--effects-only')){
+ const r=fixture(),material=r.makeMaterial({surface:'concrete'},'world');
+ unique.set('atmosphere',{name:'world/atmosphere',...shaderVariant(material,'world/atmosphere')});
+}
+const fxPrefix='#version 300 es\nprecision highp float;precision highp int;\nuniform mat4 modelViewMatrix,projectionMatrix,viewMatrix;\n';
+const fx={
+ vertex:finalise(fxPrefix+'#define attribute in\n#define varying out\nin vec3 position;in vec2 uv;\n'+billboardVertex,{}),
+ fragment:finalise(fxPrefix+'#define varying in\n#define texture2D texture\n#define gl_FragColor breachOutput\n#define TONE_MAPPING\nlayout(location=0) out vec4 breachOutput;\n'+T.ShaderChunk.colorspace_pars_fragment+'\nvec4 linearToOutputTexel(vec4 value){return sRGBTransferOETF(value);}\n'+T.ShaderChunk.tonemapping_pars_fragment+'\nvec3 toneMapping(vec3 color){return ACESFilmicToneMapping(color);}\n'+billboardFragment,{})
+};
+unique.set('billboards',{name:'effects/instanced-billboards',...fx});
 console.log(JSON.stringify([...unique.values()]));

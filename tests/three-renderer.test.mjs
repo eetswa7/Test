@@ -67,7 +67,8 @@ test('CTF flags animate in the Three scene and keep team-relative cloth colours'
  game.player.x=0;game.player.y=0;game.player.z=0;carrier.x=3;carrier.y=0;carrier.z=-4;carrier.yaw=0;
  const blue=game.rules.flags.find(f=>f.team===0),red=game.rules.flags.find(f=>f.team===1);red.carrier=carrier.id;red.atBase=false;
  r.arena=game.arena;r.updateActors(game);r.uploadDynamic(r.actorBatches);
- assert.equal(blue.renderParts.length,4);assert.equal(red.renderParts.length,4);
+ assert.equal(blue.renderParts.length,2);assert.equal(red.renderParts.length,2);
+ assert(red.renderParts[1].objectiveBanner,'the visible flag uses the authored cloth instead of floating trim');
  const banner=red.renderParts[1],binding=r.partData.get(banner).bindings.actor;assert(binding.color.r>binding.color.b,'enemy cloth uses the warm team colour');
  const x=banner.x;carrier.x+=3;game.time+=.1;r.updateActors(game);assert(banner.x>x+2.9,'carried flag follows the operator');
 });
