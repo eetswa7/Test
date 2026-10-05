@@ -8,7 +8,7 @@ are no sampled commercial weapons or sounds extracted from other games.
 
 ```sh
 npm run assets:audio
-node scripts/release.mjs 58
+node scripts/release.mjs 59
 ```
 
 Requirements: Python with NumPy/SciPy and FFmpeg. The output is 286 recordings
@@ -21,6 +21,7 @@ its own swing/action treatment.
 Safari decodes M4A natively. The loader performs two decoder jobs at a time and
 publishes clips incrementally. Legacy short synthesis remains a responsive
 startup fallback. Playback uses 24 total voices, a 16-voice ambient limit, player
-priority, positional stereo cues, distance/wall filtering and one shared short
-room response. These are designed sounds, not field recordings. Hardware audio
+priority, positional stereo cues, distance/wall filtering and two shared short-room/warehouse
+responses selected from roof geometry. Outdoors remains dry; destroyed roofs
+stop selecting the indoor response. These are designed sounds, not field recordings. Hardware audio
 latency and loudspeaker response still require physical device listening.

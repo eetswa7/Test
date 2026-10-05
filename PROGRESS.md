@@ -1,3 +1,22 @@
+# Release 59: continuation of the production art and audio overhaul
+
+- Fixed exterior-face sky access and ground bounce without another texture tap.
+- Removed heavy diffuse tinting from textured world parts and retained native
+  vertex-material finishes and baked uniform-material roughness.
+- Extended native near/far selection to individual props and facades, retaining
+  nearby detail and preventing destruction from resurrecting distant cover.
+- Added shared short-room and warehouse acoustic responses for gunfire,
+  movement, landings and weapon actions; no extra audio download is required.
+- Verified 284 regression tests, 76 packaged modules, 38 GLSL ES variants and 49
+  conservative world-scene samples across 16 maps. Maximum active world meshes:
+  200. Blacksite approach world triangles: 242,078 full detail to 170,122 selected
+  LOD, with 196 active world meshes. These counts exclude actor, weapon and shadow
+  passes and do not measure iPhone FPS or temperature.
+- Release 57 baseline and the editable Release 58 Blender source remain in git.
+  Source checkpoint: 42db6e485896a9805534b0a58e54d5c9e21754e0 on
+  art-production-overhaul. Release 59 advances the offline cache and benchmark
+  content fingerprint for an unambiguous new device report.
+
 # Release 54: Nuketown recreation and lower combat allocation cost
 
 - Added the two houses with open interiors, stairs and balconies, back gardens,

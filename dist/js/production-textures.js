@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {PRODUCTION_ASSETS} from './production-files.js?v=58';
+import {PRODUCTION_ASSETS} from './production-files.js?v=59';
 
 // A small, strictly checked container for native ASTC blocks. Safari gets the
 // authored mip chain without expanding normal maps into JavaScript RGBA arrays.

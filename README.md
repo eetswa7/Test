@@ -1,6 +1,24 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 58.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 59.** 30 weapons, 16 maps and 11 modes.
+
+## Release 59: material finish, face-aware lighting and prop LOD
+
+Exterior wall faces now sample outdoor sky and bounce lighting while their
+interior faces retain room shade. Imported physical textures preserve their
+baked roughness; textured props no longer receive the old heavy diffuse tint.
+Native prop LOD follows each instance's projected size, retains close geometry
+and removes destroyed cover from both detail levels. Across 49 conservative
+scene samples on all 16 maps, active world meshes stay at or below 200; the
+Blacksite approach removes about 30% of full-detail world triangles.
+
+Gunfire, footsteps, landings and weapon actions use distinct short-room and
+warehouse responses selected from actual roof geometry. All original 286 clips
+and bounded player-priority playback remain available offline.
+
+See [Release 59 validation and limits](docs/ART_RELEASE59.md). This is a tested
+continuation checkpoint. Fresh browser screenshots, physical iPhone frame rate
+and commercial reference-game fidelity are not established by these checks.
 
 ## Release 58: production art and original sound library
 

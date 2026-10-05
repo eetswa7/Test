@@ -1,0 +1,31 @@
+{
+  "release": "59",
+  "scope": "Source, asset integrity, offline-shell and conservative scene construction checks; no new browser or physical-device performance measurement.",
+  "regressionTests": {
+    "passed": 284,
+    "failed": 0
+  },
+  "packagedJavaScriptModules": 76,
+  "glesShaderVariants": {
+    "passed": 38,
+    "failed": 0
+  },
+  "maps": 16,
+  "sceneSamples": 49,
+  "maximumActiveWorldMeshes": 200,
+  "preserved": {
+    "maps": 16,
+    "weapons": 30,
+    "benchmark": "local recording and manual JSON export",
+    "release57BaselineBranch": "release57-baseline",
+    "editableBlenderSource": "unchanged Release 58 packed source"
+  },
+  "notVerified": [
+    "New runtime screenshot comparison",
+    "Physical iPhone 16 Pro frame rate",
+    "Safari process memory and sustained thermals",
+    "Physical-device audio listening"
+  ],
+  "sceneBudgetEvidence": "validation-release59-scene-budgets.json",
+  "shaderEvidence": "shaders-release59.json"
+}

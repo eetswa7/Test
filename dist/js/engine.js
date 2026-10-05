@@ -1,12 +1,12 @@
-import {Arena,MAPS} from './maps.js?v=58';
-import {Navigation} from './navigation.js?v=58';
-import {SpawnDirector} from './spawns.js?v=58';
-import {MatchRules} from './modes.js?v=58';
-import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=58';
-import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=58';
-import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=58';
-import {traceBullet} from './ballistics.js?v=58';
-import {beginVault,advanceVault} from './traversal.js?v=58';
+import {Arena,MAPS} from './maps.js?v=59';
+import {Navigation} from './navigation.js?v=59';
+import {SpawnDirector} from './spawns.js?v=59';
+import {MatchRules} from './modes.js?v=59';
+import {Weapon,GUN_ORDER,sanitizeLoadout} from './weapons.js?v=59';
+import {DIFFICULTY,ROLES,updateBot} from './ai.js?v=59';
+import {clamp,lerp,distance,direction,rng,rayBox,pointSegment} from './math.js?v=59';
+import {traceBullet} from './ballistics.js?v=59';
+import {beginVault,advanceVault} from './traversal.js?v=59';
 
 export const emptyInput=()=>({mx:0,mz:0,lx:0,ly:0,fire:false,firePressed:false,ads:false,sprint:false,jump:false,crouch:false,reload:false,swap:false,grenade:false,interact:false,melee:false,repeatFire:false,autoReload:false});
 const names=['YOU','TRACE','ROOK','ECHO','ONYX','VALE','KESTREL','FLINT','GHOST','HAWK'];
