@@ -31,7 +31,11 @@ export function cameraBob(state,speed,grounded,ads,dt,enabled=true){
 }
 
 export function weaponPose(p,time,motion=true,menu=false,out={}){
- if(menu){Object.assign(out,{x:.42,y:-.12,z:-1.05,yaw:.92,pitch:-.08,roll:-.1,scale:1.65});return out;}
+ if(menu){
+  const kind=p.weapon.def.kind,compact=kind==='PISTOL'||kind==='MELEE',smg=kind==='SMG';
+  // Keep the complete stock and magazine inside the landscape menu framing.
+  Object.assign(out,{x:compact?.28:smg?.29:.24,y:compact?.025:.02,z:compact?-.95:smg?-1.05:-1.22,yaw:1,pitch:-.06,roll:-.075,scale:compact?1.75:smg?1.50:1.32});return out;
+ }
  const w=p.weapon,ads=clamp(p.ads,0,1),speed=Math.hypot(p.vx,p.vz),short=w.def.kind==='PISTOL';
  const view=p.viewModel??(p.viewModel={time,phase:0,speed:0,sprint:0});
  const dt=clamp(time-view.time,0,.05);view.time=time;

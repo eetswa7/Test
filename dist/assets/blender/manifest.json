@@ -867,8 +867,8 @@
       "vertexMaterial": true
     },
     "weapon_0_groups_0": {
-      "triangles": 9792,
-      "vertices": 4956,
+      "triangles": 9752,
+      "vertices": 4936,
       "vertexMaterial": true
     },
     "weapon_0_groups_1": {
@@ -892,8 +892,8 @@
       "vertexMaterial": true
     },
     "weapon_1_groups_0": {
-      "triangles": 7548,
-      "vertices": 3846,
+      "triangles": 7508,
+      "vertices": 3826,
       "vertexMaterial": true
     },
     "weapon_1_groups_1": {
@@ -1032,8 +1032,8 @@
       "vertexMaterial": true
     },
     "weapon_7_groups_0": {
-      "triangles": 9242,
-      "vertices": 4669,
+      "triangles": 9202,
+      "vertices": 4649,
       "vertexMaterial": true
     },
     "weapon_7_groups_1": {
@@ -1052,8 +1052,8 @@
       "vertexMaterial": true
     },
     "weapon_8_groups_0": {
-      "triangles": 9402,
-      "vertices": 4761,
+      "triangles": 9362,
+      "vertices": 4741,
       "vertexMaterial": true
     },
     "weapon_8_groups_1": {
@@ -1162,8 +1162,8 @@
       "vertexMaterial": true
     },
     "weapon_13_groups_0": {
-      "triangles": 8790,
-      "vertices": 4455,
+      "triangles": 8750,
+      "vertices": 4435,
       "vertexMaterial": true
     },
     "weapon_13_groups_1": {
@@ -1197,8 +1197,8 @@
       "vertexMaterial": true
     },
     "weapon_15_groups_0": {
-      "triangles": 9078,
-      "vertices": 4581,
+      "triangles": 9038,
+      "vertices": 4561,
       "vertexMaterial": true
     },
     "weapon_15_groups_1": {
@@ -1212,8 +1212,8 @@
       "vertexMaterial": true
     },
     "weapon_16_groups_0": {
-      "triangles": 8998,
-      "vertices": 4563,
+      "triangles": 8958,
+      "vertices": 4543,
       "vertexMaterial": true
     },
     "weapon_16_groups_1": {
@@ -1232,8 +1232,8 @@
       "vertexMaterial": true
     },
     "weapon_17_groups_0": {
-      "triangles": 5520,
-      "vertices": 2836,
+      "triangles": 5560,
+      "vertices": 2856,
       "vertexMaterial": true
     },
     "weapon_17_groups_1": {
@@ -1272,8 +1272,8 @@
       "vertexMaterial": true
     },
     "weapon_19_groups_0": {
-      "triangles": 9256,
-      "vertices": 4676,
+      "triangles": 9216,
+      "vertices": 4656,
       "vertexMaterial": true
     },
     "weapon_19_groups_1": {
@@ -1332,8 +1332,8 @@
       "vertexMaterial": true
     },
     "weapon_22_groups_0": {
-      "triangles": 3564,
-      "vertices": 1804,
+      "triangles": 3536,
+      "vertices": 1790,
       "vertexMaterial": true
     },
     "weapon_22_groups_1": {
@@ -1417,8 +1417,8 @@
       "vertexMaterial": true
     },
     "weapon_26_groups_0": {
-      "triangles": 9954,
-      "vertices": 5021,
+      "triangles": 10074,
+      "vertices": 5081,
       "vertexMaterial": true
     },
     "weapon_26_groups_1": {
@@ -1462,8 +1462,8 @@
       "vertexMaterial": true
     },
     "weapon_28_groups_0": {
-      "triangles": 7640,
-      "vertices": 3888,
+      "triangles": 7600,
+      "vertices": 3868,
       "vertexMaterial": true
     },
     "weapon_28_groups_1": {
@@ -6396,27 +6396,27 @@
     {
       "path": "breachline-library.part000.bin",
       "bytes": 2097150,
-      "sha256": "f85510fb3b66a7fe341d70c77cb5224ae33f8870b6a4dbe1ed80acca988a28fc"
+      "sha256": "bb837787e11e43197a63fbe8e1bbaf0f444dccce3cf225cad2f9d613ec631c60"
     },
     {
       "path": "breachline-library.part001.bin",
       "bytes": 2097150,
-      "sha256": "c7a11301061e7e439388ebca505b29bc971597d709d27d00c60724190b588157"
+      "sha256": "ef790b92af7c0f9ed79b7f1f7ce4e325bcfd041819dbbfecb18f30449b652b62"
     },
     {
       "path": "breachline-library.part002.bin",
       "bytes": 2097150,
-      "sha256": "9d5656990f777f7d5af9b2061862a8a207dd674e9c0398f9403a71721628c55a"
+      "sha256": "142ab02e09e6ea0ca8226de22a9ad07c3db13bdebb60afa799645cd1bc005eb8"
     },
     {
       "path": "breachline-library.part003.bin",
       "bytes": 2097150,
-      "sha256": "fe4277a88100ad9c92d401f17131d9ca6cf174088d427e47be8ed57d6dc7a27b"
+      "sha256": "7fbe3375fb7ca92c4ef1d6a5e720e1bfc2ed6ce0a3820223b89033e48be5476e"
     },
     {
       "path": "breachline-library.part004.bin",
-      "bytes": 1784908,
-      "sha256": "38dbb9e46571ee671a3566ed170637a88925d71a1e33b8fd445621648108dd0e"
+      "bytes": 1778323,
+      "sha256": "81fac5b2a8f3ca535ed3faa034dd045ac5a3dd9d20a9c88718aec85cef697f18"
     },
     {
       "path": "surfaces-albedo.part000.bin",
@@ -6527,11 +6527,11 @@
   "geometryPacking": {
     "normalisedBits": 16,
     "streams": 263,
-    "savedBytes": 2543520,
+    "savedBytes": 2542968,
     "maxColourError": 0,
     "maxMaterialError": 0.000007629510948348184,
-    "exactSourceSha256": "8ca3bd3d754248cb339a4d4926dd96c50f0b1a1653f6dd5d19a65b5a1a618d04",
-    "exactPackedSha256": "8ca3bd3d754248cb339a4d4926dd96c50f0b1a1653f6dd5d19a65b5a1a618d04"
+    "exactSourceSha256": "2f8cff223bbf3458fffd6074229b26dc20891b6367dd9621e3a18bc10abed63a",
+    "exactPackedSha256": "2f8cff223bbf3458fffd6074229b26dc20891b6367dd9621e3a18bc10abed63a"
   },
   "library": {
     "parts": [
@@ -6541,9 +6541,9 @@
       "breachline-library.part003.bin",
       "breachline-library.part004.bin"
     ],
-    "bytes": 10173508,
-    "unpackedBytes": 32919320,
-    "sha256": "65881034e592f4f06283b8f1f51c74d9b5bd145a3db5e74dd5c1151a260f96c9"
+    "bytes": 10166923,
+    "unpackedBytes": 32911880,
+    "sha256": "09011136044eb2d78f219ce82e9422cfc6b3f5c68937f841f31638d86ebcea29"
   },
-  "downloadBytes": 15374708
+  "downloadBytes": 15368123
 }

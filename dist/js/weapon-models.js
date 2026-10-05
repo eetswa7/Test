@@ -39,7 +39,7 @@ const PROFILES=[
 
 function builder(w){
  const parts=[],profile=PROFILES[w.def.id]??PROFILES[0];
- let receiverBack=-Infinity;
+ let receiverBack=-Infinity,receiverFront=Infinity;
  const box=(x,y,z,a,b,c,mat=METAL,tag='',extra={})=>{
   const q={x,y,z,w:a,h:b,d:c,surface:'dark',mesh:'bevel',yaw:0,pitch:0,roll:0,...mat,...extra};
   if(tag)q.tag=tag;parts.push(q);return q;
@@ -50,7 +50,7 @@ function builder(w){
  const rail=(start,end,y=.092,width=.068)=>{box(0,y-.006,(start+end)/2,width,.014,Math.abs(end-start),METAL);for(let z=start;z>end;z-=.022)box(0,y+.005,z,width+.008,.012,.01,EDGE,'',{mesh:'cube'});};
  const ribs=(x,y,z,n,step,ww,hh,dd,mat=RUBBER,tag='')=>{for(let i=0;i<n;i++)box(x,y,z-i*step,ww,hh,dd,mat,tag,{mesh:'cube'});};
  const vents=(width,start,n,step=.039,height=.028)=>{for(const side of [-1,1])for(let i=0;i<n;i++)box(side*width,.046,start-i*step,.0025,height,.023,RUBBER);};
- const receiver=(z,len,width=.09,mat=METAL)=>{receiverBack=Math.max(receiverBack,z+len/2);box(0,.034,z,width,.092,len,mat);box(0,-.023,z+.018,width*.9,.044,len*.88,mat);box(width*.51,.041,z-.014,.002,.026,.083,RUBBER);box(width*.53,.037,z-.002,.004,.013,.063,EDGE,'bolt');for(const pz of [z-len*.32,z+len*.29])for(const s of [-1,1])pin(s*width*.51,-.006,pz);};
+ const receiver=(z,len,width=.09,mat=METAL)=>{receiverBack=Math.max(receiverBack,z+len/2);receiverFront=Math.min(receiverFront,z-len/2);box(0,.034,z,width,.092,len,mat);box(0,-.023,z+.018,width*.9,.044,len*.88,mat);box(width*.51,.041,z-.014,.002,.026,.083,RUBBER);box(width*.53,.037,z-.002,.004,.013,.063,EDGE,'bolt');for(const pz of [z-len*.32,z+len*.29])for(const s of [-1,1])pin(s*width*.51,-.006,pz);};
  const grip=(z=.103,mat=POLY,pitch=-.18,height=.168)=>{box(0,-.104,z,.061,height,.079,mat,'',{pitch});box(0,-.19,z-.014,.069,.014,.081,RUBBER);for(const s of [-1,1])for(let i=0;i<4;i++)box(s*.031,-.068-i*.029,z-i*.004,.002,.012,.05,RUBBER,'',{pitch});box(0,-.085,z-.076,.06,.013,.096,METAL);box(0,-.056,z-.119,.06,.064,.012,METAL);box(0,-.055,z-.063,.009,.042,.012,EDGE,'',{pitch:.33});};
  const magazine=(z,height=.215,width=.067,depth=.093,mat=POLY,curve=.1)=>{box(0,-.091-height*.24,z,width,height*.66,depth,mat,'magazine',{pitch:-curve});box(0,-.091-height*.73,z-height*.06,width,height*.43,depth,mat,'magazine',{pitch:-curve*1.7});box(0,-.098-height*.94,z-height*.12,width+.009,.014,depth+.013,RUBBER,'magazine');for(const s of [-1,1])for(let i=0;i<3;i++)box(s*(width*.5+.001),-.111-i*height*.21,z-.012,width*.03,.04,depth*.68,EDGE,'magazine',{pitch:-curve});};
  const stock=(z,mat=POLY,type='telescopic')=>{
@@ -71,7 +71,12 @@ function builder(w){
    box(0,-.024,z+.103,.073,.153,.026,RUBBER);box(0,.053,z+.025,.071,.032,.13,mat);
   }
  };
- const barrel=(start,end=profile.barrel,r=.025)=>{cyl(0,.06,(start+end)/2,r,Math.abs(end-start),EDGE);};
+ const barrel=(start,end=profile.barrel,r=.025)=>{
+  // The barrel continues through the hollow fore-end into the receiver. Its
+  // original forward tip remains fixed for sights, suppressors and ballistics.
+  const rear=Number.isFinite(receiverFront)?Math.max(start,receiverFront+.004):start;
+  cyl(0,.06,(rear+end)/2,r,Math.abs(end-rear),EDGE);
+ };
  const bipod=z=>{for(const s of [-1,1]){box(s*.057,-.008,z,.019,.026,.22,EDGE,'',{yaw:s*.045});box(s*.057,-.013,z-.117,.029,.022,.043,RUBBER);}cyl(0,-.006,z+.10,.085,.027,METAL,'',{pitch:0});};
  const controls=(width,z=.09)=>{box(-width*.53,-.008,z,.005,.014,.03,EDGE,'',{roll:-.4});box(width*.61,.051,z-.083,.026,.018,.022,METAL,'bolt');box(-width*.56,.004,z-.06,.009,.027,.014,EDGE);};
  return {parts,profile,box,cyl,tube,pin,rail,ribs,vents,receiver,grip,magazine,stock,barrel,bipod,controls};
@@ -250,11 +255,12 @@ function spectre(b){
  receiver(-.04,.242,.084,METAL);box(0,.025,-.194,.086,.103,.137,POLY);
  ribs(0,.022,-.16,6,.017,.096,.092,.009,RUBBER);rail(.08,-.224,.087,.062);
  barrel(-.262,undefined,.028);grip(.059);magazine(.052,.247,.049,.066,POLY,.045);stock(.243,METAL,'skeleton');controls(.084,.051);
- box(-.054,.033,-.175,.027,.016,.038,EDGE,'bolt');box(0,.077,.166,.071,.036,.074,POLY);
+ box(-.054,.033,-.175,.027,.016,.038,EDGE,'bolt');box(0,.077,.169,.071,.036,.080,POLY);
 }
 function krait(b){
  const {box,cyl,tube,grip}=b;
- box(0,.025,-.066,.084,.081,.187,METAL);box(0,.078,-.158,.067,.023,.228,EDGE);
+ // Continuous revolver frame supports the hammer, grip shoulder and top rib.
+ box(0,.020,-.029,.084,.091,.261,METAL);box(0,.06375,-.158,.067,.0515,.228,EDGE);
  cyl(0,.026,-.232,.031,.22,METAL);box(0,-.006,-.238,.061,.032,.202,TAN);
  cyl(0,.021,-.018,.107,.104,METAL,'cylinder');
  for(let i=0;i<6;i++){const a=i*Math.PI/3;tube(Math.cos(a)*.035,.021+Math.sin(a)*.035,-.075,.02,.012,RUBBER,'cylinder');}
@@ -294,7 +300,7 @@ function jackal(b){
  rail(.173,-.407,.108,.085);vents(.061,-.239,4,.033,.04);barrel(-.413,undefined,.039);
  grip(-.051,POLY,-.14,.18);cyl(0,-.177,.14,.215,.14,OLIVE,'magazine');
  box(0,-.061,.142,.086,.11,.111,METAL,'magazine');
- box(0,.012,.291,.123,.169,.073,TAN);box(0,-.015,.33,.129,.18,.02,RUBBER);controls(.12,-.049);
+ box(0,.012,.27875,.123,.169,.0975,TAN);box(0,-.015,.33,.129,.18,.02,RUBBER);controls(.12,-.049);
  box(0,-.08,-.287,.065,.06,.179,POLY);
 }
 function sentinel(b){
@@ -304,14 +310,14 @@ function sentinel(b){
  rail(.09,-.247,.105,.091);grip(.132,POLY,-.18,.178);stock(.338,WOOD,'solid');bipod(-.655);
  box(-.048,-.141,-.066,.194,.204,.184,OLIVE,'magazine');
  for(let i=0;i<9;i++){const x=-.093-i*.022;cyl(x,.025,-.044,.017,.079,BRASS,'belt');box(x,.016,-.05,.021,.013,.019,METAL,'belt');}
- box(.096,.037,-.04,.046,.02,.029,EDGE,'bolt');cyl(0,.11,-.664,.027,.113,METAL);
+ box(.096,.037,-.04,.046,.02,.029,EDGE,'bolt');cyl(0,.087,-.664,.027,.113,METAL);
 }
 function heron(b){
  const {box,cyl,receiver,barrel,grip,magazine,stock,rail}=b;
  receiver(-.037,.289,.086,finish(C.steel,.9,.32));box(0,-.025,-.326,.084,.073,.307,WOOD);
  cyl(0,.036,-.406,.065,.261,WOOD);barrel(-.548,undefined,.032);cyl(0,.079,-.614,.025,.10,METAL);
  grip(.106,WOOD,-.24,.174);magazine(-.035,.14,.068,.094,METAL,.04);stock(.334,WOOD,'solid');rail(.084,-.211,.094,.062);
- box(.054,.039,.041,.036,.019,.019,EDGE,'bolt');box(0,.058,.253,.079,.025,.16,WOOD);
+ box(.054,.039,.041,.036,.019,.019,EDGE,'bolt');box(0,.04575,.253,.079,.0495,.16,WOOD);
 }
 function paladin(b){
  const {box,cyl,grip}=b;
@@ -327,8 +333,24 @@ function addOptic(b,w){
  const {box,tube,cyl}=b,id=w.def.id;
  if(id===12)return;
  const short=w.def.kind==='PISTOL',y=short?.03:.06;
+ const core=b.parts.slice();
+ const supportTop=(z,depth,x=0)=>{
+  let top=-Infinity;
+  for(const q of core){
+   if(q.hidden||/^(magazine|hammer|cylinder|belt|loadShell)$/.test(q.tag??'')||Math.abs(q.x-x)>q.w*.5+.001)continue;
+   const c=Math.abs(Math.cos(q.pitch??0)),s=Math.abs(Math.sin(q.pitch??0));
+   const dz=(s*q.h+c*q.d)*.5,dy=(c*q.h+s*q.d)*.5;
+   if(q.z+dz<z-depth*.5||q.z-dz>z+depth*.5)continue;
+   top=Math.max(top,q.y+dy);
+  }
+  return Number.isFinite(top)?top:y+.025;
+ };
+ const mount=(z,width,top,height,depth,mat=METAL,x=0)=>{
+  const bottom=Math.min(top-height,supportTop(z,depth,x)-.008);
+  return box(x,(top+bottom)/2,z,width,top-bottom,depth,mat);
+ };
  if([3,5,6].includes(w.optic)||w.def.kind==='SNIPER'||id===7){
-  for(const z of [-.074,.067]){box(0,.116,z,.046,.047,.031,METAL);tube(0,.188,z,.079,.026,METAL);}
+  for(const z of [-.074,.067]){mount(z,.046,.1515,.047,.031);tube(0,.188,z,.079,.026,METAL);}
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);
   for(const z of [-.171,.137])tube(0,.188,z,.094,.01,EDGE);
   // The scope fills with coated optical glass in hip view. Magnified ADS renders
@@ -343,7 +365,7 @@ function addOptic(b,w){
   cyl(0,.24,-.025,.035,.027,RUBBER,'',{pitch:0});cyl(.048,.188,-.025,.031,.031,RUBBER,'',{pitch:0,roll:Math.PI/2});
  }else if([1,2,4].includes(w.optic)){
   const prism=w.optic===2,wide=w.optic===4?.115:prism?.10:.082,z=short?-.013:.017;
-  box(0,.12,z,wide+.008,.026,prism?.07:.045,METAL);
+  mount(z,wide+.008,.133,.026,prism?.07:.045);
   // One manufactured open housing has a rounded crown, recessed optical
   // aperture and physical wall thickness. The .169 sight ray remains clear.
   // A tube is also an open, aligned fallback in the compatibility renderer.
@@ -356,9 +378,9 @@ function addOptic(b,w){
  }else{
   const front=(id===4?-.228:b.profile.barrel+.046),rear=short?.073:id===4?.116:.082;
   // Open-notch rear, fine front post: the exact .119 ray remains unobstructed.
-  box(0,.095,front,.03,.027,.023,METAL);box(0,.111,front,.007,.013,.012,EDGE);
-  for(const s of [-1,1])box(s*.022,.12,rear,.012,.029,.025,METAL);
-  box(0,.096,rear,.055,.016,.033,METAL);
+  mount(front,.03,.1085,.027,.023);box(0,.111,front,.007,.013,.012,EDGE);
+  for(const s of [-1,1])box(s*.022,.11775,rear,.012,.0335,.025,METAL);
+  mount(rear,.055,.104,.016,.033);
   if(short)for(const s of [-1,1])box(s*.021,.125,rear+.014,.004,.004,.002,finish([.8,.86,.73],0,.4));
  }
 }

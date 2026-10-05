@@ -1,7 +1,7 @@
 // Render the shipped gameplay renderer at repeatable player camera positions.
 // Software WebGL screenshots and scene counts are not physical iPhone timings.
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {spawn} from 'node:child_process';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
@@ -9,8 +9,10 @@ const stage=process.argv[2]??'current',origin=process.env.ART_TEST_ORIGIN??'http
 const server=process.env.ART_TEST_ORIGIN?null:spawn(process.execPath,['scripts/preview.mjs','--port','4173'],{stdio:['ignore','pipe','pipe']});
 if(server)await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{if(String(d).includes('preview ready'))resolve();});server.on('error',reject);server.on('exit',c=>{if(c)reject(Error('Preview failed'));});});
 const browser=await chromium.launch({headless:true,executablePath:process.env.ART_TEST_BROWSER,args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-const page=await browser.newPage({viewport:{width:1280,height:600},deviceScaleFactor:1,serviceWorkers:'block'}),errors=[];
+const page=await browser.newPage({viewport:{width:1280,height:600},deviceScaleFactor:1,serviceWorkers:'block'}),errors=[],requestFailures=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+page.on('requestfailed',r=>requestFailures.push({url:r.url(),failure:r.failure()?.errorText}));
+page.on('response',r=>{if(r.status()>=400)requestFailures.push({url:r.url(),status:r.status()});});
 await page.route('**/__art',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><style>html,body{margin:0;overflow:hidden}canvas{width:100vw;height:100vh;display:block}</style><canvas id="view"></canvas>'}));
 await page.goto(origin+'/__art');
 await page.evaluate(async()=>{
@@ -60,6 +62,8 @@ try{
   },shot);
   await page.screenshot({path:'test-results/'+stage+'/'+shot.name+'.png',timeout:120000});results.push({name:shot.name,...stats});console.log(shot.name,JSON.stringify(stats));
  }
- await writeFile('test-results/'+stage+'/scene-counts.json',JSON.stringify({kind:'software_WebGL_visual_validation',actual_iphone_data:false,errors,results},null,2)+'\n');
- if(errors.length)throw Error(errors.join('\n'));
+ const {BENCHMARK_BUILD:build}=await import('../dist/js/benchmark-build.js');
+ const nativeSource=JSON.parse(await readFile('authoring/blender/source/manifest.json','utf8'));
+ await writeFile('test-results/'+stage+'/scene-counts.json',JSON.stringify({kind:'software_WebGL_visual_validation',actual_iphone_data:false,build,nativeSourceSha256:nativeSource.sha256,errors,requestFailures,results},null,2)+'\n');
+ if(errors.length||requestFailures.length)throw Error(JSON.stringify({errors,requestFailures}));
 }finally{await browser.close();server?.kill();}

@@ -38,6 +38,26 @@ test('telescopic, solid and skeleton stocks enter their actual receiver rear',()
   assert(beam.z+length/2>rear+.09,`${id}: stock no longer spans receiver to butt`);
  }
 });
+test('rifle and shotgun barrels continue through the fore-end into the receiver',()=>{
+ let checked=0;
+ for(const def of WEAPONS){
+  const w=weapon(def.id),p=weaponModel(w),core=p.slice(0,p.coreCount);
+  const receiver=core.find(q=>q.x===0&&q.y===.034&&q.h===.092);if(!receiver)continue;
+  const tip=muzzlePosition(w).z+.02;
+  const barrel=core.find(q=>q.mesh==='cylinder'&&q.x===0&&q.y===.06&&Math.abs(q.z-q.h/2-tip)<1e-9);
+  assert(barrel,`${def.name}: original barrel tip changed`);
+  assert(barrel.z+barrel.h/2>=receiver.z-receiver.d/2+.002,`${def.name}: floating forward barrel`);
+  checked++;
+ }
+ assert.equal(checked,23);
+});
+test('pistol reflex bases meet the frame while optical height stays fixed',()=>{
+ for(const id of [10,22,29]){
+  const p=weaponModel(weapon(id)),frame=p[0],base=p[p.coreCount];
+  assert(Math.abs(base.y+base.h/2-.133)<1e-12,'optic cap and sight remain at their original height');
+  assert(base.y-base.h/2<=frame.y+frame.h/2-.003,`${id}: floating optic base`);
+ }
+});
 test('reflex and prism optics leave a clear central sight ray',()=>{
  for(let id=0;id<WEAPONS.length;id++)for(const optic of [1,2]){
   if(WEAPONS[id].kind==='SNIPER'||id===12)continue;const p=weaponModel(weapon(id,optic));
