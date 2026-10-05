@@ -1,5 +1,5 @@
 // Shared authored-kit selection for the runtime and native level builder.
-const bodyKinds=['limb','limb','limb','limb','boot','boot','soft','torso','vest','pack','head','helmet','hard','soft','limb','limb','limb','limb','glove','glove'];
+const bodyKinds=['thigh','thigh','shin','shin','boot','boot','soft','torso','vest','pack','head','helmet','hard','soft','upperarm','upperarm','forearm','forearm','glove','glove'];
 export function blenderKind(p,category){
  if(p.blenderMesh)return p.blenderMesh;
  if(p.blenderKind)return p.blenderKind;

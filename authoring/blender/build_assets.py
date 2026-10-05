@@ -332,7 +332,7 @@ for weapon in INPUT['weapons']:
             key='cylinder' if p.get('mesh')=='cylinder' else 'tube' if p.get('mesh')=='tube' else 'sphere' if p.get('mesh')=='sphere' else 'flat' if p.get('mesh')=='cube' else 'box'
             designed=hero_part(p,BASE,weapon)
             if section=='hands':
-                hand_kind=('sleeve_z' if p['d']>p['h'] else 'limb') if p.get('tile')==9 and max(p['d'],p['h'])>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
+                hand_kind=('sleeve_z' if p['d']>p['h'] else 'forearm') if p.get('tile')==9 and max(p['d'],p['h'])>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
                 if hand_kind:
                     mesh=mesh_assets[hand_kind+'__near'].data;mesh.calc_loop_triangles()
                     designed=([conversion.inverted()@v.co for v in mesh.vertices],[tuple(t.vertices) for t in mesh.loop_triangles])
@@ -354,7 +354,7 @@ for weapon in INPUT['weapons']:
             if section=='groups':
                 colour=tuple(max(.32 if p.get('metal',0)>.45 else .25,x) for x in colour)
             else:
-                colour=tuple(max(.36 if max(p['h'],p['d'])>.15 else .30,x) for x in colour)
+                colour=tuple(.07+.93*x for x in colour)
             tint=tuple(linear(x) for x in colour)
             colours.extend([tuple(x*y for x,y in zip(c,tint)) for c in authored_hand_colors] if authored_hand_colors else [tint]*len(v))
             coated=p.get('metal',0)>.45 and max(p.get('color',(1,1,1)))<.21

@@ -1,6 +1,27 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 59.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 60.** 30 weapons, 16 maps and 11 modes.
+
+## Release 60: environment and hero production overhaul
+
+Blacksite establishes the revised architectural kit: solid precast walls,
+correctly sized open door/window reveals, industrial service structures,
+connected forecourts, manufactured equipment and textured vehicles. Shared
+native assets and biome materials extend across every map. All 30 weapon cores
+have revised mechanical construction; organic gloves, tapered anatomical limbs,
+cloth and tactical equipment retain the existing animation and gameplay anchors.
+Sixty compressed PBR maps, sixteen fresh Cycles light bakes, room-dependent
+reflections, contact shadows and atmospheric/effect refinements run in WebGL2.
+
+The original audio library now contains 364 AAC takes, with individual weapon
+voicings, mechanical details, surface foley, impact variations and bounded
+positional room/distance processing. Both graphics and audio remain offline.
+
+See [production changes, gameplay renders and validation](docs/ART_RELEASE60.md).
+The Release 57 baseline remains recoverable. Software rendering and scene budgets
+verify implementation; physical iPhone frame pacing, thermals and sound must be
+measured with the preserved Benchmark Mode. This release does not establish
+commercial AAA parity, photoreal humans or motion-captured skeletal animation.
 
 ## Release 59: material finish, face-aware lighting and prop LOD
 

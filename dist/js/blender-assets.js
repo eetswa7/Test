@@ -85,7 +85,9 @@ export class BlenderAssets {
   const canopyDistance=renderer.quality==='low'?12:renderer.quality==='medium'?18:24;
   const focal=(renderer.height??430)/(2*Math.tan(renderer.camera.fov*Math.PI/360));
   const detailPixels=renderer.quality==='low'?100:renderer.quality==='medium'?76:54;
+  const wallDetailPixels=renderer.quality==='low'?3.8:renderer.quality==='medium'?3:renderer.quality==='ultra'?2:2.5;
   for(const pair of renderer.blenderWorldLODs??[]){
+   const kind=pair.kind??pair.parts[0]?.kind??(pair.parts[0]?blenderKind(pair.parts[0],'world'):null);
    const selected=[[],[]];
    for(const p of pair.parts){
     if(p.destroyed)continue;
@@ -94,9 +96,23 @@ export class BlenderAssets {
     // Hero props and facades select their authored LOD per instance, not by
     // the nearest corner of a large batch. Big visible facades keep detail;
     // small distant crates and machinery use their silhouette-preserving mesh.
-    const pixels=Math.max(p.w,p.h,p.d)*focal/Math.max(1,d);
+    let pixels=Math.max(p.w,p.h,p.d)*focal/Math.max(1,d),threshold=detailPixels;
+    if(kind==='wall'){
+      // The far casting keeps its panels, grooves, chipped silhouette, plinth
+      // and coping. Near-only ties/aggregate are .022 of its shorter face axis;
+      // a wide wall alone does not make those small features resolvable.
+      // Measure from the closest surface so walking beside a long wall retains
+      // its close detail even when the mesh centre is far away.
+      let dx=renderer.camera.position.x-p.x,dz=renderer.camera.position.z-p.z;
+      if(p.yaw){const c=Math.cos(p.yaw),s=Math.sin(p.yaw),x=dx;dx=c*x-s*dz;dz=s*x+c*dz;}
+      const surfaceDistance=Math.hypot(Math.max(0,Math.abs(dx)-p.w*.5),
+        Math.max(0,Math.abs(renderer.camera.position.y-p.y)-p.h*.5),Math.max(0,Math.abs(dz)-p.d*.5));
+      const feature=Math.min(Math.max(p.w,p.d),p.h)*.022;
+      pixels=surfaceDistance<3?Infinity:feature*focal/Math.max(1,surfaceDistance);
+      threshold=wallDetailPixels;
+    }
     const far=pair.canopy?(wasFar?d>canopyDistance*.85:d>canopyDistance*1.15):
-      (wasFar?pixels<detailPixels*1.15:pixels<detailPixels*.85);
+      (wasFar?pixels<threshold*1.15:pixels<threshold*.85);
     pair.visibility.set(p,far);selected[far?1:0].push(p);
    }
    for(const [i,b] of [pair.near,pair.far].entries()){

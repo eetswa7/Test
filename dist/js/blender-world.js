@@ -25,9 +25,9 @@ export function blenderWorld(arena){
   if(cars.includes(p)){
    const alongX=p.w>p.d,top=p.culdesacCar?1.72:1.565;
    parts.push(visual(p,{x:p.x,y:top/2,z:p.z,w:Math.min(p.w,p.d),h:top,d:Math.max(p.w,p.d),
-    yaw:alongX?Math.PI/2:0,blenderKind:'vehicle_sedan',blenderColour:true,tile:-1}));continue;
+    yaw:alongX?Math.PI/2:0,blenderKind:'vehicle_sedan',blenderColour:true,tile:8}));continue;
   }
-  if(generators.includes(p)){parts.push(visual(p,{blenderKind:'generator',blenderColour:true,tile:-1}));continue;}
+  if(generators.includes(p)){parts.push(visual(p,{blenderKind:'generator',blenderColour:true,tile:8}));continue;}
   // Large painted building envelopes must not inherit the black machined
   // steel finish used by barrels and machinery. Keep the collider reference.
   if(!p.ground&&!p.roof&&p.h>.65&&Math.max(p.w,p.d)>1.1&&['steel','dark'].includes(p.surface)&&
@@ -48,6 +48,17 @@ export function blenderWorld(arena){
   parts.push(p);
  }
  for(const p of arena.decor){
+  // Blacksite's original crane/service spans were single cylindrical rods.
+  // Native open-web trusses retain the same centres and clear overhead paths;
+  // vertical columns keep the original 0.30 m footprint after unit scaling.
+  if(arena.info.id===14&&p.surface==='steel'&&p.mesh==='cylinder'&&p.roll===Math.PI/2&&p.y>=5&&p.h>=20&&p.w<.4&&p.d<.4){
+   parts.push(visual(p,{w:p.h,h:p.y>7?.72:.54,d:p.d/.18,roll:0,
+    blenderKind:'roof_truss',blenderColour:true,tile:8,productionCrane:true}));continue;
+  }
+  if(arena.info.id===14&&p.surface==='orange'&&p.h===7.4&&p.w===.3&&p.d===.3){
+   parts.push(visual(p,{w:p.h,h:.30,d:p.d/.18,roll:Math.PI/2,surface:'steel',
+    blenderKind:'roof_truss',blenderColour:true,tile:8,productionCrane:true}));continue;
+  }
   // The native facade includes glazing, reveals, bands and foundations. Avoid
   // submitting the old window/trim components over the same baked geometry.
   if(nearBuilding(p)&&(['glass','blue','wood'].includes(p.surface)||p.w<.12||p.h<.21))continue;
@@ -61,13 +72,13 @@ export function blenderWorld(arena){
   if(p.surface==='glass'&&p.h>.6&&Math.min(p.w,p.d)<.1&&Math.max(p.w,p.d)>.7){
    const alongX=p.w>p.d;
    parts.push(visual(p,{w:Math.max(p.w,p.d)+.13,h:p.h+.16,d:.17,
-    yaw:alongX?0:Math.PI/2,blenderKind:'blast_window',blenderColour:true,surface:'steel',tile:-1}));continue;
+    yaw:alongX?0:Math.PI/2,blenderKind:'blast_window',blenderColour:true,surface:'steel',tile:8}));continue;
   }
   if(p.surface==='steel'&&p.w>1&&p.d>.7&&p.h>.4&&p.h<1.1&&p.y>3){
    // Production room assemblies place full roof units and connected ducts.
    // Solid-building roofs retain the replacement at the old unit's position.
    if(arena.blocks.some(b=>b.roof&&b.room&&!b.house&&Math.abs(b.x-p.x)<.05&&Math.abs(b.z-p.z)<.05))continue;
-   parts.push(visual(p,{blenderKind:'rooftop_hvac',blenderColour:true,tile:-1}));continue;
+   parts.push(visual(p,{blenderKind:'rooftop_hvac',blenderColour:true,tile:8}));continue;
   }
   if(p.mesh==='conifer'){parts.push(visual(p,{blenderWind:true,tile:-1}));continue;}
   parts.push(p);
@@ -84,8 +95,8 @@ export function blenderWorld(arena){
  const s=arena.info.size,id=arena.info.id;
  if(id!==6&&id!==8){
   for(const sign of [-1,1]){
-   parts.push({x:sign*(s+3.9),y:.9,z:sign*s*.35,w:2.1,h:1.8,d:4.7,yaw:sign*.28,surface:'dark',tile:-1,blenderKind:'utility_van',blenderColour:true});
-   parts.push({x:sign*(s+2),y:.1,z:sign*s*.35-3.4,w:1.2,h:.2,d:1.2,surface:'wood',tile:-1,blenderKind:'pallet',blenderColour:true});
+   parts.push({x:sign*(s+3.9),y:.9,z:sign*s*.35,w:2.1,h:1.8,d:4.7,yaw:sign*.28,surface:'dark',tile:8,blenderKind:'utility_van',blenderColour:true});
+   parts.push({x:sign*(s+2),y:.1,z:sign*s*.35-3.4,w:1.2,h:.2,d:1.2,surface:'wood',tile:10,blenderKind:'pallet',blenderColour:true});
   }
  }
  return productionWorld(arena,parts);

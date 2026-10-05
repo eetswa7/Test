@@ -77,19 +77,24 @@ def author_environment(api, helpers):
                 points=[(x0+.054,y0),(x1,y0),(x1,y1),(x0,y1),
                         (x0,y0+.088),(x0+.018,y0+.059),(x0+.024,y0+.021)]
             wall.append(outline(points,-.46,.46,(.96-row*.018,.965-row*.018,.93-row*.015)))
+    # Expansion joints are deep grooves in an opaque structural casting.
+    # They must never become slits through a solid simulation wall, exposing
+    # sky or leaking exterior light into the authored interior.
+    wall.append(box((0,0,0),(1,1,.82),(.58,.61,.55),(.96,0)))
     wall_far=wall[:]
     for sign in (-1,1):
         for x in (-.465,.465):
             wall.append(box((x,0,sign*.476),(.027,.92,.028),(.73,.77,.72),(.86,.04)))
-        wall.append(box((0,-.470,sign*.480),(.984,.059,.038),(.68,.71,.64),(.96,0)))
-        wall.append(box((0,.472,sign*.479),(.986,.047,.035),(.78,.80,.75),(.87,0)))
+        plinth=box((0,-.470,sign*.480),(.984,.059,.038),(.68,.71,.64),(.96,0))
+        coping=box((0,.472,sign*.479),(.986,.047,.035),(.78,.80,.75),(.87,0))
+        wall.extend((plinth,coping));wall_far.extend((plinth,coping))
         for x in (-.365,-.125,.13,.365):
             for y in (-.325,.33):
                 wall.append((sphere(8,4),(x,y,sign*.463),(.022,.022,.003),(.48,.49,.44),(.98,0)))
         # Exposed aggregate and bent reinforcement remain inside the silhouette.
         wall.append(outline([(-.483,-.443),(-.432,-.443),(-.461,-.403),(-.48,-.36)],sign*.459,sign*.466,(.49,.50,.44)))
         wall.append(rod((-.477,-.43,sign*.466),(-.453,-.369,sign*.466),.004,rust,(.88,.18)))
-    publish('wall',wall,wall_far+wall[4:7])
+    publish('wall',wall,wall_far)
 
     # Facades are thick perimeter shells with genuine recessed apertures,
     # slabs, piers, window frames and internal shadow boxes. No opaque unit
@@ -296,14 +301,14 @@ def author_environment(api, helpers):
 
     # Armoured service door and constructional portal. A real gap is retained
     # through doorway_surround; surface placement need not block an entry.
-    portal=[box((-.4,0,0),(.2,1,.96),(.74,.78,.73),(.88,.09)),
-            box((.4,0,0),(.2,1,.96),(.74,.78,.73),(.88,.09)),
-            box((0,.44,0),(.6,.12,.96),(.74,.78,.73),(.88,.09))]
+    portal=[box((-.45,0,0),(.1,1,.96),(.95,.97,.94),(.90,.02)),
+            box((.45,0,0),(.1,1,.96),(.95,.97,.94),(.90,.02)),
+            box((0,.44,0),(.8,.12,.96),(.95,.97,.94),(.90,.02))]
     for name in ('doorway_surround','door_portal'):publish(name,portal,portal)
-    aperture=[box((-.4,0,0),(.2,1,.88),(.73,.78,.72),(.86,.08)),
-              box((.4,0,0),(.2,1,.88),(.73,.78,.72),(.86,.08)),
-              box((0,-.44,0),(.6,.12,.88),(.73,.78,.72),(.86,.08)),
-              box((0,.44,0),(.6,.12,.88),(.73,.78,.72),(.86,.08))]
+    aperture=[box((-.45,0,0),(.1,1,.88),(.95,.97,.94),(.90,.02)),
+              box((.45,0,0),(.1,1,.88),(.95,.97,.94),(.90,.02)),
+              box((0,-.44,0),(.8,.12,.88),(.95,.97,.94),(.90,.02)),
+              box((0,.44,0),(.8,.12,.88),(.95,.97,.94),(.90,.02))]
     for x in (-.45,.45):
         for y in (-.40,.40):aperture.append(fastener((x,y,-.448),radius=.013))
     publish('aperture_frame',aperture,aperture[:4])

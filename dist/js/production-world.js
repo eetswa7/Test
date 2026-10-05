@@ -1,6 +1,7 @@
 // Presentation is built from the authoritative Arena. No art operation adds a
 // collider, changes a firing aperture, or moves an objective/navigation route.
 const industrialTag=/INDUSTRIAL|REFINERY|DOCKYARD|RAIL|TROPICAL/;
+const texturedMetal=new Set(['roof_truss','switchgear','vent','light_fixture','cooling_stack','cable_tray','pipe_rack','rooftop_hvac','duct_run','loading_shutter','drain_channel']);
 
 /** Recover the actual holes in a room wall at a requested height. Matching the
  * collider segments matters: Blacksite's open windows must never become glass,
@@ -37,7 +38,7 @@ export function productionWorld(arena,parts){
  // Authored material diversity is inside each merged native mesh. Identical
  // pieces share one draw batch; colour variants remain per-instance attributes.
  const add=(x,y,z,w,h,d,kind,extra={},source)=>{
-  const p={x,y,z,w,h,d,surface:'steel',tile:-1,blenderKind:kind,blenderColour:true,
+  const p={x,y,z,w,h,d,surface:'steel',tile:texturedMetal.has(kind)?8:-1,blenderKind:kind,blenderColour:true,
    productionArt:true,productionRole:kind,...extra};
   const part=source?Object.assign(Object.create(source),p):p;
   result.push(part);return part;
@@ -47,11 +48,14 @@ export function productionWorld(arena,parts){
   blenderColour:false,color:[.95,.96,.94],productionGround:true,surfaceLayer:3,
   rough:.92,...extra},source);
  const frame=(hole,bottom,clearance,kind,source)=>{
-  const width=hole.width/.60,height=clearance/(kind==='aperture_frame'?.76:.88);
+  const width=hole.width/.80,height=clearance/(kind==='aperture_frame'?.76:.88);
   const y=kind==='aperture_frame'?bottom+clearance/2:bottom+height/2;
   const x=hole.axis==='z'?hole.at:hole.edge,z=hole.axis==='z'?hole.edge:hole.at;
   const yaw=hole.axis==='z'?(hole.sign>0?Math.PI:0):(hole.sign>0?-Math.PI/2:Math.PI/2);
-  return add(x,y,z,width,height,.43,kind,{yaw,productionOpening:{
+  const surface=industrial||['steel','dark','concrete'].includes(source.surface)?'concrete':source.surface;
+  const tile=surface==='limestone'?2:['stone','plaster'].includes(surface)?1:0;
+  return add(x,y,z,width,height,.43,kind,{yaw,surface,tile,blenderColour:false,
+   color:[.96,.98,.96],rough:.9,metal:0,productionOpening:{
    x:hole.axis==='z'?hole.at:hole.edge,z:hole.axis==='z'?hole.edge:hole.at,
    axis:hole.axis,width:hole.width,bottom,top:bottom+clearance
   }},source);
@@ -138,6 +142,15 @@ export function productionWorld(arena,parts){
   for(const sign of [-1,1]){
    floor(sign*23,0,6.4,24,'concrete');
    floor(sign*43,sign*30,17,18,'gravel',{color:[.74,.77,.72]});
+   // A poured service forecourt and connected approach replace the uniform
+   // asphalt foreground with a physically useful construction footprint. The
+   // finish stays below the original contact-shadow/impact receiving height.
+   floor(0,sign*16.2,34,8.2,'concrete',{y:.029,color:[.90,.92,.88],productionRole:'service_apron'});
+   floor(0,sign*24,13.5,16,'concrete',{y:.029,color:[.83,.86,.82],productionRole:'service_approach'});
+   for(const x of [-9.5,9.5])floor(x,sign*16.8,.14,5.8,'concrete',{
+    y:.0305,surfaceLayer:4,color:[.74,.65,.38],productionRole:'painted_service_lane'});
+   floor(0,sign*19.6,19.1,.14,'concrete',{
+    y:.0305,surfaceLayer:4,color:[.74,.65,.38],productionRole:'painted_service_lane'});
    for(const x of [-10,10])add(x,4.35,sign*11.24,2.35,.72,.23,'vent',{yaw:sign<0?0:Math.PI});
    add(0,4.48,sign*11.245,3.25,.78,.10,'site_sign_14',{yaw:sign<0?Math.PI:0});
    // Closed maintenance bays are ON the solid upper hall facade. Their bases

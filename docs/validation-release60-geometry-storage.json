@@ -1,10 +1,10 @@
 {
   "scope": "Retained native geometry attribute/index storage estimate, including metric UV attributes. Not browser process memory, driver allocation, live GPU use, Safari memory limit or physical iPhone measurement.",
   "actual_iphone_data": false,
-  "meshes": 318,
-  "compressedLibraryBytes": 11124909,
-  "decodedLibraryBytes": 34943496,
-  "retainedGeometryBufferBytes": 39828064,
+  "meshes": 329,
+  "compressedLibraryBytes": 10276946,
+  "decodedLibraryBytes": 33114672,
+  "retainedGeometryBufferBytes": 37730428,
   "largest": [
     {
       "name": "building_urban__near",

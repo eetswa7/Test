@@ -107,13 +107,13 @@
       "vertexMaterial": true
     },
     "vest__near": {
-      "triangles": 2904,
-      "vertices": 1506,
+      "triangles": 2616,
+      "vertices": 1362,
       "vertexMaterial": true
     },
     "vest__far": {
-      "triangles": 832,
-      "vertices": 432,
+      "triangles": 640,
+      "vertices": 336,
       "vertexMaterial": true
     },
     "pack__near": {
@@ -147,8 +147,8 @@
       "vertexMaterial": true
     },
     "glove__near": {
-      "triangles": 2204,
-      "vertices": 1122,
+      "triangles": 1692,
+      "vertices": 866,
       "vertexMaterial": true
     },
     "glove__far": {
@@ -257,13 +257,13 @@
       "vertexMaterial": true
     },
     "wall__near": {
-      "triangles": 1844,
-      "vertices": 986,
+      "triangles": 1888,
+      "vertices": 1010,
       "vertexMaterial": true
     },
     "wall__far": {
-      "triangles": 128,
-      "vertices": 78,
+      "triangles": 280,
+      "vertices": 158,
       "vertexMaterial": true
     },
     "column__near": {
@@ -387,8 +387,8 @@
       "vertexMaterial": true
     },
     "palm__near": {
-      "triangles": 1800,
-      "vertices": 926,
+      "triangles": 1224,
+      "vertices": 638,
       "vertexMaterial": true
     },
     "palm__far": {
@@ -397,18 +397,18 @@
       "vertexMaterial": true
     },
     "finger__near": {
-      "triangles": 576,
-      "vertices": 294,
+      "triangles": 256,
+      "vertices": 134,
       "vertexMaterial": true
     },
     "finger__far": {
-      "triangles": 320,
-      "vertices": 162,
+      "triangles": 192,
+      "vertices": 98,
       "vertexMaterial": true
     },
     "sleeve_z__near": {
-      "triangles": 1116,
-      "vertices": 568,
+      "triangles": 924,
+      "vertices": 472,
       "vertexMaterial": true
     },
     "sleeve_z__far": {
@@ -816,6 +816,46 @@
       "vertices": 514,
       "vertexMaterial": true
     },
+    "thigh__near": {
+      "triangles": 384,
+      "vertices": 194,
+      "vertexMaterial": true
+    },
+    "thigh__far": {
+      "triangles": 100,
+      "vertices": 52,
+      "vertexMaterial": true
+    },
+    "shin__near": {
+      "triangles": 384,
+      "vertices": 194,
+      "vertexMaterial": true
+    },
+    "shin__far": {
+      "triangles": 100,
+      "vertices": 52,
+      "vertexMaterial": true
+    },
+    "upperarm__near": {
+      "triangles": 384,
+      "vertices": 194,
+      "vertexMaterial": true
+    },
+    "upperarm__far": {
+      "triangles": 100,
+      "vertices": 52,
+      "vertexMaterial": true
+    },
+    "forearm__near": {
+      "triangles": 620,
+      "vertices": 316,
+      "vertexMaterial": true
+    },
+    "forearm__far": {
+      "triangles": 100,
+      "vertices": 52,
+      "vertexMaterial": true
+    },
     "optic_hood__near": {
       "triangles": 384,
       "vertices": 192,
@@ -842,13 +882,13 @@
       "vertexMaterial": true
     },
     "weapon_0_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_0_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_1_groups_0": {
@@ -867,13 +907,13 @@
       "vertexMaterial": true
     },
     "weapon_1_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_1_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_2_groups_0": {
@@ -892,13 +932,13 @@
       "vertexMaterial": true
     },
     "weapon_2_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_2_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_3_groups_0": {
@@ -917,13 +957,8 @@
       "vertexMaterial": true
     },
     "weapon_3_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
-      "vertexMaterial": true
-    },
-    "weapon_3_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_4_groups_0": {
@@ -942,13 +977,13 @@
       "vertexMaterial": true
     },
     "weapon_4_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_4_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_5_groups_0": {
@@ -972,8 +1007,8 @@
       "vertexMaterial": true
     },
     "weapon_5_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_6_groups_0": {
@@ -992,8 +1027,8 @@
       "vertexMaterial": true
     },
     "weapon_6_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_7_groups_0": {
@@ -1012,8 +1047,8 @@
       "vertexMaterial": true
     },
     "weapon_7_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_8_groups_0": {
@@ -1032,8 +1067,13 @@
       "vertexMaterial": true
     },
     "weapon_8_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
+      "vertexMaterial": true
+    },
+    "weapon_8_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_9_groups_0": {
@@ -1062,8 +1102,8 @@
       "vertexMaterial": true
     },
     "weapon_9_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_10_groups_0": {
@@ -1082,8 +1122,8 @@
       "vertexMaterial": true
     },
     "weapon_10_hands_1": {
-      "triangles": 6080,
-      "vertices": 3116,
+      "triangles": 3712,
+      "vertices": 1932,
       "vertexMaterial": true
     },
     "weapon_11_groups_0": {
@@ -1107,13 +1147,13 @@
       "vertexMaterial": true
     },
     "weapon_11_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_11_hands_1": {
-      "triangles": 6080,
-      "vertices": 3116,
+      "triangles": 3712,
+      "vertices": 1932,
       "vertexMaterial": true
     },
     "weapon_12_groups_0": {
@@ -1136,11 +1176,6 @@
       "vertices": 1352,
       "vertexMaterial": true
     },
-    "weapon_13_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
-      "vertexMaterial": true
-    },
     "weapon_14_groups_0": {
       "triangles": 5516,
       "vertices": 2832,
@@ -1157,8 +1192,8 @@
       "vertexMaterial": true
     },
     "weapon_14_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_15_groups_0": {
@@ -1191,6 +1226,11 @@
       "vertices": 1354,
       "vertexMaterial": true
     },
+    "weapon_16_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
+      "vertexMaterial": true
+    },
     "weapon_17_groups_0": {
       "triangles": 5520,
       "vertices": 2836,
@@ -1204,6 +1244,11 @@
     "weapon_17_groups_2": {
       "triangles": 2624,
       "vertices": 1318,
+      "vertexMaterial": true
+    },
+    "weapon_17_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_18_groups_0": {
@@ -1241,6 +1286,11 @@
       "vertices": 1376,
       "vertexMaterial": true
     },
+    "weapon_19_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
+      "vertexMaterial": true
+    },
     "weapon_20_groups_0": {
       "triangles": 10332,
       "vertices": 5238,
@@ -1254,11 +1304,6 @@
     "weapon_20_groups_2": {
       "triangles": 2168,
       "vertices": 1090,
-      "vertexMaterial": true
-    },
-    "weapon_20_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
       "vertexMaterial": true
     },
     "weapon_21_groups_0": {
@@ -1277,8 +1322,13 @@
       "vertexMaterial": true
     },
     "weapon_21_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
+      "vertexMaterial": true
+    },
+    "weapon_21_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_22_groups_0": {
@@ -1297,13 +1347,13 @@
       "vertexMaterial": true
     },
     "weapon_22_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_22_hands_1": {
-      "triangles": 6080,
-      "vertices": 3116,
+      "triangles": 3712,
+      "vertices": 1932,
       "vertexMaterial": true
     },
     "weapon_23_groups_0": {
@@ -1322,8 +1372,8 @@
       "vertexMaterial": true
     },
     "weapon_23_hands_1": {
-      "triangles": 6080,
-      "vertices": 3116,
+      "triangles": 3712,
+      "vertices": 1932,
       "vertexMaterial": true
     },
     "weapon_24_groups_0": {
@@ -1342,13 +1392,13 @@
       "vertexMaterial": true
     },
     "weapon_24_hands_0": {
-      "triangles": 6296,
-      "vertices": 3228,
+      "triangles": 3928,
+      "vertices": 2044,
       "vertexMaterial": true
     },
     "weapon_24_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_25_groups_0": {
@@ -1407,8 +1457,8 @@
       "vertexMaterial": true
     },
     "weapon_27_hands_1": {
-      "triangles": 5660,
-      "vertices": 2902,
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_28_groups_0": {
@@ -1424,6 +1474,11 @@
     "weapon_28_groups_2": {
       "triangles": 2732,
       "vertices": 1372,
+      "vertexMaterial": true
+    },
+    "weapon_28_hands_1": {
+      "triangles": 3624,
+      "vertices": 1888,
       "vertexMaterial": true
     },
     "weapon_29_groups_0": {
@@ -1442,8 +1497,8 @@
       "vertexMaterial": true
     },
     "weapon_29_hands_1": {
-      "triangles": 6080,
-      "vertices": 3116,
+      "triangles": 3712,
+      "vertices": 1932,
       "vertexMaterial": true
     },
     "ridge_0__near": {
@@ -1722,7 +1777,7 @@
         {
           "mesh": "weapon_0_hands_0",
           "anchor": 0,
-          "tag": "aecb803350696b64634a2bec850dbf906cdb3d42e08ae4402f5eabda2a3b92ec",
+          "tag": "294de2f7baa147bb3e5a4e04237c2504a310646baaad11377cee04bb40519fed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -1748,7 +1803,7 @@
         {
           "mesh": "weapon_0_hands_1",
           "anchor": 14,
-          "tag": "f6405280b42669c1bf8147431eef65fe6e4119e37297c8e14c5988eb71d8810b",
+          "tag": "5b54e3cdce4fab4d539c33b08a13399cd9097a77fa6ceea7000d98f2077727df",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -1885,7 +1940,7 @@
         {
           "mesh": "weapon_1_hands_0",
           "anchor": 0,
-          "tag": "ffabc706e81aca401d3a7c51b34f1d85fb50f9f9edf05fabc40de902eeffb1e0",
+          "tag": "e7a0fcfa8896dd3bd177a673d869d2989fe171ffa6deaf9b97e52db227b5b5c1",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -1911,7 +1966,7 @@
         {
           "mesh": "weapon_1_hands_1",
           "anchor": 14,
-          "tag": "e7d618dc6ba67028bfba331c135b268d927762fae5ae686665064d07abb0194e",
+          "tag": "0380d564650edaeb753898b041a833b6136008111f21f81fdafa6795c062ff50",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2047,7 +2102,7 @@
         {
           "mesh": "weapon_2_hands_0",
           "anchor": 0,
-          "tag": "44377a6381b71548eba6ce095b092416e8a6f10461d54ad6ec174085ab1538ad",
+          "tag": "e0acb114cb48e18a2ef4dcbc8e2840c0619ddd323eb4cdc7243ca94557b871ed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2073,7 +2128,7 @@
         {
           "mesh": "weapon_2_hands_1",
           "anchor": 14,
-          "tag": "30cbcb03a3383d10b921369aaa13c89adae316304fc425ad8d906d6fb31b8dc9",
+          "tag": "7552798289a62587901e3df1a7fbb2b5388d7a78b446cfcae83e46958b6e4e8e",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2203,7 +2258,7 @@
         {
           "mesh": "weapon_3_hands_0",
           "anchor": 0,
-          "tag": "87aac58bf222cd6908483cd8c2764ab118f06cceb14825629f89f4b11cc48a64",
+          "tag": "d1dc215ec5c036addb66249509aa2af899681971f9556ef7401007343bbc16ec",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2227,9 +2282,9 @@
           ]
         },
         {
-          "mesh": "weapon_3_hands_1",
+          "mesh": "weapon_2_hands_1",
           "anchor": 14,
-          "tag": "1e3679b4d094d1850643a350f0a8af1b7bf004a7eff0efe774ebe7bb8be25748",
+          "tag": "7552798289a62587901e3df1a7fbb2b5388d7a78b446cfcae83e46958b6e4e8e",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2340,7 +2395,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2366,7 +2421,7 @@
         {
           "mesh": "weapon_4_hands_1",
           "anchor": 14,
-          "tag": "587d4152fff4431291e02de29120542eb5bb9f10b11221c72bb57f82bf51aaeb",
+          "tag": "2ea339601431c464098abff07d3568113a71125b566c98a2838d2cbfeb2e82d3",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2500,7 +2555,7 @@
         {
           "mesh": "weapon_5_hands_0",
           "anchor": 0,
-          "tag": "afd0b2f38f0dd7220e76ed4cdf7b4c8d5775cc5181dfb4a9b8f09caa34bf899a",
+          "tag": "11cb54a490ec5f0c119d6f8c044ad94b6bf5ca6f2ddd9bf075da1e186c732d66",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2526,7 +2581,7 @@
         {
           "mesh": "weapon_2_hands_1",
           "anchor": 14,
-          "tag": "30cbcb03a3383d10b921369aaa13c89adae316304fc425ad8d906d6fb31b8dc9",
+          "tag": "7552798289a62587901e3df1a7fbb2b5388d7a78b446cfcae83e46958b6e4e8e",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2677,7 +2732,7 @@
         {
           "mesh": "weapon_6_hands_0",
           "anchor": 0,
-          "tag": "e69b9d8c7054f0b449edaf87d2c5c2392e6871ed4f5e5f9859d999f845e1b6cd",
+          "tag": "b15fe703ed0c413cd127b8db0358dc29b89168df63e2f18833643c835a544369",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2703,7 +2758,7 @@
         {
           "mesh": "weapon_0_hands_1",
           "anchor": 14,
-          "tag": "f6405280b42669c1bf8147431eef65fe6e4119e37297c8e14c5988eb71d8810b",
+          "tag": "5b54e3cdce4fab4d539c33b08a13399cd9097a77fa6ceea7000d98f2077727df",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2840,7 +2895,7 @@
         {
           "mesh": "weapon_2_hands_0",
           "anchor": 0,
-          "tag": "44377a6381b71548eba6ce095b092416e8a6f10461d54ad6ec174085ab1538ad",
+          "tag": "e0acb114cb48e18a2ef4dcbc8e2840c0619ddd323eb4cdc7243ca94557b871ed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -2866,7 +2921,7 @@
         {
           "mesh": "weapon_7_hands_1",
           "anchor": 14,
-          "tag": "1f3ffd23fdbdc5eca9ed32480148523fa22deaae9bb7c792fb0df7d3b83f5dea",
+          "tag": "4e8017cc8e49737a0a4f213b838f8268e0c7737bd22254f1d680b9cb6e52d5a4",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3021,7 +3076,7 @@
         {
           "mesh": "weapon_8_hands_0",
           "anchor": 0,
-          "tag": "c32374523b28ae62d785525dc0dd667c099c2e4b49b1f0a30d1fd0a50bfad8f9",
+          "tag": "3fb7a7cc871d005e9fc2c1f9a6a7e7a31d971fa32b2485d1a723f821367c1297",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3045,9 +3100,9 @@
           ]
         },
         {
-          "mesh": "weapon_2_hands_1",
+          "mesh": "weapon_8_hands_1",
           "anchor": 14,
-          "tag": "30cbcb03a3383d10b921369aaa13c89adae316304fc425ad8d906d6fb31b8dc9",
+          "tag": "9c0380045c056591211e1357c6a28029685b87c0153221b3da506235daef7561",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3222,7 +3277,7 @@
         {
           "mesh": "weapon_6_hands_0",
           "anchor": 0,
-          "tag": "e69b9d8c7054f0b449edaf87d2c5c2392e6871ed4f5e5f9859d999f845e1b6cd",
+          "tag": "b15fe703ed0c413cd127b8db0358dc29b89168df63e2f18833643c835a544369",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3248,7 +3303,7 @@
         {
           "mesh": "weapon_9_hands_1",
           "anchor": 14,
-          "tag": "ea1a8d76083def524c5ad59c82318e56a3845f341ab2d87a3f22e0979f04be21",
+          "tag": "b56ae38ddd8fe79d7749fe4f8e3890570cbd6abccb395349adb3254db9fec1ef",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3352,7 +3407,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3378,7 +3433,7 @@
         {
           "mesh": "weapon_10_hands_1",
           "anchor": 14,
-          "tag": "6fd1dc98ded8e363cc585691701d61883877f95e9b21cc11c76a6a944a1bf31b",
+          "tag": "3bd9e5bde0909764e9b0e0a5ffbd04fb90edffcb9e50829877d6a4b4452aff83",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3490,7 +3545,7 @@
         {
           "mesh": "weapon_11_hands_0",
           "anchor": 0,
-          "tag": "ab0dc7dcd8886aaab068a524e892ff4e2f3bb2625e95de5f8d7bd0b1b887c920",
+          "tag": "6ef00128e5ded060ab18286b57a882f6d2fd0702a468cfa3de21ebed40460067",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3516,7 +3571,7 @@
         {
           "mesh": "weapon_11_hands_1",
           "anchor": 14,
-          "tag": "07dbef119e6e9d3fa217ce2a969d5c9212bc2717401b098a3b9d1f3e8a8d3682",
+          "tag": "c67ad4b72dbda0b0307b7206215e6002ba1b98f1c7caf6ac69ebddd33ca6dd58",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3579,7 +3634,7 @@
         {
           "mesh": "weapon_0_hands_0",
           "anchor": 0,
-          "tag": "aecb803350696b64634a2bec850dbf906cdb3d42e08ae4402f5eabda2a3b92ec",
+          "tag": "294de2f7baa147bb3e5a4e04237c2504a310646baaad11377cee04bb40519fed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3726,7 +3781,7 @@
         {
           "mesh": "weapon_5_hands_0",
           "anchor": 0,
-          "tag": "afd0b2f38f0dd7220e76ed4cdf7b4c8d5775cc5181dfb4a9b8f09caa34bf899a",
+          "tag": "11cb54a490ec5f0c119d6f8c044ad94b6bf5ca6f2ddd9bf075da1e186c732d66",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3750,9 +3805,9 @@
           ]
         },
         {
-          "mesh": "weapon_13_hands_1",
+          "mesh": "weapon_7_hands_1",
           "anchor": 14,
-          "tag": "f3bc467addfc61904e82f3df917d5aa0325b8ec878c730eff5f8c076c9b72786",
+          "tag": "4e8017cc8e49737a0a4f213b838f8268e0c7737bd22254f1d680b9cb6e52d5a4",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3888,7 +3943,7 @@
         {
           "mesh": "weapon_0_hands_0",
           "anchor": 0,
-          "tag": "aecb803350696b64634a2bec850dbf906cdb3d42e08ae4402f5eabda2a3b92ec",
+          "tag": "294de2f7baa147bb3e5a4e04237c2504a310646baaad11377cee04bb40519fed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -3914,7 +3969,7 @@
         {
           "mesh": "weapon_14_hands_1",
           "anchor": 14,
-          "tag": "4bf0a7a8f05dbb5ecfc84b34028c0101e2efe4012f3c453bdbbd0f7c9a3ec889",
+          "tag": "a03815451d4c76b1fbe90adef280d5ee0db23c982592a705e1c14368496aa447",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4056,7 +4111,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4082,7 +4137,7 @@
         {
           "mesh": "weapon_9_hands_1",
           "anchor": 14,
-          "tag": "ea1a8d76083def524c5ad59c82318e56a3845f341ab2d87a3f22e0979f04be21",
+          "tag": "b56ae38ddd8fe79d7749fe4f8e3890570cbd6abccb395349adb3254db9fec1ef",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4231,7 +4286,7 @@
         {
           "mesh": "weapon_1_hands_0",
           "anchor": 0,
-          "tag": "ffabc706e81aca401d3a7c51b34f1d85fb50f9f9edf05fabc40de902eeffb1e0",
+          "tag": "e7a0fcfa8896dd3bd177a673d869d2989fe171ffa6deaf9b97e52db227b5b5c1",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4255,9 +4310,9 @@
           ]
         },
         {
-          "mesh": "weapon_0_hands_1",
+          "mesh": "weapon_16_hands_1",
           "anchor": 14,
-          "tag": "f6405280b42669c1bf8147431eef65fe6e4119e37297c8e14c5988eb71d8810b",
+          "tag": "031e15d69924b55d56d001f4ea08fed95734129241ae2870cc43c54051d6b7b6",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4387,7 +4442,7 @@
         {
           "mesh": "weapon_2_hands_0",
           "anchor": 0,
-          "tag": "44377a6381b71548eba6ce095b092416e8a6f10461d54ad6ec174085ab1538ad",
+          "tag": "e0acb114cb48e18a2ef4dcbc8e2840c0619ddd323eb4cdc7243ca94557b871ed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4411,9 +4466,9 @@
           ]
         },
         {
-          "mesh": "weapon_0_hands_1",
+          "mesh": "weapon_17_hands_1",
           "anchor": 14,
-          "tag": "f6405280b42669c1bf8147431eef65fe6e4119e37297c8e14c5988eb71d8810b",
+          "tag": "af0ee750d428c22ca1d0a2c1ab197a8e40145398dc08c686e9b73d59d8222986",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4550,7 +4605,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4576,7 +4631,7 @@
         {
           "mesh": "weapon_2_hands_1",
           "anchor": 14,
-          "tag": "30cbcb03a3383d10b921369aaa13c89adae316304fc425ad8d906d6fb31b8dc9",
+          "tag": "7552798289a62587901e3df1a7fbb2b5388d7a78b446cfcae83e46958b6e4e8e",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4713,7 +4768,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4737,9 +4792,9 @@
           ]
         },
         {
-          "mesh": "weapon_7_hands_1",
+          "mesh": "weapon_19_hands_1",
           "anchor": 14,
-          "tag": "1f3ffd23fdbdc5eca9ed32480148523fa22deaae9bb7c792fb0df7d3b83f5dea",
+          "tag": "7ec074de766e4666cc9a1d561aa2607825d011219ea7c21a1f2338f900d21d37",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4888,7 +4943,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -4912,9 +4967,9 @@
           ]
         },
         {
-          "mesh": "weapon_20_hands_1",
+          "mesh": "weapon_2_hands_1",
           "anchor": 14,
-          "tag": "4ae43647d8f1392921dd93335c57795638ae68445d2f8865ee51a266f33cf2cd",
+          "tag": "7552798289a62587901e3df1a7fbb2b5388d7a78b446cfcae83e46958b6e4e8e",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5047,7 +5102,7 @@
         {
           "mesh": "weapon_21_hands_0",
           "anchor": 0,
-          "tag": "70a38ec3c573fdaabc47892bd1357d0c4f5fca9c526be962036d212ce60f056f",
+          "tag": "25565bf283a73bb391e0b17c7c1f2b523c77deb9b4f6d74455aa4c132eeff224",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5071,9 +5126,9 @@
           ]
         },
         {
-          "mesh": "weapon_1_hands_1",
+          "mesh": "weapon_21_hands_1",
           "anchor": 14,
-          "tag": "e7d618dc6ba67028bfba331c135b268d927762fae5ae686665064d07abb0194e",
+          "tag": "f5989db2170a53ecf47685259d0eb31aaf91a78f679c7dcc59e7e45037a8a155",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5172,7 +5227,7 @@
         {
           "mesh": "weapon_22_hands_0",
           "anchor": 0,
-          "tag": "0b1382290519c38fd2451b35f41bba1fab804d1b467c072bb9009b69e5224ab7",
+          "tag": "fd32ae1a4f34c0834a4327051f5dd88b46bd88cf68329a53d03cfe7e48dca9de",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5198,7 +5253,7 @@
         {
           "mesh": "weapon_22_hands_1",
           "anchor": 14,
-          "tag": "2ee42b5c08ac3548e702a72910deaedf696fbf51b7e4d3fdc1c16a2751aee53b",
+          "tag": "b7cff743c823eee6f50a998b889f289e6074de7ca33912c0cfaaae1028497685",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5299,7 +5354,7 @@
         {
           "mesh": "weapon_1_hands_0",
           "anchor": 0,
-          "tag": "ffabc706e81aca401d3a7c51b34f1d85fb50f9f9edf05fabc40de902eeffb1e0",
+          "tag": "e7a0fcfa8896dd3bd177a673d869d2989fe171ffa6deaf9b97e52db227b5b5c1",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5325,7 +5380,7 @@
         {
           "mesh": "weapon_23_hands_1",
           "anchor": 14,
-          "tag": "2923908266be0a48c57e079ba212e61e88fa62008e13a4e765a5b6e855cbc732",
+          "tag": "5a9a12c0c6128aae8f043fceafb6a730ed87fc97ac5e0fa3a6a74117f476e06d",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5474,7 +5529,7 @@
         {
           "mesh": "weapon_24_hands_0",
           "anchor": 0,
-          "tag": "13620627bfaa3844e02ef1c510fa34b4c20fcac9173782277ee4a9d2ee7d9008",
+          "tag": "d9316c194056533376a983280fc7bf911796ccde297dc9a91230f62e64a58260",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5500,7 +5555,7 @@
         {
           "mesh": "weapon_24_hands_1",
           "anchor": 14,
-          "tag": "2281e51bd8c99d0f1b3ee9fde2bb51d3e1bb7bb2a3b9a5bbcf164ba27f29a5b0",
+          "tag": "e6225c1531c3d10e4797346dab8dae2572f2c1b6c6c165ba526e306eb0bacc34",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5637,7 +5692,7 @@
         {
           "mesh": "weapon_0_hands_0",
           "anchor": 0,
-          "tag": "aecb803350696b64634a2bec850dbf906cdb3d42e08ae4402f5eabda2a3b92ec",
+          "tag": "294de2f7baa147bb3e5a4e04237c2504a310646baaad11377cee04bb40519fed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5661,9 +5716,9 @@
           ]
         },
         {
-          "mesh": "weapon_0_hands_1",
+          "mesh": "weapon_16_hands_1",
           "anchor": 14,
-          "tag": "f6405280b42669c1bf8147431eef65fe6e4119e37297c8e14c5988eb71d8810b",
+          "tag": "031e15d69924b55d56d001f4ea08fed95734129241ae2870cc43c54051d6b7b6",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5801,7 +5856,7 @@
         {
           "mesh": "weapon_2_hands_0",
           "anchor": 0,
-          "tag": "44377a6381b71548eba6ce095b092416e8a6f10461d54ad6ec174085ab1538ad",
+          "tag": "e0acb114cb48e18a2ef4dcbc8e2840c0619ddd323eb4cdc7243ca94557b871ed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -5825,9 +5880,9 @@
           ]
         },
         {
-          "mesh": "weapon_20_hands_1",
+          "mesh": "weapon_1_hands_1",
           "anchor": 14,
-          "tag": "4ae43647d8f1392921dd93335c57795638ae68445d2f8865ee51a266f33cf2cd",
+          "tag": "0380d564650edaeb753898b041a833b6136008111f21f81fdafa6795c062ff50",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6006,7 +6061,7 @@
         {
           "mesh": "weapon_0_hands_0",
           "anchor": 0,
-          "tag": "aecb803350696b64634a2bec850dbf906cdb3d42e08ae4402f5eabda2a3b92ec",
+          "tag": "294de2f7baa147bb3e5a4e04237c2504a310646baaad11377cee04bb40519fed",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6032,7 +6087,7 @@
         {
           "mesh": "weapon_27_hands_1",
           "anchor": 14,
-          "tag": "44239e7b396beab898071406e91ee8c1b39660d400ae5b9b500e90ad117f148a",
+          "tag": "81d8c190534d1a2653600c173aaa16e7ff69a07b2655ad370d93116da8bb3041",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6157,7 +6212,7 @@
         {
           "mesh": "weapon_1_hands_0",
           "anchor": 0,
-          "tag": "ffabc706e81aca401d3a7c51b34f1d85fb50f9f9edf05fabc40de902eeffb1e0",
+          "tag": "e7a0fcfa8896dd3bd177a673d869d2989fe171ffa6deaf9b97e52db227b5b5c1",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6181,9 +6236,9 @@
           ]
         },
         {
-          "mesh": "weapon_3_hands_1",
+          "mesh": "weapon_28_hands_1",
           "anchor": 14,
-          "tag": "1e3679b4d094d1850643a350f0a8af1b7bf004a7eff0efe774ebe7bb8be25748",
+          "tag": "466e11454e60b2ced9d12dd10473ee04d2bad4bca4a58fca8fb10f89dd4cd8f5",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6287,7 +6342,7 @@
         {
           "mesh": "weapon_4_hands_0",
           "anchor": 0,
-          "tag": "4c8998f92b699244426c0aa5d84d7b35886b7a85c9d957d7157dd665fbf394e9",
+          "tag": "d167574e3eaaa18450bb40ee7bf750083c0f13fa166e5ffe87367469a0220678",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6313,7 +6368,7 @@
         {
           "mesh": "weapon_29_hands_1",
           "anchor": 14,
-          "tag": "88f4356b37d7a33f7062c75ac799034c9c55d1168d21c587c6f136298a7b59b9",
+          "tag": "c4b2712f4abf7fc4c86b905be0ab203be35729e10ae04552483fbf4fe3fcae5f",
           "finishTile": 0,
           "rough": 0.5,
           "metal": 0.5,
@@ -6341,32 +6396,27 @@
     {
       "path": "breachline-library.part000.bin",
       "bytes": 2097150,
-      "sha256": "98416d07e1a9e4ff7e3d3b4f5b378f7a8c1b95ee6b4aa4c3331446ce549a30f1"
+      "sha256": "3e88df02518d9e259899a80be348ff83a8e1dad5fc11df4cb24f181e088f448e"
     },
     {
       "path": "breachline-library.part001.bin",
       "bytes": 2097150,
-      "sha256": "a81d970526ccccfa603423bfab5031fb23826e80b27a2565c5e86773add0f542"
+      "sha256": "d2bfb94899a9d0ec068b2fc5cec49151867e26f1444fd7986532e8225c6a666f"
     },
     {
       "path": "breachline-library.part002.bin",
       "bytes": 2097150,
-      "sha256": "9716739e31b42a039fe2add3af1650c61ec51047b65dd92372646a12a650e15d"
+      "sha256": "23b76049fcd90305f43920b86b85572519155401d53165008aaa3267a1d9ee68"
     },
     {
       "path": "breachline-library.part003.bin",
       "bytes": 2097150,
-      "sha256": "5a7e0b12d972a4dc1dd5ca1f5b41dea438eacc3537ba3d79a81fc22d18daad03"
+      "sha256": "4655350f7b52cbed36e7770d6ba99dd302d0cab996ad0be91af80635d9f6eb52"
     },
     {
       "path": "breachline-library.part004.bin",
-      "bytes": 2097150,
-      "sha256": "ab36e7c2767ba4b52c5f6249ed6bd03942c340f7ac88eb6329ea8571afcbade0"
-    },
-    {
-      "path": "breachline-library.part005.bin",
-      "bytes": 639159,
-      "sha256": "d761b34b3492bb4e4d79867077f5651f09305da362196e8e9020f18832e2a9e4"
+      "bytes": 1888346,
+      "sha256": "1fc51e79e788cee97f760c00be957df55e072a431c7ff1f312b1bc47d8e92384"
     },
     {
       "path": "surfaces-albedo.part000.bin",
@@ -6476,12 +6526,12 @@
   "authorship": "Original Blender mesh authoring and native Cycles colour/normal/physical bakes",
   "geometryPacking": {
     "normalisedBits": 16,
-    "streams": 252,
-    "savedBytes": 2702948,
+    "streams": 263,
+    "savedBytes": 2560892,
     "maxColourError": 0,
     "maxMaterialError": 0.000007629510948348184,
-    "exactSourceSha256": "6f6e4a5f2ffcdd468ca31d7e57ad0b1856617803a6968cdd17a45d82511d65ab",
-    "exactPackedSha256": "6f6e4a5f2ffcdd468ca31d7e57ad0b1856617803a6968cdd17a45d82511d65ab"
+    "exactSourceSha256": "e7faa531d5ddcaf06699a72a1f53fc2eeedb1db9bd762e2c2ef0cca1a3601b4b",
+    "exactPackedSha256": "e7faa531d5ddcaf06699a72a1f53fc2eeedb1db9bd762e2c2ef0cca1a3601b4b"
   },
   "library": {
     "parts": [
@@ -6489,12 +6539,11 @@
       "breachline-library.part001.bin",
       "breachline-library.part002.bin",
       "breachline-library.part003.bin",
-      "breachline-library.part004.bin",
-      "breachline-library.part005.bin"
+      "breachline-library.part004.bin"
     ],
-    "bytes": 11124909,
-    "unpackedBytes": 34943496,
-    "sha256": "f25ecb8463d5db54f09537289bc970b250d8bd500850c17b85ea8120dd162d55"
+    "bytes": 10276946,
+    "unpackedBytes": 33114672,
+    "sha256": "60dfb6904c92bf6635c7053ec38fca37bffa2aa34622ab37727c80ed8df51cdb"
   },
-  "downloadBytes": 16326109
+  "downloadBytes": 15478146
 }

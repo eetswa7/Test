@@ -217,7 +217,11 @@ def author_heroes(api):
             obj=object_mesh(name+'__'+level,v,t,c,physical=physical)
             if smooth:
                 for polygon in obj.data.polygons:polygon.use_smooth=True
-            normals=obj.modifiers.new('Hero sewn and machined normals','WEIGHTED_NORMAL');normals.keep_sharp=True
+            # Area-weighted manufactured normals flatten broad cloth panels and
+            # knuckles. Organic surfaces retain their continuous smooth normals;
+            # only hard manufactured masters receive the face weighting modifier.
+            if not smooth:
+                normals=obj.modifiers.new('Hero machined normals','WEIGHTED_NORMAL');normals.keep_sharp=True
     def soft(pos,size,color=white,rm=(.94,0)):
         return B['soft'],pos,size,color,rm
     def strip(pos,size,color=edge,rm=(.86,.03)):
@@ -225,7 +229,10 @@ def author_heroes(api):
     def seam(start,end,r=.006,color=dark):
         a,b=Vector(start),Vector(end);direction=b-a
         rotation=Vector((0,1,0)).rotation_difference(direction.normalized())
-        g=([rotation@Vector((q.x*r,q.y*direction.length,q.z*r))+(a+b)*.5 for q in B['cylinder'][0]],B['cylinder'][1])
+        # A stitched cord is a few pixels across in gameplay. Eight radial
+        # sides retain that silhouette with one quarter of the former geometry.
+        cord=lathe([(-.5,.5,.5),(.5,.5,.5)],8)
+        g=([rotation@Vector((q.x*r,q.y*direction.length,q.z*r))+(a+b)*.5 for q in cord[0]],cord[1])
         return g,(0,0,0),(1,1,1),color,(.96,0)
 
     def cloth(rings,sides=24,wrinkle=.025,centre=-.24,frequency=34):
@@ -243,6 +250,24 @@ def author_heroes(api):
     limb_rings=[(-.5,.325,.335),(-.44,.36,.36),(-.34,.425,.415),(-.23,.45,.43),(-.10,.47,.445),(.08,.49,.45),(.22,.47,.43),(.35,.435,.405),(.44,.405,.385),(.5,.365,.35)]
     near=cloth(limb_rings,24,.063);far=cloth([limb_rings[i] for i in (0,2,4,6,8,9)],12,.023)
     register('limb',near,far,True)
+    # Each anatomical segment has its own mass distribution. The shoulder,
+    # biceps, calf and ankle no longer share the same capsule, and compression
+    # folds collect at the actual elbow/knee rather than along the whole limb.
+    anatomy={
+        'thigh':[(-.5,.335,.35),(-.41,.39,.39),(-.28,.415,.41),(-.10,.455,.45),(.10,.48,.475),(.28,.50,.48),(.42,.47,.44),(.5,.39,.37)],
+        'shin':[(-.5,.27,.31),(-.40,.295,.345),(-.25,.33,.39),(-.08,.405,.465),(.13,.485,.49),(.29,.48,.45),(.41,.405,.37),(.5,.36,.35)],
+        'upperarm':[(-.5,.31,.335),(-.39,.34,.37),(-.23,.39,.425),(-.05,.46,.47),(.14,.5,.475),(.30,.495,.455),(.43,.45,.415),(.5,.39,.365)],
+        'forearm':[(-.5,.255,.285),(-.43,.285,.31),(-.31,.325,.355),(-.13,.39,.405),(.05,.46,.445),(.21,.5,.465),(.38,.46,.415),(.5,.37,.36)]
+    }
+    for name,rings in anatomy.items():
+        surface=cloth(rings,24,.055,-.35 if name in ('thigh','upperarm') else .36)
+        far=cloth([rings[i] for i in (0,2,4,6,7)],10,.018)
+        pieces=[(surface,(0,0,0),(1,1,1),white,(.96,0))]
+        if name=='forearm':
+            cuff=lathe([(-.5,.27,.30),(-.46,.31,.33),(-.40,.31,.33),(-.365,.285,.31)],16)
+            pieces.append((cuff,(0,0,0),(1,1,1),dark,(.90,0)))
+            pieces.append(soft((.12,-.435,-.26),(.31,.060,.044),edge))
+        model(name,pieces,[(far,(0,0,0),(1,1,1),white,(.96,0))],True)
     torso_rings=[(-.5,.365,.34),(-.42,.36,.39),(-.28,.375,.435),(-.11,.44,.46),(.06,.475,.43),(.22,.495,.405),(.35,.43,.35),(.45,.33,.28),(.5,.265,.245)]
     register('torso',cloth(torso_rings,28,.047,-.35),lathe([torso_rings[i] for i in (0,2,4,6,8)],12),True)
     # Flattened metacarpals, thenar/palm swell and soft dorsal knuckle armour.
@@ -258,7 +283,7 @@ def author_heroes(api):
     p.append(seam((-.35,-.28,-.28),(-.405,.27,-.25),.005))
     p.append(seam((.35,-.28,-.28),(.385,.23,-.27),.005))
     model('palm',p,p[:1]+p[-4:-3],True)
-    fingers=lathe([(-.5,.245,.24),(-.43,.35,.34),(-.32,.42,.405),(-.14,.445,.42),(-.045,.46,.435),(.07,.44,.425),(.20,.425,.39),(.36,.365,.315),(.46,.255,.23),(.5,.17,.16)],16)
+    fingers=lathe([(-.5,.245,.24),(-.43,.35,.34),(-.29,.425,.405),(-.08,.46,.435),(.12,.435,.405),(.32,.385,.34),(.46,.255,.23),(.5,.17,.16)],12)
     f=[(fingers,(0,0,0),(1,1,1),white,(.92,0))]
     for y in (-.12,.16):f.append(seam((-.25,y,-.367),(.25,y,-.367),.009,dark))
     model('finger',f,f[:1],True)

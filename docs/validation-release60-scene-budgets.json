@@ -1,0 +1,939 @@
+{
+  "scope": "Shipped Blender scene construction and conservative full-scene world counts. No frustum/occlusion subtraction, browser frames, iPhone FPS or thermal validation.",
+  "maps": 16,
+  "views": 49,
+  "maximumActiveWorldBatches": 215,
+  "results": [
+    {
+      "map": "OLD QUARTER",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -22,
+        "y": 1.6,
+        "z": -22
+      },
+      "fullDetail": {
+        "activeBatches": 142,
+        "worldTriangles": 187880
+      },
+      "selectedLOD": {
+        "activeBatches": 144,
+        "worldTriangles": 130568
+      },
+      "triangleReductionPercent": 30.5
+    },
+    {
+      "map": "OLD QUARTER",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 142,
+        "worldTriangles": 187880
+      },
+      "selectedLOD": {
+        "activeBatches": 143,
+        "worldTriangles": 132300
+      },
+      "triangleReductionPercent": 29.6
+    },
+    {
+      "map": "OLD QUARTER",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 142,
+        "worldTriangles": 187880
+      },
+      "selectedLOD": {
+        "activeBatches": 144,
+        "worldTriangles": 133824
+      },
+      "triangleReductionPercent": 28.8
+    },
+    {
+      "map": "FOUNDRY",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -25,
+        "y": 1.6,
+        "z": -25
+      },
+      "fullDetail": {
+        "activeBatches": 102,
+        "worldTriangles": 93906
+      },
+      "selectedLOD": {
+        "activeBatches": 106,
+        "worldTriangles": 70254
+      },
+      "triangleReductionPercent": 25.2
+    },
+    {
+      "map": "FOUNDRY",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 102,
+        "worldTriangles": 93906
+      },
+      "selectedLOD": {
+        "activeBatches": 105,
+        "worldTriangles": 81848
+      },
+      "triangleReductionPercent": 12.8
+    },
+    {
+      "map": "FOUNDRY",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 102,
+        "worldTriangles": 93906
+      },
+      "selectedLOD": {
+        "activeBatches": 106,
+        "worldTriangles": 74276
+      },
+      "triangleReductionPercent": 20.9
+    },
+    {
+      "map": "DUSTLINE",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -26,
+        "y": 1.6,
+        "z": -26
+      },
+      "fullDetail": {
+        "activeBatches": 164,
+        "worldTriangles": 156276
+      },
+      "selectedLOD": {
+        "activeBatches": 166,
+        "worldTriangles": 75228
+      },
+      "triangleReductionPercent": 51.9
+    },
+    {
+      "map": "DUSTLINE",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 164,
+        "worldTriangles": 156276
+      },
+      "selectedLOD": {
+        "activeBatches": 167,
+        "worldTriangles": 79828
+      },
+      "triangleReductionPercent": 48.9
+    },
+    {
+      "map": "DUSTLINE",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 164,
+        "worldTriangles": 156276
+      },
+      "selectedLOD": {
+        "activeBatches": 166,
+        "worldTriangles": 68814
+      },
+      "triangleReductionPercent": 56
+    },
+    {
+      "map": "RELAY",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -34,
+        "y": 1.6,
+        "z": -34
+      },
+      "fullDetail": {
+        "activeBatches": 175,
+        "worldTriangles": 157886
+      },
+      "selectedLOD": {
+        "activeBatches": 178,
+        "worldTriangles": 60468
+      },
+      "triangleReductionPercent": 61.7
+    },
+    {
+      "map": "RELAY",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 175,
+        "worldTriangles": 157886
+      },
+      "selectedLOD": {
+        "activeBatches": 181,
+        "worldTriangles": 76936
+      },
+      "triangleReductionPercent": 51.3
+    },
+    {
+      "map": "RELAY",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 175,
+        "worldTriangles": 157886
+      },
+      "selectedLOD": {
+        "activeBatches": 180,
+        "worldTriangles": 67000
+      },
+      "triangleReductionPercent": 57.6
+    },
+    {
+      "map": "BREAKWATER",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -29,
+        "y": 1.6,
+        "z": -29
+      },
+      "fullDetail": {
+        "activeBatches": 117,
+        "worldTriangles": 114834
+      },
+      "selectedLOD": {
+        "activeBatches": 119,
+        "worldTriangles": 79286
+      },
+      "triangleReductionPercent": 31
+    },
+    {
+      "map": "BREAKWATER",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 117,
+        "worldTriangles": 114834
+      },
+      "selectedLOD": {
+        "activeBatches": 119,
+        "worldTriangles": 82158
+      },
+      "triangleReductionPercent": 28.5
+    },
+    {
+      "map": "BREAKWATER",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 117,
+        "worldTriangles": 114834
+      },
+      "selectedLOD": {
+        "activeBatches": 120,
+        "worldTriangles": 72830
+      },
+      "triangleReductionPercent": 36.6
+    },
+    {
+      "map": "CITADEL",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -30,
+        "y": 1.6,
+        "z": -30
+      },
+      "fullDetail": {
+        "activeBatches": 166,
+        "worldTriangles": 137516
+      },
+      "selectedLOD": {
+        "activeBatches": 167,
+        "worldTriangles": 55784
+      },
+      "triangleReductionPercent": 59.4
+    },
+    {
+      "map": "CITADEL",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 166,
+        "worldTriangles": 137516
+      },
+      "selectedLOD": {
+        "activeBatches": 170,
+        "worldTriangles": 66898
+      },
+      "triangleReductionPercent": 51.4
+    },
+    {
+      "map": "CITADEL",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 166,
+        "worldTriangles": 137516
+      },
+      "selectedLOD": {
+        "activeBatches": 171,
+        "worldTriangles": 62352
+      },
+      "triangleReductionPercent": 54.7
+    },
+    {
+      "map": "SWITCHYARD",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -28,
+        "y": 1.6,
+        "z": -28
+      },
+      "fullDetail": {
+        "activeBatches": 147,
+        "worldTriangles": 173456
+      },
+      "selectedLOD": {
+        "activeBatches": 150,
+        "worldTriangles": 74476
+      },
+      "triangleReductionPercent": 57.1
+    },
+    {
+      "map": "SWITCHYARD",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 147,
+        "worldTriangles": 173456
+      },
+      "selectedLOD": {
+        "activeBatches": 150,
+        "worldTriangles": 87472
+      },
+      "triangleReductionPercent": 49.6
+    },
+    {
+      "map": "SWITCHYARD",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 147,
+        "worldTriangles": 173456
+      },
+      "selectedLOD": {
+        "activeBatches": 151,
+        "worldTriangles": 72326
+      },
+      "triangleReductionPercent": 58.3
+    },
+    {
+      "map": "CANOPY",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -32,
+        "y": 1.6,
+        "z": -32
+      },
+      "fullDetail": {
+        "activeBatches": 155,
+        "worldTriangles": 150908
+      },
+      "selectedLOD": {
+        "activeBatches": 157,
+        "worldTriangles": 55052
+      },
+      "triangleReductionPercent": 63.5
+    },
+    {
+      "map": "CANOPY",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 155,
+        "worldTriangles": 150908
+      },
+      "selectedLOD": {
+        "activeBatches": 158,
+        "worldTriangles": 54196
+      },
+      "triangleReductionPercent": 64.1
+    },
+    {
+      "map": "CANOPY",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 155,
+        "worldTriangles": 150908
+      },
+      "selectedLOD": {
+        "activeBatches": 155,
+        "worldTriangles": 46880
+      },
+      "triangleReductionPercent": 68.9
+    },
+    {
+      "map": "FROSTLINE",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -32,
+        "y": 1.6,
+        "z": -32
+      },
+      "fullDetail": {
+        "activeBatches": 170,
+        "worldTriangles": 163600
+      },
+      "selectedLOD": {
+        "activeBatches": 172,
+        "worldTriangles": 68516
+      },
+      "triangleReductionPercent": 58.1
+    },
+    {
+      "map": "FROSTLINE",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 170,
+        "worldTriangles": 163600
+      },
+      "selectedLOD": {
+        "activeBatches": 172,
+        "worldTriangles": 50704
+      },
+      "triangleReductionPercent": 69
+    },
+    {
+      "map": "FROSTLINE",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 170,
+        "worldTriangles": 163600
+      },
+      "selectedLOD": {
+        "activeBatches": 172,
+        "worldTriangles": 50654
+      },
+      "triangleReductionPercent": 69
+    },
+    {
+      "map": "IRON QUARRY",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -30,
+        "y": 1.6,
+        "z": -30
+      },
+      "fullDetail": {
+        "activeBatches": 160,
+        "worldTriangles": 150596
+      },
+      "selectedLOD": {
+        "activeBatches": 162,
+        "worldTriangles": 72676
+      },
+      "triangleReductionPercent": 51.7
+    },
+    {
+      "map": "IRON QUARRY",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 160,
+        "worldTriangles": 150596
+      },
+      "selectedLOD": {
+        "activeBatches": 162,
+        "worldTriangles": 64860
+      },
+      "triangleReductionPercent": 56.9
+    },
+    {
+      "map": "IRON QUARRY",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 160,
+        "worldTriangles": 150596
+      },
+      "selectedLOD": {
+        "activeBatches": 162,
+        "worldTriangles": 61772
+      },
+      "triangleReductionPercent": 59
+    },
+    {
+      "map": "SKYBRIDGE",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -30,
+        "y": 1.6,
+        "z": -30
+      },
+      "fullDetail": {
+        "activeBatches": 162,
+        "worldTriangles": 170208
+      },
+      "selectedLOD": {
+        "activeBatches": 164,
+        "worldTriangles": 76040
+      },
+      "triangleReductionPercent": 55.3
+    },
+    {
+      "map": "SKYBRIDGE",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 162,
+        "worldTriangles": 170208
+      },
+      "selectedLOD": {
+        "activeBatches": 164,
+        "worldTriangles": 74836
+      },
+      "triangleReductionPercent": 56
+    },
+    {
+      "map": "SKYBRIDGE",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 162,
+        "worldTriangles": 170208
+      },
+      "selectedLOD": {
+        "activeBatches": 163,
+        "worldTriangles": 67588
+      },
+      "triangleReductionPercent": 60.3
+    },
+    {
+      "map": "MONSOON",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -32,
+        "y": 1.6,
+        "z": -32
+      },
+      "fullDetail": {
+        "activeBatches": 177,
+        "worldTriangles": 205530
+      },
+      "selectedLOD": {
+        "activeBatches": 179,
+        "worldTriangles": 107366
+      },
+      "triangleReductionPercent": 47.8
+    },
+    {
+      "map": "MONSOON",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 177,
+        "worldTriangles": 205530
+      },
+      "selectedLOD": {
+        "activeBatches": 182,
+        "worldTriangles": 110776
+      },
+      "triangleReductionPercent": 46.1
+    },
+    {
+      "map": "MONSOON",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 177,
+        "worldTriangles": 205530
+      },
+      "selectedLOD": {
+        "activeBatches": 181,
+        "worldTriangles": 101716
+      },
+      "triangleReductionPercent": 50.5
+    },
+    {
+      "map": "EMBERWORKS",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -31,
+        "y": 1.6,
+        "z": -31
+      },
+      "fullDetail": {
+        "activeBatches": 192,
+        "worldTriangles": 191468
+      },
+      "selectedLOD": {
+        "activeBatches": 193,
+        "worldTriangles": 103720
+      },
+      "triangleReductionPercent": 45.8
+    },
+    {
+      "map": "EMBERWORKS",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 192,
+        "worldTriangles": 191468
+      },
+      "selectedLOD": {
+        "activeBatches": 200,
+        "worldTriangles": 106464
+      },
+      "triangleReductionPercent": 44.4
+    },
+    {
+      "map": "EMBERWORKS",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 192,
+        "worldTriangles": 191468
+      },
+      "selectedLOD": {
+        "activeBatches": 194,
+        "worldTriangles": 95956
+      },
+      "triangleReductionPercent": 49.9
+    },
+    {
+      "map": "CROSSFIRE DISTRICT",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -50,
+        "y": 1.6,
+        "z": -50
+      },
+      "fullDetail": {
+        "activeBatches": 165,
+        "worldTriangles": 363262
+      },
+      "selectedLOD": {
+        "activeBatches": 167,
+        "worldTriangles": 163400
+      },
+      "triangleReductionPercent": 55
+    },
+    {
+      "map": "CROSSFIRE DISTRICT",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 165,
+        "worldTriangles": 363262
+      },
+      "selectedLOD": {
+        "activeBatches": 165,
+        "worldTriangles": 161634
+      },
+      "triangleReductionPercent": 55.5
+    },
+    {
+      "map": "CROSSFIRE DISTRICT",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 165,
+        "worldTriangles": 363262
+      },
+      "selectedLOD": {
+        "activeBatches": 168,
+        "worldTriangles": 163242
+      },
+      "triangleReductionPercent": 55.1
+    },
+    {
+      "map": "BLACKSITE",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": -48,
+        "y": 1.6,
+        "z": -48
+      },
+      "fullDetail": {
+        "activeBatches": 205,
+        "worldTriangles": 372834
+      },
+      "selectedLOD": {
+        "activeBatches": 212,
+        "worldTriangles": 171108
+      },
+      "triangleReductionPercent": 54.1
+    },
+    {
+      "map": "BLACKSITE",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 205,
+        "worldTriangles": 372834
+      },
+      "selectedLOD": {
+        "activeBatches": 215,
+        "worldTriangles": 207406
+      },
+      "triangleReductionPercent": 44.4
+    },
+    {
+      "map": "BLACKSITE",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 205,
+        "worldTriangles": 372834
+      },
+      "selectedLOD": {
+        "activeBatches": 210,
+        "worldTriangles": 206446
+      },
+      "triangleReductionPercent": 44.6
+    },
+    {
+      "map": "BLACKSITE",
+      "view": "interior",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 9
+      },
+      "fullDetail": {
+        "activeBatches": 205,
+        "worldTriangles": 372834
+      },
+      "selectedLOD": {
+        "activeBatches": 214,
+        "worldTriangles": 217650
+      },
+      "triangleReductionPercent": 41.6
+    },
+    {
+      "map": "NUKETOWN",
+      "view": "spawn",
+      "quality": "high",
+      "camera": {
+        "x": 10,
+        "y": 1.6,
+        "z": -27
+      },
+      "fullDetail": {
+        "activeBatches": 126,
+        "worldTriangles": 214122
+      },
+      "selectedLOD": {
+        "activeBatches": 130,
+        "worldTriangles": 133434
+      },
+      "triangleReductionPercent": 37.7
+    },
+    {
+      "map": "NUKETOWN",
+      "view": "centre",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 0
+      },
+      "fullDetail": {
+        "activeBatches": 126,
+        "worldTriangles": 214122
+      },
+      "selectedLOD": {
+        "activeBatches": 132,
+        "worldTriangles": 144882
+      },
+      "triangleReductionPercent": 32.3
+    },
+    {
+      "map": "NUKETOWN",
+      "view": "approach",
+      "quality": "high",
+      "camera": {
+        "x": 0,
+        "y": 1.6,
+        "z": 27
+      },
+      "fullDetail": {
+        "activeBatches": 126,
+        "worldTriangles": 214122
+      },
+      "selectedLOD": {
+        "activeBatches": 130,
+        "worldTriangles": 135286
+      },
+      "triangleReductionPercent": 36.8
+    }
+  ]
+}

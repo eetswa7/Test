@@ -26,7 +26,7 @@ const shots=[
  {name:'blacksite-interior',map:14,x:0,z:9,yaw:0,pitch:0},
  {name:'blacksite-yard',map:14,x:-31,z:25,yaw:-.12,pitch:0},
  {name:'blacksite-oblique',map:14,x:12,z:30,yaw:.40,pitch:-.015},
- {name:'blacksite-services',map:14,x:-10,z:6,yaw:-.95,pitch:0},
+ {name:'blacksite-services',map:14,x:-5.5,z:8,yaw:-.95,pitch:0},
  {name:'weapon-close',map:14,x:0,z:27,yaw:0,pitch:0,weapon:1},
  {name:'operator-close',map:14,x:0,z:27,yaw:0,pitch:0,operator:true},
  {name:'combat',map:14,x:0,z:27,yaw:0,pitch:0,operator:true,combat:true},
@@ -47,9 +47,12 @@ try{
    if(shot.reload){p.weapon.ammo=0;p.weapon.reload();p.weapon.reloadLeft=p.weapon.reloadTime*.40;}
    if(shot.combat){p.weapon.sinceShot=.018;renderer.events([{type:'shot',source:0,weapon:0,position:g.eye(p),end:{x:2,y:1.2,z:21},suppressed:false},{type:'impact',surface:'steel',position:{x:2,y:.8,z:21},normal:{x:0,y:0,z:1}}],g);}
    await renderer.prepareMatch(g);
-   // Let projected-size LOD and camera lighting settle after every teleport.
+   // Set the gameplay camera, then settle the CPU light/LOD state without
+   // queueing 24 redundant full frames on the software renderer.
+   renderer.render(g,1/60,!!shot.menu);
+   for(let i=0;i<24;i++)renderer.updateLighting(1/60);
+   renderer.blenderAssets.lodClock=0;renderer.blenderAssets.updateLOD(renderer,0);
    // Force one scheduled shadow update for comparable complete-frame counts.
-   for(let i=0;i<24;i++)renderer.render(g,1/60,!!shot.menu);
    renderer.shadowClock=1;renderer.render(g,1/60,!!shot.menu);
    const world=renderer.worldBatches.filter(b=>b.count>0);
    return {map:g.arena.info.name,draws:renderer.drawCalls,triangles:renderer.triangles,shadowDraws:renderer.lastShadowDraws,textureEstimateBytes:renderer.textureMemory,programs:renderer.shaderPrograms,geometryCount:renderer.blenderAssets.geometries.size,activeWorldBatches:world.length,selectedWorldTriangles:world.reduce((n,b)=>n+b.count*(b.geometry.index?.count??b.geometry.getAttribute('position').count)/3,0)};

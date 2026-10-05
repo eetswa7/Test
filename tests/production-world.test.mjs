@@ -19,7 +19,7 @@ test('production composition preserves complete authoritative map state on all s
    spawns:arena.spawns,objectives:arena.objectives,cover:arena.cover,doors:arena.doors}),state,map.name);
   assert(parts.every(p=>[p.x,p.y,p.z,p.w,p.h,p.d].every(Number.isFinite)),map.name);
   assert(parts.every(p=>p.w>0&&p.h>0&&p.d>0),map.name);
-  assert(parts.filter(p=>p.productionArt).length<=115,'bounded native dressing');
+  assert(parts.filter(p=>p.productionArt).length<=140,'bounded native dressing');
  }
 });
 
@@ -34,7 +34,7 @@ test('Blacksite native entries and windows exactly follow existing firing apertu
  }
  for(const p of parts.filter(p=>p.productionOpening)){
   const opening=p.productionOpening;
-  assert(Math.abs(p.w*.6-opening.width)<1e-8);
+  assert(Math.abs(p.w*.8-opening.width)<1e-8);
   assert(Math.abs(p.h*(p.blenderKind==='aperture_frame'?.76:.88)-(opening.top-opening.bottom))<1e-8);
   const point={x:opening.x,y:opening.bottom+.01,z:opening.z};
   assert(!arena.collides(point,.001,opening.top-opening.bottom-.02),'art frame must agree with the real empty opening');
@@ -76,6 +76,19 @@ test('native doorway and window geometry leaves the authoritative aperture compl
    }
   }
  }
+ // Validate the actual rotated native topology, not its pre-rotation height:
+ // columns retain the original narrow footprint, spans stay above head level.
+ const cranes=parts.filter(p=>p.productionCrane);assert.equal(cranes.length,10);
+ for(const p of cranes){
+  const g=geometries.get('roof_truss__near');let source=p;
+  while(Object.getPrototypeOf(source)!==Object.prototype)source=Object.getPrototypeOf(source);
+  compose(raw,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);
+  const box=g.boundingBox.clone().applyMatrix4(matrix.fromArray(raw)),size=box.getSize(new THREE.Vector3());
+  if(source.surface==='orange'){
+   assert(size.x<=source.w+.001&&size.z<=source.d+.001,'native column cannot introduce wider invisible cover');
+   assert(box.min.y>=-.001&&box.max.y<=source.h+.001,'original column height stays authoritative');
+  }else assert(box.min.y>3.3,'native overhead span must preserve player head clearance');
+ }
 });
 
 test('native composition stays within mobile active world batch and scene triangle budgets',async()=>{
@@ -86,6 +99,6 @@ test('native composition stays within mobile active world batch and scene triang
   renderer.arena=new Arena(map.id);renderer.buildWorld();
   const active=renderer.worldBatches.filter(b=>b.count>0),triangles=active.reduce((n,b)=>n+b.geometry.index.count/3*b.count,0);
   assert(active.length<220,`${map.name}: ${active.length} submitted world batches`);
-  assert(triangles<360000,`${map.name}: ${triangles} full-detail scene triangles before frustum/LOD culling`);
+  assert(triangles<375000,`${map.name}: ${triangles} full-detail scene triangles before frustum/LOD culling`);
  }
 });

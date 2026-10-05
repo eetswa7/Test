@@ -216,7 +216,7 @@ export class Renderer {
   materialKey(p, category) {
     const m = this.partMaterial(p);
     if(p.objectiveBanner)return `${category}/objective-banner-v1`;
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.operatorWeapon?'operator-weapon':'general'}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon'||p.operatorWeapon ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.operatorWeapon?'operator-weapon':'general'}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${(category==='weapon'||p.operatorWeapon)&&p.blenderColour&&p.blenderVertexMaterial?'native-hero-reflectance':'general-reflectance'}/${category==='world'&&m.pattern===9&&p.blenderVertexMaterial?'authored-paint':'base-reflectance'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon'||p.operatorWeapon ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -225,18 +225,19 @@ export class Renderer {
     const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
     const hero=category==='weapon'||p.operatorWeapon;
     const finish = hero && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
-    const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
+    const nativeHero=!!(hero&&finish&&p.blenderColour&&p.blenderVertexMaterial);
+    const maps = p.objectiveBanner?null:finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
     const options = { dithering: true, color: 0xffffff, vertexColors:!!this.blenderAssets?.key(p,category)||['ridge','conifer','strata'].includes(p.mesh), roughness: p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
-      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(hero ? .27 : p.productionGround?.20:.48,
-        hero ? .27 : p.productionGround?.20:.48), envMapIntensity: hero ? 1.15 : .65 };
+      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(nativeHero?(m.finishTile===2?.55:.85):hero ? .27 : p.productionGround?.20:.48,
+        nativeHero?(m.finishTile===2?.55:.85):hero ? .27 : p.productionGround?.20:.48), envMapIntensity: hero ? 1.15 : .65 };
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if(p.blenderWind)Object.assign(options,{side:THREE.DoubleSide,roughness:1,metalness:0});
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
     const mat = water ? waterMaterial(options) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
-    if(p.objectiveBanner){mat.map=this.bannerTexture??(this.bannerTexture=objectiveBannerTexture());mat.roughness=.92;mat.metalness=0;mat.emissiveIntensity=0;}
+    if(p.objectiveBanner){mat.map=this.bannerTexture??(this.bannerTexture=objectiveBannerTexture());mat.roughness=.92;mat.metalness=0;mat.emissiveIntensity=0;mat.vertexColors=false;}
     // Per-instance dimensions give architecture a consistent material scale.
     if (!leaf && maps && (category === 'world' || finish)) {
       mat.onBeforeCompile = shader => patchMetricUV(shader,hero?18:.7);
@@ -287,14 +288,14 @@ export class Renderer {
       const depth=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});this.patchWind(depth);this.depthMaterials.set(key,depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked,!!p.blenderVertexMaterial,p.wet?.42:1);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader,category==='world');this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked,!!p.blenderVertexMaterial,p.wet?.42:1);if(p.blenderVertexMaterial&&!p.objectiveBanner)patchBlenderMaterial(shader,category==='world'&&tile===8,nativeHero);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader,category==='world');this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
     // Cache by the actual shader interface. World bounce, actor lighting and
     // the viewmodel use different uniforms even when their Three defines match.
     // Epoxy's diffuse patch also differs from ordinary concrete.
-    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v2':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v2`;
+    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${nativeHero?'native-hero-reflectance-v1':'general-reflectance'}/${category==='world'&&tile===8&&p.blenderVertexMaterial?'authored-paint-v1':'base-reflectance'}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v2':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v2`;
     if(p.objectiveBanner){const before=mat.onBeforeCompile,key=mat.customProgramCacheKey();
       mat.onBeforeCompile=shader=>{before(shader);patchObjectiveBanner(shader,this.windTime??{value:0});};
-      mat.customProgramCacheKey=()=>key+'/objective-textile-v1';
+      mat.customProgramCacheKey=()=>key+'/objective-textile-v2';
     }
     this.materials.set(key, mat); return mat;
   }
@@ -323,9 +324,10 @@ export class Renderer {
     // Architectural textures contain their own albedo; retain a light tint rather than multiplying it twice.
     if ((category === 'weapon'||p.operatorWeapon) && m.finishTile >= 0) return this.color.setRGB(
       .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
-    const brighten = category === 'world' && m.pattern > 0 && !p.color;
-    this.color.setRGB(brighten ? .85 + c[0] * .15 : c[0],
-      brighten ? .85 + c[1] * .15 : c[1], brighten ? .85 + c[2] * .15 : c[2], THREE.SRGBColorSpace);
+    const painted=category==='world'&&m.pattern===9&&p.blenderVertexMaterial;
+    const brighten = category === 'world' && m.pattern > 0 && !p.color&&!painted;
+    this.color.setRGB(painted?.25+c[0]*.75:brighten ? .85 + c[0] * .15 : c[0],
+      painted?.25+c[1]*.75:brighten ? .85 + c[1] * .15 : c[1], painted?.25+c[2]*.75:brighten ? .85 + c[2] * .15 : c[2], THREE.SRGBColorSpace);
     if(category==='world'&&this.arena&&!this.lightingField){m.occlusion??=sceneryOcclusion(p,this.arena);this.color.multiplyScalar(m.occlusion);}
     return this.color;
   }
@@ -386,7 +388,7 @@ export class Renderer {
         far.boundingBox=batch.boundingBox.clone();far.boundingSphere=batch.boundingSphere.clone();
         far.castShadow=batch.castShadow;far.receiveShadow=batch.receiveShadow;far.onBeforeShadow=batch.onBeforeShadow;
         far.customDepthMaterial=batch.customDepthMaterial;
-        const pair={near:batch,far,parts,canopy,visibility:new WeakMap()};
+        const pair={near:batch,far,parts,kind,canopy,visibility:new WeakMap()};
         batch.userData.blenderPair=pair;far.userData={...batch.userData,blenderFar:true};
         far.count=0;this.world.add(far);this.worldBatches.push(far);this.blenderWorldLODs.push(pair);
         for(const b of [batch,far]){b.instanceMatrix.setUsage(THREE.DynamicDrawUsage);b.instanceColor?.setUsage(THREE.DynamicDrawUsage);}
@@ -688,7 +690,10 @@ export class Renderer {
     for (const a of game.actors) {
       const actorDistance = distance(a, player);
       if (a.id === player.id || actorDistance > this.camera.far) continue;
-      if (!preparing && this.frustum && actorDistance > 12) {
+      if (!preparing && this.frustum && actorDistance > 3) {
+        // Include the held rifle and posed limbs, even if the body centre is
+        // outside the view. Falling operators need room for their root lean.
+        this.actorBounds.radius = a.dead ? 2.5 : 2;
         this.actorBounds.center.set(a.x, a.y + .9, a.z);
         if (!this.frustum.intersectsSphere(this.actorBounds)) continue;
       }

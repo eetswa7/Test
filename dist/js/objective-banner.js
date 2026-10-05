@@ -21,6 +21,11 @@ export function objectiveBannerTexture(){
 export function patchObjectiveBanner(shader,time){
  shader.uniforms.uBannerTime=time;
  shader.vertexShader='uniform float uBannerTime;\n'+shader.vertexShader;
+ shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',`#include <uv_vertex>
+  #ifdef USE_MAP
+  vMapUv=vec2(position.x+.5,position.y+.5);
+  #endif
+ `);
  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
   float bannerFree=clamp(position.x+.5,0.0,1.0);
   transformed.z+=sin(uBannerTime*2.2-position.x*5.0)*.65*bannerFree*bannerFree;

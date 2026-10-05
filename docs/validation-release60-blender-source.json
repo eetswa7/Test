@@ -1,0 +1,383 @@
+{
+  "schema": "breachline.validation.blender-source.v1",
+  "release": 60,
+  "status": "passed",
+  "scope": "Read-only Blender inspection of editable native source and SHA-256 reconstruction. This verifies source completeness, not visual quality or physical iPhone performance.",
+  "blender": "4.3.2",
+  "source_bytes": 166234999,
+  "source_sha256": "b60f7ea64a825fd5ae19b317102cc95974d646f00455322d535645a27f829726",
+  "source_segments_verified": 80,
+  "runtime_native_meshes_verified": 329,
+  "levels": [
+    {
+      "id": 0,
+      "name": "OLD QUARTER",
+      "objects": 680
+    },
+    {
+      "id": 1,
+      "name": "FOUNDRY",
+      "objects": 245
+    },
+    {
+      "id": 2,
+      "name": "DUSTLINE",
+      "objects": 865
+    },
+    {
+      "id": 3,
+      "name": "RELAY",
+      "objects": 635
+    },
+    {
+      "id": 4,
+      "name": "BREAKWATER",
+      "objects": 421
+    },
+    {
+      "id": 5,
+      "name": "CITADEL",
+      "objects": 707
+    },
+    {
+      "id": 6,
+      "name": "SWITCHYARD",
+      "objects": 590
+    },
+    {
+      "id": 7,
+      "name": "CANOPY",
+      "objects": 647
+    },
+    {
+      "id": 8,
+      "name": "FROSTLINE",
+      "objects": 528
+    },
+    {
+      "id": 9,
+      "name": "IRON QUARRY",
+      "objects": 840
+    },
+    {
+      "id": 10,
+      "name": "SKYBRIDGE",
+      "objects": 693
+    },
+    {
+      "id": 11,
+      "name": "MONSOON",
+      "objects": 551
+    },
+    {
+      "id": 12,
+      "name": "EMBERWORKS",
+      "objects": 747
+    },
+    {
+      "id": 13,
+      "name": "CROSSFIRE DISTRICT",
+      "objects": 747
+    },
+    {
+      "id": 14,
+      "name": "BLACKSITE",
+      "objects": 660
+    },
+    {
+      "id": 15,
+      "name": "NUKETOWN",
+      "objects": 1225
+    }
+  ],
+  "weapon_rigs": [
+    {
+      "id": 0,
+      "name": "Kestrel AR",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 1,
+      "name": "Bastion 7",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 2,
+      "name": "Raptor C",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 3,
+      "name": "Vesper 9",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 4,
+      "name": "Lynx PDW",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 5,
+      "name": "Breach 12",
+      "animated_groups": 4,
+      "hand_groups": 2
+    },
+    {
+      "id": 6,
+      "name": "Tempest S",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 7,
+      "name": "Longbow M",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 8,
+      "name": "Warden D",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 9,
+      "name": "Atlas L",
+      "animated_groups": 5,
+      "hand_groups": 2
+    },
+    {
+      "id": 10,
+      "name": "Sable P",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 11,
+      "name": "Dire 50",
+      "animated_groups": 4,
+      "hand_groups": 2
+    },
+    {
+      "id": 12,
+      "name": "Field blade",
+      "animated_groups": 1,
+      "hand_groups": 1
+    },
+    {
+      "id": 13,
+      "name": "Harrow B3",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 14,
+      "name": "Marten 45",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 15,
+      "name": "Mako 7",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 16,
+      "name": "Peregrine 6",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 17,
+      "name": "Osprey S",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 18,
+      "name": "Bison 12",
+      "animated_groups": 4,
+      "hand_groups": 2
+    },
+    {
+      "id": 19,
+      "name": "Talon 338",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 20,
+      "name": "Rampart 556",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 21,
+      "name": "Spectre SD",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 22,
+      "name": "Krait R",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 23,
+      "name": "Swift 93",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 24,
+      "name": "Storm 68",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 25,
+      "name": "Needle 57",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 26,
+      "name": "Jackal 12",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 27,
+      "name": "Sentinel 762",
+      "animated_groups": 5,
+      "hand_groups": 2
+    },
+    {
+      "id": 28,
+      "name": "Heron S",
+      "animated_groups": 3,
+      "hand_groups": 2
+    },
+    {
+      "id": 29,
+      "name": "Paladin 45",
+      "animated_groups": 3,
+      "hand_groups": 2
+    }
+  ],
+  "rig_type": "Rigid mesh groups with simulation anchor indices and animated tags; no skeletal armature is claimed.",
+  "editable_level_material_policy_verified": {
+    "native_physical_instances": 1602,
+    "native_paint_instances": 508,
+    "authored_native_paint_instances": 468,
+    "instance_tinted_native_paint_instances": 40,
+    "scope": "Read-only inspection of saved native level material graphs, verifying physical roughness/metallic UV routing, absence of a second tile-8 paint albedo multiplication and authored or instance paint tint. Does not establish pixel equivalence with the runtime shader."
+  },
+  "editable_pbr_graphs": 20,
+  "original_artwork": [
+    {
+      "name": "architecture.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    },
+    {
+      "name": "ground.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    },
+    {
+      "name": "equipment.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    },
+    {
+      "name": "natural.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    },
+    {
+      "name": "road-surface.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    },
+    {
+      "name": "weapon-steel.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "packed": true
+    }
+  ],
+  "packed_images": 48,
+  "image_count": 52,
+  "baked_atlases_verified": 9,
+  "cycles_gi_maps_verified": 16,
+  "gi_encoding": "Linear RGBM range 6, 512 pixels, 32 Cycles samples",
+  "external_dependencies": [],
+  "errors": [],
+  "runtime_material_payload": {
+    "status": "passed",
+    "texture_maps_verified": 60,
+    "first_mip_astc_blocks_independently_decoded": 60,
+    "full_astc_mip_chains_verified": 60,
+    "fallback_webp_images_decoded": 60,
+    "lightmaps_decoded": 16,
+    "manifest_segments_sha256_verified": 139,
+    "astc_map_payload_bytes": 54593984,
+    "astc_map_download_bytes": 54597356,
+    "fallback_map_download_bytes": 6036082,
+    "lightmap_download_bytes": 6682448,
+    "lightmap_rgba_bytes": 16777216,
+    "primary_material_and_gi_gpu_storage_bytes_estimate": 71371200,
+    "fallback_material_and_gi_rgba_mip_bytes_estimate": 113246128,
+    "production_transport_bytes_including_both_formats": 67315886,
+    "scope": "Texture block or RGBA storage estimate including material mipmaps and unmipped GI only. Excludes geometry, other textures, decoded source images, render targets, browser/driver overhead and duplicate upload buffers. Not a measured Safari process memory footprint, iPhone thermal result or assurance against memory termination.",
+    "actual_iphone_data": false,
+    "runtime_test_command": "node --test tests/production-textures.test.mjs",
+    "runtime_tests_passed": 4,
+    "runtime_tests_status": "passed",
+    "runtime_tests_failed": 0,
+    "runtime_tests_exit_code": 0,
+    "runtime_tests_duration_ms": 1708.702953,
+    "primary_astc_material_and_gi_download_bytes": 61279804,
+    "fallback_webp_material_and_gi_download_bytes": 12718530,
+    "production_manifest_bytes_excluded_from_transport_sum": 38385,
+    "download_scope": "Sum of production asset segment bytes in manifest, excluding manifest JSON itself, HTTP headers, geometry and other assets. Primary and fallback are alternative texture paths; the combined-format figure includes both for offline cache.",
+    "rgba_mip_estimate_method": "Exact RGBA8 texel sum of full power-of-two WebP fallback mip chains plus sixteen unmipped 512x512 RGBA8 GI textures; browser/driver storage and overhead remain unmeasured."
+  },
+  "final_reflectance_rebuild_comparison": {
+    "material_texture_payloads_unchanged": true,
+    "all_60_material_payload_sha256_unchanged": 60,
+    "all_329_mesh_topology_descriptors_unchanged": true,
+    "nine_native_material_bake_png_sha256_unchanged": true,
+    "scope": "Compared final production texture SHA-256 values, mesh vertices/triangles/vertexMaterial descriptors and nine native material-bake PNG SHA-256 values with the captured pre-final-reflectance rebuild. Geometry positions were not independently compared between rebuilds."
+  },
+  "verification_commands": [
+    "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-source60.py",
+    "python3 /tmp/inspect-breachline-textures60.py",
+    "node --test tests/production-textures.test.mjs"
+  ]
+}
