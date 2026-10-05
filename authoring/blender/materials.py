@@ -109,13 +109,24 @@ def surface_graph(mat, tile, hero=False):
     # Original source photography is input to Blender's material, as in a
     # conventional game-art workflow. It is baked with the authored height,
     # physical response and low-frequency colour into a new runtime atlas.
-    source=Path(__file__).resolve().parents[2]/'dist/assets'/('weapon-finishes.webp' if hero else 'surfaces-atlas.webp')
+    art=Path(__file__).parent/'textures'
+    bank=('architecture','ground','equipment','natural')[tile//4] if not hero else 'equipment'
+    source=art/(bank+'.png')
     image=bpy.data.images.load(str(source),check_existing=True);image.pack();image.use_fake_user=True
     tex=n.new('ShaderNodeTexImage');tex.image=image;tex.extension='EXTEND'
-    atlas=n.new('ShaderNodeVectorMath');atlas.operation='MULTIPLY_ADD';cols=2 if hero else 4
-    atlas.inputs[1].default_value=(1/cols,1/cols,1);atlas.inputs[2].default_value=(tile%cols/cols,(cols-1-tile//cols)/cols,0)
+    atlas=n.new('ShaderNodeVectorMath');atlas.operation='MULTIPLY_ADD';cols=2
+    source_tile=tile%4 if not hero else (0,2,1,0)[tile]
+    atlas.inputs[1].default_value=(1/cols,1/cols,1);atlas.inputs[2].default_value=(source_tile%cols/cols,(cols-1-source_tile//cols)/cols,0)
     l.new(vector,atlas.inputs[0]);l.new(atlas.outputs[0],tex.inputs['Vector'])
-    colour=mix(n,l,.12,tex.outputs['Color'],colour)
+    # The original scan provides macro relief, while native shader detail is
+    # baked at full texel density. Albedo and normals describe the same wear.
+    grey=n.new('ShaderNodeRGBToBW');l.new(tex.outputs['Color'],grey.inputs[0])
+    height=math_node(n,l,'ADD',height,math_node(n,l,'MULTIPLY',grey.outputs[0],.18 if not hero else .025))
+    colour=mix(n,l,.07 if not hero else .12,tex.outputs['Color'],colour)
+    if hero:
+        # Rigid groups contain their own albedo and metallic response. A neutral
+        # finish modulates grain instead of darkening that albedo a second time.
+        colour=mix(n,l,grey.outputs[0],(.58,.58,.58,1),(.91,.91,.91,1))
     bsdf=n.new('ShaderNodeBsdfPrincipled');l.new(colour,bsdf.inputs['Base Color']);l.new(rough,bsdf.inputs['Roughness'])
     bump=n.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.25 if hero else .52
     bump.inputs['Distance'].default_value=.007 if hero else .036;l.new(height,bump.inputs['Height']);l.new(bump.outputs['Normal'],bsdf.inputs['Normal'])
@@ -137,7 +148,8 @@ def bake_atlas(scene, out, name, columns, hero=False):
             local.data[li].uv=uv;bake.data[li].uv=((tile%columns+uv[0])/columns,(columns-1-tile//columns+uv[1])/columns)
         poly.material_index=tile
     obj=bpy.data.objects.new(name+' / baking',mesh);scene.collection.objects.link(obj)
-    images={suffix:bpy.data.images.new(name+'-'+suffix,width=1024,height=1024,alpha=False) for suffix in ('albedo','normal','orm')}
+    resolution=4096 if not hero else 4096
+    images={suffix:bpy.data.images.new(name+'-'+suffix,width=resolution,height=resolution,alpha=False) for suffix in ('albedo','normal','orm')}
     for suffix,img in images.items():img.colorspace_settings.name='sRGB' if suffix=='albedo' else 'Non-Color';img.use_fake_user=True
     graphs=[]
     for tile in range(columns*columns):

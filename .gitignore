@@ -11,3 +11,6 @@ dist/assets/blender/*.webp
 authoring/blender/__pycache__/
 authoring/blender/breachline-assets.blend
 authoring/blender/rig-input.json
+dist/assets/production/*.btex
+dist/assets/production/*.webp
+authoring/blender/breachline-assets.staging.blend1

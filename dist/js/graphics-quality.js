@@ -25,7 +25,7 @@ export class GraphicsQuality {
     const gpuValid=Number.isFinite(gpuMs)&&gpuMs>0;
     const overloaded=this.frameMs>budget*1.17||(gpuValid&&gpuMs>budget*.93)||cpuMs>budget*.9;
     // Promotion requires measured work headroom at the chosen frame budget.
-    const headroom=this.frameMs<budget*1.05&&cpuMs>0&&cpuMs<budget*.6&&(!gpuValid||gpuMs<budget*.66);
+    const headroom=this.frameMs<budget*1.035&&cpuMs>0&&cpuMs<budget*.6&&(!gpuValid||gpuMs<budget*.66);
     this.slow=overloaded?this.slow+elapsed:Math.max(0,this.slow-elapsed);
     this.fast=headroom?this.fast+elapsed:0;
     if(this.cooldown>0)return;
@@ -36,7 +36,10 @@ export class GraphicsQuality {
       this.slow=this.fast=0;this.cooldown=3;
     }else if(this.fast>18){
       if(this.scale<1){this.scale=Math.min(1,Math.round((this.scale+.04)*100)/100);this.reason='Recovering resolution';}
-      else if(this.requested==='auto'&&this.tier!=='ultra'){
+      // The Release 57 iPhone trace promoted to Ultra without a GPU timer,
+      // then spent repeated windows reducing resolution. Submission cadence
+      // at a 60 FPS cap alone cannot prove spare GPU capacity.
+      else if(this.requested==='auto'&&this.tier!=='ultra'&&gpuValid){
         this.tier=tiers[tiers.indexOf(this.tier)+1];this.reason='Measured headroom';
       }
       this.fast=0;this.cooldown=8;

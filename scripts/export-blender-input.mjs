@@ -19,6 +19,6 @@ const weapons=WEAPONS.map(def=>{
  }),hands:hands.map(extract)};
 });
 await mkdir(resolve(out,'..'),{recursive:true});
-const maps=MAPS.map(info=>{const arena=new Arena(info.id);return {...info,parts:blenderWorld(arena).filter(p=>!p.invisible&&!p.destroyed).map(p=>{const matrix=new Float32Array(16);compose(matrix,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);const kind=p.mesh==='ridge'?`ridge_${info.id}`:blenderKind(p,'world');return {kind,matrix:Array.from(matrix),material:material(p),authoredColour:!!p.blenderColour,surface:p.surface,leaf:p.leaf};})};});
+const maps=MAPS.map(info=>{const arena=new Arena(info.id);return {...info,parts:blenderWorld(arena).filter(p=>!p.invisible&&!p.destroyed).map(p=>{const matrix=new Float32Array(16);compose(matrix,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);const kind=p.mesh==='ridge'?`ridge_${info.ridgeTemplate??info.id}`:blenderKind(p,'world');return {kind,matrix:Array.from(matrix),material:material(p),authoredColour:!!p.blenderColour,surface:p.surface,leaf:p.leaf,breakable:!!p.breakable};})};});
 await writeFile(out,JSON.stringify({schema:1,units:'metres',forward:'-Z',up:'Y',maps,weapons})+'\n');
 console.log(`Exported ${weapons.length} unchanged weapon rigs for Blender.`);

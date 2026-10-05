@@ -7,6 +7,11 @@ const run=(q,seconds,elapsed=1/60,cpu=5,gpu=8)=>{for(let t=0;t<seconds;t+=elapse
 test('automatic graphics earns higher tiers with sustained measured gameplay headroom',()=>{
  const q=new GraphicsQuality();assert.equal(q.tier,'medium');run(q,22);assert.equal(q.tier,'high');run(q,28);assert.equal(q.tier,'ultra');assert.equal(q.scale,1);
 });
+test('Safari without GPU timings recovers resolution without guessing a higher detail tier',()=>{
+ const q=new GraphicsQuality();run(q,120,1/60,3.7,null);assert.equal(q.tier,'medium');
+ run(q,9,1/30,4,null);assert(q.scale<1);const reduced=q.scale;
+ run(q,60,1/60,3.7,null);assert(q.scale>reduced);assert.equal(q.tier,'medium');
+});
 test('GPU overload lowers resolution then quality; CPU overload lowers scene cost',()=>{
  const gpu=new GraphicsQuality('ultra');run(gpu,8,1/30,5,28);assert(gpu.scale<1);run(gpu,45,1/30,5,28);assert.notEqual(gpu.tier,'ultra');
  const cpu=new GraphicsQuality('high');run(cpu,9,1/30,23,8);assert.notEqual(cpu.tier,'high');

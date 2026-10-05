@@ -1,0 +1,1045 @@
+Warning: truncated output (original token count: 7188)
+Total output lines: 1250
+
+{
+  "source": "User physical iPhone 16 Pro, Safari, Release 57 gameplay export",
+  "actual_iphone_data": true,
+  "build": {
+    "release": "57",
+    "commit": "e00aad3d18a569aade107add0812235ef43d52f4",
+    "source_commit": "e00aad3d18a569aade107add0812235ef43d52f4",
+    "content_sha256": "7930f099c9ebfe153e2b833b7b540e045caf6771c2ac030e6b24d8aaa3a35230",
+    "commit_resolution": "source_commit"
+  },
+  "active_duration_ms": 634267,
+  "summary": {
+    "fps": {
+      "average": 57.363,
+      "median": 58.394,
+      "low_1_percent": 29.014
+    },
+    "cpu_frame": {
+      "count": 32940,
+      "mean_ms": 3.737,
+      "min_ms": 0,
+      "max_ms": 39,
+      "p50_ms": 4.125,
+      "p90_ms": 6.125,
+      "p95_ms": 7.125,
+      "p99_ms": 8.125
+    },
+    "frame_time": {
+      "count": 32940,
+      "mean_ms": 17.433,
+      "min_ms": 6,
+      "max_ms": 60,
+      "p50_ms": 17.125,
+      "p90_ms": 20.125,
+      "p95_ms": 24.125,
+      "p99_ms": 32.125
+    },
+    "stutters": 1315,
+    "spikes": 1
+  },
+  "availability": {
+    "cpu_frame": {
+      "status": "measured"
+    },
+    "gpu": {
+      "status": "unavailable",
+      "supported": false
+    },
+    "js_heap": {
+      "status": "unavailable"
+    },
+    "texture_bytes": {
+      "status": "estimate"
+    },
+    "process_memory": {
+      "status": "unavailable"
+    },
+    "vram": {
+      "status": "unavailable"
+    },
+    "temperature": {
+      "status": "unavailable"
+    },
+    "display_refresh_rate": {
+      "status": "unavailable"
+    }
+  },
+  "contexts": [
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 1,
+        "width": 1297,
+        "height": 596,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Measuring gameplay"
+      },
+      "steady": {
+        "frames": 2349,
+        "fps": {
+          "average": 58.987,
+          "median": 58.394,
+          "low_1_percent": 31.209
+        },
+        "stutters": 29
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "high",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 1,
+        "width": 1616,
+        "height": 743,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Measured headroom"
+      },
+      "steady": {
+        "frames": 2236,
+        "fps": {
+          "average": 58.651,
+          "median": 58.394,
+          "low_1_percent": 44.487
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 1,
+        "width": 1748,
+        "height": 804,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Measured headroom"
+      },
+      "steady": {
+        "frames": 379,
+        "fps": {
+          "average": 47.452,
+          "median": 47.337,
+          "low_1_percent": 31.008
+        },
+        "stutters": 15
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.92,
+        "width": 1748,
+        "height": 804,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 55.556,
+          "median": 55.556,
+          "low_1_percent": 55.556
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.92,
+        "width": 1608,
+        "height": 739,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 322,
+        "fps": {
+          "average": 52.469,
+          "median": 55.172,
+          "low_1_percent": 32.52
+        },
+        "stutters": 19
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.84,
+        "width": 1608,
+        "height": 739,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 25,
+          "median": 25,
+          "low_1_percent": 25
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.84,
+        "width": 1468,
+        "height": 675,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 142,
+        "fps": {
+          "average": 47.603,
+          "median": 47.337,
+          "low_1_percent": 34.483
+        },
+        "stutters": 8
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.76,
+        "width": 1468,
+        "height": 675,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 47.619,
+          "median": 47.619,
+          "low_1_percent": 47.619
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.76,
+        "width": 1328,
+        "height": 611,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 753,
+        "fps": {
+          "average": 54.68,
+          "median": 58.394,
+          "low_1_percent": 31.373
+        },
+        "stutters": 43
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.7,
+        "width": 1328,
+        "height": 611,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 58.824,
+          "median": 58.824,
+          "low_1_percent": 58.824
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "domination",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.7,
+        "width": 1223,
+        "height": 562,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 491,
+        "fps": {
+          "average": 54.254,
+          "median": 58.394,
+          "low_1_percent": 29.762
+        },
+        "stutters": 48
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "tdm",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.7,
+        "width": 1223,
+        "height": 562,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1068,
+        "fps": {
+          "average": 56.55,
+          "median": 58.394,
+          "low_1_percent": 28.947
+        },
+        "stutters": 27
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "tdm",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "ultra",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 1223,
+        "height": 562,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing scene cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 29.412,
+          "median": 29.412,
+          "low_1_percent": 29.412
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "tdm",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "high",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 1325,
+        "height": 609,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing scene cost"
+      },
+      "steady": {
+        "frames": 122,
+        "fps": {
+          "average": 40.68,
+          "median": 39.801,
+          "low_1_percent": 20
+        },
+        "stutters": 59
+      }
+    },
+    {
+      "map": {
+        "id": 14,
+        "name": "BLACKSITE"
+      },
+      "mode": "tdm",
+      "players": 16,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "high",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.74,
+        "width": 1325,
+        "height": 609,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynam…1188 tokens truncated…: "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.94,
+        "width": 1168,
+        "height": 537,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 58.824,
+          "median": 58.824,
+          "low_1_percent": 58.824
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.94,
+        "width": 1220,
+        "height": 561,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 3429,
+        "fps": {
+          "average": 58.136,
+          "median": 58.394,
+          "low_1_percent": 30.702
+        },
+        "stutters": 124
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.86,
+        "width": 1220,
+        "height": 561,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 34.483,
+          "median": 34.483,
+          "low_1_percent": 34.483
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.86,
+        "width": 1116,
+        "height": 513,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 143,
+        "fps": {
+          "average": 48.181,
+          "median": 55.172,
+          "low_1_percent": 28.571
+        },
+        "stutters": 35
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.78,
+        "width": 1116,
+        "height": 513,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 30.303,
+          "median": 30.303,
+          "low_1_percent": 30.303
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.78,
+        "width": 1012,
+        "height": 465,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 3142,
+        "fps": {
+          "average": 58.446,
+          "median": 58.394,
+          "low_1_percent": 27.706
+        },
+        "stutters": 108
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 1012,
+        "height": 465,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 2,
+        "fps": {
+          "average": 54.054,
+          "median": 62.016,
+          "low_1_percent": 47.619
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 1064,
+        "height": 489,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 3466,
+        "fps": {
+          "average": 56.953,
+          "median": 58.394,
+          "low_1_percent": 30.146
+        },
+        "stutters": 205
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.74,
+        "width": 1064,
+        "height": 489,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 2,
+        "fps": {
+          "average": 38.462,
+          "median": 55.172,
+          "low_1_percent": 29.412
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.74,
+        "width": 960,
+        "height": 441,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 2096,
+        "fps": {
+          "average": 57.056,
+          "median": 58.394,
+          "low_1_percent": 27.778
+        },
+        "stutters": 131
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.78,
+        "width": 960,
+        "height": 441,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 58.824,
+          "median": 58.824,
+          "low_1_percent": 58.824
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "medium",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.86,
+        "width": 960,
+        "height": 441,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing scene cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 31.25,
+          "median": 31.25,
+          "low_1_percent": 31.25
+        },
+        "stutters": 1
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "low",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.86,
+        "width": 710,
+        "height": 326,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing scene cost"
+      },
+      "steady": {
+        "frames": 144,
+        "fps": {
+          "average": 48.257,
+          "median": 58.394,
+          "low_1_percent": 25.974
+        },
+        "stutters": 34
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "low",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.78,
+        "width": 710,
+        "height": 326,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 55.556,
+          "median": 55.556,
+          "low_1_percent": 55.556
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "low",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.78,
+        "width": 644,
+        "height": 296,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Reducing pixel cost"
+      },
+      "steady": {
+        "frames": 1511,
+        "fps": {
+          "average": 59.019,
+          "median": 58.394,
+          "low_1_percent": 27.778
+        },
+        "stutters": 43
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "low",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 644,
+        "height": 296,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 1,
+        "fps": {
+          "average": 62.5,
+          "median": 62.5,
+          "low_1_percent": 62.5
+        },
+        "stutters": 0
+      }
+    },
+    {
+      "map": {
+        "id": 2,
+        "name": "DUSTLINE"
+      },
+      "mode": "tdm",
+      "players": 8,
+      "graphics": {
+        "requested_quality": "auto",
+        "effective_quality": "low",
+        "frame_cap": 60,
+        "effective_frame_cap": 60,
+        "render_scale": 0.82,
+        "width": 677,
+        "height": 311,
+        "device_pixel_ratio": 3,
+        "fov": 80,
+        "camera_motion": true,
+        "dynamic_resolution": true,
+        "reason": "Recovering resolution"
+      },
+      "steady": {
+        "frames": 1515,
+        "fps": {
+          "average": 59.087,
+          "median": 58.394,
+          "low_1_percent": 35.088
+        },
+        "stutters": 31
+      }
+    }
+  ],
+  "baseline_branch": "release57-baseline",
+  "baseline_commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415"
+}

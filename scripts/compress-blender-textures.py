@@ -7,6 +7,9 @@ import tempfile
 root=Path('dist/assets/blender')
 for name in ('surfaces-albedo','weapons-albedo','foliage','sky','effects','surfaces-normal','surfaces-orm','weapons-normal','weapons-orm'):
     source=Image.open(root/(name+'.png')).convert('RGBA')
+    # The compatibility atlas is deliberately compact. The primary renderer
+    # uses independently streamed, high-resolution ASTC/ WebP production tiles.
+    if source.width>1024:source=source.resize((1024,1024),Image.Resampling.LANCZOS)
     target=root/(name+'.webp')
     fd,temporary=tempfile.mkstemp(dir=root,suffix='.tmp');os.close(fd)
     source.save(temporary,format='WEBP',lossless=True,exact=True,method=6)
