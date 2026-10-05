@@ -29,6 +29,32 @@ test('Breakwater water is a single opaque dielectric plane without rigid foam st
  assert(shader.fragmentShader.includes('float chop=')&&shader.fragmentShader.includes('float coast='));
  assert.equal(shader.fragmentShader.match(/#include <normal_fragment_maps>/g)?.length,1);
 });
+test('Frostline snow keeps pale reflectance and reuses grain detail without plaster albedo',()=>{
+ const r=fixture();for(const maps of r.surfaceMaps)maps.baked=true;
+ const snow={surface:'snow',color:[.82,.89,.93],blenderVertexMaterial:true},m=r.makeMaterial(snow,'world');
+ const plaster=r.makeMaterial({...snow,surface:'plaster'},'world');
+ assert.equal(m.map,null);assert.equal(m.normalMap,r.surfaceMaps[6].normal);
+ assert.equal(m.roughnessMap,r.surfaceMaps[6].roughness);assert.equal(m.roughness,.98);assert.equal(m.metalness,0);
+ assert.deepEqual(m.normalScale.toArray(),[.12,.12]);assert.equal(plaster.map,r.surfaceMaps[1].map);
+ assert.notEqual(m,plaster);assert.notEqual(m.customProgramCacheKey(),plaster.customProgramCacheKey());
+ const c=r.instanceColor(snow,'world'),expected=new THREE.Color().setRGB(.973,.9835,.9895,THREE.SRGBColorSpace);
+ assert(c.distanceTo?c.distanceTo(expected)<1e-10:Math.abs(c.r-expected.r)+Math.abs(c.g-expected.g)+Math.abs(c.b-expected.b)<1e-10);
+ const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};m.onBeforeCompile(shader);
+ assert(!shader.vertexShader.includes('attribute vec2 breachMaterial'),'snow ignores the generic kit physical material');
+ assert(shader.fragmentShader.includes('roughness+(texelRoughness.g-.75)'),'grain varies around the snow roughness');
+});
+test('only shallow puddle layers use neutral transparent water and soft irregular local edges',()=>{
+ const r=fixture(),p={surface:'water',surfaceLayer:2,color:[.14,.22,.23],blenderVertexMaterial:true},m=r.makeMaterial(p,'world');
+ const canal=r.makeMaterial({...p,surfaceLayer:0},'world');
+ assert.equal(m.transparent,true);assert.equal(m.depthWrite,false);assert(m.opacity<.6&&m.opacity>.3);
+ assert.equal(m.transmission,0);assert.equal(m.map,null);assert.equal(m.normalMap,null);assert.equal(m.roughnessMap,null);
+ assert.equal(canal.transparent,false);assert.equal(canal.depthWrite,true);assert.notEqual(m.customProgramCacheKey(),canal.customProgramCacheKey());
+ const c=r.instanceColor(p,'world');assert(Math.abs(c.r-c.b)<1e-10);assert(Math.abs(c.g-c.r)<.003,'puddles do not inherit cyan instance tint');
+ const shader={uniforms:{},vertexShader:THREE.ShaderLib.physical.vertexShader,fragmentShader:THREE.ShaderLib.physical.fragmentShader};m.onBeforeCompile(shader);
+ assert(shader.vertexShader.includes('position.xz*2.0'));assert(shader.fragmentShader.includes('diffuseColor.a*=1.0-smoothstep(.70,.94,puddleEdge)'));
+ assert(!shader.fragmentShader.includes('float coast='));assert(!shader.vertexShader.includes('attribute vec2 breachMaterial'));
+ assert(shader.fragmentShader.indexOf('float puddleEdge=')<shader.fragmentShader.indexOf('#include <alphatest_fragment>'),'edge alpha is ready before alpha testing');
+});
 test('visual ground queries follow overlapping and rotated finishes without changing collision floors',()=>{
  const arena={decor:[{x:0,y:.02,z:0,w:8,h:.02,d:8,surface:'concrete'},
   {x:0,y:.035,z:0,w:.2,h:.01,d:6,surface:'white',yaw:Math.PI/2},

@@ -22,6 +22,22 @@ test('all attachment combinations animate cached arrays without drifting or repl
 test('muzzles follow real barrel tips and suppressors extend the origin',()=>{
  for(let id=0;id<WEAPONS.length;id++){if(id===12)continue;const a=muzzlePosition(weapon(id)),s=muzzlePosition(weapon(id,1,1));assert(s.z<a.z-.1);assert.equal(a.x,0);assert(a.z<-.15);assert(a.y>0);}
 });
+test('telescopic, solid and skeleton stocks enter their actual receiver rear',()=>{
+ const stocked=[0,1,5,6,7,8,9,13,14,15,16,17,18,19,20,21,25,27,28];
+ for(const id of stocked){
+  const p=weaponModel(weapon(id)),core=p.slice(0,p.coreCount);
+  const receiver=core.find(q=>q.x===0&&q.y===.034&&q.h===.092),rear=receiver.z+receiver.d/2;
+  const beam=core.find(q=>q.x===0&&(
+   q.mesh==='cylinder'&&q.y===.026&&q.w===.035||
+   q.y===-.009&&q.w===.072&&q.h===.079||
+   q.y===.027&&q.w===.037&&q.h===.026));
+  assert(beam,`${id}: missing structural stock beam`);
+  const length=beam.mesh==='cylinder'?beam.h:beam.d;
+  const front=beam.z-Math.cos(beam.mesh==='cylinder'?0:beam.pitch)*length/2;
+  assert(front<=rear-.002,`${id}: stock starts ${front-rear} m behind receiver`);
+  assert(beam.z+length/2>rear+.09,`${id}: stock no longer spans receiver to butt`);
+ }
+});
 test('reflex and prism optics leave a clear central sight ray',()=>{
  for(let id=0;id<WEAPONS.length;id++)for(const optic of [1,2]){
   if(WEAPONS[id].kind==='SNIPER'||id===12)continue;const p=weaponModel(weapon(id,optic));

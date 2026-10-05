@@ -1,0 +1,466 @@
+{
+  "librarySHA256": "65881034e592f4f06283b8f1f51c74d9b5bd145a3db5e74dd5c1151a260f96c9",
+  "meshes": 329,
+  "summary": {
+    "weapons": 30,
+    "stocks": 19,
+    "curvedMagazines": 16,
+    "maxNativeFeedCentreErrorMm": 0.00002662503206445108,
+    "minimumNativeStockOverlapMm": 3.9999852897976833
+  },
+  "weapons": [
+    {
+      "id": 0,
+      "name": "Kestrel AR",
+      "stock": {
+        "family": "telescopic",
+        "nativeJoinVertices": 61,
+        "sourceOverlapMm": 3.99999999999999,
+        "nativeOverlapMm": 3.999991350017357
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 30.650000000000006,
+        "nativeFeedCentreErrorMm": 0.000011528840116224394,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000004638414803111595,
+          0.000020206969956355756
+        ]
+      },
+      "nativeCoreTriangles": 12676
+    },
+    {
+      "id": 1,
+      "name": "Bastion 7",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 23,
+        "sourceOverlapMm": 3.509268877704308,
+        "nativeOverlapMm": 6.356546551045062
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 29.120000000000005,
+        "nativeFeedCentreErrorMm": 0.00001544845685077895,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000018449341483392916,
+          0.000013899024996071631
+        ]
+      },
+      "nativeCoreTriangles": 10436
+    },
+    {
+      "id": 2,
+      "name": "Raptor C",
+      "stock": null,
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 30.650000000000006,
+        "nativeFeedCentreErrorMm": 0.000011963804891585677,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000007163204670666237,
+          0.00000788767643940775
+        ]
+      },
+      "nativeCoreTriangles": 10758
+    },
+    {
+      "id": 3,
+      "name": "Vesper 9",
+      "stock": null,
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 26.509999999999994,
+        "nativeFeedCentreErrorMm": 0.000013490652970796633,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000010407073391601157,
+          0.00000588894616320047
+        ]
+      },
+      "nativeCoreTriangles": 8394
+    },
+    {
+      "id": 4,
+      "name": "Lynx PDW",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 4890
+    },
+    {
+      "id": 5,
+      "name": "Breach 12",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 25,
+        "sourceOverlapMm": 3.475878925053272,
+        "nativeOverlapMm": 6.32315686648266
+      },
+      "magazine": null,
+      "nativeCoreTriangles": 7904
+    },
+    {
+      "id": 6,
+      "name": "Tempest S",
+      "stock": {
+        "family": "telescopic",
+        "nativeJoinVertices": 61,
+        "sourceOverlapMm": 4.0000000000000036,
+        "nativeOverlapMm": 4.00000372610676
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 29.749999999999993,
+        "nativeFeedCentreErrorMm": 0.000009699987426501619,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000008913414207699377,
+          2.850793859240138e-7
+        ]
+      },
+      "nativeCoreTriangles": 12780
+    },
+    {
+      "id": 7,
+      "name": "Longbow M",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 16,
+        "sourceOverlapMm": 3.99999999999999,
+        "nativeOverlapMm": 3.9999852897976833
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 37.849999999999994,
+        "nativeFeedCentreErrorMm": 0.0000037726892972595393,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000011168834658215942,
+          0.000004882547237201207
+        ]
+      },
+      "nativeCoreTriangles": 12362
+    },
+    {
+      "id": 8,
+      "name": "Warden D",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 20,
+        "sourceOverlapMm": 4.0000000000000036,
+        "nativeOverlapMm": 4.000001759347393
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 35.06000000000002,
+        "nativeFeedCentreErrorMm": 0.0000024432899718078413,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000006530284681145563,
+          0.000002741312173826736
+        ]
+      },
+      "nativeCoreTriangles": 12286
+    },
+    {
+      "id": 9,
+      "name": "Atlas L",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 96,
+        "sourceOverlapMm": 3.5548006313193548,
+        "nativeOverlapMm": 6.536807038327569
+      },
+      "magazine": {
+        "sections": 1,
+        "feedExtensionMm": 0,
+        "nativeFeedCentreErrorMm": 0.000012105329839509909,
+        "nativeMatingCapCentreErrorsMm": []
+      },
+      "nativeCoreTriangles": 13792
+    },
+    {
+      "id": 10,
+      "name": "Sable P",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 5920
+    },
+    {
+      "id": 11,
+      "name": "Dire 50",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 5986
+    },
+    {
+      "id": 12,
+      "name": "Field blade",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 1992
+    },
+    {
+      "id": 13,
+      "name": "Harrow B3",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 3.999999999999976,
+        "nativeOverlapMm": 4.000007899744223
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 31.099999999999994,
+        "nativeFeedCentreErrorMm": 0.0000037941097460214937,
+        "nativeMatingCapCentreErrorsMm": [
+          0.0000083235683540776,
+          0.000012457066299570696
+        ]
+      },
+      "nativeCoreTriangles": 11674
+    },
+    {
+      "id": 14,
+      "name": "Marten 45",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 4.000000000000018,
+        "nativeOverlapMm": 3.999999592402839
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 27.05000000000001,
+        "nativeFeedCentreErrorMm": 0.000007699366386918695,
+        "nativeMatingCapCentreErrorsMm": [
+          0.0000153023503659642,
+          0.00000924326419159591
+        ]
+      },
+      "nativeCoreTriangles": 8400
+    },
+    {
+      "id": 15,
+      "name": "Mako 7",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 20,
+        "sourceOverlapMm": 4.0000000000000036,
+        "nativeOverlapMm": 4.000009417060745
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 32.900000000000006,
+        "nativeFeedCentreErrorMm": 9.914907402680652e-7,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000007474422888752174,
+          0.00001370273280355519
+        ]
+      },
+      "nativeCoreTriangles": 11962
+    },
+    {
+      "id": 16,
+      "name": "Peregrine 6",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 4.000000000000018,
+        "nativeOverlapMm": 3.9999930086460216
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 32.53999999999999,
+        "nativeFeedCentreErrorMm": 0.0000041886392187250574,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000007641048027711015,
+          0.00000918828207687418
+        ]
+      },
+      "nativeCoreTriangles": 11882
+    },
+    {
+      "id": 17,
+      "name": "Osprey S",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 4.0000000000000036,
+        "nativeOverlapMm": 4.000014675700491
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 24.26000000000002,
+        "nativeFeedCentreErrorMm": 0.000011499340022833706,
+        "nativeMatingCapCentreErrorsMm": [
+          0.0000023543834206109944,
+          0.000008531250235035264
+        ]
+      },
+      "nativeCoreTriangles": 8464
+    },
+    {
+      "id": 18,
+      "name": "Bison 12",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 87,
+        "sourceOverlapMm": 3.4839734590292606,
+        "nativeOverlapMm": 6.465962130680958
+      },
+      "magazine": null,
+      "nativeCoreTriangles": 9994
+    },
+    {
+      "id": 19,
+      "name": "Talon 338",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 16,
+        "sourceOverlapMm": 4.000000000000018,
+        "nativeOverlapMm": 3.9999901216099394
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 36.04999999999998,
+        "nativeFeedCentreErrorMm": 0.00002662503206445108,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000015249597224843673,
+          0.000021939023189988966
+        ]
+      },
+      "nativeCoreTriangles": 12376
+    },
+    {
+      "id": 20,
+      "name": "Rampart 556",
+      "stock": {
+        "family": "telescopic",
+        "nativeJoinVertices": 57,
+        "sourceOverlapMm": 4.0000000000000036,
+        "nativeOverlapMm": 3.999995184168881
+      },
+      "magazine": {
+        "sections": 1,
+        "feedExtensionMm": 0,
+        "nativeFeedCentreErrorMm": 0.000015437318375540224,
+        "nativeMatingCapCentreErrorsMm": []
+      },
+      "nativeCoreTriangles": 12660
+    },
+    {
+      "id": 21,
+      "name": "Spectre SD",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 4.000000000000031,
+        "nativeOverlapMm": 3.99999461390757
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 27.77,
+        "nativeFeedCentreErrorMm": 0.00000698522986151733,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000010482882867175679,
+          0.00000774012051810734
+        ]
+      },
+      "nativeCoreTriangles": 10482
+    },
+    {
+      "id": 22,
+      "name": "Krait R",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 4868
+    },
+    {
+      "id": 23,
+      "name": "Swift 93",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 5818
+    },
+    {
+      "id": 24,
+      "name": "Storm 68",
+      "stock": null,
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 31.01,
+        "nativeFeedCentreErrorMm": 0.000009901095981151025,
+        "nativeMatingCapCentreErrorsMm": [
+          0.00000835955126302976,
+          0.00001044416246376084
+        ]
+      },
+      "nativeCoreTriangles": 11576
+    },
+    {
+      "id": 25,
+      "name": "Needle 57",
+      "stock": {
+        "family": "skeleton",
+        "nativeJoinVertices": 12,
+        "sourceOverlapMm": 3.99999999999999,
+        "nativeOverlapMm": 3.999998171887703
+      },
+      "magazine": null,
+      "nativeCoreTriangles": 8998
+    },
+    {
+      "id": 26,
+      "name": "Jackal 12",
+      "stock": null,
+      "magazine": {
+        "sections": 1,
+        "feedExtensionMm": 0,
+        "nativeFeedCentreErrorMm": 0.000008341000816871668,
+        "nativeMatingCapCentreErrorsMm": []
+      },
+      "nativeCoreTriangles": 11802
+    },
+    {
+      "id": 27,
+      "name": "Sentinel 762",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 26,
+        "sourceOverlapMm": 3.475878925053244,
+        "nativeOverlapMm": 6.323182267872069
+      },
+      "magazine": {
+        "sections": 1,
+        "feedExtensionMm": 0,
+        "nativeFeedCentreErrorMm": 0.0000028908253568715736,
+        "nativeMatingCapCentreErrorsMm": []
+      },
+      "nativeCoreTriangles": 13568
+    },
+    {
+      "id": 28,
+      "name": "Heron S",
+      "stock": {
+        "family": "solid",
+        "nativeJoinVertices": 29,
+        "sourceOverlapMm": 3.422252637462181,
+        "nativeOverlapMm": 6.269513943715721
+      },
+      "magazine": {
+        "sections": 2,
+        "feedExtensionMm": 37.400000000000006,
+        "nativeFeedCentreErrorMm": 0.0000023358065170112604,
+        "nativeMatingCapCentreErrorsMm": [
+          0.000011037180950026721,
+          0.000013743381411868354
+        ]
+      },
+      "nativeCoreTriangles": 10524
+    },
+    {
+      "id": 29,
+      "name": "Paladin 45",
+      "stock": null,
+      "magazine": null,
+      "nativeCoreTriangles": 5930
+    }
+  ]
+}

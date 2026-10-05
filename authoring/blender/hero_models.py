@@ -131,8 +131,8 @@ def weapon_component(p,base,weapon=None):
     elif abs(p['x'])<.02 and p['z']>.17 and width>.05 and height>.10 and depth>.065:role='stock'
     elif kind=='MELEE' and depth>.1 and width<.03 and height>.035:role='blade'
     if not role:return None
-    cache_key=(role,identity if role in ('receiver','handguard','stock') else kind,wood,
-               round(width,5),round(height,5),round(depth,5),round(p.get('z',0),4))
+    cache_key=(role,identity if role in ('receiver','handguard','stock','magazine') else kind,wood,
+               round(width,5),round(height,5),round(depth,5),round(p.get('z',0),4),round(p.get('y',0),4))
     if cache_key in _component_cache:return _component_cache[cache_key]
     cuts=[];radius=.0012;segments=2
     if role=='receiver':
@@ -175,8 +175,23 @@ def weapon_component(p,base,weapon=None):
             for i in range(5):cuts.append(((side*.484,-.02,.13+i*.058),(.058,.64,.022)))
         radius=.00065;segments=1
     elif role=='magazine':
-        # Continuous feed lips, shoulder and stamped/pressed side profile.
-        geometry=_chamfer_profile([(-.5,.425,.45,0),(-.43,.485,.49,0),(-.12,.49,.49,0),(.32,.48,.48,0),(.46,.425,.43,0),(.5,.40,.40,0)],axis=1)
+        # The source curved magazine comprises two overlapping sections. Their
+        # mating faces must keep the full stamped width, rather than giving
+        # each half a tapered collar which reads as a detached second magazine.
+        rings=[(-.5,.495,.495,0),(-.40,.495,.495,0),(-.12,.495,.495,0),(.32,.495,.495,0),(.5,.495,.495,0)]
+        source=(weapon or {}).get('parts',[])
+        magazines=[q for q in source if q.get('tag')=='magazine' and q.get('mesh') not in ('cylinder','tube') and q['h']>.055 and q['w']>.035 and q['d']>.04]
+        upper=max(magazines,key=lambda q:q['y']+q['h']*.5,default=None)
+        if upper is p:
+            supports=[q for q in source if not q.get('tag') and abs(q['x'])<.02 and q['d']>.13 and q['h']>.03 and q['y']>-.06 and q['z']-q['d']*.5<=p['z']<=q['z']+q['d']*.5]
+            if supports:
+                bottom=min(q['y']-q['h']*.5 for q in supports)
+                feed_top=max(.5,(bottom+.004-p['y'])/height)
+                if feed_top>.51:
+                    # Insert the existing upper section into the lower receiver;
+                    # its anchor and reload travel remain exactly unchanged.
+                    rings.extend(((max(.505,feed_top-.025),.475,.475,0),(feed_top,.465,.475,0)))
+        geometry=_chamfer_profile(rings,axis=1)
         for side in (-1,1):
             for z in (-.24,0,.24):cuts.append(((side*.491,-.065,z),(.052,.62,.08)))
         radius=.0006;segments=1

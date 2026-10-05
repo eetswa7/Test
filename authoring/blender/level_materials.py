@@ -42,20 +42,21 @@ class LevelMaterials:
         native = bpy.data.objects.get(part['kind']+'__near')
         physical = bool(native and native.data.uv_layers.get('BreachMaterial'))
         painted = tile == 8 and physical
+        snow = part['surface'] == 'snow'
         # Match the renderer's light tint for textured architectural surfaces.
         tint = (1, 1, 1) if authored else tuple(.25+c*.75 for c in color) if painted else tuple(.85 + c*.15 for c in color) if tile >= 0 else color
         matrix = part['matrix']
         dims = tuple(Vector(matrix[i:i+3]).length for i in (0, 4, 8))
-        key = (tile, tint, authored, physical, round(desc.get('emissive', 0), 3), tuple(round(v, 3) for v in dims), part['surface'])
+        key = (tile, tint, authored, physical, 'snow-grain-v1' if snow else 'textured-v1', round(desc.get('emissive', 0), 3), tuple(round(v, 3) for v in dims), part['surface'])
         if key in self.cache:
             return self.cache[key]
         material = bpy.data.materials.new('Level / ' + part['surface'] + ' / ' + str(len(self.cache)))
         material.use_nodes = True
         nodes = material.node_tree.nodes; links = material.node_tree.links
         bsdf = nodes.get('Principled BSDF')
-        bsdf.inputs['Roughness'].default_value = desc.get('rough', .75)
-        bsdf.inputs['Metallic'].default_value = desc.get('metal', 0)
-        if physical:
+        bsdf.inputs['Roughness'].default_value = .98 if snow else desc.get('rough', .75)
+        bsdf.inputs['Metallic'].default_value = 0 if snow else desc.get('metal', 0)
+        if physical and not snow:
             uv = nodes.new('ShaderNodeUVMap'); uv.uv_map = 'BreachMaterial'
             components = nodes.new('ShaderNodeSeparateXYZ'); links.new(uv.outputs[0], components.inputs[0])
             links.new(components.outputs[0], bsdf.inputs['Roughness'])
@@ -67,7 +68,9 @@ class LevelMaterials:
         multiply.inputs[2].default_value = (*[srgb(v) for v in tint], 1)
         links.new(vertex.outputs['Color'], multiply.inputs[1])
         color_socket = multiply.outputs[0]
-        if 0 <= tile < 16 and not authored and not painted:
+        # Snow shares grain detail at runtime, never plaster's photographic
+        # albedo. Cycles must use the same pale diffuse reflectance for GI.
+        if 0 <= tile < 16 and not authored and not painted and not snow:
             uv = nodes.new('ShaderNodeTexCoord')
             scale = nodes.new('ShaderNodeVectorMath'); scale.operation = 'MULTIPLY'
             # Blender Z is game Y, and Blender Y is negative game Z.

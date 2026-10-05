@@ -1,0 +1,28 @@
+{
+  "scope": "Read-only Blender graph construction using the actual LevelMaterials module and a native UV/vertex-colour fixture. Confirms Cycles snow reflectance and physical inputs, not a rendered-image or iPhone performance test.",
+  "blender_version": "4.3.2",
+  "source_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
+  "snow": {
+    "roughness": 0.98,
+    "metalness": 0.0,
+    "photographic_albedo_nodes": 0,
+    "generic_physical_uv_override": false,
+    "tint_linear": [
+      0.9265657587300747,
+      0.9528913616268259,
+      0.969563717437396
+    ],
+    "same_material_reused": true
+  },
+  "plaster_control": {
+    "photographic_albedo_nodes": 1,
+    "physical_uv_override_preserved": true
+  },
+  "runtime_focused_checks": {
+    "passed": 23,
+    "failed": 0
+  },
+  "extra_runtime_textures": 0,
+  "extra_geometry": 0,
+  "extra_fullscreen_passes": 0
+}

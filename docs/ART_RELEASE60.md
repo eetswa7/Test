@@ -40,7 +40,7 @@ Impacts have material-specific tint/rotation, and bounded particles have coheren
 rotating smoke volumes, varied dust/debris and distinct precipitation silhouettes.
 Objective cloth has an original insignia, textile colour and anchored movement.
 
-All thirty firearm voicings have editable pressure/noise/mechanical layers, with
+All thirty weapon voicings have editable pressure/noise/mechanical layers, with
 four unsuppressed and three suppressed variants. Footsteps have five variants per
 surface, including wood, and actions, impacts and debris avoid immediate repeats.
 The bank contains 364 original AAC takes across 164 event keys. Distance filtering,
@@ -54,7 +54,17 @@ angles, during combat/reload and with close operators and weapons. The first
 integrated review exposed oversized untextured surrounds, wall-joint light leaks,
 flat machinery and grey faceted hands. The follow-up rebuild fixes those defects
 and rebakes the source assemblies; export success alone was not accepted as a
-visual result. Final image and scene-count evidence is stored with this release.
+visual result. The complete map sweep also exposed unsupported legacy service
+spans, plaster artwork on snow, hard cyan puddle edges and disconnected stock
+construction. The refined source removes the unsupported spans, calibrates snow
+and irregular transparent puddles, joins all helper-built stock families to their
+receivers and makes magazine sections continuous. Side views are included for
+every weapon to expose construction gaps hidden in the forward camera.
+
+Matched actual Release 57 gameplay renders use the same software backend, camera,
+quality, seed and viewport as the new screenshots. Those images are visual
+evidence, not physical-device frame-rate measurements. Final image and
+scene-count evidence is stored with this release.
 
 ## Cost controls and limits
 

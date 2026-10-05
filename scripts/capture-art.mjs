@@ -34,6 +34,7 @@ const shots=[
 ];
 if(process.argv.includes('--all-maps'))for(let map=0;map<16;map++)shots.push({name:'map-'+map,map,menu:true});
 if(process.argv.includes('--all-weapons'))for(let weapon=0;weapon<30;weapon++)shots.push({name:'weapon-'+weapon,map:14,x:0,z:27,yaw:0,pitch:0,weapon});
+if(process.argv.includes('--weapon-sides'))for(let weapon=0;weapon<30;weapon++)shots.push({name:'weapon-side-'+weapon,map:14,menu:true,weapon});
 const results=[];
 try{
  for(const shot of shots){

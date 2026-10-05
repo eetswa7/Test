@@ -4,8 +4,8 @@
   "status": "passed",
   "scope": "Read-only Blender inspection of editable native source and SHA-256 reconstruction. This verifies source completeness, not visual quality or physical iPhone performance.",
   "blender": "4.3.2",
-  "source_bytes": 166234999,
-  "source_sha256": "b60f7ea64a825fd5ae19b317102cc95974d646f00455322d535645a27f829726",
+  "source_bytes": 166153336,
+  "source_sha256": "2ca9038fb823d5285b3d15d02983883ffd2374dac1d7f5a12c3d45ff286a338e",
   "source_segments_verified": 80,
   "runtime_native_meshes_verified": 329,
   "levels": [
@@ -82,7 +82,7 @@
     {
       "id": 14,
       "name": "BLACKSITE",
-      "objects": 660
+      "objects": 656
     },
     {
       "id": 15,
@@ -274,11 +274,12 @@
   ],
   "rig_type": "Rigid mesh groups with simulation anchor indices and animated tags; no skeletal armature is claimed.",
   "editable_level_material_policy_verified": {
-    "native_physical_instances": 1602,
-    "native_paint_instances": 508,
-    "authored_native_paint_instances": 468,
+    "native_physical_instances": 1598,
+    "native_paint_instances": 504,
+    "authored_native_paint_instances": 464,
     "instance_tinted_native_paint_instances": 40,
-    "scope": "Read-only inspection of saved native level material graphs, verifying physical roughness/metallic UV routing, absence of a second tile-8 paint albedo multiplication and authored or instance paint tint. Does not establish pixel equivalence with the runtime shader."
+    "snow_instances": 8,
+    "scope": "Saved level graphs verify native physical roughness/metallic UV routing except snow, tile-8 paint reflectance and authored or instance tint. Eight snow graphs use fixed unlinked roughness .98 and metallic 0 with no photographic albedo. Graph inspection does not establish runtime pixel equivalence."
   },
   "editable_pbr_graphs": 20,
   "original_artwork": [
@@ -349,11 +350,11 @@
     "astc_map_payload_bytes": 54593984,
     "astc_map_download_bytes": 54597356,
     "fallback_map_download_bytes": 6036082,
-    "lightmap_download_bytes": 6682448,
+    "lightmap_download_bytes": 6679858,
     "lightmap_rgba_bytes": 16777216,
     "primary_material_and_gi_gpu_storage_bytes_estimate": 71371200,
     "fallback_material_and_gi_rgba_mip_bytes_estimate": 113246128,
-    "production_transport_bytes_including_both_formats": 67315886,
+    "production_transport_bytes_including_both_formats": 67313296,
     "scope": "Texture block or RGBA storage estimate including material mipmaps and unmipped GI only. Excludes geometry, other textures, decoded source images, render targets, browser/driver overhead and duplicate upload buffers. Not a measured Safari process memory footprint, iPhone thermal result or assurance against memory termination.",
     "actual_iphone_data": false,
     "runtime_test_command": "node --test tests/production-textures.test.mjs",
@@ -361,19 +362,27 @@
     "runtime_tests_status": "passed",
     "runtime_tests_failed": 0,
     "runtime_tests_exit_code": 0,
-    "runtime_tests_duration_ms": 1708.702953,
-    "primary_astc_material_and_gi_download_bytes": 61279804,
-    "fallback_webp_material_and_gi_download_bytes": 12718530,
+    "runtime_tests_duration_ms": 1292.367144,
+    "primary_astc_material_and_gi_download_bytes": 61277214,
+    "fallback_webp_material_and_gi_download_bytes": 12715940,
     "production_manifest_bytes_excluded_from_transport_sum": 38385,
     "download_scope": "Sum of production asset segment bytes in manifest, excluding manifest JSON itself, HTTP headers, geometry and other assets. Primary and fallback are alternative texture paths; the combined-format figure includes both for offline cache.",
     "rgba_mip_estimate_method": "Exact RGBA8 texel sum of full power-of-two WebP fallback mip chains plus sixteen unmipped 512x512 RGBA8 GI textures; browser/driver storage and overhead remain unmeasured."
   },
-  "final_reflectance_rebuild_comparison": {
-    "material_texture_payloads_unchanged": true,
-    "all_60_material_payload_sha256_unchanged": 60,
-    "all_329_mesh_topology_descriptors_unchanged": true,
-    "nine_native_material_bake_png_sha256_unchanged": true,
-    "scope": "Compared final production texture SHA-256 values, mesh vertices/triangles/vertexMaterial descriptors and nine native material-bake PNG SHA-256 values with the captured pre-final-reflectance rebuild. Geometry positions were not independently compared between rebuilds."
+  "final_material_and_bake_comparison": {
+    "material_texture_payloads_sha256_unchanged": true,
+    "material_texture_payloads_verified": 60,
+    "native_material_bake_png_sha256_unchanged": true,
+    "native_material_bakes_verified": 9,
+    "geometry_policy": "Final native geometry includes revised stock connections and continuous magazine feed necks. Saved geometry is verified against the final runtime manifest rather than compared for equality with the prior geometry."
+  },
+  "editable_snow_material_policy_verified": {
+    "instances": 8,
+    "roughness": 0.98,
+    "roughness_linked": false,
+    "metallic": 0,
+    "metallic_linked": false,
+    "photographic_albedo_image_nodes": 0
   },
   "verification_commands": [
     "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-source60.py",

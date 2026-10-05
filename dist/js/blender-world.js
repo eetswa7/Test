@@ -48,7 +48,11 @@ export function blenderWorld(arena){
   parts.push(p);
  }
  for(const p of arena.decor){
-  // Blacksite's original crane/service spans were single cylindrical rods.
+  // Four legacy service-bridge rods had no supports and extended 6.5 m past
+  // each side of the 10 m catwalk. Remove that decorative floating geometry;
+  // the bridge itself and every authoritative collider remain unchanged.
+  if(arena.info.id===14&&p.surface==='steel'&&p.mesh==='cylinder'&&p.roll===Math.PI/2&&p.y===5.1&&p.h===23&&p.w===.3&&p.d===.3)continue;
+  // Blacksite's two supported crane spans were single cylindrical rods.
   // Native open-web trusses retain the same centres and clear overhead paths;
   // vertical columns keep the original 0.30 m footprint after unit scaling.
   if(arena.info.id===14&&p.surface==='steel'&&p.mesh==='cylinder'&&p.roll===Math.PI/2&&p.y>=5&&p.h>=20&&p.w<.4&&p.d<.4){

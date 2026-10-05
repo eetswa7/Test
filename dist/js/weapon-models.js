@@ -39,6 +39,7 @@ const PROFILES=[
 
 function builder(w){
  const parts=[],profile=PROFILES[w.def.id]??PROFILES[0];
+ let receiverBack=-Infinity;
  const box=(x,y,z,a,b,c,mat=METAL,tag='',extra={})=>{
   const q={x,y,z,w:a,h:b,d:c,surface:'dark',mesh:'bevel',yaw:0,pitch:0,roll:0,...mat,...extra};
   if(tag)q.tag=tag;parts.push(q);return q;
@@ -49,10 +50,27 @@ function builder(w){
  const rail=(start,end,y=.092,width=.068)=>{box(0,y-.006,(start+end)/2,width,.014,Math.abs(end-start),METAL);for(let z=start;z>end;z-=.022)box(0,y+.005,z,width+.008,.012,.01,EDGE,'',{mesh:'cube'});};
  const ribs=(x,y,z,n,step,ww,hh,dd,mat=RUBBER,tag='')=>{for(let i=0;i<n;i++)box(x,y,z-i*step,ww,hh,dd,mat,tag,{mesh:'cube'});};
  const vents=(width,start,n,step=.039,height=.028)=>{for(const side of [-1,1])for(let i=0;i<n;i++)box(side*width,.046,start-i*step,.0025,height,.023,RUBBER);};
- const receiver=(z,len,width=.09,mat=METAL)=>{box(0,.034,z,width,.092,len,mat);box(0,-.023,z+.018,width*.9,.044,len*.88,mat);box(width*.51,.041,z-.014,.002,.026,.083,RUBBER);box(width*.53,.037,z-.002,.004,.013,.063,EDGE,'bolt');for(const pz of [z-len*.32,z+len*.29])for(const s of [-1,1])pin(s*width*.51,-.006,pz);};
+ const receiver=(z,len,width=.09,mat=METAL)=>{receiverBack=Math.max(receiverBack,z+len/2);box(0,.034,z,width,.092,len,mat);box(0,-.023,z+.018,width*.9,.044,len*.88,mat);box(width*.51,.041,z-.014,.002,.026,.083,RUBBER);box(width*.53,.037,z-.002,.004,.013,.063,EDGE,'bolt');for(const pz of [z-len*.32,z+len*.29])for(const s of [-1,1])pin(s*width*.51,-.006,pz);};
  const grip=(z=.103,mat=POLY,pitch=-.18,height=.168)=>{box(0,-.104,z,.061,height,.079,mat,'',{pitch});box(0,-.19,z-.014,.069,.014,.081,RUBBER);for(const s of [-1,1])for(let i=0;i<4;i++)box(s*.031,-.068-i*.029,z-i*.004,.002,.012,.05,RUBBER,'',{pitch});box(0,-.085,z-.076,.06,.013,.096,METAL);box(0,-.056,z-.119,.06,.064,.012,METAL);box(0,-.055,z-.063,.009,.042,.012,EDGE,'',{pitch:.33});};
  const magazine=(z,height=.215,width=.067,depth=.093,mat=POLY,curve=.1)=>{box(0,-.091-height*.24,z,width,height*.66,depth,mat,'magazine',{pitch:-curve});box(0,-.091-height*.73,z-height*.06,width,height*.43,depth,mat,'magazine',{pitch:-curve*1.7});box(0,-.098-height*.94,z-height*.12,width+.009,.014,depth+.013,RUBBER,'magazine');for(const s of [-1,1])for(let i=0;i<3;i++)box(s*(width*.5+.001),-.111-i*height*.21,z-.012,width*.03,.04,depth*.68,EDGE,'magazine',{pitch:-curve});};
- const stock=(z,mat=POLY,type='telescopic')=>{if(type==='telescopic'){cyl(0,.026,z-.056,.035,.174,EDGE);box(0,.006,z+.032,.069,.075,.16,mat);box(0,-.035,z+.079,.074,.128,.072,mat);box(0,-.048,z+.121,.083,.161,.021,RUBBER);box(0,-.043,z-.011,.026,.033,.067,RUBBER);}else if(type==='solid'){box(0,-.009,z-.04,.072,.079,.19,mat,'',{pitch:-.09});box(0,-.036,z+.082,.082,.14,.13,mat);box(0,-.043,z+.154,.087,.158,.018,RUBBER);}else{for(const y of [.027,-.072])box(0,y,z,.037,.026,.21,mat,'',{pitch:y>0?0:-.1});box(0,-.024,z+.103,.073,.153,.026,RUBBER);box(0,.053,z+.025,.071,.032,.13,mat);}};
+ const stock=(z,mat=POLY,type='telescopic')=>{
+  // Stock centres previously left a visible air gap behind the receiver.
+  // Extend existing structural pieces into its rear face, preserving their
+  // indices, finish, tags and every gameplay/hand/optic transform.
+  const front=Number.isFinite(receiverBack)?receiverBack-.004:z-.143;
+  if(type==='telescopic'){
+   const rear=z+.031;cyl(0,.026,(front+rear)/2,.035,rear-front,EDGE);
+   box(0,.006,z+.032,.069,.075,.16,mat);box(0,-.035,z+.079,.074,.128,.072,mat);box(0,-.048,z+.121,.083,.161,.021,RUBBER);box(0,-.043,z-.011,.026,.033,.067,RUBBER);
+  }else if(type==='solid'){
+   const rear=z+.055;box(0,-.009,(front+rear)/2,.072,.079,rear-front,mat,'',{pitch:-.09});
+   box(0,-.036,z+.082,.082,.14,.13,mat);box(0,-.043,z+.154,.087,.158,.018,RUBBER);
+  }else{
+   const rear=z+.105,span=rear-front;
+   box(0,.027,(front+rear)/2,.037,.026,span,mat);
+   const frontY=-.032,rearY=-.062;box(0,(frontY+rearY)/2,(front+rear)/2,.037,.026,Math.hypot(span,rearY-frontY),mat,'',{pitch:Math.atan2(frontY-rearY,span)});
+   box(0,-.024,z+.103,.073,.153,.026,RUBBER);box(0,.053,z+.025,.071,.032,.13,mat);
+  }
+ };
  const barrel=(start,end=profile.barrel,r=.025)=>{cyl(0,.06,(start+end)/2,r,Math.abs(end-start),EDGE);};
  const bipod=z=>{for(const s of [-1,1]){box(s*.057,-.008,z,.019,.026,.22,EDGE,'',{yaw:s*.045});box(s*.057,-.013,z-.117,.029,.022,.043,RUBBER);}cyl(0,-.006,z+.10,.085,.027,METAL,'',{pitch:0});};
  const controls=(width,z=.09)=>{box(-width*.53,-.008,z,.005,.014,.03,EDGE,'',{roll:-.4});box(width*.61,.051,z-.083,.026,.018,.022,METAL,'bolt');box(-width*.56,.004,z-.06,.009,.027,.014,EDGE);};

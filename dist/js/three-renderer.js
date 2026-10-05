@@ -216,26 +216,26 @@ export class Renderer {
   materialKey(p, category) {
     const m = this.partMaterial(p);
     if(p.objectiveBanner)return `${category}/objective-banner-v1`;
-    return m.keys[category] ?? (m.keys[category] = `${category}/${p.operatorWeapon?'operator-weapon':'general'}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${(category==='weapon'||p.operatorWeapon)&&p.blenderColour&&p.blenderVertexMaterial?'native-hero-reflectance':'general-reflectance'}/${category==='world'&&m.pattern===9&&p.blenderVertexMaterial?'authored-paint':'base-reflectance'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon'||p.operatorWeapon ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${p.surface==='snow'?'snow-grain-v1':p.surface==='water'&&p.surfaceLayer===2?'puddle-v1':'general-surface'}/${p.operatorWeapon?'operator-weapon':'general'}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${(category==='weapon'||p.operatorWeapon)&&p.blenderColour&&p.blenderVertexMaterial?'native-hero-reflectance':'general-reflectance'}/${category==='world'&&m.pattern===9&&p.blenderVertexMaterial?'authored-paint':'base-reflectance'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon'||p.operatorWeapon ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
     const key = this.materialKey(p, category);
     if (this.materials.has(key)) return this.materials.get(key);
-    const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', tile = Math.round(m.pattern - 1);
+    const m = this.partMaterial(p), leaf = p.leaf !== undefined, water=p.surface==='water', snow=p.surface==='snow', puddle=water&&p.surfaceLayer===2, tile = Math.round(m.pattern - 1);
     const hero=category==='weapon'||p.operatorWeapon;
     const finish = hero && Number.isInteger(m.finishTile) ? this.weaponMaps?.[m.finishTile] : null;
     const nativeHero=!!(hero&&finish&&p.blenderColour&&p.blenderVertexMaterial);
-    const maps = p.objectiveBanner?null:finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
-    const options = { dithering: true, color: 0xffffff, vertexColors:!!this.blenderAssets?.key(p,category)||['ridge','conifer','strata'].includes(p.mesh), roughness: p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
-      map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
-      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(nativeHero?(m.finishTile===2?.55:.85):hero ? .27 : p.productionGround?.20:.48,
-        nativeHero?(m.finishTile===2?.55:.85):hero ? .27 : p.productionGround?.20:.48), envMapIntensity: hero ? 1.15 : .65 };
+    const maps = p.objectiveBanner?null:snow?this.surfaceMaps[6]:finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
+    const normalStrength=snow?.12:nativeHero?(m.finishTile===2?.55:.85):hero?.27:p.productionGround?.20:.48;
+    const options = { dithering: true, color: 0xffffff, vertexColors:!!this.blenderAssets?.key(p,category)||['ridge','conifer','strata'].includes(p.mesh), roughness: snow?.98:p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: snow?0:clamp(m.metal, 0, 1),
+      map: snow?null:leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
+      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(normalStrength,normalStrength), envMapIntensity: hero ? 1.15 : .65 };
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if(p.blenderWind)Object.assign(options,{side:THREE.DoubleSide,roughness:1,metalness:0});
     if (m.emissive > 0) Object.assign(options, { emissive: 0xffffff, emissiveIntensity: m.emissive * .7 });
-    const mat = water ? waterMaterial(options) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
+    const mat = water ? waterMaterial(options,puddle) : p.surface === 'glass' ? new THREE.MeshPhysicalMaterial({ ...options, clearcoat: .9,
       clearcoatRoughness: .12, roughness: .18, metalness: 0 }) : new THREE.MeshStandardMaterial(options);
     if(p.objectiveBanner){mat.map=this.bannerTexture??(this.bannerTexture=objectiveBannerTexture());mat.roughness=.92;mat.metalness=0;mat.emissiveIntensity=0;mat.vertexColors=false;}
     // Per-instance dimensions give architecture a consistent material scale.
@@ -288,11 +288,11 @@ export class Renderer {
       const depth=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});this.patchWind(depth);this.depthMaterials.set(key,depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked,!!p.blenderVertexMaterial,p.wet?.42:1);if(p.blenderVertexMaterial&&!p.objectiveBanner)patchBlenderMaterial(shader,category==='world'&&tile===8,nativeHero);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader,category==='world');this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked,snow||!!p.blenderVertexMaterial,p.wet?.42:1);if(p.blenderVertexMaterial&&!p.objectiveBanner&&!snow&&!puddle)patchBlenderMaterial(shader,category==='world'&&tile===8,nativeHero);if(water)patchWater(shader,this.windTime,this.arena?.info?.size,puddle);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader,category==='world');this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
     // Cache by the actual shader interface. World bounce, actor lighting and
     // the viewmodel use different uniforms even when their Three defines match.
     // Epoxy's diffuse patch also differs from ordinary concrete.
-    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${nativeHero?'native-hero-reflectance-v1':'general-reflectance'}/${category==='world'&&tile===8&&p.blenderVertexMaterial?'authored-paint-v1':'base-reflectance'}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v2':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v2`;
+    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${puddle?'puddle-v1':water?'water-v2':snow?'snow-grain-v1':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial&&!snow&&!puddle?'vertex-rm-v2':''}/${nativeHero?'native-hero-reflectance-v1':'general-reflectance'}/${category==='world'&&tile===8&&p.blenderVertexMaterial?'authored-paint-v1':'base-reflectance'}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v2':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v2`;
     if(p.objectiveBanner){const before=mat.onBeforeCompile,key=mat.customProgramCacheKey();
       mat.onBeforeCompile=shader=>{before(shader);patchObjectiveBanner(shader,this.windTime??{value:0});};
       mat.customProgramCacheKey=()=>key+'/objective-textile-v2';
@@ -315,8 +315,10 @@ export class Renderer {
   }
 
   instanceColor(p, category, override) {
+    if(p.surface==='water'&&p.surfaceLayer===2)return this.color.setRGB(.19,.195,.19,THREE.SRGBColorSpace);
     if(p.blenderColour)return this.color.setRGB(1,1,1);
     const m = this.partMaterial(p), c = override ?? p.color ?? m.color;
+    if(category==='world'&&p.surface==='snow')return this.color.setRGB(.85+c[0]*.15,.85+c[1]*.15,.85+c[2]*.15,THREE.SRGBColorSpace);
     // The authored cloth already owns its diffuse reflectance. Team colours tint
     // it gently, avoiding the former multiplication of two dark albedos.
     if(category==='actor'&&p.surface==='fabric')return this.color.setRGB(.68+c[0]*.32,.68+c[1]*.32,.68+c[2]*.32,THREE.SRGBColorSpace);

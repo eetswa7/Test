@@ -78,17 +78,24 @@ test('native doorway and window geometry leaves the authoritative aperture compl
  }
  // Validate the actual rotated native topology, not its pre-rotation height:
  // columns retain the original narrow footprint, spans stay above head level.
- const cranes=parts.filter(p=>p.productionCrane);assert.equal(cranes.length,10);
+ const cranes=parts.filter(p=>p.productionCrane);assert.equal(cranes.length,6);
+ assert.equal(parts.filter(p=>p.surface==='steel'&&p.mesh==='cylinder'&&p.roll===Math.PI/2&&p.y===5.1&&p.h===23&&p.w===.3&&p.d===.3).length,0,
+  'unsupported original service-bridge rods must not remain in the visual scene');
+ const columns=[],spans=[];
  for(const p of cranes){
   const g=geometries.get('roof_truss__near');let source=p;
   while(Object.getPrototypeOf(source)!==Object.prototype)source=Object.getPrototypeOf(source);
   compose(raw,p.x,p.y,p.z,p.w,p.h,p.d,p.yaw??0,p.pitch??0,p.roll??0);
   const box=g.boundingBox.clone().applyMatrix4(matrix.fromArray(raw)),size=box.getSize(new THREE.Vector3());
   if(source.surface==='orange'){
+   columns.push(box);
    assert(size.x<=source.w+.001&&size.z<=source.d+.001,'native column cannot introduce wider invisible cover');
    assert(box.min.y>=-.001&&box.max.y<=source.h+.001,'original column height stays authoritative');
-  }else assert(box.min.y>3.3,'native overhead span must preserve player head clearance');
+  }else{spans.push(box);assert(box.min.y>3.3,'native overhead span must preserve player head clearance');}
  }
+ assert.equal(spans.length,2);assert.equal(columns.length,4);
+ for(const span of spans)assert.equal(columns.filter(column=>span.intersectsBox(column)).length,2,
+  'each remaining crane span physically meets both of its original support columns');
 });
 
 test('native composition stays within mobile active world batch and scene triangle budgets',async()=>{

@@ -1,6 +1,12 @@
 {
   "scope": "Paired conservative selected world geometry counts using the same native library and 49 camera samples at 600 px height, 55 degree vertical FOV, High quality. No frustum or occlusion subtraction, browser GPU frames or physical iPhone performance measurement.",
   "actual_iphone_data": false,
+  "library": {
+    "meshes": 329,
+    "decodedSha256": "f85e8acfe4cff7b3e8a7d443d88610853453b956f1be91d7bbdabdeadbb00ec1",
+    "sourceSha256": "2ca9038fb823d5285b3d15d02983883ffd2374dac1d7f5a12c3d45ff286a338e"
+  },
+  "comparisonMethod": "Same final library and unchanged presentation placement. Before disables only the wall-specific feature criterion by substituting the pair kind in the isolated scene fixture; the generic whole-object projected-size criterion, hysteresis, other kinds and camera samples remain identical. No shipped code changes.",
   "policy": {
     "affectedKind": "wall",
     "feature": "Near-only tie/aggregate extent .022 of shorter face dimension",
@@ -25,9 +31,9 @@
   "views": 49,
   "maximumActiveWorldBatchesBefore": 215,
   "maximumActiveWorldBatchesAfter": 215,
-  "totalSelectedTrianglesBefore": 6549594,
-  "totalSelectedTrianglesAfter": 4779186,
-  "overallTriangleReductionPercent": 27,
+  "totalSelectedTrianglesBefore": 6523226,
+  "totalSelectedTrianglesAfter": 4752818,
+  "overallTriangleReductionPercent": 27.1,
   "results": [
     {
       "map": "OLD QUARTER",
@@ -579,53 +585,53 @@
       "map": "BLACKSITE",
       "view": "spawn",
       "before": {
-        "activeBatches": 215,
-        "worldTriangles": 203268
+        "activeBatches": 214,
+        "worldTriangles": 196676
       },
       "after": {
-        "activeBatches": 212,
-        "worldTriangles": 171108
+        "activeBatches": 211,
+        "worldTriangles": 164516
       },
-      "triangleReductionPercent": 15.8
+      "triangleReductionPercent": 16.4
     },
     {
       "map": "BLACKSITE",
       "view": "centre",
       "before": {
         "activeBatches": 215,
-        "worldTriangles": 279766
+        "worldTriangles": 273174
       },
       "after": {
         "activeBatches": 215,
-        "worldTriangles": 207406
+        "worldTriangles": 200814
       },
-      "triangleReductionPercent": 25.9
+      "triangleReductionPercent": 26.5
     },
     {
       "map": "BLACKSITE",
       "view": "approach",
       "before": {
         "activeBatches": 212,
-        "worldTriangles": 291670
+        "worldTriangles": 285078
       },
       "after": {
         "activeBatches": 210,
-        "worldTriangles": 206446
+        "worldTriangles": 199854
       },
-      "triangleReductionPercent": 29.2
+      "triangleReductionPercent": 29.9
     },
     {
       "map": "BLACKSITE",
       "view": "interior",
       "before": {
         "activeBatches": 214,
-        "worldTriangles": 293226
+        "worldTriangles": 286634
       },
       "after": {
         "activeBatches": 214,
-        "worldTriangles": 217650
+        "worldTriangles": 211058
       },
-      "triangleReductionPercent": 25.8
+      "triangleReductionPercent": 26.4
     },
     {
       "map": "NUKETOWN",

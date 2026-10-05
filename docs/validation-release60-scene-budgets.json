@@ -813,13 +813,13 @@
       },
       "fullDetail": {
         "activeBatches": 205,
-        "worldTriangles": 372834
+        "worldTriangles": 366242
       },
       "selectedLOD": {
-        "activeBatches": 212,
-        "worldTriangles": 171108
+        "activeBatches": 211,
+        "worldTriangles": 164516
       },
-      "triangleReductionPercent": 54.1
+      "triangleReductionPercent": 55.1
     },
     {
       "map": "BLACKSITE",
@@ -832,13 +832,13 @@
       },
       "fullDetail": {
         "activeBatches": 205,
-        "worldTriangles": 372834
+        "worldTriangles": 366242
       },
       "selectedLOD": {
         "activeBatches": 215,
-        "worldTriangles": 207406
+        "worldTriangles": 200814
       },
-      "triangleReductionPercent": 44.4
+      "triangleReductionPercent": 45.2
     },
     {
       "map": "BLACKSITE",
@@ -851,13 +851,13 @@
       },
       "fullDetail": {
         "activeBatches": 205,
-        "worldTriangles": 372834
+        "worldTriangles": 366242
       },
       "selectedLOD": {
         "activeBatches": 210,
-        "worldTriangles": 206446
+        "worldTriangles": 199854
       },
-      "triangleReductionPercent": 44.6
+      "triangleReductionPercent": 45.4
     },
     {
       "map": "BLACKSITE",
@@ -870,13 +870,13 @@
       },
       "fullDetail": {
         "activeBatches": 205,
-        "worldTriangles": 372834
+        "worldTriangles": 366242
       },
       "selectedLOD": {
         "activeBatches": 214,
-        "worldTriangles": 217650
+        "worldTriangles": 211058
       },
-      "triangleReductionPercent": 41.6
+      "triangleReductionPercent": 42.4
     },
     {
       "map": "NUKETOWN",
