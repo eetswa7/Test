@@ -1,6 +1,37 @@
 # BREACHLINE
 
-**Latest checkpoint: Release 57.** 30 weapons, 16 maps and 11 modes.
+**Latest checkpoint: Release 58.** 30 weapons, 16 maps and 11 modes.
+
+## Release 58: production art and original sound library
+
+Blacksite opens as the showcase. The same revised Blender kit and physical
+materials ship across all 16 maps and 30 weapons: manufactured receivers and
+handguards, folded sleeves and gloves, shaped operator gear, recessed facades,
+precast walls, containers, vehicles and industrial machinery. Sixty individual
+PBR maps replace the small shared runtime atlases. Safari can upload native ASTC
+mip chains; other browsers receive WebP. Sixteen Cycles ground-lighting bakes,
+weather-matched reflections, contact shadows and restrained haze share the
+existing WebGL2 renderer without another full-screen rendering pass.
+
+The new audio bank contains 286 original AAC recordings rendered from editable
+sound designs. Guns have variations, mechanical actions and acoustic tails;
+movement and impacts follow their surfaces. Distance filtering, wall occlusion,
+a shared room response and bounded playback preserve responsive player sounds.
+Every runtime asset is included in the offline installation.
+
+The editable Blender source and material inputs are committed in recoverable
+segments. See [art, sound and rebuild details](docs/ART_RELEASE58.md) and
+[asset provenance](docs/ART_PROVENANCE.md). The larger art download is intentional;
+physical iPhone frame rate, memory pressure and sustained thermals remain
+unmeasured for this release. The retained operator rig uses articulated rigid
+parts; this checkpoint does not establish commercial AAA fidelity.
+
+Release 57 remains recoverable on `release57-baseline` at
+`454a5a26a8418fa8db1d3cc1ec197f7e56c56415`. Its real iPhone measurements guide
+adaptive quality: Safari's unavailable GPU timer no longer allows automatic
+promotion from Medium to High/Ultra on CPU timing alone. Resolution can recover,
+quality can still decrease, and manual quality choices remain available.
+Benchmark Mode, saved reports and JSON export remain local and work offline.
 
 ## Release 57: local benchmark recording and JSON export
 

@@ -1,0 +1,13 @@
+{
+  "kind": "desktop_browser_audio_validation",
+  "actual_iphone_data": false,
+  "recordings": 286,
+  "downloadBytes": 3557807,
+  "decodedBytes": 33637560,
+  "decodedKeys": 163,
+  "contextState": "running",
+  "sampleRate": 44100,
+  "peakVoices": 24,
+  "remainingVoices": 0,
+  "remainingSources": 0
+}

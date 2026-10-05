@@ -1,10 +1,12 @@
 import {createHash} from 'node:crypto';
-import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {resolve} from 'node:path';
-const root=resolve('dist'),files=[];
-async function walk(path){for(const f of (await readdir(path,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){const full=path+'/'+f.name;if(f.isDirectory())await walk(full);else if(!full.endsWith('/benchmark-build.js'))files.push(full);}}
-await walk(root);const hash=createHash('sha256');for(const f of files){hash.update(f.slice(root.length+1)+'\0');hash.update(await readFile(f));}
+const root=resolve('dist');
+// Native .blend/GLB/PNG and compression intermediates stay in the authoring
+// workspace. Fingerprint the repository's distributable files, as deployed.
+const files=execFileSync('git',['ls-files','-z','--cached','--others','--exclude-standard','--','dist'],{encoding:'utf8'}).split('\0').filter(f=>f&&!f.endsWith('/benchmark-build.js')).sort((a,b)=>a.localeCompare(b));
+const hash=createHash('sha256');for(const f of files){hash.update(f.slice(5)+'\0');hash.update(await readFile(resolve(f)));}
 const release=/const RELEASE='(\d+)'/.exec(await readFile(root+'/js/boot.js','utf8'))[1],source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 // Stamp a known source revision only when its distributed code is committed.
 // This manifest is excluded from both the fingerprint and the dirty-code check.

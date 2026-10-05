@@ -1,6 +1,6 @@
-import {weaponModel,muzzlePosition} from './weapon-models.js?v=57';
-import {clamp} from './math.js?v=57';
-import {poseSegment} from './actor-pose.js?v=57';
+import {weaponModel,muzzlePosition} from './weapon-models.js?v=58';
+import {clamp} from './math.js?v=58';
+import {poseSegment} from './actor-pose.js?v=58';
 
 const templates=new Map(),MAX_TEMPLATES=32;
 function template(w){
@@ -19,13 +19,15 @@ export function addOperatorGear(parts,actor){
  const add=(x,y,z,w,h,d,surface='rubber',extra={})=>parts.push({x,y,z,w,h,d,surface,mesh:'bevel',...extra});
  // Preserve the established body rig indices; the placeholder rifle is hidden.
  for(const i of [20,21,22])parts[i].hidden=true;
- add(0,1.73,-.02,.27,.105,.28,'rubber',{actorFar:true});
- add(0,1.70,-.178,.235,.033,.085,'rubber',{actorFar:true});
+ // The shaped ballistic shell owns the silhouette; the old rectangular cover
+ // obscured it. Keep its rig slot for cached poses, with a compact NVG bracket.
+ add(0,1.73,-.02,.27,.105,.28,'rubber',{hidden:true});
+ add(0,1.70,-.159,.077,.067,.026,'steel',{actorFar:true});
  add(0,1.765,.04,.055,.015,.17,'steel');
  for(const sign of [-1,1]){
-  add(sign*.168,1.585,.01,.06,.13,.095,'rubber');
+  add(sign*.168,1.585,.01,.06,.13,.095,'rubber',{mesh:'sphere'});
   add(sign*.19,1.605,.005,.018,.055,.10,'steel');
-  add(sign*.24,1.34,-.035,.135,.145,.17,'rubber',{roll:sign*.18,actorFar:actor.role===4});
+  add(sign*.24,1.34,-.035,.135,.145,.17,'fabric',{mesh:'sphere',roll:sign*.18,operatorNeutral:true,actorFar:actor.role===4});
   add(sign*.25,1.34,-.129,.07,.027,.016,'white',{actorFar:true});
   add(sign*.135,1.37,-.177,.053,.065,.045,'fabric');
  }

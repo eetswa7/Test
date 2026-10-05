@@ -1,8 +1,8 @@
-import {blenderKind} from './blender-kind.js?v=57';
+import {blenderKind} from './blender-kind.js?v=58';
 export {blenderKind};
 import * as THREE from '../vendor/three.module.min.js';
-import {installMetricUV} from './surface-uv.js?v=57';
-import {LIBRARY_FILES} from './blender-files.js?v=57';
+import {installMetricUV} from './surface-uv.js?v=58';
+import {LIBRARY_FILES} from './blender-files.js?v=58';
 
 export const BLENDER_FILES=[...LIBRARY_FILES,'blender/manifest.json'];
 const components={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};
@@ -77,7 +77,7 @@ export class BlenderAssets {
   const record=this.manifest.weapons[id],indices=[];
   for(let i=parts.coreCount;i<parts.length;i++)if(/^(rightHand|supportHand|pumpHand)$/.test(parts[i].tag??''))indices.push(i);
   if(!record.hands||record.handCount!==indices.length)return null;
-  return record.hands.map(g=>({...parts[indices[g.anchor]],blenderMesh:g.mesh,blenderColour:true,mesh:g.mesh,color:[1,1,1],rough:.8,metal:0,finishTile:0,tile:-1,blenderVertexMaterial:true,anchor:indices[g.anchor],members:g.members.map(i=>indices[i])}));
+  return record.hands.map(g=>({...parts[indices[g.anchor]],blenderMesh:g.mesh,blenderColour:true,mesh:g.mesh,color:[1,1,1],rough:.8,metal:0,finishTile:2,tile:-1,blenderVertexMaterial:true,anchor:indices[g.anchor],members:g.members.map(i=>indices[i])}));
  }
  updateLOD(renderer,dt){
   this.lodClock-=dt;if(this.lodClock>0)return;this.lodClock=.25;

@@ -5,13 +5,15 @@ needs Cycles, an external lighting service or a screen-space GI render pass.
 """
 import bpy
 import math
+import struct
+import zlib
 import numpy as np
 from mathutils import Vector
 
 
 def bake_levels(scene,out,levels,preview,maps):
     preview.hide_render=True
-    old_samples=scene.cycles.samples;scene.cycles.samples=16
+    old_samples=scene.cycles.samples;scene.cycles.samples=32
     scene.cycles.max_bounces=4;scene.cycles.diffuse_bounces=3
     scene.render.bake.use_pass_direct=True;scene.render.bake.use_pass_indirect=True
     scene.render.bake.use_pass_color=False;scene.render.bake.margin=0
@@ -50,7 +52,7 @@ def bake_levels(scene,out,levels,preview,maps):
         for loop in mesh.loops:mesh.uv_layers[0].data[loop.index].uv=uv[loop.vertex_index]
         floor=bpy.data.objects.new('GI capture / '+info['name'],mesh);scene.collection.objects.link(floor)
         mesh.materials.append(white)
-        image=bpy.data.images.new('lightmap-'+str(info['id']),width=512,height=512,alpha=True,float_buffer=True)
+        image=bpy.data.images.new('GI capture '+str(info['id']),width=512,height=512,alpha=True,float_buffer=True)
         image.colorspace_settings.name='Non-Color';image.use_fake_user=True;target.image=image
         bpy.ops.object.select_all(action='DESELECT');floor.select_set(True);bpy.context.view_layer.objects.active=floor
         # Destructibles use the existing live contact/shadow path, so their
@@ -62,8 +64,18 @@ def bake_levels(scene,out,levels,preview,maps):
         pixels=np.empty(512*512*4,dtype=np.float32);image.pixels.foreach_get(pixels);pixels=pixels.reshape((-1,4))
         rgb=np.maximum(0,pixels[:,:3]);mult=np.maximum(1/255,np.ceil(np.clip(rgb.max(axis=1)/6,0,1)*255)/255)
         pixels[:,:3]=np.clip(rgb/(mult[:,None]*6),0,1);pixels[:,3]=mult
-        image.pixels.foreach_set(pixels.ravel());image.file_format='PNG';image.filepath_raw=str(out/(image.name+'.png'))
-        image.save();image.pack();image['encoding']='linear RGBM, range 6';image['cycles_samples']=16
+        # Alpha is a fourth data channel, not opacity. Blender's ordinary RGBA
+        # writer unpremultiplies it, which destroys RGBM chroma and radiance.
+        # Write exact channel-packed pixels, then pack that PNG into the source.
+        rgba=np.round(np.clip(pixels,0,1)*255).astype(np.uint8).reshape((512,512,4))[::-1]
+        def chunk(kind,data):return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)
+        png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',512,512,8,6,0,0,0))
+        png+=chunk(b'IDAT',zlib.compress(b''.join(b'\0'+row.tobytes() for row in rgba),9))+chunk(b'IEND',b'')
+        path=out/('lightmap-'+str(info['id'])+'.png');temporary=path.with_suffix('.png.tmp');temporary.write_bytes(png);temporary.replace(path)
+        encoded=bpy.data.images.load(str(path),check_existing=False);encoded.name='lightmap-'+str(info['id'])
+        encoded.alpha_mode='CHANNEL_PACKED';encoded.colorspace_settings.name='Non-Color';encoded.use_fake_user=True;encoded.pack()
+        encoded['encoding']='linear RGBM, range 6';encoded['cycles_samples']=32;target.image=encoded
+        bpy.data.images.remove(image)
         floor.hide_render=True;floor.hide_set(True)
         collection.hide_render=True;collection.hide_viewport=True
         for obj in excluded:obj.hide_render=False
@@ -71,4 +83,4 @@ def bake_levels(scene,out,levels,preview,maps):
             data=lamp.data;bpy.data.objects.remove(lamp,do_unlink=True);bpy.data.lights.remove(data)
         print('BAKED_CYCLES_GI',info['name'],flush=True)
     lights.hide_render=True;scene.cycles.samples=old_samples;preview.hide_render=False
-    scene['lighting_bakes']='16 actual Cycles diffuse direct + indirect RGBM lightmaps, 512 px, 16 samples, 3 diffuse bounces'
+    scene['lighting_bakes']='16 actual Cycles diffuse direct + indirect RGBM lightmaps, 512 px, 32 samples, 3 diffuse bounces'

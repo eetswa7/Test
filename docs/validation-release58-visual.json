@@ -1,0 +1,537 @@
+{
+  "kind": "software_WebGL_visual_validation",
+  "actual_iphone_data": false,
+  "errors": [],
+  "results": [
+    {
+      "name": "blacksite-approach",
+      "map": "BLACKSITE",
+      "draws": 266,
+      "triangles": 316952,
+      "shadowDraws": 136,
+      "textureEstimateBytes": 82736235,
+      "programs": 27,
+      "geometryCount": 268
+    },
+    {
+      "name": "blacksite-interior",
+      "map": "BLACKSITE",
+      "draws": 223,
+      "triangles": 263936,
+      "shadowDraws": 128,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "blacksite-yard",
+      "map": "BLACKSITE",
+      "draws": 129,
+      "triangles": 133666,
+      "shadowDraws": 115,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-close",
+      "map": "BLACKSITE",
+      "draws": 151,
+      "triangles": 142926,
+      "shadowDraws": 136,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "operator-close",
+      "map": "BLACKSITE",
+      "draws": 167,
+      "triangles": 160258,
+      "shadowDraws": 136,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "combat",
+      "map": "BLACKSITE",
+      "draws": 301,
+      "triangles": 312288,
+      "shadowDraws": 136,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "reload",
+      "map": "BLACKSITE",
+      "draws": 224,
+      "triangles": 270332,
+      "shadowDraws": 128,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-0",
+      "map": "OLD QUARTER",
+      "draws": 268,
+      "triangles": 267544,
+      "shadowDraws": 113,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-1",
+      "map": "FOUNDRY",
+      "draws": 226,
+      "triangles": 162712,
+      "shadowDraws": 98,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-2",
+      "map": "DUSTLINE",
+      "draws": 283,
+      "triangles": 216482,
+      "shadowDraws": 113,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-3",
+      "map": "RELAY",
+      "draws": 263,
+      "triangles": 211366,
+      "shadowDraws": 130,
+      "textureEstimateBytes": 82736235,
+      "programs": 30,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-4",
+      "map": "BREAKWATER",
+      "draws": 190,
+      "triangles": 200576,
+      "shadowDraws": 92,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-5",
+      "map": "CITADEL",
+      "draws": 243,
+      "triangles": 111370,
+      "shadowDraws": 116,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-6",
+      "map": "SWITCHYARD",
+      "draws": 217,
+      "triangles": 185544,
+      "shadowDraws": 114,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-7",
+      "map": "CANOPY",
+      "draws": 236,
+      "triangles": 117444,
+      "shadowDraws": 118,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-8",
+      "map": "FROSTLINE",
+      "draws": 235,
+      "triangles": 164620,
+      "shadowDraws": 115,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-9",
+      "map": "IRON QUARRY",
+      "draws": 243,
+      "triangles": 133166,
+      "shadowDraws": 111,
+      "textureEstimateBytes": 82736235,
+      "programs": 31,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-10",
+      "map": "SKYBRIDGE",
+      "draws": 238,
+      "triangles": 156690,
+      "shadowDraws": 118,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-11",
+      "map": "MONSOON",
+      "draws": 238,
+      "triangles": 193834,
+      "shadowDraws": 112,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-12",
+      "map": "EMBERWORKS",
+      "draws": 272,
+      "triangles": 245524,
+      "shadowDraws": 137,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-13",
+      "map": "CROSSFIRE DISTRICT",
+      "draws": 234,
+      "triangles": 185896,
+      "shadowDraws": 109,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-14",
+      "map": "BLACKSITE",
+      "draws": 256,
+      "triangles": 381134,
+      "shadowDraws": 124,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "map-15",
+      "map": "NUKETOWN",
+      "draws": 268,
+      "triangles": 239534,
+      "shadowDraws": 112,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-0",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 387074,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-1",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 313928,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-2",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 155630,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-3",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 154894,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-4",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 153542,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-5",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 312068,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-6",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 314760,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 32,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-7",
+      "map": "BLACKSITE",
+      "draws": 153,
+      "triangles": 158734,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-8",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 157078,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-9",
+      "map": "BLACKSITE",
+      "draws": 150,
+      "triangles": 157982,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-10",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 309844,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-11",
+      "map": "BLACKSITE",
+      "draws": 261,
+      "triangles": 309628,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-12",
+      "map": "BLACKSITE",
+      "draws": 142,
+      "triangles": 147094,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-13",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 156498,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-14",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 155390,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-15",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 313696,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-16",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 314104,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-17",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 154858,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-18",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 154410,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-19",
+      "map": "BLACKSITE",
+      "draws": 153,
+      "triangles": 158750,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-20",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 314504,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-21",
+      "map": "BLACKSITE",
+      "draws": 261,
+      "triangles": 312400,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-22",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 151986,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-23",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 152346,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-24",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 156614,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-25",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 313212,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-26",
+      "map": "BLACKSITE",
+      "draws": 260,
+      "triangles": 312880,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-27",
+      "map": "BLACKSITE",
+      "draws": 150,
+      "triangles": 158410,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-28",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 155254,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    },
+    {
+      "name": "weapon-29",
+      "map": "BLACKSITE",
+      "draws": 148,
+      "triangles": 152454,
+      "shadowDraws": 134,
+      "textureEstimateBytes": 82736235,
+      "programs": 33,
+      "geometryCount": 268
+    }
+  ]
+}

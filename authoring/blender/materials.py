@@ -106,7 +106,7 @@ def surface_graph(mat, tile, hero=False):
         fine=math_node(n,l,'MULTIPLY',scratches.outputs['Fac'],.018)
         height=math_node(n,l,'ADD',height,fine)
         rough=math_node(n,l,'ADD',math_node(n,l,'MULTIPLY',micro,.16),.54 if hero else .61)
-    # Original source photography is input to Blender's material, as in a
+    # Original AI-created diffuse artwork is input to Blender's material, as in a
     # conventional game-art workflow. It is baked with the authored height,
     # physical response and low-frequency colour into a new runtime atlas.
     art=Path(__file__).parent/'textures'
@@ -118,7 +118,7 @@ def surface_graph(mat, tile, hero=False):
     source_tile=tile%4 if not hero else (0,2,1,0)[tile]
     atlas.inputs[1].default_value=(1/cols,1/cols,1);atlas.inputs[2].default_value=(source_tile%cols/cols,(cols-1-source_tile//cols)/cols,0)
     l.new(vector,atlas.inputs[0]);l.new(atlas.outputs[0],tex.inputs['Vector'])
-    # The original scan provides macro relief, while native shader detail is
+    # Source luminance provides approximate macro relief; native shader detail is
     # baked at full texel density. Albedo and normals describe the same wear.
     grey=n.new('ShaderNodeRGBToBW');l.new(tex.outputs['Color'],grey.inputs[0])
     height=math_node(n,l,'ADD',height,math_node(n,l,'MULTIPLY',grey.outputs[0],.18 if not hero else .025))

@@ -1,12 +1,13 @@
-import {readFile,writeFile,mkdir,readdir,rm} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,readdir,rm,rename} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {basename,dirname} from 'node:path';
-export async function writeParts(data,prefix){
+export async function writeParts(data,prefix,chunkBytes=2097150){
+ if(!Number.isSafeInteger(chunkBytes)||chunkBytes<1)throw Error('Invalid asset segment size');
  await mkdir(dirname(prefix),{recursive:true});
  const files=[];
- for(let offset=0,i=0;offset<data.length;offset+=262140,i++){
-  const chunk=data.subarray(offset,offset+262140),path=`${prefix}.part${String(i).padStart(3,'0')}.bin`;
-  await writeFile(path,chunk);
+ for(let offset=0,i=0;offset<data.length;offset+=chunkBytes,i++){
+  const chunk=data.subarray(offset,offset+chunkBytes),path=`${prefix}.part${String(i).padStart(3,'0')}.bin`;
+  await writeFile(path+'.tmp',chunk);await rename(path+'.tmp',path);
  files.push({path:basename(path),bytes:chunk.length,sha256:createHash('sha256').update(chunk).digest('hex')});
  }
  const current=new Set(files.map(file=>file.path)),stem=basename(prefix)+'.part';

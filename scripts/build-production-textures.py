@@ -6,7 +6,7 @@ transport/GPU compression only. No runtime procedural normal-map generation.
 from pathlib import Path
 from PIL import Image
 import concurrent.futures
-import json, math, struct, subprocess, tempfile, hashlib
+import json, math, struct, subprocess, tempfile, hashlib, os, sys
 
 root=Path('dist/assets/production');root.mkdir(parents=True,exist_ok=True)
 bakes=Path('dist/assets/blender');temporary=Path(tempfile.mkdtemp(prefix='breachline-astc-'))
@@ -24,12 +24,20 @@ for bank,columns,count in [('surfaces',4,16),('weapons',2,4)]:
 def encode(job):
     bank,index,suffix,tile=job;name=f'{bank}-{index}-{suffix}'
     fallback=tile.resize((512 if bank=='surfaces' else 1024 if index==0 else 512,)*2,Image.Resampling.LANCZOS)
-    fallback.save(root/(name+'.webp'),format='WEBP',quality=94,method=6,lossless=suffix=='orm')
+    destination=root/(name+'.webp');staging=destination.with_suffix('.webp.tmp')
+    fallback.save(staging,format='WEBP',quality=94,method=6,lossless=suffix=='orm')
+    with staging.open('rb') as file:os.fsync(file.fileno())
+    with Image.open(staging) as check:check.load()
+    staging.replace(destination)
     block=4 if suffix=='normal' else 6 if suffix=='albedo' else 8
     # Compressed WebGL uploads cannot flip Y. Match ordinary image textures
     # before encoding every mip, rather than changing metric UVs at runtime.
     tile=tile.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
     mipmaps=[];size=tile.width
+    if '--fallback-only' in sys.argv:
+        container=(root/(name+'.btex')).read_bytes();magic,width,height,saved_block,count,_=struct.unpack('<4sHHBBH',container[:12])
+        if magic!=b'BTX1' or width!=tile.width or height!=width or saved_block!=block:raise RuntimeError('Stale ASTC texture')
+        return {'name':name,'width':width,'block':block,'mips':count,'astcBytes':len(container),'fallbackBytes':destination.stat().st_size,'sha256':hashlib.sha256(container).hexdigest()}
     while True:
         source=temporary/(name+f'-{size}.png');target=temporary/(name+f'-{size}.astc')
         tile.save(source)
@@ -45,12 +53,14 @@ def encode(job):
     width=job[3].width
     container=struct.pack('<4sHHBBH',b'BTX1',width,width,block,len(mipmaps),0)
     container+=b''.join(struct.pack('<I',len(m)) for m in mipmaps)+b''.join(mipmaps)
-    (root/(name+'.btex')).write_bytes(container)
+    staging=root/(name+'.btex.tmp');staging.write_bytes(container);staging.replace(root/(name+'.btex'))
     return {'name':name,'width':width,'block':block,'mips':len(mipmaps),'astcBytes':len(container),'fallbackBytes':(root/(name+'.webp')).stat().st_size,'sha256':hashlib.sha256(container).hexdigest()}
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
     records=list(pool.map(encode,jobs))
 for p in sorted(bakes.glob('lightmap-*.png')):
-    Image.open(p).save(root/(p.stem+'.webp'),format='WEBP',lossless=True,exact=True,method=6)
+    staging=root/(p.stem+'.webp.tmp');Image.open(p).save(staging,format='WEBP',lossless=True,exact=True,method=6)
+    with Image.open(staging) as check:check.load()
+    staging.replace(root/(p.stem+'.webp'))
 (root/'manifest.json').write_text(json.dumps({'schema':1,'source':'Blender Cycles native bakes','textures':records,'astcGpuBytes':sum(r['astcBytes'] for r in records),'fallbackDownloadBytes':sum(r['fallbackBytes'] for r in records),'lightmaps':16,'lightmapEncoding':'linear RGBM range 6'},indent=2)+'\n')
 print('Production texture compression complete',len(records),flush=True)

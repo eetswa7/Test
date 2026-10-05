@@ -1,4 +1,5 @@
-import {WEAPONS} from './weapons.js?v=57';
+import {WEAPONS} from './weapons.js?v=58';
+import {loadSoundLibrary,footstepSurface} from './audio-library.js?v=58';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -13,10 +14,14 @@ const SHOTS=[
 ];
 function randomStream(seed){let n=seed>>>0;return()=>{n^=n<<13;n^=n>>>17;n^=n<<5;return(n>>>0)/2147483648-1;};}
 export class AudioSystem {
- constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.voices=0;this.active=new Set();this.hapticAt=0;this.muted=false;}
+ constructor(settings){this.settings=settings;this.context=null;this.buffers=new Map();this.variations=new Map();this.variationCursor=new Map();this.voicePriority=new WeakMap();this.voices=0;this.active=new Set();this.hapticAt=0;this.muted=false;}
  async start(){try{
-  if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C();this.master=this.context.createGain();this.master.gain.value=this.settings.volume;if(this.context.createDynamicsCompressor){this.limiter=this.context.createDynamicsCompressor();this.limiter.threshold.value=-7;this.limiter.knee.value=5;this.limiter.ratio.value=5;this.limiter.attack.value=.003;this.limiter.release.value=.12;this.master.connect(this.limiter);this.limiter.connect(this.context.destination);}else this.master.connect(this.context.destination);this.build();this.makeRoom();}
+  if(!this.context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;this.context=new C({latencyHint:'interactive'});this.master=this.context.createGain();this.master.gain.value=this.settings.volume;if(this.context.createDynamicsCompressor){this.limiter=this.context.createDynamicsCompressor();this.limiter.threshold.value=-7;this.limiter.knee.value=5;this.limiter.ratio.value=5;this.limiter.attack.value=.003;this.limiter.release.value=.12;this.master.connect(this.limiter);this.limiter.connect(this.context.destination);}else this.master.connect(this.context.destination);this.build();this.makeRoom();}
   if(this.context.state==='suspended')await this.context.resume();this.muted=false;
+  if(!this.libraryReady)this.libraryReady=loadSoundLibrary(this.context,(key,variant,buffer)=>{
+   if(!this.variations.has(key))this.variations.set(key,[]);this.variations.get(key)[variant]=buffer;
+   if(variant===0)this.buffers.set(key,buffer);
+  }).then(stats=>{this.libraryStats=stats;}).catch(error=>{this.libraryError=error.message;});
  }catch{}}
  build(){
   const c=this.context,rate=c.sampleRate;
@@ -66,19 +71,25 @@ export class AudioSystem {
  makeRoom(){
   const c=this.context;if(!c.createConvolver)return;
   // One shared short room response replaces per-shot delay graphs.
-  const response=c.createBuffer(2,Math.ceil(c.sampleRate*.28),c.sampleRate),noise=randomStream(52378);
-  for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);for(let i=0;i<a.length;i++){const t=i/c.sampleRate;a[i]=t<.019?0:noise()*Math.exp(-t*24)*.25;}}
+  const response=c.createBuffer(2,Math.ceil(c.sampleRate*.58),c.sampleRate),noise=randomStream(52378);
+  for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);let low=0;for(let i=0;i<a.length;i++){const t=i/c.sampleRate;low+=.19*(noise()-low);a[i]=t<.012?0:low*Math.exp(-t*10)*.21;}for(const [t,g]of [[.013,.34],[.027,.23],[.047,.16],[.079,.08]])a[Math.round((t+ch*.0017)*c.sampleRate)]+=g;}
   this.room=c.createConvolver();this.room.buffer=response;this.roomGain=c.createGain();this.roomGain.gain.value=.19;this.room.connect(this.roomGain);this.roomGain.connect(this.master);
  }
- play(key,{volume=1,pan=0,rate=1,indoor=false,distance=0,important=false}={}){
-  const c=this.context;if(!c||this.muted||c.state!=='running'||this.voices>=(important?24:16)||volume<.006)return;
-  const buffer=this.buffers.get(key);if(!buffer)return;
+ play(key,{volume=1,pan=0,rate=1,indoor=false,distance=0,important=false,occluded=false}={}){
+  const c=this.context;if(!c||this.muted||c.state!=='running'||volume<.006)return;
+  // Reserve ambient capacity and replace its oldest tail when a player shot
+  // or hit cue needs the last voice. Cleanup remains idempotent on native end.
+  if(important&&this.voices>=24)for(const tail of this.active)if(!this.voicePriority.get(tail)){try{tail.stop();}catch{}tail.onended?.();break;}
+  if(this.voices>=(important?24:16))return;
+  const variants=this.variations.get(key),cursor=this.variationCursor.get(key)??0;
+  const buffer=variants?.[cursor%variants.length]??this.buffers.get(key);if(!buffer)return;
+  this.variationCursor.set(key,cursor+1);
   const source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;source.playbackRate.value=clamp(rate,.65,1.6);gain.gain.value=clamp(volume,0,1.4);
   let filter=null,panner=null;
-  if(distance>14&&c.createBiquadFilter){filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=Math.max(1200,9000/(1+distance*.045));filter.Q.value=.45;source.connect(filter);filter.connect(gain);}else source.connect(gain);
+  if((distance>14||occluded)&&c.createBiquadFilter){filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=occluded?Math.max(600,1600/(1+distance*.018)):Math.max(1200,10500/(1+distance*.045));filter.Q.value=.45;source.connect(filter);filter.connect(gain);}else source.connect(gain);
   if(c.createStereoPanner){panner=c.createStereoPanner();panner.pan.value=clamp(pan,-1,1);gain.connect(panner);panner.connect(this.master);}else gain.connect(this.master);
   if(indoor&&this.room)gain.connect(this.room);
-  this.voices++;this.active.add(source);let ended=false;
+  this.voices++;this.active.add(source);this.voicePriority.set(source,important);let ended=false;
   source.onended=()=>{if(ended)return;ended=true;this.voices=Math.max(0,this.voices-1);this.active.delete(source);source.disconnect();gain.disconnect();filter?.disconnect();panner?.disconnect();};
   source.start();
  }
@@ -87,13 +98,16 @@ export class AudioSystem {
   if(this.master)this.master.gain.value=this.settings.volume;let impacts=0;
   for(const e of events){
    const dx=e.position?e.position.x-game.player.x:0,dy=e.position?e.position.y-game.player.y:0,dz=e.position?e.position.z-game.player.z:0;
-   const d=Math.hypot(dx,dy,dz),own=e.source===0,volume=own||!e.position?1:clamp(1/(1+d*d*.004)-.015,0,.85);
+   const d=Math.hypot(dx,dy,dz),own=e.source===0;
+   const spatial=['shot','step','land','impact','explosion'].includes(e.type);
+   const occluded=!!(!own&&spatial&&e.position&&d>2&&d<80&&game.arena.visible?.({x:game.player.x,y:game.player.y+1.55,z:game.player.z},{x:e.position.x,y:e.position.y+(e.type==='step'?1.1:.08),z:e.position.z})===false);
+   const volume=(own||!e.position?1:clamp(1/(1+d*d*.004)-.015,0,.85))*(occluded?.48:1);
    const pan=e.position?Math.sin(Math.atan2(dx,-dz)-game.player.yaw):0;
    switch(e.type){
-    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72)*(e.loudness??1),pan,rate:.978+Math.random()*.044,indoor:e.indoor,distance:d,important:own});if(own)this.haptic(8);break;
-    case 'step':case 'land':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST'),land=e.type==='land';const sound=hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(land?.65:own?.28:.48)*(e.value??1),pan,rate:land?.76:.91+Math.random()*.16,distance:d,important:land&&own});if(land&&own)this.haptic(Math.round(8+12*(e.value??0)));}break;
-    case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d});}break;
-    case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true});if(d<14)this.haptic(30);break;
+    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72)*(e.loudness??1),pan,rate:.985+Math.random()*.030,indoor:e.indoor,distance:d,important:own,occluded});if(own)this.haptic(8);break;
+    case 'step':case 'land':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST'),land=e.type==='land';const actual=footstepSurface(game.arena,e.position);const sound=actual?'step'+actual:hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(land?.65:own?.28:.48)*(e.value??1),pan,rate:land?.76:.94+Math.random()*.11,distance:d,important:land&&own,occluded});if(land&&own)this.haptic(Math.round(8+12*(e.value??0)));}break;
+    case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':s==='glass'?'impactGlass':s==='water'?'impactWater':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d,occluded});}break;
+    case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true,occluded,indoor:e.position&&game.arena.indoors(e.position)});if(d<14)this.haptic(30);break;
     case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime)});break;}
     case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&!w.def.shellReload?'rack':'seat'}${id}`,{volume:.55});this.haptic(9);break;}
     case 'empty':case 'switch':this.play('click',{volume:.7});break;

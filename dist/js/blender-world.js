@@ -1,5 +1,6 @@
 // Render-only assembly of the Blender kit. The simulation's arena objects,
 // collision, objectives and navigation stay authoritative.
+import {productionWorld} from './production-world.js?v=58';
 export function blenderWorld(arena){
  const visual=(p,options)=>Object.assign(Object.create(p),{blenderPrepared:null,...options});
  const buildings=arena.blocks.filter(p=>!p.ground&&!p.roof&&p.h>5&&p.w>4&&p.d>4);
@@ -10,6 +11,11 @@ export function blenderWorld(arena){
  for(const p of arena.blocks){
   if(p.invisible||p.destroyed)continue;
   if(p.surface==='dark'&&p.w>1&&p.d>1&&p.h>.8&&p.h<3.1){parts.push(visual(p,{blenderKind:'generator',blenderColour:true,tile:-1}));continue;}
+  // Large painted building envelopes must not inherit the black machined
+  // steel finish used by barrels and machinery. Keep the collider reference.
+  if(!p.ground&&!p.roof&&p.h>2&&Math.max(p.w,p.d)>2.2&&['steel','dark'].includes(p.surface)){
+   parts.push(visual(p,{surface:'concrete',tile:0,color:[.96,.98,.96],rough:.86,metal:.04,productionPaint:true,...(p.w>4&&p.d>4&&p.h>5?{blenderKind:'building_industrial'}:{})}));continue;
+  }
   parts.push(p);
  }
  for(const p of arena.decor){
@@ -36,5 +42,5 @@ export function blenderWorld(arena){
    parts.push({x:sign*(s+2),y:.1,z:sign*s*.35-3.4,w:1.2,h:.2,d:1.2,surface:'wood',tile:-1,blenderKind:'pallet',blenderColour:true});
   }
  }
- return parts;
+ return productionWorld(arena,parts);
 }

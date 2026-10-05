@@ -17,7 +17,7 @@ await page.evaluate(async()=>{
  const [{Renderer},{Game},{Weapon},{MAPS}]=await Promise.all([import('/js/three-renderer.js'),import('/js/engine.js'),import('/js/weapons.js'),import('/js/maps.js')]);
  window.art={Renderer,Game,Weapon,MAPS};
  const game=new Game({map:14,mode:'domination'},{seed:817});
- const renderer=new Renderer(document.querySelector('canvas'),{quality:'high',motion:false,fov:80,frameRate:60});
+ const renderer=new Renderer(document.querySelector('canvas'),{quality:document.documentElement.dataset.quality??'high',motion:false,fov:80,frameRate:60});
  renderer.setArena(game.arena);await renderer.ready;window.art.game=game;window.art.renderer=renderer;
 });
 await mkdir('test-results/'+stage,{recursive:true});
@@ -26,6 +26,9 @@ const shots=[
  {name:'blacksite-interior',map:14,x:0,z:9,yaw:0,pitch:0},
  {name:'blacksite-yard',map:14,x:-31,z:25,yaw:-.12,pitch:0},
  {name:'weapon-close',map:14,x:0,z:27,yaw:0,pitch:0,weapon:1},
+ {name:'operator-close',map:14,x:0,z:27,yaw:0,pitch:0,operator:true},
+ {name:'combat',map:14,x:0,z:27,yaw:0,pitch:0,operator:true,combat:true},
+ {name:'reload',map:14,x:0,z:9,yaw:0,pitch:0,reload:true},
 ];
 if(process.argv.includes('--all-maps'))for(let map=0;map<16;map++)shots.push({name:'map-'+map,map,menu:true});
 if(process.argv.includes('--all-weapons'))for(let weapon=0;weapon<30;weapon++)shots.push({name:'weapon-'+weapon,map:14,x:0,z:27,yaw:0,pitch:0,weapon});
@@ -38,6 +41,9 @@ try{
    if(g.arena.info.id!==shot.map){g=new Game({map:shot.map,mode:'tdm'},{seed:817});window.art.game=g;renderer.setArena(g.arena);}
    const p=g.player;Object.assign(p,{x:shot.x??15,y:0,z:shot.z??25,yaw:shot.yaw??0,pitch:shot.pitch??0,vx:0,vz:0,ads:0});
    p.weapons[0]=new Weapon(shot.weapon??0,{optic:1});p.slot=0;renderer.weaponKey='';renderer.cameraY=null;g.time=2;
+   if(shot.operator){const actor=g.actors.find(a=>a.id!==p.id&&a.team!==p.team);if(actor)Object.assign(actor,{x:2,y:0,z:22,yaw:Math.PI,vx:1.3,vz:0,pitch:0});}
+   if(shot.reload){p.weapon.ammo=0;p.weapon.reload();p.weapon.reloadLeft=p.weapon.reloadTime*.40;}
+   if(shot.combat){p.weapon.sinceShot=.018;renderer.events([{type:'shot',source:0,weapon:0,position:g.eye(p),end:{x:2,y:1.2,z:21},suppressed:false},{type:'impact',surface:'steel',position:{x:2,y:.8,z:21},normal:{x:0,y:0,z:1}}],g);}
    await renderer.prepareMatch(g);
    for(let i=0;i<8;i++)renderer.render(g,1/60,!!shot.menu);
    return {map:g.arena.info.name,draws:renderer.drawCalls,triangles:renderer.triangles,shadowDraws:renderer.lastShadowDraws,textureEstimateBytes:renderer.textureMemory,programs:renderer.shaderPrograms,geometryCount:renderer.blenderAssets.geometries.size};

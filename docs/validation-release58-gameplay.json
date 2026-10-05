@@ -1,0 +1,108 @@
+{
+  "kind": "source_regression_comparison",
+  "baseline_commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415",
+  "release_url_normalization": true,
+  "unchanged": [
+    {
+      "path": "dist/js/engine.js",
+      "sha256": "135bb6ba8e092737fbfc443bfc3ee38c18e5e1b6e6af6297323ca779cbba4d65"
+    },
+    {
+      "path": "dist/js/ai.js",
+      "sha256": "34dd5b7447c96ffa2886e8d9432e6adfd41fdaac677287baecd67cacdc9bbee8"
+    },
+    {
+      "path": "dist/js/ballistics.js",
+      "sha256": "54d97127a1208b5b2e9e493af7d7438a59846bb9ab32b66cfbf03ea78552c238"
+    },
+    {
+      "path": "dist/js/maps.js",
+      "sha256": "66143f5477fd48a8dd959341758ec0451558dd8f9f4c9c2dab56e9bcff6cca48"
+    },
+    {
+      "path": "dist/js/battlegrounds.js",
+      "sha256": "5b74bfb1fc5bdbea01fb5561ed8d544242904b320214ab9e7b09b5026bf19409"
+    },
+    {
+      "path": "dist/js/nuketown.js",
+      "sha256": "4db59524bbf3bf4753b305640add87990304d9b1703a97d6c18c4b716389a573"
+    },
+    {
+      "path": "dist/js/navigation.js",
+      "sha256": "7ef664d81da8fd2e0e9ecdec87d5dda05de6363d7e96137ecdbec2da28b4e124"
+    },
+    {
+      "path": "dist/js/spawns.js",
+      "sha256": "208b51d3ecca6564bfa7429a3c7ea3dd3bc4c6c1f319406513fa7ee24047da0e"
+    },
+    {
+      "path": "dist/js/ray-grid.js",
+      "sha256": "667ba09fad0f4dadc8f8df25c67997982ea378cc55f6229b9d8a1ed2db93b243"
+    },
+    {
+      "path": "dist/js/traversal.js",
+      "sha256": "961b7d20aa94de3ba47c446484b29ef9ac0cff302d148e0f79df15a58b987500"
+    },
+    {
+      "path": "dist/js/aim-assist.js",
+      "sha256": "37ef7a81f28a0e9c5848f160f25c47f8457c359d5e5fa7756d990d9cb4af45af"
+    },
+    {
+      "path": "dist/js/weapon-clearance.js",
+      "sha256": "fc60fe6c2b135f1e97202758e3d29b4a5667a93b112cdd7a991d488dd583982e"
+    },
+    {
+      "path": "dist/js/weapons.js",
+      "sha256": "5010cfc281640e309ecac84fc27e6b69fdf3eb7928724f450fe92acbc89dba88"
+    },
+    {
+      "path": "dist/js/attachments.js",
+      "sha256": "df19007d395200cbf14902a8264ac77008d348529e53fc68d7f87017a640c8aa"
+    },
+    {
+      "path": "dist/js/modes.js",
+      "sha256": "c6dd924008c4daeb23e936cccf8a8fa8ed418469119d1fa687fdb2b8d004ce3c"
+    },
+    {
+      "path": "dist/js/save.js",
+      "sha256": "5c014fbbb9cee9702b4dbdab5c18d582f9dbc52eb8acd3e977cd32e2c6723636"
+    },
+    {
+      "path": "dist/js/input.js",
+      "sha256": "b9ae38801c26cba1fb2d7a51af358cee2d14951f2cfb436ac8f6a3465ad84860"
+    },
+    {
+      "path": "dist/js/gamepad.js",
+      "sha256": "45da68c51caa3594575c99f2b240a60487d3486040703eeca24565a1e3b1d5c9"
+    },
+    {
+      "path": "dist/js/benchmark.js",
+      "sha256": "29e0ad29b2a88273254d1c48e0bd34adca4d946dd47e2b92ac52be8af544d50b"
+    },
+    {
+      "path": "dist/js/benchmark-recorder.js",
+      "sha256": "7f8077fc4a4f028cb3f44bee1018f15e41dca0c531896eb1008a1803be7e0ac2"
+    },
+    {
+      "path": "dist/js/benchmark-stats.js",
+      "sha256": "425caf1a971c979b75931a88227c64da600214097b27419a2508de46a1350a74"
+    },
+    {
+      "path": "dist/js/benchmark-store.js",
+      "sha256": "23db27d6c750fecee29af63402ea90cb6832057da37cfeb6f66458029dc7b83e"
+    },
+    {
+      "path": "dist/js/benchmark-export.js",
+      "sha256": "d3893d519a0d151154150a23e81d914e53d93adbb95622c2cc72cbde68ecd7c2"
+    },
+    {
+      "path": "dist/js/benchmark-stress.js",
+      "sha256": "b5d5c8be840af70894fd52d6efdb7c470e4422f5070791aaf1b1bd8fba534641"
+    },
+    {
+      "path": "dist/js/benchmark-methodology.js",
+      "sha256": "2d3a152a902a039cb89f0562b910f32ef5a263e15109714e47f5010f25e208c2"
+    }
+  ],
+  "changed": []
+}

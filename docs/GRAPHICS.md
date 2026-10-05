@@ -1,4 +1,10 @@
-# Current checkpoint: Release 50
+# Release 58
+
+The current art and audio pipeline, visual evidence, measured transfer budgets
+and limitations are in [ART_RELEASE58.md](ART_RELEASE58.md). The following entries
+retain the earlier pipeline and its historical measurements.
+
+# Historical checkpoint: Release 50
 
 The primary game renderer now takes its complete 3D library and all nine visual
 texture atlases from Blender. The editable source includes the shared asset
@@ -32,7 +38,7 @@ See [scene counts](profile-release50-blender.json),
 
 The following entries describe earlier checkpoints.
 
-# Current checkpoint: Release 49
+# Historical checkpoint: Release 49
 
 Current content remains 30 weapons, 15 maps and 11 modes. Blender now supplies
 the primary renderer's complete shared mesh kit, merged weapon cores, operator

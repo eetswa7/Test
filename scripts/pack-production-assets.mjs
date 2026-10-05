@@ -5,9 +5,12 @@ async function pack(name){const parts=await writeParts(await readFile(`${root}/$
 for(const [bank,count]of [['surfaces',16],['weapons',4]])for(let i=0;i<count;i++){
  const maps={};for(const suffix of ['albedo','normal','orm']){
   const stem=`${bank}-${i}-${suffix}`;
+  const fallback=await readFile(`${root}/${stem}.webp`),gpu=await readFile(`${root}/${stem}.btex`);
+  if(fallback.length<32||fallback.toString('ascii',8,12)!=='WEBP'||fallback.readUInt32LE(4)+8!==fallback.length)throw Error('Incomplete production fallback: '+stem);
+  if(gpu.length<32||gpu.toString('ascii',0,4)!=='BTX1')throw Error('Incomplete production GPU texture: '+stem);
   // Distinct stems keep GPU and fallback containers independently selectable.
-  const gpuParts=await writeParts(await readFile(`${root}/${stem}.btex`),`${root}/${stem}-astc`);
-  const fallbackParts=await writeParts(await readFile(`${root}/${stem}.webp`),`${root}/${stem}-webp`);
+  const gpuParts=await writeParts(gpu,`${root}/${stem}-astc`);
+  const fallbackParts=await writeParts(fallback,`${root}/${stem}-webp`);
   files.push(...gpuParts,...fallbackParts);maps[suffix]={astc:gpuParts.map(p=>'production/'+p.path),webp:fallbackParts.map(p=>'production/'+p.path)};
  }
  assets[bank].push(maps);

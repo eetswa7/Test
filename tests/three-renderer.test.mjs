@@ -166,6 +166,7 @@ test('shadow texels stay stable through small movements and gun lighting follows
  assert(Math.abs(a.x-b.x)<1e-10);assert(Math.abs(a.y-b.y)<1e-10);
  r.camera.rotation.y=Math.PI/2;r.camera.updateMatrixWorld();r.updateLighting(1/60);
  assert(key.distanceTo(r.weaponKeyLight.position)>1,'turning changes camera-space sunlight');
- r.arena.indoors=()=>true;r.updateLighting(.2);assert(r.weaponScene.environmentIntensity<.5);
+ const outdoorIntensity=r.weaponScene.environmentIntensity;
+ r.arena.indoors=()=>true;r.updateLighting(.2);assert(r.weaponScene.environmentIntensity<outdoorIntensity);
  assert(r.sun.shadow.matrix.elements.every(Number.isFinite));
 });

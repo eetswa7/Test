@@ -329,10 +329,255 @@ for weapon in INPUT['weapons']:
             key='cylinder' if p.get('mesh')=='cylinder' else 'tube' if p.get('mesh')=='tube' else 'sphere' if p.get('mesh')=='sphere' else 'flat' if p.get('mesh')=='cube' else 'box'
             designed=hero_part(p,BASE)
             if section=='hands':
-                hand_kind='sleeve_z' if p.get('tile')==9 and p['d']>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
+                hand_kind=('sleeve_z' if p['d']>p['h'] else 'limb') if p.get('tile')==9 and max(p['d'],p['h'])>.15 else 'palm' if p.get('mesh')=='sphere' and p['w']>.055 and p['h']>.06 and p['d']>.055 else 'finger' if p.get('mesh')=='sphere' and p['w']<.035 else None
                 if hand_kind:
                     mesh=mesh_assets[hand_kind+'__near'].data;mesh.calc_loop_triangles()
                     designed=([conversion.inverted()@v.co for v in mesh.vertices],[tuple(t.vertices) for t in mesh.loop_triangles])
             v,t=designed or BASE[key];matrix=Matrix([p['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
             start=len(vertices);vertices.extend(matrix@(q if designed else manufactured_vertex(q,p,key)) for q in v)
-            triangles.extend(tuple(i+start for i in tri) for tri i
+            triangles.extend(tuple(i+start for i in tri) for tri in t)
+            colour=p.get('color',(.2,.2,.2))
+            if section=='groups':
+                colour=tuple(max(.32 if p.get('metal',0)>.45 else .25,x) for x in colour)
+            else:
+                colour=tuple(max(.44 if max(p['h'],p['d'])>.15 else .48,x) for x in colour)
+            colours.extend([tuple(linear(x) for x in colour)]*len(v))
+            coated=p.get('metal',0)>.45 and max(p.get('color',(1,1,1)))<.21
+            physical.extend([(p.get('rough',.6),.24 if coated else p.get('metal',0))]*len(v))
+        ao=cavity(vertices,triangles,.18)
+        local=[inverse@p for p in vertices]
+        colours=[tuple(x*ao[i] for x in c) for i,c in enumerate(colours)]
+        name=f"weapon_{weapon['id']}_{section}_{gi}"
+        if section=='hands':
+            # Identical poses share GPU/source geometry across the arsenal.
+            # Quantisation is below 0.01 mm at the real hand scale.
+            signature=hashlib.sha256(json.dumps([[tuple(round(v,4) for v in p) for p in local],triangles,[tuple(round(v,3) for v in c) for c in colours],physical]).encode()).hexdigest()
+            if signature in hand_shape_cache:name=hand_shape_cache[signature]
+            else:
+                obj=object_mesh(name,local,triangles,colours,bake=False,physical=physical)
+                for poly in obj.data.polygons:poly.use_smooth=True
+                hand_shape_cache[signature]=name
+        else:
+            obj=object_mesh(name,local,triangles,colours,bake=False,physical=physical)
+            for poly in obj.data.polygons:poly.use_smooth=True
+            normals=obj.modifiers.new('Machined surface normals','WEIGHTED_NORMAL')
+            normals.mode='FACE_AREA_WITH_ANGLE';normals.keep_sharp=True;normals.weight=50
+        # Welded vertices share indexed buffers; glTF splits only true UV/normal seams.
+        definitions.append({'mesh':name,'anchor':anchor['index'],'tag':signature,
+                            'finishTile':0,'rough':.5,'metal':.5,'tile':-1,
+                            'vertexMaterial':True,'members':[p['index'] for p in parts]})
+      record[section]=definitions
+    manifest['weapons'][str(weapon['id'])]=record
+    print(f"Authored {weapon['name']}: {len(record['groups'])} weapon and {len(record['hands'])} hand groups",flush=True)
+
+
+def terrain(map_info,segments,steps):
+    size=map_info['size'];id=map_info['id'];inner=math.sqrt(2)*size+5
+    verts=[];tris=[];colours=[]
+    for row in range(steps+1):
+        t=row/steps
+        for i in range(segments+1):
+            a=i/segments*math.tau
+            base=18 if id==8 else 14 if id in (3,5) else 12 if id==9 else 10 if id==2 else 11
+            crest=base+2.8*math.sin(a*3+id*.7)+1.7*math.sin(a*7-id*.37)+.9*math.sin(a*13+id)
+            r=inner+t*66+(math.sin(a*5+id*.4)*3.5+math.sin(a*11-id*.6)*2)*math.sin(math.pi*t)
+            profile=math.sin(math.pi*t)**1.7
+            erosion=(math.sin(a*29+t*15)+.55*math.sin(a*57-t*24))*1.2*profile
+            y=-2.2+(crest+2.2)*profile+erosion
+            verts.append(Vector((math.sin(a)*r,y,math.cos(a)*r)))
+            snow=max(0,min(1,(y-9)/9)) if id==8 else 0
+            dry=id in (2,9)
+            c=(.59,.47,.33) if dry else (.45,.52,.47)
+            c=tuple(v*(.93+.08*math.sin(a*19+t*9)) for v in c)
+            c=tuple(c[j]*(1-snow)+(.90,.95,.98)[j]*snow for j in range(3))
+            colours.append(tuple(linear(v) for v in c))
+    for row in range(steps):
+        for i in range(segments):
+            a=row*(segments+1)+i;b=a+segments+1;c=b+1;d=a+1
+            tris.extend(((a,b,c),(a,c,d)))
+    return verts,tris,colours
+
+for map_info in INPUT.get('maps',[]):
+    if map_info['id']==4:continue # Maritime terminal retains its open sea horizon.
+    register('ridge_'+str(map_info['id']),terrain(map_info,128,8),terrain(map_info,64,4),True)
+
+
+def shader_math(nodes,links,op,a,b):
+    node=nodes.new('ShaderNodeMath');node.operation=op
+    if hasattr(a,'node'):links.new(a,node.inputs[0])
+    else:node.inputs[0].default_value=a
+    if hasattr(b,'node'):links.new(b,node.inputs[1])
+    else:node.inputs[1].default_value=b
+    return node.outputs[0]
+
+
+def bake_details(name,columns,hero=False):
+    resolution=1024
+    mesh=bpy.data.meshes.new(name+'_bake_grid')
+    vertices=[];faces=[]
+    for tile in range(columns*columns):
+        x=tile%columns;y=tile//columns;start=len(vertices)
+        vertices.extend(((x*2,y*2,0),(x*2+1,y*2,0),(x*2+1,y*2+1,0),(x*2,y*2+1,0)))
+        faces.append((start,start+1,start+2,start+3))
+    mesh.from_pydata(vertices,[],faces);mesh.update()
+    local=mesh.uv_layers.new(name='MaterialUV');bake=mesh.uv_layers.new(name='BakeUV')
+    local=mesh.uv_layers['MaterialUV'];bake=mesh.uv_layers['BakeUV']
+    mesh.uv_layers.active=bake;bake.active_render=True
+    for tile,poly in enumerate(mesh.polygons):
+        for li,uv in zip(poly.loop_indices,((0,0),(1,0),(1,1),(0,1))):
+            local.data[li].uv=uv
+            bake.data[li].uv=((tile%columns+uv[0])/columns,(columns-1-tile//columns+uv[1])/columns)
+        poly.material_index=tile
+    obj=bpy.data.objects.new(name+'_baking',mesh);scene.collection.objects.link(obj)
+    normal_image=bpy.data.images.new(name+'-normal',width=resolution,height=resolution,alpha=False)
+    orm_image=bpy.data.images.new(name+'-orm',width=resolution,height=resolution,alpha=False)
+    for image in (normal_image,orm_image):image.colorspace_settings.name='Non-Color'
+    definitions=[]
+    for tile in range(columns*columns):
+        mat=bpy.data.materials.new(f'{name} / tile {tile}');mat.use_nodes=True;mesh.materials.append(mat)
+        n=mat.node_tree.nodes;l=mat.node_tree.links;n.clear()
+        uv=n.new('ShaderNodeUVMap');uv.uv_map='MaterialUV'
+        mapping=n.new('ShaderNodeVectorMath');mapping.operation='MULTIPLY';mapping.inputs[1].default_value=(1,1,1)
+        l.new(uv.outputs[0],mapping.inputs[0])
+        noise=n.new('ShaderNodeTexNoise');noise.inputs['Scale'].default_value=150 if hero else 65;noise.inputs['Detail'].default_value=2.5
+        l.new(mapping.outputs[0],noise.inputs['Vector'])
+        grain=n.new('ShaderNodeTexNoise');grain.inputs['Scale'].default_value=12;grain.inputs['Detail'].default_value=3
+        l.new(uv.outputs[0],grain.inputs['Vector'])
+        height=shader_math(n,l,'ADD',shader_math(n,l,'MULTIPLY',noise.outputs['Fac'],.17),shader_math(n,l,'MULTIPLY',grain.outputs['Fac'],.09))
+        if (not hero and tile in (8,11)) or (hero and tile==0):
+            mapping.inputs[1].default_value=(.18,9,1)
+        if (not hero and tile==10) or (hero and tile==1):
+            wave=n.new('ShaderNodeTexWave');wave.wave_type='BANDS';wave.bands_direction='X';wave.inputs['Scale'].default_value=28;wave.inputs['Distortion'].default_value=5
+            l.new(uv.outputs[0],wave.inputs['Vector']);height=shader_math(n,l,'MULTIPLY',wave.outputs['Color'],.08)
+        if (not hero and tile==9) or (hero and tile in (2,3)):
+            # Separate warp/weft frequencies prevent the old noisy rock-like cloth.
+            checker=n.new('ShaderNodeTexChecker');checker.inputs['Scale'].default_value=135
+            l.new(uv.outputs[0],checker.inputs['Vector']);height=shader_math(n,l,'MULTIPLY',checker.outputs['Fac'],.035)
+        bump=n.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.24 if hero else .48;bump.inputs['Distance'].default_value=.012 if hero else .026
+        l.new(height,bump.inputs['Height'])
+        principled=n.new('ShaderNodeBsdfPrincipled');l.new(bump.outputs['Normal'],principled.inputs['Normal'])
+        principled.inputs['Roughness'].default_value=.6;principled.inputs['Base Color'].default_value=(.3,.3,.3,1)
+        output=n.new('ShaderNodeOutputMaterial');l.new(principled.outputs['BSDF'],output.inputs['Surface'])
+        target=n.new('ShaderNodeTexImage');target.image=normal_image;n.active=target
+        red=shader_math(n,l,'ADD',shader_math(n,l,'MULTIPLY',grain.outputs['Fac'],.10),.90)
+        green=shader_math(n,l,'ADD',shader_math(n,l,'MULTIPLY',noise.outputs['Fac'],.22),.64)
+        blue=shader_math(n,l,'ADD',shader_math(n,l,'MULTIPLY',grain.outputs['Fac'],.16),.84)
+        pack=n.new('ShaderNodeCombineXYZ');l.new(red,pack.inputs[0]);l.new(green,pack.inputs[1]);l.new(blue,pack.inputs[2])
+        emit=n.new('ShaderNodeEmission');l.new(pack.outputs[0],emit.inputs['Color'])
+        definitions.append((n,l,target,output,emit))
+    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
+    scene.render.bake.use_clear=True
+    bpy.ops.object.bake(type='NORMAL')
+    for n,l,target,output,emit in definitions:
+        target.image=orm_image;n.active=target
+        l.new(emit.outputs[0],output.inputs['Surface'])
+    bpy.ops.object.bake(type='EMIT')
+    for image in (normal_image,orm_image):
+        image.filepath_raw=str(OUT/(image.name+'.png'));image.file_format='PNG';image.save();image.pack();image.use_fake_user=True
+        if max(image.pixels[:4096])==0:raise RuntimeError('Empty Blender bake: '+image.name)
+    obj.hide_render=True;obj.hide_set(True)
+
+
+from materials import bake_atlas,bake_auxiliary
+if '--reuse-bakes' in sys.argv:
+    # Geometry iteration restores the exact previously baked pixels and their
+    # editable shader graphs from our native source, without rebaking imagery.
+    previous=SOURCE/'breachline-assets.blend'
+    if not previous.exists():raise RuntimeError('Restore the native source before using --reuse-bakes')
+    baked_names=['surfaces-albedo','surfaces-normal','surfaces-orm',
+                 'weapons-albedo','weapons-normal','weapons-orm','foliage','sky','effects']
+    if '--reuse-lightmaps' in sys.argv:baked_names += ['lightmap-'+str(i) for i in range(16)]
+    with bpy.data.libraries.load(str(previous),link=False) as (source,target):
+        if not all(n in source.images for n in baked_names):raise RuntimeError('Incomplete cached native bakes')
+        target.images=baked_names.copy()
+        target.objects=[n for n in source.objects if n.endswith(' / baking')]
+    for obj in target.objects:
+        scene.collection.objects.link(obj);obj.hide_render=True;obj.hide_set(True)
+    for name in baked_names:
+        image=bpy.data.images[name]
+        if not image.packed_file:raise RuntimeError('Cached bake is not packed: '+name)
+        data=bytes(image.packed_file.data)
+        if data[:8]!=b'\x89PNG\r\n\x1a\n':raise RuntimeError('Cached bake is not PNG: '+name)
+        (OUT/(name+'.png')).write_bytes(data);image.use_fake_user=True
+    print('REUSED_NATIVE_BAKES: nine exact packed images and editable shader graphs',flush=True)
+else:
+    bake_atlas(scene,OUT,'surfaces',4)
+    bake_atlas(scene,OUT,'weapons',2,True)
+    bake_auxiliary(scene,OUT,'foliage',2,'foliage')
+    bake_auxiliary(scene,OUT,'sky',1,'clouds')
+    bake_auxiliary(scene,OUT,'effects',2,'effects')
+
+bpy.ops.object.select_all(action='DESELECT')
+for obj in mesh_assets.values():obj.select_set(True)
+bpy.context.view_layer.objects.active=next(iter(mesh_assets.values()))
+glb=OUT/'breachline-library.glb'
+bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,
+                          export_yup=True,export_apply=True,export_materials='NONE',
+                          export_normals=True,export_texcoords=True,export_colors=True,
+                          export_extras=True,export_animations=False)
+
+# Source materials display baked colour and physical response inside Blender.
+for physical in (False,True):
+    material=bpy.data.materials.new('Weapon physical vertex material' if physical else 'Kit baked colour and AO')
+    material.use_nodes=True;n=material.node_tree.nodes;l=material.node_tree.links
+    bsdf=n.get('Principled BSDF');attribute=n.new('ShaderNodeVertexColor');attribute.layer_name='BakedColourAO'
+    l.new(attribute.outputs['Color'],bsdf.inputs['Base Color']);bsdf.inputs['Roughness'].default_value=.72
+    if physical:
+        uv=n.new('ShaderNodeUVMap');uv.uv_map='BreachMaterial';separate=n.new('ShaderNodeSeparateXYZ');l.new(uv.outputs[0],separate.inputs[0])
+        l.new(separate.outputs[0],bsdf.inputs['Roughness'])
+        invert=n.new('ShaderNodeMath');invert.operation='SUBTRACT';invert.inputs[0].default_value=1;l.new(separate.outputs[1],invert.inputs[1]);l.new(invert.outputs[0],bsdf.inputs['Metallic'])
+    for name,obj in mesh_assets.items():
+        if bool(obj.data.uv_layers.get('BreachMaterial'))==physical:obj.data.materials.append(material)
+
+# A gallery makes the editable source useful immediately when opened in Blender.
+for i,(name,obj) in enumerate(mesh_assets.items()):
+    obj.hide_set(True);obj.hide_render=True
+    if name.startswith('weapon_'):continue
+    if name.endswith('__far'):continue
+    copy=bpy.data.objects.new(name+' / preview',obj.data);preview.objects.link(copy)
+    copy.location=(i%12*1.4,i//12*1.4,0)
+    if name.startswith('ridge_'):copy.scale=(.007,.007,.007)
+for weapon in INPUT['weapons']:
+    collection=bpy.data.collections.new(f"Weapon {weapon['id']:02d} / {weapon['name']}");preview.children.link(collection)
+    offset=Vector((weapon['id']%6*1.5,weapon['id']//6*1.3-8,0))
+    for group in manifest['weapons'][str(weapon['id'])]['groups']:
+        original=mesh_assets[group['mesh']];copy=bpy.data.objects.new(group['tag'],original.data);collection.objects.link(copy)
+        anchor=weapon['parts'][group['anchor']]
+        transform=Matrix([anchor['matrix'][i:i+4] for i in range(0,16,4)]).transposed()
+        copy.matrix_world=conversion@transform@conversion.inverted();copy.location+=offset
+        copy['animated_tag']=group['tag'];copy['rig_anchor']=group['anchor']
+scene['pipeline']='BREACHLINE Blender -> GLB -> indexed instanced WebGL2'
+scene['gameplay']='Rig transforms and collision are owned by Release 48 simulation'
+scene['regenerate']='npm run assets:blender'
+scene['normal_maps']='Cycles tangent-normal bake from independent surface height graphs'
+scene['source_texture_license']='Original BREACHLINE textures'
+levels=bpy.data.collections.new('Complete levels / metres');scene.collection.children.link(levels)
+for info in INPUT['maps']:
+    collection=bpy.data.collections.new(f"Map {info['id']:02d} / {info['name']}");levels.children.link(collection)
+    collection['map_id']=info['id'];collection['collision']='Original simulation, unchanged';collection['sun']=info['sun']
+    for i,p in enumerate(info.get('parts',[])):
+        original=mesh_assets.get(p['kind']+'__near')
+        if not original:raise RuntimeError('Missing full-level Blender asset: '+p['kind'])
+        obj=bpy.data.objects.new(f"{p['surface']} / {i:04d}",original.data);collection.objects.link(obj)
+        transform=Matrix([p['matrix'][j:j+4] for j in range(0,16,4)]).transposed()
+        obj.matrix_world=conversion@transform@conversion.inverted()
+        obj.color=(*([1,1,1] if p['authoredColour'] else p['material']['color']),1)
+        obj['surface']=p['surface'];obj['texture_tile']=p['material']['pattern']-1;obj['breakable']=p.get('breakable',False)
+    collection.hide_viewport=True;collection.hide_render=True
+scene['levels']='All 16 complete level assemblies are in Complete levels / metres. Enable one collection to inspect it.'
+from bake_lighting import bake_levels
+if '--reuse-lightmaps' in sys.argv:
+    scene['lighting_bakes']='Cached Cycles RGBM bakes, 512 px, 32 samples; geometry-only hero iteration'
+else:bake_levels(scene,OUT,levels,preview,INPUT['maps'])
+scene.world.color=(.22,.22,.22)
+source_path=SOURCE/'breachline-assets.blend'
+source_staging=SOURCE/'breachline-assets.staging.blend'
+# Appending cached bake graphs keeps their library open until Blender exits.
+# Save to a separate file, then replace atomically after a successful save.
+bpy.ops.wm.save_as_mainfile(filepath=str(source_staging),compress=True)
+source_staging.replace(source_path)
+for file in sorted(OUT.iterdir()):
+    if file.suffix in ('.glb','.png'):
+        manifest['files'].append({'path':file.name,'bytes':file.stat().st_size,'sha256':hashlib.sha256(file.read_bytes()).hexdigest()})
+(OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print(f"BLENDER_EXPORT_OK: {len(mesh_assets)} meshes; {glb.stat().st_size} bytes GLB",flush=True)

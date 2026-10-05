@@ -1,0 +1,20 @@
+# Release 58 asset provenance
+
+| Asset | Source and production | Attribution |
+| --- | --- | --- |
+| Architecture, ground, equipment and natural diffuse sheets | Original artwork generated for Breachline with OpenAI ImageGen; four retained PNG inputs | No third-party asset pack used |
+| Physical texture maps | Native Blender shader graphs and Cycles bakes; source luminance supplies approximate macro relief | Editable source in `authoring/blender` |
+| Environment, weapon and operator meshes | Original native modelling in the repository's Blender definitions; exported with their existing gameplay rig contracts | Editable definitions and packed `.blend` retained |
+| Ground irradiance | Cycles baking of the native level assemblies, 32 samples, direct and indirect diffuse, RGBM encoding | Editable baking script and packed images retained |
+| New gunfire, actions, boots, impacts and explosions | Original deterministic sound designs, rendered to PCM and mastered before AAC encoding | Editable source in `authoring/audio`; no third-party samples |
+| Sky, foliage and auxiliary effect imagery | Retained Release 57 baseline artwork, packed in the existing Blender pipeline | Retained history; not relabelled as newly created assets |
+| Three.js and gzip fallback | Existing vendored dependencies | Licence files retained in `dist/vendor` |
+
+The diffuse sheets are generated artwork, not measured photographs or
+photogrammetry scans. Normal maps are art-directed approximations. No Delta
+Force, Arena Breakout or Call of Duty model, texture or sound was downloaded or
+copied for this overhaul. The retained map named Nuketown predates this release;
+its existing game layout was preserved, and no commercial map asset was imported.
+
+No external account, texture CDN, audio hosting service or runtime asset licence
+key is required. All new runtime media and the editable source are committed.

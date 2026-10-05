@@ -17,11 +17,20 @@ varying vec2 vUv; varying vec3 vTint; varying float vAlpha; varying float vKind;
 void main(){
   vec2 p=vUv*2.0-1.0; float radius=length(p);
   float edge=1.0-smoothstep(.22,1.0,radius);
-  vec4 stamp=texture2D(uBreachEffects,vUv*.5+vec2(vKind>1.5?.5:0.0,.5));
-  float a=stamp.a*vAlpha;
+  bool spark=vKind>1.5&&vKind<2.5;
+  bool casing=vKind>2.5&&vKind<3.5;
+  bool chip=vKind>.5&&vKind<1.5;
+  bool shard=vKind>3.5;
+  vec4 stamp=texture2D(uBreachEffects,vUv*.5+vec2(spark?.5:0.0,.5));
+  float shape=stamp.a;
+  if(chip||shard)shape=smoothstep(.0,.12,min(.68-abs(p.x),.67-abs(p.y+.22*p.x)));
+  if(casing)shape=smoothstep(.0,.09,min(.83-abs(p.x),.72-abs(p.y)));
+  float a=shape*vAlpha;
   if(a<.012)discard;
   vec3 c=vTint*stamp.rgb;
-  if(vKind>1.5)c=mix(vTint,vec3(2.8,2.2,1.3),pow(max(0.0,1.0-radius),4.0));
+  if(chip||shard)c=vTint*(.58+.42*vUv.y);
+  if(casing)c=vTint*(.62+.58*pow(max(0.0,1.0-abs(p.y+.14)),8.0));
+  if(spark)c=mix(vTint,vec3(2.8,2.2,1.3),pow(max(0.0,1.0-radius),4.0));
   gl_FragColor=vec4(c,a);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

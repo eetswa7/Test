@@ -1,34 +1,36 @@
-import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=57';
-import {patchBlenderMaterial} from './blender-material.js?v=57';
-import {blenderWorld} from './blender-world.js?v=57';
-import {operatorMuzzle} from './operator-detail.js?v=57';
-import {updateWeaponClearance} from './weapon-clearance.js?v=57';
-import {WEAPONS} from './weapons.js?v=57';
-import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=57';
-import {patchAtmosphere} from './atmosphere.js?v=57';
-import {installMetricUV,patchMetricUV} from './surface-uv.js?v=57';
-import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=57';
-import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=57';
-import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=57';
-import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=57';
-import {DecalSystem} from './decal-system.js?v=57';
-import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=57';
-import {LightingField} from './lighting-field.js?v=57';
-import {RoomLights} from './room-lights.js?v=57';
-import {waterMaterial,patchWater} from './water-material.js?v=57';
-import {visualGroundHeight} from './surface-placement.js?v=57';
-import {patchSurfaceDetail} from './material-detail.js?v=57';
-import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=57';
-import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=57';
-import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=57';
+import {loadProductionTextures} from './production-textures.js?v=58';
+import {ProductionLighting} from './production-lighting.js?v=58';
+import {loadBlenderAssets,syncBlenderWeapon} from './blender-assets.js?v=58';
+import {patchBlenderMaterial} from './blender-material.js?v=58';
+import {blenderWorld} from './blender-world.js?v=58';
+import {operatorMuzzle} from './operator-detail.js?v=58';
+import {updateWeaponClearance} from './weapon-clearance.js?v=58';
+import {WEAPONS} from './weapons.js?v=58';
+import {hardWeaponBevel,patchWeaponBevel} from './weapon-surface.js?v=58';
+import {patchAtmosphere} from './atmosphere.js?v=58';
+import {installMetricUV,patchMetricUV} from './surface-uv.js?v=58';
+import {SceneLOD,detailThickness,actorDetailLevel} from './scene-lod.js?v=58';
+import {positionSun,shadowDue,shadowBias} from './shadow-system.js?v=58';
+import {billboardVertex,billboardFragment,ambientDust,weatherParticles} from './particles.js?v=58';
+import {configurePresentation,presentationCapabilities} from './render-pipeline.js?v=58';
+import {DecalSystem} from './decal-system.js?v=58';
+import {EnvironmentProbes,orientWeaponEnvironment,roomProbeSelected,cloudMask} from './environment-probes.js?v=58';
+import {LightingField} from './lighting-field.js?v=58';
+import {RoomLights} from './room-lights.js?v=58';
+import {waterMaterial,patchWater} from './water-material.js?v=58';
+import {visualGroundHeight} from './surface-placement.js?v=58';
+import {patchSurfaceDetail} from './material-detail.js?v=58';
+import {QUALITY,GraphicsQuality} from './graphics-quality.js?v=58';
+import {GraphicsProfiler,textureBytes} from './graphics-profiler.js?v=58';
+import {framebufferSize,sceneryOcclusion} from './render-budget.js?v=58';
 import * as THREE from '../vendor/three.module.min.js';
-import { clamp, lerp, compose, direction, distance } from './math.js?v=57';
-import { actorModel, material, part } from './geometry.js?v=57';
-import { ridgeMesh, ridgeTint } from './meshes.js?v=57';
-import { loadImages } from './textures.js?v=57';
-import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=57';
-import { weaponModel, animateWeaponParts } from './weapon-models.js?v=57';
-import { identityFor, IDENTITIES } from './combat-identity.js?v=57';
+import { clamp, lerp, compose, direction, distance } from './math.js?v=58';
+import { actorModel, material, part } from './geometry.js?v=58';
+import { ridgeMesh, ridgeTint } from './meshes.js?v=58';
+import { loadImages } from './textures.js?v=58';
+import { aimFov, verticalFov, scopeVisible, weaponPose, cameraBob, movementFov } from './aim.js?v=58';
+import { weaponModel, animateWeaponParts } from './weapon-models.js?v=58';
+import { identityFor, IDENTITIES } from './combat-identity.js?v=58';
 
 const FRIEND = IDENTITIES.ally.band, ENEMY = IDENTITIES.enemy.band;
 const FX_CAPACITY = 280;
@@ -84,7 +86,7 @@ export class Renderer {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.shadowMap.autoUpdate = false;
     this.scene = new THREE.Scene(); this.weaponScene = new THREE.Scene();
-    this.lightingField=new LightingField();this.roomLights=new RoomLights();this.sceneLOD=new SceneLOD();
+    this.productionLighting=new ProductionLighting();this.lightingField=new LightingField();this.roomLights=new RoomLights();this.sceneLOD=new SceneLOD();
     this.camera = new THREE.PerspectiveCamera(55, 1, .055, 190);
     this.weaponCamera = new THREE.PerspectiveCamera(65, 1, .018, 10);
     this.world = new THREE.Group(); this.scene.add(this.world);
@@ -148,32 +150,12 @@ export class Renderer {
   }
 
   async loadAssets() {
-    const [images,blenderAssets] = await Promise.all([loadImages(),loadBlenderAssets()]);
-    this.blenderAssets=blenderAssets;
+    const [images,blenderAssets,production] = await Promise.all([loadImages(['leaves','horizon','effects']),loadBlenderAssets(),loadProductionTextures(this.renderer)]);
+    this.blenderAssets=blenderAssets;this.productionAssets=production;
     const anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
-    const bakedDetail=(normal,orm,columns,index,size)=>{
-      const n=new THREE.CanvasTexture(tileCanvas(normal,columns,index,size)),r=new THREE.CanvasTexture(tileCanvas(orm,columns,index,size));
-      for(const t of [n,r]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=anisotropy;}
-      return {normal:n,roughness:r,baked:true};
-    };
-    this.surfaceMaps = []; this.leafMaps = []; this.weaponMaps = [];
-    for (let i = 0; i < 16; i++) {
-      const canvas = tileCanvas(images.surfaces, 4, i, 256), map = new THREE.CanvasTexture(canvas);
-      map.colorSpace = THREE.SRGBColorSpace; map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
-      const detail = bakedDetail(images.surfaceNormal,images.surfaceORM,4,i,256);this.surfaceMaps.push({ map, ...detail });
-      this.textures.push(map, detail.normal, detail.roughness);
-      if (i % 4 === 3) await IDLE_FRAME(); // Let input/loading UI paint between CPU texture work.
-    }
-    if (images.weapon) for (let i = 0; i < 4; i++) {
-      const canvas = tileCanvas(images.weapon, 2, i, 512), context = canvas.getContext('2d');
-      const detail = bakedDetail(images.weaponNormal,images.weaponORM,2,i,512), pixels = context.getImageData(0, 0, 512, 512);
-      neutraliseFinish(pixels.data); context.putImageData(pixels, 0, 0);
-      const map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace;
-      map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = anisotropy;
-      detail.normal.anisotropy = anisotropy;
-      this.weaponMaps.push({ map, ...detail }); this.textures.push(map, detail.normal, detail.roughness);
-      await IDLE_FRAME();
-    }
+    this.surfaceMaps=production.surfaces;this.weaponMaps=production.weapons;this.leafMaps=[];
+    this.textures.push(...production.textures);
+    if(this.arena)this.productionLighting.setArena(this.arena,production.lightmaps);
     for (let i = 0; i < 4; i++) {
       const map = new THREE.CanvasTexture(tileCanvas(images.leaves, 2, i, 512));
       map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = anisotropy;
@@ -185,7 +167,7 @@ export class Renderer {
     // The visible sky and reflections now share weather, horizon and sun.
     this.scene.background = this.environmentProbes.sky; this.scene.backgroundIntensity = 1;
     this.scene.environment = this.weaponScene.environment = this.environment.texture;
-    this.scene.environmentIntensity = .58; this.weaponScene.environmentIntensity = .85;
+    this.scene.environmentIntensity = .88; this.weaponScene.environmentIntensity = 1.35;
     this.textureMemory=textureBytes([...this.textures,this.environment?.texture,this.environmentProbes?.sky,this.environmentProbes?.interior?.texture,this.lightingField?.texture.value]);
     this.loaded = true;
     if (this.arena) this.buildWorld();
@@ -209,8 +191,8 @@ export class Renderer {
     this.hazeSun?.value.set(...info.sun).normalize();if(this.hazeAmount)this.hazeAmount.value=overcast?.045:info.tag==='DESERT'||info.tag==='QUARRY'?.13:.075;
     this.scene.fog = new THREE.Fog(this.color.setRGB(...info.fog, THREE.SRGBColorSpace).clone(), 45, 155);
     this.sun.color.setHex(overcast ? 0xd6e4ef : 0xffefd8); this.sun.intensity = overcast ? 1.8 : 3.1;
-    this.hemi.intensity = overcast ? 1.65 : 1.35;
-    this.lightingField?.setArena(arena);
+    this.hemi.intensity = overcast ? 2.8 : 1.75;
+    this.lightingField?.setArena(arena);this.productionLighting?.setArena(arena,this.productionAssets?.lightmaps);
     this.lightClock=0;
     this.lightPositions = arena.decor.filter(p => p.emissive > .5 && p.y > 1 && p.surface === 'white')
       .map(p => ({ x: p.x, y: p.y - .25, z: p.z }));
@@ -233,7 +215,7 @@ export class Renderer {
 
   materialKey(p, category) {
     const m = this.partMaterial(p);
-    return m.keys[category] ?? (m.keys[category] = `${category}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
+    return m.keys[category] ?? (m.keys[category] = `${category}/${this.blenderAssets?.key(p,category)?'blender':['ridge','conifer','strata'].includes(p.mesh)?p.mesh:'regular'}/${p.blenderWind?'plant-wind':'still'}/${p.blenderVertexMaterial?'vertex-material':'uniform-material'}/${p.productionGround?'baked-ground':'live-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/${p.wet?'wet':'dry'}/${p.surfaceLayer??0}/${!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'hard-bevel':'regular'}/${m.pattern}/${category === 'weapon' ? m.finishTile ?? -1 : -1}/${Math.round(m.rough * 10) / 10}/${Math.round(m.metal * 10) / 10}/${m.emissive > 0 ? m.emissive : 0}/${p.surface==='water'?2:p.surface === 'glass' ? 1 : 0}`);
   }
 
   makeMaterial(p, category) {
@@ -244,8 +226,8 @@ export class Renderer {
     const maps = finish ?? (!leaf && tile >= 0 ? this.surfaceMaps[tile] : null);
     const options = { dithering: true, color: 0xffffff, vertexColors:!!this.blenderAssets?.key(p,category)||['ridge','conifer','strata'].includes(p.mesh), roughness: p.wet?Math.max(.18,m.rough*.42):clamp(m.rough, .14, 1), metalness: clamp(m.metal, 0, 1),
       map: leaf ? this.leafMaps[p.leaf] : maps?.map ?? null, normalMap: maps?.normal ?? null,
-      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .19 : .38,
-        category === 'weapon' ? .19 : .38), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
+      roughnessMap: maps?.roughness ?? null, normalScale: new THREE.Vector2(category === 'weapon' ? .27 : p.productionGround?.20:.48,
+        category === 'weapon' ? .27 : p.productionGround?.20:.48), envMapIntensity: category === 'weapon' ? 1.15 : .65 };
     if(p.surfaceLayer)Object.assign(options,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-p.surfaceLayer});
     if (leaf) Object.assign(options, { side: THREE.DoubleSide, alphaToCoverage:true, alphaTest: .58, metalness: 0, roughness: 1 });
     if(p.blenderWind)Object.assign(options,{side:THREE.DoubleSide,roughness:1,metalness:0});
@@ -270,7 +252,9 @@ export class Renderer {
           shader.fragmentShader='varying vec3 vBreachSurface; varying vec2 vBreachAge;\n'+shader.fragmentShader;
           shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
             // Low-frequency mottling breaks repeated tiles without another texture read.
+            ${p.productionEpoxy?'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.19,.215,.21),.62);':''}
             float patina=sin(vBreachSurface.x*.61+sin(vBreachSurface.z*.47))*sin(vBreachSurface.z*.39+vBreachSurface.y*.72);
+            if(abs(vBreachAge.y)<.05)diffuseColor.rgb=mix(diffuseColor.rgb,vec3(dot(diffuseColor.rgb,vec3(.2126,.7152,.0722))),.16);
             float breachDirt=(1.0-smoothstep(.05,.85,vBreachSurface.y))*(.10+vBreachAge.x*.14)*vBreachAge.y;
             diffuseColor.rgb*=(.94+patina*.055+vBreachAge.x*.06)*(1.0-breachDirt);
             diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.88,.84,.75),breachDirt);
@@ -300,8 +284,11 @@ export class Renderer {
       const depth=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});this.patchWind(depth);this.depthMaterials.set(key,depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){this.lightingField?.patch(shader);this.roomLights?.patch(shader);}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
-    mat.customProgramCacheKey=()=>`${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?.baked?'blender-v1':'v2'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/room-lightfield-v2/haze-v1`;
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader);this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
+    // Cache by the actual shader interface. World bounce, actor lighting and
+    // the viewmodel use different uniforms even when their Three defines match.
+    // Epoxy's diffuse patch also differs from ordinary concrete.
+    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v1':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.productionGround?'cycles-ground-v1':category==='world'?'room-ground-bounce-v3':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v1`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -322,6 +309,10 @@ export class Renderer {
   instanceColor(p, category, override) {
     if(p.blenderColour)return this.color.setRGB(1,1,1);
     const m = this.partMaterial(p), c = override ?? p.color ?? m.color;
+    // The authored cloth already owns its diffuse reflectance. Team colours tint
+    // it gently, avoiding the former multiplication of two dark albedos.
+    if(category==='actor'&&p.surface==='fabric')return this.color.setRGB(.68+c[0]*.32,.68+c[1]*.32,.68+c[2]*.32,THREE.SRGBColorSpace);
+    if(category==='actor'&&p.surface==='rubber')return this.color.setRGB(.20+c[0]*.8,.20+c[1]*.8,.20+c[2]*.8,THREE.SRGBColorSpace);
     // Architectural textures contain their own albedo; retain a light tint rather than multiplying it twice.
     if (category === 'weapon' && m.finishTile >= 0) return this.color.setRGB(
       .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
@@ -371,7 +362,7 @@ export class Renderer {
         batch.setColorAt(i, this.instanceColor(parts[i], 'world')); }
       batch.instanceMatrix.needsUpdate = true; if (batch.instanceColor) batch.instanceColor.needsUpdate = true;
       // Tiny decorative strips do not warrant another shadow-caster draw call.
-      batch.castShadow = !p.ground && p.mesh!=='surface' && p.mesh!=='ridge' && p.mesh!=='strata' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = p.mesh!=='ridge'&&p.mesh!=='strata';
+      batch.castShadow = !p.ground && p.mesh!=='surface' && p.mesh!=='ridge' && p.mesh!=='strata' && parts.some(q => Math.max(q.w, q.h, q.d) > .6); batch.receiveShadow = !p.productionGround&&p.mesh!=='ridge'&&p.mesh!=='strata';
       batch.userData.leaf = leaf; batch.userData.parts = parts; batch.userData.fullCount = parts.length;
       batch.userData.hasMicroDetail=parts.some(q=>q.renderMicroDetail);
       batch.onBeforeShadow=()=>{this.shadowDraws=(this.shadowDraws??0)+1;};
@@ -595,12 +586,15 @@ export class Renderer {
               2, [1.8, 1.14, .38], .025, .055); }
         }
       } else if (event.type === 'impact') {
-        const steel = event.surface === 'steel' || event.surface === 'rust';
-        for (let i = 0; i < Math.min(6, event.value ?? 3); i++) this.particle(p, steel ? 2 : 1,
-          steel ? [2, 1.2, .3] : [.38, .32, .25], .025, .15 + Math.random() * .18,
-          (Math.random() - .5) * 2.5, Math.random() * 2.2, (Math.random() - .5) * 2.5);
-        this.particle(p, 0, [.42, .39, .33], .11, .6, 0, .28, 0);
-        const n=event.normal??{x:0,y:1,z:0};this.decalSystem?.add(p,n,steel,n.y>.9?visualGroundHeight(this.arena,p.x,p.z,p.y):p.y);
+        const steel = ['steel','rust','dark','blue','brass'].includes(event.surface),glass=event.surface==='glass',water=event.surface==='water',wood=event.surface==='wood';
+        const n=event.normal??{x:0,y:1,z:0},tint=steel?[2,1.2,.3]:glass?[.57,.76,.79]:water?[.49,.65,.71]:wood?[.46,.31,.17]:[.48,.46,.41];
+        // Debris follows the actual struck face, with a separate chip/spark
+        // silhouette. Glass and water avoid the old brown concrete dust puff.
+        for (let i = 0; i < Math.min(6, event.value ?? 3); i++)this.particle(p,steel?2:glass||water?4:1,
+          tint,water?.038:.018+Math.random()*.016,.16+Math.random()*.24,
+          n.x*1.1+(Math.random()-.5)*1.7,n.y*1.1+Math.random()*1.5,n.z*1.1+(Math.random()-.5)*1.7);
+        if(!glass&&!water)this.particle(p,0,wood?[.45,.33,.21]:[.47,.46,.43],.11,.6,n.x*.15,.22+n.y*.15,n.z*.15);
+        if(!water)this.decalSystem?.add(p,n,steel,n.y>.9?visualGroundHeight(this.arena,p.x,p.z,p.y):p.y);
       } else if (event.type === 'blood') {
         for (let i = 0; i < Math.min(6, event.value ?? 4); i++) this.particle(p, 1, [.27, .025, .016], .035, .28,
           (Math.random() - .5) * 1.5, Math.random(), (Math.random() - .5) * 1.5);
@@ -689,7 +683,7 @@ export class Renderer {
         if(this.blenderAssets){q.blenderBodyIndex=i<a.operatorBodyCount?i:undefined;q.blenderFar=distant;}
         if (q.hidden || distant && !FAR_ACTOR_PARTS.has(i) && !q.actorFar) continue;
         // Navy/cyan versus warm charcoal/crimson is stable after sides switch and in FFA.
-        if (q.surface === 'fabric') color = identity.cloth;
+        if (q.surface === 'fabric') color = q.operatorNeutral ? q.color ?? [.65,.64,.52] : identity.cloth;
         if (q.surface === 'white' || q.teamBand) color = identity.band;
         this.addDynamic(this.actorBatches, this.scene, q, 'actor', this.parentMatrix, color);
       }
@@ -784,8 +778,8 @@ export class Renderer {
     this.target.set(this.sun.position.x - this.sun.target.position.x, sun[1]*65, this.sun.position.z - this.sun.target.position.z);
     this.target.transformDirection(this.camera.matrixWorldInverse);
     this.weaponKeyLight.position.copy(this.target).multiplyScalar(5);
-    this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, .18+sky*.67, clamp(dt * 5, 0, 1));
-    this.weaponFill.intensity = lerp(this.weaponFill.intensity, .3+sky*.7, clamp(dt * 5, 0, 1));
+    this.weaponScene.environmentIntensity = lerp(this.weaponScene.environmentIntensity, .48+sky*1.0, clamp(dt * 5, 0, 1));
+    this.weaponFill.intensity = lerp(this.weaponFill.intensity, .8+sky*1.1, clamp(dt * 5, 0, 1));
     this.weaponKeyLight.intensity = lerp(this.weaponKeyLight.intensity, this.weaponSunVisible===false ? .08 : this.sun.intensity, clamp(dt * 5, 0, 1));
     const q = QUALITY[this.quality] ?? QUALITY.medium;
     if (shadowDue(this,dt,q.shadowHz)) { this.renderer.shadowMap.needsUpdate = true; this.sun.shadow.needsUpdate = true;
@@ -820,9 +814,9 @@ export class Renderer {
       syncBlenderWeapon(this.blenderWeaponGroups,this.weaponParts);
       for(const q of this.blenderWeaponGroups)if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
     }
-    if(this.blenderHandGroups){syncBlenderWeapon(this.blenderHandGroups,this.weaponParts);for(const q of this.blenderHandGroups)if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');}
+    if(this.blenderHandGroups&&!menu){syncBlenderWeapon(this.blenderHandGroups,this.weaponParts);for(const q of this.blenderHandGroups)if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');}
     for (let i=this.blenderWeaponGroups?this.weaponParts.coreCount:0;i<this.weaponParts.length;i++){
-      const q=this.weaponParts[i];if(this.blenderHandGroups&&/^(rightHand|supportHand|pumpHand)$/.test(q.tag??''))continue;if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
+      const q=this.weaponParts[i];if((this.blenderHandGroups||menu)&&/^(rightHand|supportHand|pumpHand)$/.test(q.tag??''))continue;if(!q.hidden)this.addDynamic(this.weaponBatches,this.weaponRoot,q,'weapon');
     }
     this.uploadDynamic(this.weaponBatches);
     const pose = weaponPose(p, game.time, this.settings.motion !== false, menu, this.weaponPoseState ?? (this.weaponPoseState = {}));

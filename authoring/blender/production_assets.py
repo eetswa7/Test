@@ -29,6 +29,7 @@ def profile_mesh(sections, axis=2):
 def author_production(api):
     B=api['BASE'];lathe=api['lathe'];sphere=api['sphere'];register=api['register']
     assemble=api['assemble'];object_mesh=api['object_mesh'];linear=api['linear']
+    flat=([Vector(p) for p in ((-.5,-.5,-.5),(.5,-.5,-.5),(.5,.5,-.5),(-.5,.5,-.5),(-.5,-.5,.5),(.5,-.5,.5),(.5,.5,.5),(-.5,.5,.5))],[(0,2,1),(0,3,2),(4,5,6),(4,6,7),(0,1,5),(0,5,4),(3,7,6),(3,6,2),(0,4,7),(0,7,3),(1,2,6),(1,6,5)])
     def model(name,items,far=None,smooth=False):
         for level,pieces in (('near',items),('far',far or items)):
             v,t,c=assemble([p[:4] for p in pieces]);physical=[]
@@ -37,7 +38,7 @@ def author_production(api):
             if smooth:
                 for face in obj.data.polygons:face.use_smooth=True
             normals=obj.modifiers.new('Production face normals','WEIGHTED_NORMAL');normals.keep_sharp=True
-    def box(pos,size,c=(1,1,1),rm=(.8,0),soft=False):return (B['soft'] if soft else B['world'],pos,size,c,rm)
+    def box(pos,size,c=(1,1,1),rm=(.8,0),soft=False):return (B['soft'] if soft else flat if min(size)<.035 else B['world'],pos,size,c,rm)
     def tube(pos,size,c=(.55,.57,.56),rm=(.38,.7),rotate=None):
         g=B['tube']
         if rotate:
@@ -48,6 +49,32 @@ def author_production(api):
         return (([q@Vector((v.x*r,v.y*d.length,v.z*r))+(a+b)*.5 for v in B['cylinder'][0]],B['cylinder'][1]),(0,0,0),(1,1,1),c,rm)
     def screw(x,y,z,r=.017):return (lathe([(-.5,.42,.42),(-.2,.5,.5),(.3,.5,.5),(.5,.38,.38)],8),(x,y,z),(r,r*.28,r),(.38,.4,.39),(.34,.8))
     grey=(.81,.83,.81);edge=(.55,.57,.54);black=(.16,.18,.17)
+
+    # Modular precast walls have real panel joints, plinths and steel reveals.
+    # Detail is authored into the mesh, not dozens of runtime trim objects.
+    p=[box((0,0,0),(.98,.98,.91),(1,1,1),(.88,0))]
+    for x in (-.489,.489):p.append(box((x,0,0),(.019,1,1),(.72,.77,.74),(.58,.28)))
+    for sign in (-1,1):
+        for y in (-.29,.01,.30):p.append(box((0,y,sign*.467),(.962,.003,.018),(.23,.25,.23),(.92,0)))
+        for x in (-.16,.16):p.append(box((x,0,sign*.468),(.002,.97,.014),(.30,.32,.30),(.94,0)))
+        p.append(box((0,-.464,sign*.479),(.99,.07,.047),(.63,.66,.61),(.94,0)))
+        p.append(box((0,.476,sign*.481),(1,.035,.04),(.73,.76,.73),(.72,.12)))
+    model('wall',p,p[:3]+[p[-1]])
+
+    signs=[]
+    for map_id,label in enumerate(('OLD QUARTER','FOUNDRY','DUSTLINE','RELAY','BREAKWATER','CITADEL','SWITCHYARD','CANOPY','FROSTLINE','IRON QUARRY','SKYBRIDGE','MONSOON','EMBERWORKS','CROSSFIRE','BLACKSITE','TEST SITE')):
+        name='site_sign_'+str(map_id);signs.append(name)
+        pieces=[box((0,0,0),(1,.86,.8),(.18,.23,.24),(.52,.35)),box((0,-.33,.43),(.97,.023,.025),(.67,.56,.30),(.61,.15))]
+        for text,y,height in ((label,.065,.20),('RESTRICTED ACCESS',-.18,.071)):
+            curve=bpy.data.curves.new('Facility typography','FONT');curve.body=text;curve.align_x='CENTER';curve.align_y='CENTER';curve.size=height
+            curve.extrude=.001;curve.resolution_u=3
+            obj=bpy.data.objects.new('Facility sign lettering',curve);bpy.context.scene.collection.objects.link(obj)
+            deps=bpy.context.evaluated_depsgraph_get();mesh=bpy.data.meshes.new_from_object(obj.evaluated_get(deps));mesh.calc_loop_triangles()
+            scale=min(1,.89/max(.01,max(v.co.x for v in mesh.vertices)-min(v.co.x for v in mesh.vertices)))
+            geometry=([Vector((v.co.x*scale,v.co.y+y,.422+v.co.z)) for v in mesh.vertices],[tuple(t.vertices) for t in mesh.loop_triangles])
+            pieces.append((geometry,(0,0,0),(1,1,1),(.88,.91,.83),(.84,0)))
+            bpy.data.meshes.remove(mesh);bpy.data.objects.remove(obj,do_unlink=True);bpy.data.curves.remove(curve)
+        model(name,pieces,pieces)
 
     # Real recessed glazing inside open facade reveals, rather than glass
     # rectangles painted on a solid unit cube. The opaque backing is behind it.
@@ -75,7 +102,7 @@ def author_production(api):
                     p.append(box((0,y,sign*.50),(.92,.02,.09),(.64,.64,.6),(.88,0)))
                     for x in (-.45,-.15,.15,.45):p.append(rod((x,y,sign*.53),(x,y+.05,sign*.53),.006))
         p.extend([box((0,-.481,0),(1,.035,1),(.55,.56,.52),(.92,0)),box((0,.492,0),(1,.027,1),(.75,.77,.73),(.89,0))])
-        model('building_'+style,p,p[:1]+[q for q in p[1:] if q[2][0]>.19 or q[2][1]>.2])
+        model('building_'+style,p,p[:1]+[q for q in p[1:] if q[4][0]<.20 or q[2][0]>.9 and q[2][1]<.08])
 
     # Cast, tapered Jersey barrier with lifting eyes and chipped corners.
     g=profile_mesh([(-.5,.5,.5),(-.46,.5,.5),(-.18,.5,.43),(.05,.5,.28),(.45,.49,.19),(.5,.46,.18)],axis=1)
@@ -213,4 +240,4 @@ def author_production(api):
     for x in (-.30,.30):p.append(box((x,-.08,-.491),(.17,.066,.016),(.82,.83,.75),(.19,.08)))
     for y in (-.08,-.12,-.16):p.append(box((0,y,-.498),(.42,.014,.018),(.26,.3,.28),(.38,.7)))
     model('utility_van',p,p[:7]+p[7:15],True)
-    return ['roof_truss','switchgear','light_fixture','cooling_stack']
+    return ['roof_truss','switchgear','light_fixture','cooling_stack',*signs]

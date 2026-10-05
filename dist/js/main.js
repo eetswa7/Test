@@ -1,18 +1,18 @@
-import {Game,emptyInput} from './engine.js?v=57';
-import {Renderer} from './three-renderer.js?v=57';
-import {CompatibilityRenderer} from './compatibility-renderer.js?v=57';
-import {TouchInput} from './input.js?v=57';
-import {AudioSystem} from './audio.js?v=57';
-import {SaveStore} from './save.js?v=57';
-import {Interface,$} from './ui.js?v=57';
-import {Weapon} from './weapons.js?v=57';
-import {opticMagnification} from './aim.js?v=57';
-import {FramePacer} from './frame-pacer.js?v=57';
-import {BenchmarkController} from './benchmark.js?v=57';
-import {updateAimAssist} from './aim-assist.js?v=57';
+import {Game,emptyInput} from './engine.js?v=58';
+import {Renderer} from './three-renderer.js?v=58';
+import {CompatibilityRenderer} from './compatibility-renderer.js?v=58';
+import {TouchInput} from './input.js?v=58';
+import {AudioSystem} from './audio.js?v=58';
+import {SaveStore} from './save.js?v=58';
+import {Interface,$} from './ui.js?v=58';
+import {Weapon} from './weapons.js?v=58';
+import {opticMagnification} from './aim.js?v=58';
+import {FramePacer} from './frame-pacer.js?v=58';
+import {BenchmarkController} from './benchmark.js?v=58';
+import {updateAimAssist} from './aim-assist.js?v=58';
 
 export class Application {
- constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:0,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;this.framePacer=new FramePacer();
+ constructor(){this.store=new SaveStore();this.config={mode:'tdm',map:14,difficulty:'regular',loadout:this.store.data.loadout};this.playing=false;this.starting=false;this.assetsFailed=false;this.resultShown=false;this.accumulator=0;this.pending=emptyInput();this.wakeLock=null;this.last=0;this.framePacer=new FramePacer();
   try{this.renderer=new Renderer($('world'),this.store.data.settings);}catch(error){console.warn('WebGL renderer unavailable:',error.message);const fresh=$('world').cloneNode();$('world').replaceWith(fresh);this.renderer=new CompatibilityRenderer(fresh,this.store.data.settings);}
   this.game=new Game(this.config,{seed:881});this.renderer.setArena(this.game.arena);this.audio=new AudioSystem(this.store.data.settings);this.input=new TouchInput($('world'),$('touch-layer'),this.store.data.settings);this.benchmark=new BenchmarkController(this);this.ui=new Interface(this);this.benchmark.bindUI();this.controllerHUD=false;
   window.addEventListener('pointerdown',()=>{this.controllerHUD=false;this.touchUntil=performance.now()+750;document.body.classList.remove('controller-active');},{capture:true,passive:true});

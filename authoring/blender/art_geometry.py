@@ -36,16 +36,17 @@ def hero_part(p, base):
         # machined faces stay distinct from the narrow rounded edge highlights.
         v,t=rectangular_profile([(-.5,.42,.40),(-.43,.48,.47),(-.27,.50,.50),(.32,.48,.50),(.5,.39,.40)])
         g=([Vector((q.x,-q.z,q.y)) for q in v],t)
-        if p['z']<-.13:
+        if p['z']<-.13 or p['h']>.06:
             # Native Boolean slots provide actual open side vents, rather than
             # painting black rectangles on the silhouette.
             verts,tris=g;mesh=bpy.data.meshes.new('Handguard / manufacturing blank')
             mesh.from_pydata([tuple(v) for v in verts],[],tris);mesh.update()
             obj=bpy.data.objects.new('Handguard / machining',mesh);bpy.context.scene.collection.objects.link(obj)
-            for i in range(3):
-                bpy.ops.mesh.primitive_cube_add(size=1,location=(0,.08,-.29+i*.28))
-                cut=bpy.context.object;cut.scale=(1.25,.20,.13)
-                mod=obj.modifiers.new('Through vent '+str(i),'BOOLEAN');mod.operation='DIFFERENCE';mod.solver='EXACT';mod.object=cut
+            cuts=[((0,.08,-.29+i*.28),(1.25,.20,.13)) for i in range(3)] if p['z']<-.13 else [((.485,.13,-.09),(.20,.27,.28)),((-.49,-.08,.23),(.09,.13,.12))]
+            for i,(position,size) in enumerate(cuts):
+                bpy.ops.mesh.primitive_cube_add(size=1,location=position)
+                cut=bpy.context.object;cut.scale=size
+                mod=obj.modifiers.new(('Through vent ' if p['z']<-.13 else 'Receiver pocket ')+str(i),'BOOLEAN');mod.operation='DIFFERENCE';mod.solver='EXACT';mod.object=cut
                 bpy.context.view_layer.objects.active=obj
                 bpy.ops.object.modifier_apply(modifier=mod.name);bpy.data.objects.remove(cut,do_unlink=True)
             evaluated=bpy.data.meshes.new_from_object(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()));evaluated.calc_loop_triangles()
