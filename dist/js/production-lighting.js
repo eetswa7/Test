@@ -18,7 +18,9 @@ export class ProductionLighting {
   shader.uniforms.uProductionGI=this.map;shader.uniforms.uProductionGISize=this.size;shader.uniforms.uProductionGIEnabled=this.enabled;
   shader.fragmentShader='uniform sampler2D uProductionGI; uniform float uProductionGISize; uniform float uProductionGIEnabled;\n'+shader.fragmentShader;
   shader.fragmentShader=shader.fragmentShader.replace('#include <aomap_fragment>',`#include <aomap_fragment>
-   vec4 groundBounce=texture2D(uProductionGI,clamp(vBreachLightPosition.xz/(2.0*uProductionGISize)+.5,0.0,1.0));
+   vec3 bounceFaceNormal=inverseTransformDirection(nonPerturbedNormal,viewMatrix);
+   vec3 bouncePosition=vBreachLightPosition+bounceFaceNormal*(1.2*(1.0-abs(bounceFaceNormal.y)));
+   vec4 groundBounce=texture2D(uProductionGI,clamp(bouncePosition.xz/(2.0*uProductionGISize)+.5,0.0,1.0));
    // Ground-plan bounce is an approximation for vertical surfaces. Their
    // directional sunlight, contact shadows and specular response remain live.
    reflectedLight.indirectDiffuse+=diffuseColor.rgb*(1.0-metalnessFactor)*groundBounce.rgb*groundBounce.a*6.0*.24*uProductionGIEnabled;

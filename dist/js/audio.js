@@ -1,5 +1,5 @@
 import {WEAPONS} from './weapons.js?v=58';
-import {loadSoundLibrary,footstepSurface} from './audio-library.js?v=58';
+import {loadSoundLibrary,footstepSurface,roomAcoustics} from './audio-library.js?v=58';
 // Original synthesized recordings: cached pressure transients, action sounds and
 // surface impacts. No external audio downloads or continuously running ambience.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -70,10 +70,18 @@ export class AudioSystem {
  }
  makeRoom(){
   const c=this.context;if(!c.createConvolver)return;
-  // One shared short room response replaces per-shot delay graphs.
-  const response=c.createBuffer(2,Math.ceil(c.sampleRate*.58),c.sampleRate),noise=randomStream(52378);
-  for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);let low=0;for(let i=0;i<a.length;i++){const t=i/c.sampleRate;low+=.19*(noise()-low);a[i]=t<.012?0:low*Math.exp(-t*10)*.21;}for(const [t,g]of [[.013,.34],[.027,.23],[.047,.16],[.079,.08]])a[Math.round((t+ch*.0017)*c.sampleRate)]+=g;}
-  this.room=c.createConvolver();this.room.buffer=response;this.roomGain=c.createGain();this.roomGain.gain.value=.19;this.room.connect(this.roomGain);this.roomGain.connect(this.master);
+  // Two bounded shared responses distinguish close rooms from industrial
+  // halls. The longer hall tail stays quieter than the direct action sounds.
+  this.rooms=new Map();
+  for(const [name,duration,decay,wet,taps] of [
+   ['room',.42,16,.18,[[.013,.34],[.027,.23],[.047,.16],[.079,.08]]],
+   ['hall',.88,8,.14,[[.025,.28],[.055,.23],[.096,.18],[.151,.10],[.213,.06]]]
+  ]){
+   const response=c.createBuffer(2,Math.ceil(c.sampleRate*duration),c.sampleRate),noise=randomStream(name==='room'?52378:71149);
+   for(let ch=0;ch<2;ch++){const a=response.getChannelData(ch);let low=0;for(let i=0;i<a.length;i++){const t=i/c.sampleRate;low+=.19*(noise()-low);a[i]=t<.012?0:low*Math.exp(-t*decay)*.21;}for(const [t,g]of taps)a[Math.round((t+ch*.0017)*c.sampleRate)]+=g;}
+   const node=c.createConvolver(),gain=c.createGain();node.buffer=response;gain.gain.value=wet;node.connect(gain);gain.connect(this.master);this.rooms.set(name,{node,gain});
+  }
+  this.room=this.rooms.get('room').node;this.roomGain=this.rooms.get('room').gain;
  }
  play(key,{volume=1,pan=0,rate=1,indoor=false,distance=0,important=false,occluded=false}={}){
   const c=this.context;if(!c||this.muted||c.state!=='running'||volume<.006)return;
@@ -88,7 +96,7 @@ export class AudioSystem {
   let filter=null,panner=null;
   if((distance>14||occluded)&&c.createBiquadFilter){filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=occluded?Math.max(600,1600/(1+distance*.018)):Math.max(1200,10500/(1+distance*.045));filter.Q.value=.45;source.connect(filter);filter.connect(gain);}else source.connect(gain);
   if(c.createStereoPanner){panner=c.createStereoPanner();panner.pan.value=clamp(pan,-1,1);gain.connect(panner);panner.connect(this.master);}else gain.connect(this.master);
-  if(indoor&&this.room)gain.connect(this.room);
+  if(indoor&&this.room)gain.connect(this.rooms?.get(indoor==='hall'?'hall':'room')?.node??this.room);
   this.voices++;this.active.add(source);this.voicePriority.set(source,important);let ended=false;
   source.onended=()=>{if(ended)return;ended=true;this.voices=Math.max(0,this.voices-1);this.active.delete(source);source.disconnect();gain.disconnect();filter?.disconnect();panner?.disconnect();};
   source.start();
@@ -103,13 +111,14 @@ export class AudioSystem {
    const occluded=!!(!own&&spatial&&e.position&&d>2&&d<80&&game.arena.visible?.({x:game.player.x,y:game.player.y+1.55,z:game.player.z},{x:e.position.x,y:e.position.y+(e.type==='step'?1.1:.08),z:e.position.z})===false);
    const volume=(own||!e.position?1:clamp(1/(1+d*d*.004)-.015,0,.85))*(occluded?.48:1);
    const pan=e.position?Math.sin(Math.atan2(dx,-dz)-game.player.yaw):0;
+   const room=spatial?roomAcoustics(game.arena,e.position):null;
    switch(e.type){
-    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72)*(e.loudness??1),pan,rate:.985+Math.random()*.030,indoor:e.indoor,distance:d,important:own,occluded});if(own)this.haptic(8);break;
-    case 'step':case 'land':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST'),land=e.type==='land';const actual=footstepSurface(game.arena,e.position);const sound=actual?'step'+actual:hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(land?.65:own?.28:.48)*(e.value??1),pan,rate:land?.76:.94+Math.random()*.11,distance:d,important:land&&own,occluded});if(land&&own)this.haptic(Math.round(8+12*(e.value??0)));}break;
+    case 'shot':this.play(`${e.suppressed?'suppressed':'shot'}${e.weapon}`,{volume:volume*(own?.85:.72)*(e.loudness??1),pan,rate:.985+Math.random()*.030,indoor:room??e.indoor,distance:d,important:own,occluded});if(own)this.haptic(8);break;
+    case 'step':case 'land':if(d<24){const hard=game.arena.indoors(e.position),map=game.arena.info?.id,tag=game.arena.info?.tag,soft=tag==='MIXED'||tag?.includes('FOREST'),land=e.type==='land';const actual=footstepSurface(game.arena,e.position);const sound=actual?'step'+actual:hard?'stepHard':map===8?'stepSnow':map===9?'stepQuarry':soft?'stepSoft':'stepGravel';this.play(sound,{volume:volume*(land?.65:own?.28:.48)*(e.value??1),pan,rate:land?.76:.94+Math.random()*.11,distance:d,important:land&&own,occluded,indoor:room});if(land&&own)this.haptic(Math.round(8+12*(e.value??0)));}break;
     case 'impact':if(d<40&&impacts++<3){const s=e.surface,key=['steel','dark','blue','rust','brass'].includes(s)?'impactMetal':s==='wood'?'impactWood':s==='glass'?'impactGlass':s==='water'?'impactWater':'impactStone';this.play(key,{volume:volume*.34,pan,distance:d,occluded});}break;
-    case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true,occluded,indoor:e.position&&game.arena.indoors(e.position)});if(d<14)this.haptic(30);break;
-    case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime)});break;}
-    case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&!w.def.shellReload?'rack':'seat'}${id}`,{volume:.55});this.haptic(9);break;}
+    case 'explosion':this.play('explosion',{volume:Math.max(.06,volume),pan,distance:d,important:true,occluded,indoor:room});if(d<14)this.haptic(30);break;
+    case 'reload':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`reload${id}`,{volume:.7,rate:(WEAPONS[id].reload||.3)/Math.max(.1,w.reloadTime),indoor:roomAcoustics(game.arena,game.player)});break;}
+    case 'reloadDone':{const w=game.player.weapon,id=e.weapon??w.def.id;this.play(`${w.reloadStartedEmpty&&!w.def.shellReload?'rack':'seat'}${id}`,{volume:.55,indoor:roomAcoustics(game.arena,game.player)});this.haptic(9);break;}
     case 'empty':case 'switch':this.play('click',{volume:.7});break;
     case 'hit':this.play('hit',{volume:e.headshot?1.1:.8,important:true});break;
     case 'kill':if(own)this.play('kill',{volume:.8,important:true});break;

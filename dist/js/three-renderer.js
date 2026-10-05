@@ -284,11 +284,11 @@ export class Renderer {
       const depth=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});this.patchWind(depth);this.depthMaterials.set(key,depth);
     }
     const previousPatch=mat.onBeforeCompile,previousKey=mat.customProgramCacheKey();
-    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader);this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
+    mat.onBeforeCompile=shader=>{previousPatch(shader);if(!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p))patchWeaponBevel(shader);if(maps||water)patchSurfaceDetail(shader,maps?.baked,!!p.blenderVertexMaterial,p.wet?.42:1);if(p.blenderVertexMaterial)patchBlenderMaterial(shader);if(water)patchWater(shader,this.windTime,this.arena?.info?.size);else if(category!=='weapon'&&!leaf){if(p.productionGround)this.productionLighting?.patch(shader);else{this.lightingField?.patch(shader,category==='world');this.roomLights?.patch(shader);if(category==='world')this.productionLighting?.patchBounce(shader);}}if(category!=='weapon')patchAtmosphere(shader,this.hazeSun??{value:new THREE.Vector3(0,1,0)},this.hazeAmount??{value:.075});};
     // Cache by the actual shader interface. World bounce, actor lighting and
     // the viewmodel use different uniforms even when their Three defines match.
     // Epoxy's diffuse patch also differs from ordinary concrete.
-    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v1':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.productionGround?'cycles-ground-v1':category==='world'?'room-ground-bounce-v3':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v1`;
+    mat.customProgramCacheKey=()=>`${category}/${previousKey}/${water?'water-v2':!this.blenderAssets&&category==='weapon'&&hardWeaponBevel(p)?'metric-bevel':''}/packed-orm-${maps?maps.baked?'blender-v2':'v2':'none'}/${p.blenderVertexMaterial?'vertex-rm-v2':''}/${p.wet?'wet':'dry'}/${p.productionGround?'cycles-ground-v1':category==='world'?'room-ground-bounce-v4':category==='actor'?'room-lightfield-v2':'hero-lighting'}/${p.productionEpoxy?'epoxy':'plain'}/haze-v1`;
     this.materials.set(key, mat); return mat;
   }
 
@@ -317,8 +317,8 @@ export class Renderer {
     if (category === 'weapon' && m.finishTile >= 0) return this.color.setRGB(
       .14 + c[0] * .86, .14 + c[1] * .86, .14 + c[2] * .86, THREE.SRGBColorSpace);
     const brighten = category === 'world' && m.pattern > 0 && !p.color;
-    this.color.setRGB(brighten ? .55 + c[0] * .45 : c[0],
-      brighten ? .55 + c[1] * .45 : c[1], brighten ? .55 + c[2] * .45 : c[2], THREE.SRGBColorSpace);
+    this.color.setRGB(brighten ? .85 + c[0] * .15 : c[0],
+      brighten ? .85 + c[1] * .15 : c[1], brighten ? .85 + c[2] * .15 : c[2], THREE.SRGBColorSpace);
     if(category==='world'&&this.arena&&!this.lightingField){m.occlusion??=sceneryOcclusion(p,this.arena);this.color.multiplyScalar(m.occlusion);}
     return this.color;
   }
@@ -370,13 +370,16 @@ export class Renderer {
       batch.computeBoundingBox(); batch.computeBoundingSphere();
       this.world.add(batch); this.worldBatches.push(batch);
       const kind=this.blenderAssets?.key(p,'world')?.split('/')[0];
-      if(this.blenderAssets&&['conifer','palm_crown','tree_crown'].includes(kind)){
-        const far=new THREE.InstancedMesh(this.blenderAssets.geometry(p,'world',true),batch.material,parts.length);
+      const canopy=['conifer','palm_crown','tree_crown'].includes(kind);
+      const farGeometry=this.blenderAssets?.geometry(p,'world',true);
+      const detailLOD=farGeometry&&!p.blenderMesh&&!kind?.startsWith('ridge_')&&!batch.userData.hasMicroDetail&&batch.geometry.index.count>960&&farGeometry.index.count<batch.geometry.index.count*.75;
+      if(this.blenderAssets&&(canopy||detailLOD)){
+        const far=new THREE.InstancedMesh(farGeometry,batch.material,parts.length);
         far.instanceMatrix.copy(batch.instanceMatrix);if(batch.instanceColor)far.instanceColor=batch.instanceColor.clone();
         far.boundingBox=batch.boundingBox.clone();far.boundingSphere=batch.boundingSphere.clone();
         far.castShadow=batch.castShadow;far.receiveShadow=batch.receiveShadow;far.onBeforeShadow=batch.onBeforeShadow;
         far.customDepthMaterial=batch.customDepthMaterial;
-        const pair={near:batch,far,parts,visibility:new WeakMap()};
+        const pair={near:batch,far,parts,canopy,visibility:new WeakMap()};
         batch.userData.blenderPair=pair;far.userData={...batch.userData,blenderFar:true};
         far.count=0;this.world.add(far);this.worldBatches.push(far);this.blenderWorldLODs.push(pair);
         for(const b of [batch,far]){b.instanceMatrix.setUsage(THREE.DynamicDrawUsage);b.instanceColor?.setUsage(THREE.DynamicDrawUsage);}
@@ -399,13 +402,21 @@ export class Renderer {
     let changed=false;
     for(const batch of this.worldBatches){const parts=batch.userData.parts;
       if(!parts||!parts.some(p=>p.destroyed&&!p.renderDestroyed))continue;
+      if(batch.userData.blenderPair){
+        const pair=batch.userData.blenderPair;
+        for(const p of parts)if(p.destroyed)p.renderDestroyed=true;
+        pair.near.userData.blenderSelection=pair.far.userData.blenderSelection=null;
+        changed=true;continue;
+      }
       changed=true;let count=0;
       for(const p of parts){if(p.destroyed){p.renderDestroyed=true;continue;}batch.setMatrixAt(count,this.partMatrix(p));batch.setColorAt(count,this.instanceColor(p,'world'));count++;}
       batch.count=count;batch.userData.fullCount=count;batch.userData.lodParts=null;batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;
       batch.computeBoundingSphere();batch.computeBoundingBox();
     }
     if(!changed)return;
-    this.buildStaticContacts();this.lightingField?.invalidate(this.arena);if(this.sceneLOD)this.sceneLOD.clock=0;this.shadowClock=1;
+    this.buildStaticContacts();this.lightingField?.invalidate(this.arena);if(this.sceneLOD)this.sceneLOD.clock=0;
+    if(this.blenderAssets){this.blenderAssets.lodClock=0;this.blenderAssets.updateLOD(this,0);}
+    this.shadowClock=1;
   }
 
   partGeometry(p, category) {

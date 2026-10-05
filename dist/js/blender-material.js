@@ -17,5 +17,6 @@ export function patchBlenderMaterial(shader){
    normal=normalize(mix(normal,nonPerturbedNormal,breachSmooth));`);
  shader.fragmentShader=shader.fragmentShader.replace('float roughnessFactor=roughness;','float roughnessFactor=vBreachMaterial.x;')
   .replace('roughnessFactor=clamp(roughness+','roughnessFactor=clamp(vBreachMaterial.x+');
+ shader.fragmentShader=shader.fragmentShader.replace('roughnessFactor=clamp((roughness+','roughnessFactor=clamp((vBreachMaterial.x+');
  shader.fragmentShader=shader.fragmentShader.replace('#include <metalnessmap_fragment>','float metalnessFactor=vBreachMaterial.y;');
 }

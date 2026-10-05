@@ -25,7 +25,7 @@ export function detailMaps(canvas,hero=false){
   for(const t of [n,r]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;t.needsUpdate=true;}
   return {normal:n,roughness:r};
 }
-export function patchSurfaceDetail(shader,baked=false){
+export function patchSurfaceDetail(shader,baked=false,vertexMaterial=false,roughnessScale=1){
   // Normal-map specular AA reuses derivatives already evaluated by Three's
   // geometry roughness. No extra texture tap, history buffer or screen pass.
   const physical=THREE.ShaderChunk.lights_physical_fragment.replace('dFdx( nonPerturbedNormal )','dFdx( normal )').replace('dFdy( nonPerturbedNormal )','dFdy( normal )');
@@ -36,7 +36,7 @@ export function patchSurfaceDetail(shader,baked=false){
   shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`float roughnessFactor=roughness;
     #ifdef USE_ROUGHNESSMAP
     vec4 texelRoughness=texture2D(roughnessMap,vRoughnessMapUv);
-    roughnessFactor=clamp(roughness+(texelRoughness.g-${baked?'.75':'.84'})*.45,.14,1.0);
+    roughnessFactor=clamp(${baked&&!vertexMaterial?`texelRoughness.g*${roughnessScale.toFixed(2)}`:`(roughness+(texelRoughness.g-${baked?'.75':'.84'})*.45)*${roughnessScale.toFixed(2)}`},.14,1.0);
     #endif`);
 
   shader.fragmentShader=shader.fragmentShader.replace('#include <metalnessmap_fragment>',`#include <metalnessmap_fragment>

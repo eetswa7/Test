@@ -83,13 +83,20 @@ export class BlenderAssets {
   this.lodClock-=dt;if(this.lodClock>0)return;this.lodClock=.25;
   const near=renderer.quality==='low'?13:renderer.quality==='medium'?21:30;
   const canopyDistance=renderer.quality==='low'?12:renderer.quality==='medium'?18:24;
+  const focal=(renderer.height??430)/(2*Math.tan(renderer.camera.fov*Math.PI/360));
+  const detailPixels=renderer.quality==='low'?100:renderer.quality==='medium'?76:54;
   for(const pair of renderer.blenderWorldLODs??[]){
    const selected=[[],[]];
    for(const p of pair.parts){
     if(p.destroyed)continue;
     const d=Math.hypot(p.x-renderer.camera.position.x,p.y-renderer.camera.position.y,p.z-renderer.camera.position.z);
     const wasFar=pair.visibility.get(p)??false;
-    const far=wasFar?d>canopyDistance*.85:d>canopyDistance*1.15;
+    // Hero props and facades select their authored LOD per instance, not by
+    // the nearest corner of a large batch. Big visible facades keep detail;
+    // small distant crates and machinery use their silhouette-preserving mesh.
+    const pixels=Math.max(p.w,p.h,p.d)*focal/Math.max(1,d);
+    const far=pair.canopy?(wasFar?d>canopyDistance*.85:d>canopyDistance*1.15):
+      (wasFar?pixels<detailPixels*1.15:pixels<detailPixels*.85);
     pair.visibility.set(p,far);selected[far?1:0].push(p);
    }
    for(const [i,b] of [pair.near,pair.far].entries()){

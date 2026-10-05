@@ -65,6 +65,17 @@ test('exterior ambient occlusion survives at eye height and only real roofs rest
  const arena={info:{size:10},blocks:[{x:0,y:3,z:0,w:2,h:6,d:10}],decor:[]};
  const f=new LightingField();f.setArena(arena);assert(f.sample({x:1.5,y:1.6,z:0})<.95);assert(f.sample({x:8,y:1.6,z:0})>.99);f.dispose();
 });
+
+test('opposite sides of an overhung wall retain exterior sky and interior shade',()=>{
+ const roof={x:0,y:4,z:0,w:12,h:.3,d:12,roof:true};
+ const arena={info:{size:10},blocks:[roof],decor:[],visible:()=>false};
+ const field=new LightingField();field.setArena(arena);
+ const wall={x:0,y:1.6,z:5.7};
+ assert(field.sample(wall,{x:0,y:0,z:1})>.95,'the outward face sees open sky');
+ assert(field.sample(wall,{x:0,y:0,z:-1})<.3,'the inward face keeps room shade');
+ assert.equal(field.sample({x:0,y:5,z:0},{x:0,y:1,z:0}),1,'roof tops retain daylight');
+ field.dispose();
+});
 test('cloud sampling joins at the sky seam and fades at the pole',()=>{
  const m={width:2,height:2,data:new Float32Array([.2,.9,.4,.8])};
  assert.equal(sampleCloud(m,0,.4),sampleCloud(m,1,.4));assert.equal(sampleCloud(m,.3,1),0);

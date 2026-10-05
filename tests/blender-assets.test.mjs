@@ -70,7 +70,7 @@ test('every map uses shared authored world geometry without changing collision o
  for(const map of MAPS){
   const game=new Game({map:map.id},{seed:817}),before=JSON.stringify({blocks:game.arena.blocks.map(p=>[p.x,p.y,p.z,p.w,p.h,p.d,p.surface]),spawns:game.arena.spawns,objectives:game.arena.objectives});
   r.arena=game.arena;r.buildWorld();r.updateActors(game);r.uploadDynamic(r.actorBatches);
-  assert(r.worldBatches.length<220,'mobile world draw budget');
+  assert(r.worldBatches.filter(b=>b.count>0).length<220,'mobile world draw budget counts submitted meshes, excluding dormant LODs');
   for(const b of r.worldBatches){assert(b.geometry.userData.blender);assert(b.boundingSphere.radius>0);assert([...b.instanceMatrix.array].every(Number.isFinite));}
   const after=JSON.stringify({blocks:game.arena.blocks.map(p=>[p.x,p.y,p.z,p.w,p.h,p.d,p.surface]),spawns:game.arena.spawns,objectives:game.arena.objectives});
   assert.equal(after,before,'graphics preparation must never edit physics or objectives');
@@ -106,6 +106,22 @@ test('canopy LOD retains every tree, reduces distant work, restores detail and a
  assert(pair.near.userData.blenderSelection.includes(tree));
  const represented=r.blenderWorldLODs.flatMap(p=>[...p.near.userData.blenderSelection,...p.far.userData.blenderSelection]);
  assert.equal(new Set(represented).size,represented.length,'no duplicate tree instances');
+});
+
+test('prop LOD retains close detail, represents each prop once and removes destroyed far instances',()=>{
+ const r=fixture();r.blenderAssets=assets;r.arena=new Game({map:14},{seed:817}).arena;r.buildWorld();r.height=600;r.quality='high';
+ const pair=r.blenderWorldLODs.find(p=>!p.canopy&&p.parts[0].blenderKind==='generator');assert(pair);
+ const prop=pair.parts[0];r.camera.position.set(prop.x,prop.y,prop.z);assets.lodClock=0;assets.updateLOD(r,0);
+ assert(pair.near.userData.blenderSelection.includes(prop),'close machinery keeps its native hero mesh');
+ r.camera.position.set(300,2,300);assets.lodClock=0;assets.updateLOD(r,0);
+ assert(pair.far.userData.blenderSelection.includes(prop));
+ for(const p of r.blenderWorldLODs){
+  const represented=[...p.near.userData.blenderSelection,...p.far.userData.blenderSelection];
+  assert.equal(new Set(represented).size,p.parts.length,'each living render proxy appears exactly once');
+ }
+ const source=Object.getPrototypeOf(prop);source.destroyed=true;r.refreshDestroyed();
+ assert(!pair.near.userData.blenderSelection.includes(prop));assert(!pair.far.userData.blenderSelection.includes(prop));
+ assert.equal(pair.near.count+pair.far.count,pair.parts.length-1,'the far mesh cannot resurrect destroyed combat cover');
 });
 
 test('authored texture axes use exact byte values and primary geometry cannot silently fall back',()=>{

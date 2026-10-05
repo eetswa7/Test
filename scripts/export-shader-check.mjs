@@ -30,7 +30,7 @@ const manifest=JSON.parse(await readFile(new URL('../dist/assets/blender/manifes
 const assets=new BlenderAssets(parseBlenderGLB(await decodeBlenderLibrary(data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength))),manifest);
 const unique=new Map();
 for(const authored of [false,true]){
- const r=fixture();if(authored)r.blenderAssets=assets;r.lightingField=new LightingField();
+ const r=fixture();if(authored){r.blenderAssets=assets;for(const maps of [...r.surfaceMaps,...r.weaponMaps])maps.baked=true;}r.lightingField=new LightingField();
  for(const m of MAPS){const g=new Game({map:m.id},{seed:718});r.arena=g.arena;r.buildWorld();r.updateActors(g);}
  for(const def of WEAPONS){
   const w=new Weapon(def.id),parts=weaponModel(w);

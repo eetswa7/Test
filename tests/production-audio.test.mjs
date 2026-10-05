@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {AUDIO_BANK,AUDIO_PARTS} from '../dist/js/audio-files.js';
 import {WEAPONS} from '../dist/js/weapons.js';
 import {AudioSystem} from '../dist/js/audio.js';
-import {footstepSurface} from '../dist/js/audio-library.js';
+import {footstepSurface,roomAcoustics} from '../dist/js/audio-library.js';
 
 test('original audio bank covers every weapon, suppression, reload action and surface',async()=>{
  const bytes=Buffer.concat(await Promise.all(AUDIO_PARTS.map(p=>readFile('dist/assets/'+p))));assert.equal(bytes.length,AUDIO_BANK.bytes);
@@ -25,4 +25,19 @@ test('occluded gunfire remains directional while losing high frequency and level
  const game={player:{x:0,y:0,z:0,yaw:0},arena:{visible:()=>false}};
  audio.events([{type:'shot',weapon:0,source:2,position:{x:9,y:1.5,z:0}},{type:'shot',weapon:0,source:0,position:{x:0,y:1.5,z:0}}],game);
  assert.equal(played[0].key,'shot0');assert(played[0].occluded);assert(played[0].pan>.99);assert(played[0].volume<played[1].volume*.5);assert(!played[1].occluded);assert(played[1].important);
+});
+
+test('room sound follows actual roof geometry and destruction while outdoor cues stay dry',()=>{
+ const hall={x:0,y:5,z:0,w:24,h:.3,d:18,roof:true};
+ const room={x:30,y:3,z:0,w:5,h:.3,d:4,roof:true};
+ const arena={blocks:[hall,room],indoors:()=>false};
+ assert.equal(roomAcoustics(arena,{x:0,y:1.6,z:0}),'hall');
+ assert.equal(roomAcoustics(arena,{x:30,y:1.6,z:0}),'room');
+ assert.equal(roomAcoustics(arena,{x:0,y:6,z:0}),null);
+ assert.equal(roomAcoustics(arena,{x:20,y:1.6,z:0}),null);
+ const audio=new AudioSystem({volume:1}),played=[];audio.play=(key,options)=>played.push(options);
+ const game={player:{x:0,y:0,z:0,yaw:0},arena};
+ audio.events([{type:'shot',weapon:0,source:2,position:{x:3,y:1.6,z:0}}],game);
+ hall.destroyed=true;audio.events([{type:'shot',weapon:0,source:2,position:{x:3,y:1.6,z:0}}],game);
+ assert.equal(played[0].indoor,'hall');assert(!played[1].indoor);
 });

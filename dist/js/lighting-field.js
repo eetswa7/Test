@@ -55,10 +55,14 @@ export class LightingField {
     t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;
     this.texture.value=t;this.size.value=field.size;this.enabled.value=1;this.field=field;
   }
-  sample(point){
+  sample(point,faceNormal=null){
     const f=this.field;if(!f)return 1;
-    const x=clamp((point.x/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
-    const z=clamp((point.z/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
+    // Sample the side of a wall that the face actually sees. The coarse roof
+    // footprint includes wall thickness and overhang, so sampling the wall's
+    // centre falsely gives both its exterior and interior the room's darkness.
+    const offset=faceNormal?1.2*(1-Math.abs(faceNormal.y)):0;
+    const x=clamp(((point.x+(faceNormal?.x??0)*offset)/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
+    const z=clamp(((point.z+(faceNormal?.z??0)*offset)/(f.size*2)+.5)*f.resolution-.5,0,f.resolution-1);
     const x0=Math.floor(x),z0=Math.floor(z),fx=x-x0,fz=z-z0;
     const at=(xx,zz)=>{const i=(zz*f.resolution+xx)*4,roof=f.data[i+2]/255*16;
       const t=roof>.03?clamp((point.y-roof+.2)/.65,0,1):0,above=t*t*(3-2*t);
@@ -67,7 +71,7 @@ export class LightingField {
     const b=at(x0,Math.min(z0+1,f.resolution-1))*(1-fx)+at(Math.min(x0+1,f.resolution-1),Math.min(z0+1,f.resolution-1))*fx;
     return a*(1-fz)+b*fz;
   }
-  patch(shader){
+  patch(shader,wallFaces=false){
     shader.uniforms.uBreachField=this.texture;shader.uniforms.uBreachFieldSize=this.size;shader.uniforms.uBreachFieldEnabled=this.enabled;
     shader.vertexShader='varying vec3 vBreachLightPosition;\n'+shader.vertexShader;
     shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
@@ -78,7 +82,9 @@ export class LightingField {
       #endif`);
     shader.fragmentShader='varying vec3 vBreachLightPosition; uniform sampler2D uBreachField; uniform float uBreachFieldSize; uniform float uBreachFieldEnabled;\n'+shader.fragmentShader;
     shader.fragmentShader=shader.fragmentShader.replace('#include <aomap_fragment>',`#include <aomap_fragment>
-      vec4 field=texture2D(uBreachField,clamp(vBreachLightPosition.xz/(2.0*uBreachFieldSize)+.5,0.0,1.0));
+      ${wallFaces?`vec3 fieldFaceNormal=inverseTransformDirection(nonPerturbedNormal,viewMatrix);
+      vec3 fieldPosition=vBreachLightPosition+fieldFaceNormal*(1.2*(1.0-abs(fieldFaceNormal.y)));`:'vec3 fieldPosition=vBreachLightPosition;'}
+      vec4 field=texture2D(uBreachField,clamp(fieldPosition.xz/(2.0*uBreachFieldSize)+.5,0.0,1.0));
       float roofHeight=field.b*16.0;
       float hasRoof=step(.03,roofHeight);
       float aboveRoof=hasRoof*smoothstep(roofHeight-.2,roofHeight+.45,vBreachLightPosition.y);

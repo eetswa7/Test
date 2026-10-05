@@ -42,3 +42,17 @@ export function footstepSurface(arena,position){
  if(['grass','moss','dirt','sand'].includes(selected))return 'Soft';
  if(selected==='snow')return 'Snow';if(selected==='gravel')return 'Gravel';return null;
 }
+
+// Geometry selects a shared short-room or warehouse response. No acoustic
+// volumes, extra physics objects or per-voice convolution graphs are created.
+export function roomAcoustics(arena,position){
+ if(!position)return null;
+ let selected=null;
+ for(const roof of arena.nearby?.(position)??arena.blocks??[]){
+  if(!roof.roof||roof.destroyed||position.y>=roof.y-roof.h*.5||
+    Math.abs(position.x-roof.x)>=roof.w*.5||Math.abs(position.z-roof.z)>=roof.d*.5)continue;
+  if(!selected||roof.y<selected.y)selected=roof;
+ }
+ if(selected)return selected.w*selected.d*Math.max(1,selected.y-selected.h*.5)>450?'hall':'room';
+ return arena.indoors?.(position)?'room':null;
+}
