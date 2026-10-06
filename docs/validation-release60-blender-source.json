@@ -4,8 +4,8 @@
   "status": "passed",
   "scope": "Read-only Blender inspection of editable native source and SHA-256 reconstruction. This verifies source completeness, not visual quality or physical iPhone performance.",
   "blender": "4.3.2",
-  "source_bytes": 166153336,
-  "source_sha256": "2ca9038fb823d5285b3d15d02983883ffd2374dac1d7f5a12c3d45ff286a338e",
+  "source_bytes": 166125068,
+  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
   "source_segments_verified": 80,
   "runtime_native_meshes_verified": 329,
   "levels": [
@@ -279,7 +279,7 @@
     "authored_native_paint_instances": 464,
     "instance_tinted_native_paint_instances": 40,
     "snow_instances": 8,
-    "scope": "Saved level graphs verify native physical roughness/metallic UV routing except snow, tile-8 paint reflectance and authored or instance tint. Eight snow graphs use fixed unlinked roughness .98 and metallic 0 with no photographic albedo. Graph inspection does not establish runtime pixel equivalence."
+    "scope": "Saved level graphs verify native physical roughness and metallic UV routing, tile-8 paint reflectance and authored or instance tint. Snow graphs use fixed unlinked roughness .98 and metallic zero without photographic albedo. Graph inspection does not establish runtime rendered pixel equivalence."
   },
   "editable_pbr_graphs": 20,
   "original_artwork": [
@@ -344,49 +344,642 @@
     "texture_maps_verified": 60,
     "first_mip_astc_blocks_independently_decoded": 60,
     "full_astc_mip_chains_verified": 60,
+    "full_astc_mip_chains_independently_decoded": 60,
+    "astc_mip_images_independently_decoded": 663,
+    "mip_chain_histogram": {
+      "11": 57,
+      "12": 3
+    },
     "fallback_webp_images_decoded": 60,
+    "lossless_orm_fallbacks_pixel_equal_to_source_resize": 20,
     "lightmaps_decoded": 16,
+    "lightmaps_pixel_equal_to_source_bakes": 16,
     "manifest_segments_sha256_verified": 139,
+    "production_manifest_sha256": "c04dea95a272b5d79e1ee1bb878838ab8123238fba5bb18fd94194d19c4b7a01",
     "astc_map_payload_bytes": 54593984,
     "astc_map_download_bytes": 54597356,
+    "astc_container_overhead_bytes": 3372,
     "fallback_map_download_bytes": 6036082,
     "lightmap_download_bytes": 6679858,
     "lightmap_rgba_bytes": 16777216,
     "primary_material_and_gi_gpu_storage_bytes_estimate": 71371200,
     "fallback_material_and_gi_rgba_mip_bytes_estimate": 113246128,
     "production_transport_bytes_including_both_formats": 67313296,
-    "scope": "Texture block or RGBA storage estimate including material mipmaps and unmipped GI only. Excludes geometry, other textures, decoded source images, render targets, browser/driver overhead and duplicate upload buffers. Not a measured Safari process memory footprint, iPhone thermal result or assurance against memory termination.",
+    "primary_material_and_gi_download_bytes": 61277214,
+    "fallback_material_and_gi_download_bytes": 12715940,
+    "scope": "Read-only verification of all current material ASTC mip images, WebP fallbacks and sixteen lossless RGBM GI images. Storage estimates count compressed material mip blocks or RGBA8 fallback texels and unmipped GI only; they exclude geometry, other textures, render targets, browser/driver overhead and duplicate upload buffers. Pixel errors describe bake compression, not rendered material realism, Safari process memory, iPhone performance or thermal behavior.",
     "actual_iphone_data": false,
+    "verification_command": "python3 /tmp/inspect-breachline-all-astc-final60.py",
+    "decoded_image_directory": "/workspace/scratch/breachline-final-all-mips60-_n5wyqp3",
+    "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+    "download_scope": "Segment payload byte sums exclude manifest JSON and HTTP headers. Primary and fallback figures are alternative texture paths; the combined-format figure includes both for offline cache.",
+    "rgba_mip_estimate_method": "Exact RGBA8 texel sum for complete power-of-two WebP fallback mip chains, plus sixteen unmipped 512x512 RGBA8 GI textures. No browser or driver overhead measurement.",
+    "astc_quality": {
+      "representative_maps": [
+        {
+          "material": "surfaces-0",
+          "albedo_rmse_8bit": 2.1883,
+          "albedo_psnr_db": 41.33,
+          "normal_rmse_8bit": 0.5246,
+          "normal_psnr_db": 53.73,
+          "normal_angular_error_mean_degrees": 0.2895,
+          "normal_angular_error_p99_degrees": 1.0046,
+          "orm_rmse_8bit": 1.006,
+          "orm_psnr_db": 48.08
+        },
+        {
+          "material": "surfaces-4",
+          "albedo_rmse_8bit": 2.2532,
+          "albedo_psnr_db": 41.07,
+          "normal_rmse_8bit": 0.1603,
+          "normal_psnr_db": 64.03,
+          "normal_angular_error_mean_degrees": 0.0264,
+          "normal_angular_error_p99_degrees": 0.6355,
+          "orm_rmse_8bit": 0.8876,
+          "orm_psnr_db": 49.17
+        },
+        {
+          "material": "surfaces-8",
+          "albedo_rmse_8bit": 1.1092,
+          "albedo_psnr_db": 47.23,
+          "normal_rmse_8bit": 0.0,
+          "normal_psnr_db": null,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.7278,
+          "orm_psnr_db": 50.89
+        },
+        {
+          "material": "weapons-0",
+          "albedo_rmse_8bit": 0.0431,
+          "albedo_psnr_db": 75.45,
+          "normal_rmse_8bit": 0.0,
+          "normal_psnr_db": null,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.6212,
+          "orm_psnr_db": 52.27
+        },
+        {
+          "material": "weapons-2",
+          "albedo_rmse_8bit": 0.2429,
+          "albedo_psnr_db": 60.42,
+          "normal_rmse_8bit": 0.0008,
+          "normal_psnr_db": 110.1,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.8599,
+          "orm_psnr_db": 49.44
+        }
+      ],
+      "all_material_maps_compared": 60,
+      "all_mip_images_compared": 663,
+      "decoder_output_directory": "/workspace/scratch/breachline-final-all-mips60-_n5wyqp3",
+      "method": "Decode every actual BTX1 mip payload using astcenc -ds for albedo or -dl for linear normal/ORM. Compare RGB pixels with the corresponding source bake tile resized to runtime resolution, flipped vertically for ASTC, and successively downsampled with Lanczos exactly as the checked-in packing script specifies. Normal angular errors normalize decoded/reference RGB vectors before comparison.",
+      "scope": "Compression pixel statistics against native published Blender bake files; no rendered-material or iPhone quality test and no visual-realism claim.",
+      "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+      "all_first_mip_error_ranges": {
+        "albedo": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.0431,
+          "first_mip_rmse_8bit_max": 3.6989
+        },
+        "normal": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.0,
+          "first_mip_rmse_8bit_max": 1.1683,
+          "first_mip_mean_angular_error_degrees_min": 0.0,
+          "first_mip_mean_angular_error_degrees_max": 0.7346,
+          "first_mip_p99_angular_error_degrees_max": 2.0394
+        },
+        "orm": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.5824,
+          "first_mip_rmse_8bit_max": 3.2823
+        }
+      },
+      "psnr_null_meaning": "Exact decoded RGB byte match has zero RMSE and infinite PSNR, represented as null rather than a capped finite value."
+    },
     "runtime_test_command": "node --test tests/production-textures.test.mjs",
     "runtime_tests_passed": 4,
-    "runtime_tests_status": "passed",
     "runtime_tests_failed": 0,
-    "runtime_tests_exit_code": 0,
-    "runtime_tests_duration_ms": 1292.367144,
-    "primary_astc_material_and_gi_download_bytes": 61277214,
-    "fallback_webp_material_and_gi_download_bytes": 12715940,
-    "production_manifest_bytes_excluded_from_transport_sum": 38385,
-    "download_scope": "Sum of production asset segment bytes in manifest, excluding manifest JSON itself, HTTP headers, geometry and other assets. Primary and fallback are alternative texture paths; the combined-format figure includes both for offline cache.",
-    "rgba_mip_estimate_method": "Exact RGBA8 texel sum of full power-of-two WebP fallback mip chains plus sixteen unmipped 512x512 RGBA8 GI textures; browser/driver storage and overhead remain unmeasured."
+    "runtime_test_log": "/workspace/scratch/release60-final-production-textures-tests.log"
   },
-  "final_material_and_bake_comparison": {
-    "material_texture_payloads_sha256_unchanged": true,
-    "material_texture_payloads_verified": 60,
-    "native_material_bake_png_sha256_unchanged": true,
-    "native_material_bakes_verified": 9,
-    "geometry_policy": "Final native geometry includes revised stock connections and continuous magazine feed necks. Saved geometry is verified against the final runtime manifest rather than compared for equality with the prior geometry."
-  },
+  "verification_commands": [
+    "python3 /tmp/inspect-breachline-all-astc-final60.py",
+    "node --test tests/production-textures.test.mjs",
+    "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-source60.py",
+    "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-saved-image-graphs60.py",
+    "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-saved-assemblies60.py",
+    "node /tmp/inspect-breachline-geometry-storage60.mjs"
+  ],
   "editable_snow_material_policy_verified": {
     "instances": 8,
     "roughness": 0.98,
     "roughness_linked": false,
     "metallic": 0,
     "metallic_linked": false,
-    "photographic_albedo_image_nodes": 0
+    "photographic_albedo_image_nodes": 0,
+    "scope": "All saved level snow instance graphs were inspected in the loaded final .blend."
   },
-  "verification_commands": [
-    "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-source60.py",
-    "python3 /tmp/inspect-breachline-textures60.py",
-    "node --test tests/production-textures.test.mjs"
-  ]
+  "original_artwork_sha256_verified": 6,
+  "saved_packed_bake_payloads": {
+    "status": "passed",
+    "packed_png_byte_hashes_verified": 25,
+    "bakes": [
+      {
+        "name": "surfaces-albedo",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 30008301,
+        "sha256": "7aeeb48bea68dcba60ed9591dfcb4a4c8c34e7c953a4b0229722900bb51de38f",
+        "color_space": "sRGB"
+      },
+      {
+        "name": "surfaces-normal",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 16879888,
+        "sha256": "0e06a6a0390ab499e5c4971d22a7ba9ec75fed650f05402f360b241ccfde2554",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "surfaces-orm",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 16419963,
+        "sha256": "77d74ae30870005216b2967a963158d3591958d94088775c7f38efbdac373b48",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "weapons-albedo",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 5077956,
+        "sha256": "b9322b5899095446b984586f2e86fb73e5b5a6b033b5a75f044cb34ce0383f2c",
+        "color_space": "sRGB"
+      },
+      {
+        "name": "weapons-normal",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 490206,
+        "sha256": "710782a5ac63cd74a01d29526859afc7fbde0a3b1108a50f54b64873f2a9a940",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "weapons-orm",
+        "dimensions": [
+          4096,
+          4096
+        ],
+        "packed_png_bytes": 10301173,
+        "sha256": "1c8949a22835be3b958c776f1308b56305c0f47a29ceee2f7a20fea1752abe4e",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "foliage",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "packed_png_bytes": 2106902,
+        "sha256": "7df3d721f7b188f9094cabb8013b2d2a7a007fa8466c2b6472f156e6dcde8de0",
+        "color_space": "sRGB"
+      },
+      {
+        "name": "sky",
+        "dimensions": [
+          512,
+          256
+        ],
+        "packed_png_bytes": 322600,
+        "sha256": "7bb3ece49d6d1e8a9f94245660a5ede16f26c3c052888c15031d4caa2882fd50",
+        "color_space": "sRGB"
+      },
+      {
+        "name": "effects",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 222800,
+        "sha256": "8ef4cdba1fd31bf0b3cedcf1c55ed558fe0640935cff601c189db851a5e69351",
+        "color_space": "sRGB"
+      },
+      {
+        "name": "lightmap-0",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 594773,
+        "sha256": "67ea3bb978d9731b427f02c04e7cb9da1ed859264354ac6a5d723269a47c1636",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-1",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 591062,
+        "sha256": "4b8969e3d985c3ef2477799bfcb70eea112c3f4e7f1b24befe674fdeb031c5e3",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-2",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 600394,
+        "sha256": "7f72688b47c55484b78d466abbbbce883549466fd8e83d67f202685849408ab8",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-3",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 660407,
+        "sha256": "79dd7b05a24626b744e6657409d6b3b62a646f22193db2490c0f88d4068d4d94",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-4",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 546763,
+        "sha256": "75b4a2a462055b479304c1c0d7e173976f9cb5ca002b4604223ee3dec7289874",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-5",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 661892,
+        "sha256": "c620676c27fd5ae01da7f8f09427f7c13ae750f7bcc4a1f4ee6c65af07b1b5a1",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-6",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 555528,
+        "sha256": "623104abe8e77805384526ea0da0cd0c58583bbc9a479168b1931505a637057b",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-7",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 632315,
+        "sha256": "838c1d186574e62f3843044d61ac170828d90745c126962bc99689c46aa2916c",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-8",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 553962,
+        "sha256": "9a9b2177a58a8e8d1cf28a8193caf939cf615d2af01ac2e92131bf735496e5b2",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-9",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 627207,
+        "sha256": "c7c107c235dfa86e1c230a587eb5e7b0370a80b1c285a04aebc9662dc59bb88d",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-10",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 617975,
+        "sha256": "90d4cded724ac000a86327df4e6e535436a9f1ca8b632d6607051036c5a1ec72",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-11",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 595921,
+        "sha256": "ad03dd2ffb1eab75c01e2b5ed904aff9c249e51aa04b4da945e34868c5b9f8c8",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-12",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 596518,
+        "sha256": "fdb046e7489e837d725b9d2a6076925afa18d17c87a01268f48f1323287d2f67",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-13",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 612538,
+        "sha256": "fb0bc5683a3a3007acd9dc1c4a556e915d812f65dc365d8c376f347463058e1a",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-14",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 580974,
+        "sha256": "9aab64a4c461e2084fb54ab744d3b9892e170d8181e0f51fa8308f743d338f0d",
+        "color_space": "Non-Color"
+      },
+      {
+        "name": "lightmap-15",
+        "dimensions": [
+          512,
+          512
+        ],
+        "packed_png_bytes": 576061,
+        "sha256": "244f52616f26016c49edb9f5c3e962257031570852a8072764c26d2fc85ddc7b",
+        "color_space": "Non-Color"
+      }
+    ],
+    "scope": "Read-only inspection of the saved .blend. Exact packed PNG bytes match currently published Blender bake files. Shader graph routing and physical input metadata are inspected; this does not establish runtime rendered pixel equivalence or visual realism."
+  },
+  "saved_editable_pbr_graph_routes": {
+    "status": "passed",
+    "graphs_verified": 20,
+    "graphs": [
+      {
+        "name": "surfaces / authored surface 0",
+        "identity": "cast concrete",
+        "nodes": 24,
+        "image_nodes": [
+          "architecture.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.87,
+        "relief_distance_metres": 0.014
+      },
+      {
+        "name": "surfaces / authored surface 1",
+        "identity": "weathered plaster",
+        "nodes": 24,
+        "image_nodes": [
+          "architecture.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.89,
+        "relief_distance_metres": 0.01
+      },
+      {
+        "name": "surfaces / authored surface 10",
+        "identity": "seasoned timber",
+        "nodes": 24,
+        "image_nodes": [
+          "equipment.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.76,
+        "relief_distance_metres": 0.01
+      },
+      {
+        "name": "surfaces / authored surface 11",
+        "identity": "oxidised sheet metal",
+        "nodes": 34,
+        "image_nodes": [
+          "equipment.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.67,
+        "relief_distance_metres": 0.006
+      },
+      {
+        "name": "surfaces / authored surface 12",
+        "identity": "forest floor",
+        "nodes": 24,
+        "image_nodes": [
+          "natural.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.97,
+        "relief_distance_metres": 0.013
+      },
+      {
+        "name": "surfaces / authored surface 13",
+        "identity": "dry grass",
+        "nodes": 24,
+        "image_nodes": [
+          "natural.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.96,
+        "relief_distance_metres": 0.01
+      },
+      {
+        "name": "surfaces / authored surface 14",
+        "identity": "terracotta roof",
+        "nodes": 24,
+        "image_nodes": [
+          "natural.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.85,
+        "relief_distance_metres": 0.014
+      },
+      {
+        "name": "surfaces / authored surface 15",
+        "identity": "weathered rock",
+        "nodes": 24,
+        "image_nodes": [
+          "natural.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.87,
+        "relief_distance_metres": 0.02
+      },
+      {
+        "name": "surfaces / authored surface 2",
+        "identity": "limestone masonry",
+        "nodes": 24,
+        "image_nodes": [
+          "architecture.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.86,
+        "relief_distance_metres": 0.018
+      },
+      {
+        "name": "surfaces / authored surface 3",
+        "identity": "fired brick",
+        "nodes": 24,
+        "image_nodes": [
+          "architecture.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.85,
+        "relief_distance_metres": 0.014
+      },
+      {
+        "name": "surfaces / authored surface 4",
+        "identity": "asphalt aggregate",
+        "nodes": 24,
+        "image_nodes": [
+          "road-surface.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.94,
+        "relief_distance_metres": 0.006
+      },
+      {
+        "name": "surfaces / authored surface 5",
+        "identity": "compacted earth",
+        "nodes": 24,
+        "image_nodes": [
+          "ground.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.97,
+        "relief_distance_metres": 0.01
+      },
+      {
+        "name": "surfaces / authored surface 6",
+        "identity": "sand",
+        "nodes": 24,
+        "image_nodes": [
+          "ground.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.96,
+        "relief_distance_metres": 0.006
+      },
+      {
+        "name": "surfaces / authored surface 7",
+        "identity": "crushed gravel",
+        "nodes": 24,
+        "image_nodes": [
+          "ground.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.92,
+        "relief_distance_metres": 0.018
+      },
+      {
+        "name": "surfaces / authored surface 8",
+        "identity": "worn steel",
+        "nodes": 24,
+        "image_nodes": [
+          "weapon-steel.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.52,
+        "relief_distance_metres": 0.002
+      },
+      {
+        "name": "surfaces / authored surface 9",
+        "identity": "woven canvas",
+        "nodes": 24,
+        "image_nodes": [
+          "equipment.png",
+          "surfaces-orm"
+        ],
+        "roughness_centre": 0.91,
+        "relief_distance_metres": 0.003
+      },
+      {
+        "name": "weapons / authored surface 0",
+        "identity": "machined weapon steel",
+        "nodes": 23,
+        "image_nodes": [
+          "weapon-steel.png",
+          "weapons-orm"
+        ],
+        "roughness_centre": 0.72,
+        "relief_distance_metres": 0.0015
+      },
+      {
+        "name": "weapons / authored surface 1",
+        "identity": "wood furniture",
+        "nodes": 24,
+        "image_nodes": [
+          "equipment.png",
+          "weapons-orm"
+        ],
+        "roughness_centre": 0.8,
+        "relief_distance_metres": 0.004
+      },
+      {
+        "name": "weapons / authored surface 2",
+        "identity": "tactical fabric",
+        "nodes": 23,
+        "image_nodes": [
+          "equipment.png",
+          "weapons-orm"
+        ],
+        "roughness_centre": 0.91,
+        "relief_distance_metres": 0.002
+      },
+      {
+        "name": "weapons / authored surface 3",
+        "identity": "moulded polymer",
+        "nodes": 24,
+        "image_nodes": [
+          "equipment.png",
+          "weapons-orm"
+        ],
+        "roughness_centre": 0.81,
+        "relief_distance_metres": 0.001
+      }
+    ],
+    "scope": "Saved MaterialUV, base colour, roughness, bump-height/normal and ORM roughness socket routing inspected. Image nodes use packed images and relief metadata agrees with physical inputs. Saved graph inspection does not establish runtime rendered pixel equivalence or visual realism."
+  },
+  "saved_native_assemblies": {
+    "schema": "breachline.validation.saved-assemblies.v1",
+    "release": 60,
+    "status": "passed",
+    "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "editable_level_instances_mesh_and_transform_verified": 10777,
+    "maximum_level_matrix_component_error": 2.384185791015625e-06,
+    "rigid_groups_rest_transforms_verified": 95,
+    "maximum_rigid_group_matrix_component_error": 3.29055147470826e-08,
+    "native_mesh_triangle_positions_exactly_verified": 329,
+    "native_mesh_triangles_verified": 621910,
+    "runtime_compressed_library_sha256": "09011136044eb2d78f219ce82e9422cfc6b3f5c68937f841f31638d86ebcea29",
+    "errors": [],
+    "scope": "Read-only saved .blend comparison against final authored instance/rig matrices and runtime library triangle positions. Saved matrix_basis is inspected for unparented objects because hidden Blender collections have unevaluated matrix_world values at load. Native triangle positions are compared exactly after the documented Y-up coordinate conversion, retaining triangle multiplicity. Material, normal and UV quantization quality is covered separately; this does not verify collision, animation behavior or rendered visual quality."
+  }
 }

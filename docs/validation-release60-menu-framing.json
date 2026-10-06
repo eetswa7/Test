@@ -1,0 +1,341 @@
+{
+  "actual_iphone_data": false,
+  "scope": "Actual shipped native mesh vertex projection in menu-only pose; 1280x600 landscape, reflex default optic. No GPU frames.",
+  "library": {
+    "meshes": 329,
+    "decodedSha256": "73deaca650576eec7327f5ea3015173e375da9ccb9516df108f4a81b335c3e10",
+    "sourceSha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9"
+  },
+  "results": [
+    {
+      "id": 0,
+      "name": "Kestrel AR",
+      "bounds": {
+        "left": 507.3,
+        "right": 1001.72,
+        "top": 178.31,
+        "bottom": 459.71
+      },
+      "clipped": false
+    },
+    {
+      "id": 1,
+      "name": "Bastion 7",
+      "bounds": {
+        "left": 491.12,
+        "right": 1049.87,
+        "top": 178.31,
+        "bottom": 468.15
+      },
+      "clipped": false
+    },
+    {
+      "id": 2,
+      "name": "Raptor C",
+      "bounds": {
+        "left": 543.69,
+        "right": 893.15,
+        "top": 178.31,
+        "bottom": 470.11
+      },
+      "clipped": false
+    },
+    {
+      "id": 3,
+      "name": "Vesper 9",
+      "bounds": {
+        "left": 574.41,
+        "right": 1038.87,
+        "top": 138.95,
+        "bottom": 552.17
+      },
+      "clipped": false
+    },
+    {
+      "id": 4,
+      "name": "Lynx PDW",
+      "bounds": {
+        "left": 542.19,
+        "right": 997.69,
+        "top": 138.95,
+        "bottom": 437.18
+      },
+      "clipped": false
+    },
+    {
+      "id": 5,
+      "name": "Breach 12",
+      "bounds": {
+        "left": 473.39,
+        "right": 1073.89,
+        "top": 178.31,
+        "bottom": 399.38
+      },
+      "clipped": false
+    },
+    {
+      "id": 6,
+      "name": "Tempest S",
+      "bounds": {
+        "left": 488.37,
+        "right": 1008.95,
+        "top": 178.31,
+        "bottom": 466.7
+      },
+      "clipped": false
+    },
+    {
+      "id": 7,
+      "name": "Longbow M",
+      "bounds": {
+        "left": 437.47,
+        "right": 1056.11,
+        "top": 159.24,
+        "bottom": 415.65
+      },
+      "clipped": false
+    },
+    {
+      "id": 8,
+      "name": "Warden D",
+      "bounds": {
+        "left": 475.31,
+        "right": 1020.95,
+        "top": 178.31,
+        "bottom": 432.99
+      },
+      "clipped": false
+    },
+    {
+      "id": 9,
+      "name": "Atlas L",
+      "bounds": {
+        "left": 464.46,
+        "right": 1055.78,
+        "top": 178.31,
+        "bottom": 412.37
+      },
+      "clipped": false
+    },
+    {
+      "id": 10,
+      "name": "Sable P",
+      "bounds": {
+        "left": 633.64,
+        "right": 879.71,
+        "top": 96.91,
+        "bottom": 485.5
+      },
+      "clipped": false
+    },
+    {
+      "id": 11,
+      "name": "Dire 50",
+      "bounds": {
+        "left": 593.94,
+        "right": 904.39,
+        "top": 96.91,
+        "bottom": 501.46
+      },
+      "clipped": false
+    },
+    {
+      "id": 12,
+      "name": "Field blade",
+      "bounds": {
+        "left": 566.78,
+        "right": 928.02,
+        "top": 225.13,
+        "bottom": 308.15
+      },
+      "clipped": false
+    },
+    {
+      "id": 13,
+      "name": "Harrow B3",
+      "bounds": {
+        "left": 510.44,
+        "right": 992.22,
+        "top": 178.31,
+        "bottom": 455.91
+      },
+      "clipped": false
+    },
+    {
+      "id": 14,
+      "name": "Marten 45",
+      "bounds": {
+        "left": 566.75,
+        "right": 1095.39,
+        "top": 138.95,
+        "bottom": 547.92
+      },
+      "clipped": false
+    },
+    {
+      "id": 15,
+      "name": "Mako 7",
+      "bounds": {
+        "left": 477.89,
+        "right": 1025.57,
+        "top": 178.31,
+        "bottom": 445.36
+      },
+      "clipped": false
+    },
+    {
+      "id": 16,
+      "name": "Peregrine 6",
+      "bounds": {
+        "left": 515.2,
+        "right": 992.22,
+        "top": 178.31,
+        "bottom": 448.52
+      },
+      "clipped": false
+    },
+    {
+      "id": 17,
+      "name": "Osprey S",
+      "bounds": {
+        "left": 593.28,
+        "right": 1096.73,
+        "top": 138.95,
+        "bottom": 571.46
+      },
+      "clipped": false
+    },
+    {
+      "id": 18,
+      "name": "Bison 12",
+      "bounds": {
+        "left": 482.09,
+        "right": 1065.77,
+        "top": 178.31,
+        "bottom": 399.51
+      },
+      "clipped": false
+    },
+    {
+      "id": 19,
+      "name": "Talon 338",
+      "bounds": {
+        "left": 426.34,
+        "right": 1064.01,
+        "top": 159.24,
+        "bottom": 426.99
+      },
+      "clipped": false
+    },
+    {
+      "id": 20,
+      "name": "Rampart 556",
+      "bounds": {
+        "left": 486.48,
+        "right": 1019.05,
+        "top": 178.31,
+        "bottom": 448.61
+      },
+      "clipped": false
+    },
+    {
+      "id": 21,
+      "name": "Spectre SD",
+      "bounds": {
+        "left": 511.28,
+        "right": 1120.05,
+        "top": 138.95,
+        "bottom": 543.68
+      },
+      "clipped": false
+    },
+    {
+      "id": 22,
+      "name": "Krait R",
+      "bounds": {
+        "left": 545.86,
+        "right": 906.07,
+        "top": 96.91,
+        "bottom": 497.65
+      },
+      "clipped": false
+    },
+    {
+      "id": 23,
+      "name": "Swift 93",
+      "bounds": {
+        "left": 605.16,
+        "right": 889.08,
+        "top": 96.91,
+        "bottom": 520.65
+      },
+      "clipped": false
+    },
+    {
+      "id": 24,
+      "name": "Storm 68",
+      "bounds": {
+        "left": 505.23,
+        "right": 918.59,
+        "top": 178.31,
+        "bottom": 468.12
+      },
+      "clipped": false
+    },
+    {
+      "id": 25,
+      "name": "Needle 57",
+      "bounds": {
+        "left": 551.94,
+        "right": 1102.14,
+        "top": 138.95,
+        "bottom": 435.9
+      },
+      "clipped": false
+    },
+    {
+      "id": 26,
+      "name": "Jackal 12",
+      "bounds": {
+        "left": 515.71,
+        "right": 941.99,
+        "top": 178.31,
+        "bottom": 452.65
+      },
+      "clipped": false
+    },
+    {
+      "id": 27,
+      "name": "Sentinel 762",
+      "bounds": {
+        "left": 443.01,
+        "right": 1090.48,
+        "top": 178.31,
+        "bottom": 430.13
+      },
+      "clipped": false
+    },
+    {
+      "id": 28,
+      "name": "Heron S",
+      "bounds": {
+        "left": 462.78,
+        "right": 1086.29,
+        "top": 178.31,
+        "bottom": 417.73
+      },
+      "clipped": false
+    },
+    {
+      "id": 29,
+      "name": "Paladin 45",
+      "bounds": {
+        "left": 614.99,
+        "right": 878.21,
+        "top": 96.91,
+        "bottom": 495.87
+      },
+      "clipped": false
+    }
+  ]
+}

@@ -18,9 +18,9 @@
       "actorsRendered": 15,
       "nativeWeapons": 15,
       "actorBatches": 56,
-      "actorTriangles": 453296,
+      "actorTriangles": 453056,
       "nativeWeaponBatches": 37,
-      "nativeWeaponTriangles": 171044
+      "nativeWeaponTriangles": 170804
     },
     {
       "quality": "low",
@@ -30,9 +30,9 @@
       "actorsRendered": 15,
       "nativeWeapons": 15,
       "actorBatches": 56,
-      "actorTriangles": 453296,
+      "actorTriangles": 453056,
       "nativeWeaponBatches": 37,
-      "nativeWeaponTriangles": 171044
+      "nativeWeaponTriangles": 170804
     },
     {
       "quality": "low",
@@ -42,9 +42,9 @@
       "actorsRendered": 6,
       "nativeWeapons": 6,
       "actorBatches": 41,
-      "actorTriangles": 185512,
+      "actorTriangles": 185392,
       "nativeWeaponBatches": 22,
-      "nativeWeaponTriangles": 72568
+      "nativeWeaponTriangles": 72448
     },
     {
       "quality": "low",
@@ -54,7 +54,7 @@
       "actorsRendered": 15,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 305080,
+      "actorTriangles": 305572,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -66,7 +66,7 @@
       "actorsRendered": 4,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 81360,
+      "actorTriangles": 81488,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -78,7 +78,7 @@
       "actorsRendered": 5,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 101808,
+      "actorTriangles": 101936,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -90,9 +90,9 @@
       "actorsRendered": 15,
       "nativeWeapons": 15,
       "actorBatches": 56,
-      "actorTriangles": 453296,
+      "actorTriangles": 453056,
       "nativeWeaponBatches": 37,
-      "nativeWeaponTriangles": 171044
+      "nativeWeaponTriangles": 170804
     },
     {
       "quality": "high",
@@ -102,9 +102,9 @@
       "actorsRendered": 15,
       "nativeWeapons": 15,
       "actorBatches": 56,
-      "actorTriangles": 453296,
+      "actorTriangles": 453056,
       "nativeWeaponBatches": 37,
-      "nativeWeaponTriangles": 171044
+      "nativeWeaponTriangles": 170804
     },
     {
       "quality": "high",
@@ -114,9 +114,9 @@
       "actorsRendered": 6,
       "nativeWeapons": 6,
       "actorBatches": 41,
-      "actorTriangles": 185512,
+      "actorTriangles": 185392,
       "nativeWeaponBatches": 22,
-      "nativeWeaponTriangles": 72568
+      "nativeWeaponTriangles": 72448
     },
     {
       "quality": "high",
@@ -126,7 +126,7 @@
       "actorsRendered": 15,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 305080,
+      "actorTriangles": 305572,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -138,7 +138,7 @@
       "actorsRendered": 4,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 81360,
+      "actorTriangles": 81488,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -150,7 +150,7 @@
       "actorsRendered": 5,
       "nativeWeapons": 0,
       "actorBatches": 23,
-      "actorTriangles": 101808,
+      "actorTriangles": 101936,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     }

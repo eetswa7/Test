@@ -1,7 +1,7 @@
 {
   "scope": "Read-only Blender graph construction using the actual LevelMaterials module and a native UV/vertex-colour fixture. Confirms Cycles snow reflectance and physical inputs, not a rendered-image or iPhone performance test.",
   "blender_version": "4.3.2",
-  "source_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
+  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
   "snow": {
     "roughness": 0.98,
     "metalness": 0.0,
@@ -19,10 +19,708 @@
     "physical_uv_override_preserved": true
   },
   "runtime_focused_checks": {
-    "passed": 23,
-    "failed": 0
+    "passed": 4,
+    "failed": 0,
+    "command": "node --test tests/production-textures.test.mjs",
+    "duration_ms": 1208.43716,
+    "log": "/workspace/scratch/release60-final-production-textures-tests.log"
   },
   "extra_runtime_textures": 0,
   "extra_geometry": 0,
-  "extra_fullscreen_passes": 0
+  "extra_fullscreen_passes": 0,
+  "material_module_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
+  "material_module_path": "authoring/blender/level_materials.py",
+  "source_hash_scope": "Final authoring/blender/breachline-assets.blend bytes",
+  "material_module_hash_scope": "Actual LevelMaterials Python module used by the fresh native Blender graph fixture; this is distinct from the final .blend byte hash.",
+  "runtime_ship_checks": {
+    "passed": 312,
+    "failed": 0,
+    "duration_ms": 118100.715029,
+    "log": "/workspace/scratch/release60-ship-tests.log",
+    "scope": "Existing fresh complete ship test log, independently checked for the reported summary; the focused texture suite was also rerun during this payload audit."
+  },
+  "implementation_delta_scope": "The extra_runtime_textures, extra_geometry and extra_fullscreen_passes values describe the reviewed snow material policy implementation delta; they are not measured device performance results.",
+  "graph_verification": {
+    "status": "passed",
+    "exit_code": 0,
+    "command": "blender --background --factory-startup --python-exit-code 1 --python /tmp/check-snow-level-material.py",
+    "cwd": "/workspace/Test",
+    "log": "/workspace/scratch/release60-final-material-graph-inspection.log",
+    "scope": "Fresh read-only native Blender fixture validates the actual material module graph. It does not render an image or inspect all saved level instances."
+  },
+  "runtime_material_payload": {
+    "status": "passed",
+    "texture_maps_verified": 60,
+    "first_mip_astc_blocks_independently_decoded": 60,
+    "full_astc_mip_chains_verified": 60,
+    "full_astc_mip_chains_independently_decoded": 60,
+    "astc_mip_images_independently_decoded": 663,
+    "mip_chain_histogram": {
+      "11": 57,
+      "12": 3
+    },
+    "fallback_webp_images_decoded": 60,
+    "lossless_orm_fallbacks_pixel_equal_to_source_resize": 20,
+    "lightmaps_decoded": 16,
+    "lightmaps_pixel_equal_to_source_bakes": 16,
+    "manifest_segments_sha256_verified": 139,
+    "production_manifest_sha256": "c04dea95a272b5d79e1ee1bb878838ab8123238fba5bb18fd94194d19c4b7a01",
+    "astc_map_payload_bytes": 54593984,
+    "astc_map_download_bytes": 54597356,
+    "astc_container_overhead_bytes": 3372,
+    "fallback_map_download_bytes": 6036082,
+    "lightmap_download_bytes": 6679858,
+    "lightmap_rgba_bytes": 16777216,
+    "primary_material_and_gi_gpu_storage_bytes_estimate": 71371200,
+    "fallback_material_and_gi_rgba_mip_bytes_estimate": 113246128,
+    "production_transport_bytes_including_both_formats": 67313296,
+    "primary_material_and_gi_download_bytes": 61277214,
+    "fallback_material_and_gi_download_bytes": 12715940,
+    "scope": "Read-only verification of all current material ASTC mip images, WebP fallbacks and sixteen lossless RGBM GI images. Storage estimates count compressed material mip blocks or RGBA8 fallback texels and unmipped GI only; they exclude geometry, other textures, render targets, browser/driver overhead and duplicate upload buffers. Pixel errors describe bake compression, not rendered material realism, Safari process memory, iPhone performance or thermal behavior.",
+    "actual_iphone_data": false,
+    "verification_command": "python3 /tmp/inspect-breachline-all-astc-final60.py",
+    "decoded_image_directory": "/workspace/scratch/breachline-final-all-mips60-_n5wyqp3",
+    "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+    "download_scope": "Segment payload byte sums exclude manifest JSON and HTTP headers. Primary and fallback figures are alternative texture paths; the combined-format figure includes both for offline cache.",
+    "rgba_mip_estimate_method": "Exact RGBA8 texel sum for complete power-of-two WebP fallback mip chains, plus sixteen unmipped 512x512 RGBA8 GI textures. No browser or driver overhead measurement.",
+    "astc_quality": {
+      "representative_maps": [
+        {
+          "material": "surfaces-0",
+          "albedo_rmse_8bit": 2.1883,
+          "albedo_psnr_db": 41.33,
+          "normal_rmse_8bit": 0.5246,
+          "normal_psnr_db": 53.73,
+          "normal_angular_error_mean_degrees": 0.2895,
+          "normal_angular_error_p99_degrees": 1.0046,
+          "orm_rmse_8bit": 1.006,
+          "orm_psnr_db": 48.08
+        },
+        {
+          "material": "surfaces-4",
+          "albedo_rmse_8bit": 2.2532,
+          "albedo_psnr_db": 41.07,
+          "normal_rmse_8bit": 0.1603,
+          "normal_psnr_db": 64.03,
+          "normal_angular_error_mean_degrees": 0.0264,
+          "normal_angular_error_p99_degrees": 0.6355,
+          "orm_rmse_8bit": 0.8876,
+          "orm_psnr_db": 49.17
+        },
+        {
+          "material": "surfaces-8",
+          "albedo_rmse_8bit": 1.1092,
+          "albedo_psnr_db": 47.23,
+          "normal_rmse_8bit": 0.0,
+          "normal_psnr_db": null,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.7278,
+          "orm_psnr_db": 50.89
+        },
+        {
+          "material": "weapons-0",
+          "albedo_rmse_8bit": 0.0431,
+          "albedo_psnr_db": 75.45,
+          "normal_rmse_8bit": 0.0,
+          "normal_psnr_db": null,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.6212,
+          "orm_psnr_db": 52.27
+        },
+        {
+          "material": "weapons-2",
+          "albedo_rmse_8bit": 0.2429,
+          "albedo_psnr_db": 60.42,
+          "normal_rmse_8bit": 0.0008,
+          "normal_psnr_db": 110.1,
+          "normal_angular_error_mean_degrees": 0.0,
+          "normal_angular_error_p99_degrees": 0.0,
+          "orm_rmse_8bit": 0.8599,
+          "orm_psnr_db": 49.44
+        }
+      ],
+      "all_material_maps_compared": 60,
+      "all_mip_images_compared": 663,
+      "decoder_output_directory": "/workspace/scratch/breachline-final-all-mips60-_n5wyqp3",
+      "method": "Decode every actual BTX1 mip payload using astcenc -ds for albedo or -dl for linear normal/ORM. Compare RGB pixels with the corresponding source bake tile resized to runtime resolution, flipped vertically for ASTC, and successively downsampled with Lanczos exactly as the checked-in packing script specifies. Normal angular errors normalize decoded/reference RGB vectors before comparison.",
+      "scope": "Compression pixel statistics against native published Blender bake files; no rendered-material or iPhone quality test and no visual-realism claim.",
+      "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+      "all_first_mip_error_ranges": {
+        "albedo": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.0431,
+          "first_mip_rmse_8bit_max": 3.6989
+        },
+        "normal": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.0,
+          "first_mip_rmse_8bit_max": 1.1683,
+          "first_mip_mean_angular_error_degrees_min": 0.0,
+          "first_mip_mean_angular_error_degrees_max": 0.7346,
+          "first_mip_p99_angular_error_degrees_max": 2.0394
+        },
+        "orm": {
+          "maps": 20,
+          "first_mip_rmse_8bit_min": 0.5824,
+          "first_mip_rmse_8bit_max": 3.2823
+        }
+      },
+      "psnr_null_meaning": "Exact decoded RGB byte match has zero RMSE and infinite PSNR, represented as null rather than a capped finite value."
+    },
+    "runtime_test_command": "node --test tests/production-textures.test.mjs",
+    "runtime_tests_passed": 4,
+    "runtime_tests_failed": 0,
+    "runtime_test_log": "/workspace/scratch/release60-final-production-textures-tests.log"
+  },
+  "decoded_first_mip_material_statistics": {
+    "scope": "Spatial means and channel variation from the actual independently decoded ASTC mip 0. Albedo sRGB values are converted per pixel to linear RGB before averaging; ORM channels are linear AO, roughness and metalness. These characterize the payload and do not prove surface identity or physical realism in a rendered scene.",
+    "materials": [
+      {
+        "material": "surfaces-0",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.581184,
+          0.570787,
+          0.549636
+        ],
+        "albedo_mean_linear": [
+          0.305052,
+          0.293863,
+          0.270903
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.989962,
+          0.901687,
+          0.99965
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.009425,
+          0.008716,
+          0.000334
+        ],
+        "normal_angular_error_mean_degrees": 0.2895,
+        "normal_angular_error_p99_degrees": 1.0046
+      },
+      {
+        "material": "surfaces-1",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.763109,
+          0.705709,
+          0.631847
+        ],
+        "albedo_mean_linear": [
+          0.55089,
+          0.464417,
+          0.36539
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.998234,
+          0.918445,
+          0.999553
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.005706,
+          0.006359,
+          0.000167
+        ],
+        "normal_angular_error_mean_degrees": 0.2334,
+        "normal_angular_error_p99_degrees": 1.0048
+      },
+      {
+        "material": "surfaces-2",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.677606,
+          0.609324,
+          0.520532
+        ],
+        "albedo_mean_linear": [
+          0.430677,
+          0.344568,
+          0.249317
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.992836,
+          0.896233,
+          0.999656
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.027749,
+          0.034651,
+          0.002292
+        ],
+        "normal_angular_error_mean_degrees": 0.7346,
+        "normal_angular_error_p99_degrees": 2.0394
+      },
+      {
+        "material": "surfaces-3",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.386369,
+          0.279429,
+          0.236991
+        ],
+        "albedo_mean_linear": [
+          0.136753,
+          0.070805,
+          0.051561
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.948483,
+          0.890219,
+          0.99951
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.011854,
+          0.013625,
+          0.000694
+        ],
+        "normal_angular_error_mean_degrees": 0.3404,
+        "normal_angular_error_p99_degrees": 1.3438
+      },
+      {
+        "material": "surfaces-4",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.288552,
+          0.282248,
+          0.278306
+        ],
+        "albedo_mean_linear": [
+          0.07896,
+          0.075282,
+          0.07264
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.945904,
+          0.958574,
+          0.999169
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.001725,
+          0.001764,
+          2.1e-05
+        ],
+        "normal_angular_error_mean_degrees": 0.0264,
+        "normal_angular_error_p99_degrees": 0.6355
+      },
+      {
+        "material": "surfaces-5",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.386944,
+          0.329179,
+          0.283739
+        ],
+        "albedo_mean_linear": [
+          0.139375,
+          0.100983,
+          0.07464
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.951869,
+          0.983671,
+          0.999013
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.005756,
+          0.005807,
+          0.000184
+        ],
+        "normal_angular_error_mean_degrees": 0.1962,
+        "normal_angular_error_p99_degrees": 1.0046
+      },
+      {
+        "material": "surfaces-6",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.773951,
+          0.65827,
+          0.545008
+        ],
+        "albedo_mean_linear": [
+          0.569041,
+          0.400228,
+          0.267026
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.998041,
+          0.977795,
+          0.999707
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.00294,
+          0.003064,
+          2.9e-05
+        ],
+        "normal_angular_error_mean_degrees": 0.1033,
+        "normal_angular_error_p99_degrees": 0.8987
+      },
+      {
+        "material": "surfaces-7",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.47547,
+          0.445972,
+          0.419678
+        ],
+        "albedo_mean_linear": [
+          0.214639,
+          0.188683,
+          0.166406
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.969764,
+          0.950988,
+          0.999684
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.028883,
+          0.028958,
+          0.002345
+        ],
+        "normal_angular_error_mean_degrees": 0.6466,
+        "normal_angular_error_p99_degrees": 2.0044
+      },
+      {
+        "material": "surfaces-8",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.226665,
+          0.226256,
+          0.224624
+        ],
+        "albedo_mean_linear": [
+          0.042976,
+          0.042816,
+          0.04222
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.938237,
+          0.565028,
+          0.99979
+        ],
+        "normal_rgb_std_0_to_1": [
+          1e-05,
+          5e-06,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0,
+        "normal_angular_error_p99_degrees": 0.0
+      },
+      {
+        "material": "surfaces-9",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.311283,
+          0.297826,
+          0.210646
+        ],
+        "albedo_mean_linear": [
+          0.090708,
+          0.083387,
+          0.043732
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.947928,
+          0.926521,
+          0.999119
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.000462,
+          0.000399,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0011,
+        "normal_angular_error_p99_degrees": 0.0
+      },
+      {
+        "material": "surfaces-10",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.438278,
+          0.363131,
+          0.297808
+        ],
+        "albedo_mean_linear": [
+          0.171933,
+          0.116114,
+          0.077358
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.957596,
+          0.809564,
+          0.999656
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.005493,
+          0.011497,
+          0.00029
+        ],
+        "normal_angular_error_mean_degrees": 0.2569,
+        "normal_angular_error_p99_degrees": 1.0046
+      },
+      {
+        "material": "surfaces-11",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.474579,
+          0.441023,
+          0.407369
+        ],
+        "albedo_mean_linear": [
+          0.203259,
+          0.17687,
+          0.153595
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.969346,
+          0.783646,
+          0.663959
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.002971,
+          0.002123,
+          2.1e-05
+        ],
+        "normal_angular_error_mean_degrees": 0.0671,
+        "normal_angular_error_p99_degrees": 0.8987
+      },
+      {
+        "material": "surfaces-12",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.362047,
+          0.314367,
+          0.201072
+        ],
+        "albedo_mean_linear": [
+          0.130425,
+          0.098286,
+          0.042753
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.950762,
+          0.983633,
+          0.998923
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.013085,
+          0.012912,
+          0.000617
+        ],
+        "normal_angular_error_mean_degrees": 0.3317,
+        "normal_angular_error_p99_degrees": 1.265
+      },
+      {
+        "material": "surfaces-13",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.430023,
+          0.412856,
+          0.258636
+        ],
+        "albedo_mean_linear": [
+          0.176592,
+          0.161244,
+          0.0659
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.963727,
+          0.974275,
+          0.999868
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.008717,
+          0.007799,
+          0.000297
+        ],
+        "normal_angular_error_mean_degrees": 0.2561,
+        "normal_angular_error_p99_degrees": 1.0046
+      },
+      {
+        "material": "surfaces-14",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.552516,
+          0.374208,
+          0.283981
+        ],
+        "albedo_mean_linear": [
+          0.283713,
+          0.123963,
+          0.071957
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.963849,
+          0.880577,
+          0.999236
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.010363,
+          0.009297,
+          0.00039
+        ],
+        "normal_angular_error_mean_degrees": 0.3015,
+        "normal_angular_error_p99_degrees": 1.0048
+      },
+      {
+        "material": "surfaces-15",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.542661,
+          0.516549,
+          0.476926
+        ],
+        "albedo_mean_linear": [
+          0.266895,
+          0.240118,
+          0.202783
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.980522,
+          0.910093,
+          0.999618
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.024007,
+          0.02707,
+          0.001761
+        ],
+        "normal_angular_error_mean_degrees": 0.6096,
+        "normal_angular_error_p99_degrees": 1.8472
+      },
+      {
+        "material": "weapons-0",
+        "astc_width": 2048,
+        "astc_mips_per_map": 12,
+        "albedo_mean_srgb": [
+          0.900734,
+          0.900734,
+          0.900734
+        ],
+        "albedo_mean_linear": [
+          0.788871,
+          0.788871,
+          0.788871
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.961824,
+          0.752242,
+          0.999546
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0,
+        "normal_angular_error_p99_degrees": 0.0
+      },
+      {
+        "material": "weapons-1",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.859035,
+          0.859035,
+          0.859035
+        ],
+        "albedo_mean_linear": [
+          0.708902,
+          0.708902,
+          0.708902
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.973414,
+          0.837513,
+          0.999421
+        ],
+        "normal_rgb_std_0_to_1": [
+          4.9e-05,
+          0.000981,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0001,
+        "normal_angular_error_p99_degrees": 0.0
+      },
+      {
+        "material": "weapons-2",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.904443,
+          0.904443,
+          0.904443
+        ],
+        "albedo_mean_linear": [
+          0.796286,
+          0.796286,
+          0.796286
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.966571,
+          0.926857,
+          0.999027
+        ],
+        "normal_rgb_std_0_to_1": [
+          2.9e-05,
+          3.2e-05,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0,
+        "normal_angular_error_p99_degrees": 0.0
+      },
+      {
+        "material": "weapons-3",
+        "astc_width": 1024,
+        "astc_mips_per_map": 11,
+        "albedo_mean_srgb": [
+          0.94529,
+          0.94529,
+          0.94529
+        ],
+        "albedo_mean_linear": [
+          0.880041,
+          0.880041,
+          0.880041
+        ],
+        "orm_mean_ao_roughness_metalness": [
+          0.999663,
+          0.838534,
+          0.999663
+        ],
+        "normal_rgb_std_0_to_1": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "normal_angular_error_mean_degrees": 0.0,
+        "normal_angular_error_p99_degrees": 0.0
+      }
+    ],
+    "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json"
+  },
+  "status": "passed",
+  "schema": "breachline.validation.material-identity.v1",
+  "release": 60
 }

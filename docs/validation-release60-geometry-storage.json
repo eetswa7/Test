@@ -1,10 +1,15 @@
 {
-  "scope": "Retained native geometry attribute/index storage estimate, including metric UV attributes. Not browser process memory, driver allocation, live GPU use, Safari memory limit or physical iPhone measurement.",
+  "schema": "breachline.validation.geometry-storage.v1",
+  "release": 60,
+  "status": "passed",
+  "scope": "Sum of retained native geometry typed-array attribute/index bytes, including metric UV attributes, using the actual runtime parser. Excludes scene instance attributes, transient decode/upload buffers, object metadata and browser/driver overhead. Not browser process memory, driver allocation, live GPU use, a Safari memory limit or physical iPhone measurement.",
   "actual_iphone_data": false,
   "meshes": 329,
-  "compressedLibraryBytes": 10173508,
-  "decodedLibraryBytes": 32919320,
-  "retainedGeometryBufferBytes": 37508922,
+  "compressedLibrarySHA256": "09011136044eb2d78f219ce82e9422cfc6b3f5c68937f841f31638d86ebcea29",
+  "blenderSegmentsSHA256Verified": 14,
+  "compressedLibraryBytes": 10166923,
+  "decodedLibraryBytes": 32911880,
+  "retainedGeometryBufferBytes": 37500654,
   "largest": [
     {
       "name": "building_urban__near",
@@ -16,11 +21,11 @@
     },
     {
       "name": "weapon_9_groups_0",
-      "bytes": 489460
+      "bytes": 489660
     },
     {
       "name": "weapon_20_groups_0",
-      "bytes": 486942
+      "bytes": 487142
     },
     {
       "name": "vehicle_sedan__near",
@@ -28,15 +33,19 @@
     },
     {
       "name": "weapon_26_groups_0",
-      "bytes": 466424
+      "bytes": 470394
     },
     {
       "name": "weapon_27_groups_0",
-      "bytes": 458282
+      "bytes": 458482
     },
     {
       "name": "weapon_6_groups_0",
-      "bytes": 455766
+      "bytes": 455966
     }
+  ],
+  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+  "verification_commands": [
+    "node /tmp/inspect-breachline-geometry-storage60.mjs"
   ]
 }
