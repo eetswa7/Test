@@ -2,7 +2,7 @@
 // Software WebGL screenshots and scene counts are not physical iPhone timings.
 import {createRequire} from 'node:module';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
-import {spawn} from 'node:child_process';
+import {execFileSync,spawn} from 'node:child_process';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const stage=process.argv[2]??'current',origin=process.env.ART_TEST_ORIGIN??'http://127.0.0.1:4173';
@@ -30,7 +30,7 @@ const shots=[
  {name:'blacksite-oblique',map:14,x:12,z:30,yaw:.40,pitch:-.015},
  {name:'blacksite-services',map:14,x:-5.5,z:8,yaw:-.95,pitch:0},
  {name:'weapon-close',map:14,x:0,z:27,yaw:0,pitch:0,weapon:1},
- {name:'operator-close',map:14,x:0,z:27,yaw:0,pitch:0,operator:true},
+ {name:'operator-close',map:14,x:0,z:27,yaw:0,pitch:0,operator:true,actorX:-1.6,actorZ:22,operatorMotion:'stand'},
  {name:'combat',map:14,x:0,z:27,yaw:0,pitch:0,operator:true,combat:true},
  {name:'reload',map:14,x:0,z:9,yaw:0,pitch:0,reload:true},
 ];
@@ -39,14 +39,15 @@ if(process.argv.includes('--all-weapons'))for(let weapon=0;weapon<30;weapon++)sh
 if(process.argv.includes('--weapon-sides'))for(let weapon=0;weapon<30;weapon++)shots.push({name:'weapon-side-'+weapon,map:14,menu:true,weapon});
 const results=[];
 try{
- for(const shot of shots){
+ const captureShots=process.argv.includes('--operators-only')?shots.filter(s=>s.operator):shots;
+ for(const shot of captureShots){
   const stats=await page.evaluate(async shot=>{
    const {game,renderer,Game,Weapon}=window.art;
    let g=window.art.game;
    if(g.arena.info.id!==shot.map){g=new Game({map:shot.map,mode:'tdm'},{seed:817});window.art.game=g;renderer.setArena(g.arena);}
    const p=g.player;Object.assign(p,{x:shot.x??15,y:0,z:shot.z??25,yaw:shot.yaw??0,pitch:shot.pitch??0,vx:0,vz:0,ads:0});
    p.weapons[0]=new Weapon(shot.weapon??0,{optic:1});p.slot=0;renderer.weaponKey='';renderer.cameraY=null;g.time=2;
-   if(shot.operator){const actor=g.actors.find(a=>a.id!==p.id&&a.team!==p.team);if(actor)Object.assign(actor,{x:2,y:0,z:22,yaw:Math.PI,vx:1.3,vz:0,pitch:0});}
+   if(shot.operator){const actor=g.actors.find(a=>a.id!==p.id&&a.team!==p.team);if(actor)Object.assign(actor,{x:shot.actorX??2,y:0,z:shot.actorZ??22,yaw:Math.PI,vx:shot.operatorMotion==='stand'?0:1.3,vz:0,pitch:0});}
    if(shot.reload){p.weapon.ammo=0;p.weapon.reload();p.weapon.reloadLeft=p.weapon.reloadTime*.40;}
    if(shot.combat){p.weapon.sinceShot=.018;renderer.events([{type:'shot',source:0,weapon:0,position:g.eye(p),end:{x:2,y:1.2,z:21},suppressed:false},{type:'impact',surface:'steel',position:{x:2,y:.8,z:21},normal:{x:0,y:0,z:1}}],g);}
    await renderer.prepareMatch(g);
@@ -64,6 +65,7 @@ try{
  }
  const {BENCHMARK_BUILD:build}=await import('../dist/js/benchmark-build.js');
  const nativeSource=JSON.parse(await readFile('authoring/blender/source/manifest.json','utf8'));
- await writeFile('test-results/'+stage+'/scene-counts.json',JSON.stringify({kind:'software_WebGL_visual_validation',actual_iphone_data:false,build,nativeSourceSha256:nativeSource.sha256,errors,requestFailures,results},null,2)+'\n');
+ const distributionDirty=!!execFileSync('git',['status','--porcelain','--','dist'],{encoding:'utf8'}).trim();
+ await writeFile('test-results/'+stage+'/scene-counts.json',JSON.stringify({kind:'software_WebGL_visual_validation',actual_iphone_data:false,build,distributionDirty,nativeSourceSha256:nativeSource.sha256,errors,requestFailures,results},null,2)+'\n');
  if(errors.length||requestFailures.length)throw Error(JSON.stringify({errors,requestFailures}));
 }finally{await browser.close();server?.kill();}

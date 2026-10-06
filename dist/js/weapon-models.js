@@ -346,11 +346,15 @@ function addOptic(b,w){
   return Number.isFinite(top)?top:y+.025;
  };
  const mount=(z,width,top,height,depth,mat=METAL,x=0)=>{
-  const bottom=Math.min(top-height,supportTop(z,depth,x)-.008);
+  // Seat below the authored receiver's chamfer rather than only its box bound.
+  const bottom=Math.min(top-height,supportTop(z,depth,x)-.012);
   return box(x,(top+bottom)/2,z,width,top-bottom,depth,mat);
  };
  if([3,5,6].includes(w.optic)||w.def.kind==='SNIPER'||id===7){
-  for(const z of [-.074,.067]){mount(z,.046,.1515,.047,.031);tube(0,.188,z,.079,.026,METAL);}
+  for(const z of [-.074,.067]){
+   // The compact Vesper receiver needs a longer rear mounting foot.
+   mount(z,.046,.1515,.047,id===3&&z>0?.065:.031);tube(0,.188,z,.079,.026,METAL);
+  }
   tube(0,.188,-.007,.07,.242,METAL);tube(0,.188,-.153,.09,.069,METAL);tube(0,.188,.13,.086,.044,RUBBER);
   for(const z of [-.171,.137])tube(0,.188,z,.094,.01,EDGE);
   // The scope fills with coated optical glass in hip view. Magnified ADS renders

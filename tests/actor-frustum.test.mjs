@@ -24,6 +24,26 @@ function actorFixture(x,z){
 }
 const instances=r=>[...r.actorBatches.values()].reduce((n,e)=>n+e.used,0);
 
+test('native clothing detail simplifies at distance and restores without losing anatomy or identifiers',()=>{
+ const {r,g,a}=actorFixture(0,-5);r.height=600;
+ r.updateActors(g);const body=a.renderParts.slice(0,a.operatorBodyCount);
+ assert.equal(a.renderBodyLOD,0);
+ const near=instances(r);
+ a.z=-20;r.updateActors(g);
+ assert.equal(a.renderBodyLOD,1);
+ for(const i of [0,2,4,7,12,13,26]){
+  assert.equal(a.renderParts[i],body[i],'the existing posed rig is reused');
+  assert(a.renderParts[i].blenderFar,'authored far anatomy is selected');
+  const geometry=assets.geometry(a.renderParts[i],'actor',true);
+  assert([...r.actorBatches.values()].some(b=>b.used&&b.mesh.geometry===geometry),'the body part stays visible');
+ }
+ for(const i of [28,29])assert(a.renderParts[i].actorFar,'sewn affiliation patches remain at distance');
+ assert.equal(a.renderIdentifiers.length,2,'duplicate floating arm tabs are removed');
+ a.z=-14;r.updateActors(g);assert.equal(a.renderBodyLOD,1,'a small approach does not switch detail repeatedly');
+ a.z=-5;r.updateActors(g);assert.equal(a.renderBodyLOD,0);
+ assert.equal(instances(r),near,'close geometry and every component restore');
+});
+
 test('near operators behind the camera submit no meshes and restore correctly when visible',()=>{
  const {r,g,a}=actorFixture(0,-5);
  r.updateActors(g);r.uploadDynamic(r.actorBatches);const front=instances(r);

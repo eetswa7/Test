@@ -241,6 +241,22 @@ def author_heroes(api):
         return B['soft'],pos,size,color,rm
     def strip(pos,size,color=edge,rm=(.86,.03)):
         return B['box'],pos,size,color,rm
+    def front_plate(outline,sections):
+        # Convex X/Y contours give kneepads and goggles a shaped front without
+        # the old sphere or a rectangular visor. Z sections crown the surface.
+        vertices=[];triangles=[];count=len(outline)
+        for z,scale in sections:
+            vertices.extend(Vector((x*scale,y*scale,z)) for x,y in outline)
+        for row in range(len(sections)-1):
+            for i in range(count):
+                a=row*count+i;b=row*count+(i+1)%count
+                triangles.extend(((a,b,b+count),(a,b+count,a+count)))
+        for row,front in ((0,True),(len(sections)-1,False)):
+            centre=len(vertices);vertices.append(Vector((0,0,sections[row][0])))
+            for i in range(count):
+                a=row*count+i;b=row*count+(i+1)%count
+                triangles.append((centre,b,a) if front else (centre,a,b))
+        return vertices,triangles
     def seam(start,end,r=.006,color=dark):
         a,b=Vector(start),Vector(end);direction=b-a
         rotation=Vector((0,1,0)).rotation_difference(direction.normalized())
@@ -269,22 +285,57 @@ def author_heroes(api):
     # biceps, calf and ankle no longer share the same capsule, and compression
     # folds collect at the actual elbow/knee rather than along the whole limb.
     anatomy={
-        'thigh':[(-.5,.335,.35),(-.41,.39,.39),(-.28,.415,.41),(-.10,.455,.45),(.10,.48,.475),(.28,.50,.48),(.42,.47,.44),(.5,.39,.37)],
-        'shin':[(-.5,.27,.31),(-.40,.295,.345),(-.25,.33,.39),(-.08,.405,.465),(.13,.485,.49),(.29,.48,.45),(.41,.405,.37),(.5,.36,.35)],
-        'upperarm':[(-.5,.31,.335),(-.39,.34,.37),(-.23,.39,.425),(-.05,.46,.47),(.14,.5,.475),(.30,.495,.455),(.43,.45,.415),(.5,.39,.365)],
-        'forearm':[(-.5,.255,.285),(-.43,.285,.31),(-.31,.325,.355),(-.13,.39,.405),(.05,.46,.445),(.21,.5,.465),(.38,.46,.415),(.5,.37,.36)]
+        'thigh':[(-.54,.39,.405),(-.43,.40,.405),(-.28,.435,.43),(-.10,.475,.47),(.10,.50,.49),(.28,.51,.49),(.42,.48,.46),(.54,.43,.405)],
+        'shin':[(-.54,.30,.34),(-.40,.32,.36),(-.25,.355,.41),(-.08,.43,.47),(.13,.485,.49),(.29,.48,.47),(.41,.435,.415),(.54,.405,.405)],
+        'upperarm':[(-.55,.39,.405),(-.39,.385,.405),(-.23,.42,.445),(-.05,.475,.48),(.14,.515,.495),(.30,.515,.48),(.43,.495,.46),(.55,.48,.45)],
+        'forearm':[(-.54,.285,.315),(-.43,.31,.34),(-.31,.35,.38),(-.13,.415,.43),(.05,.48,.46),(.21,.5,.48),(.38,.465,.445),(.55,.42,.425)]
     }
     for name,rings in anatomy.items():
         surface=cloth(rings,24,.055,-.35 if name in ('thigh','upperarm') else .36)
         far=cloth([rings[i] for i in (0,2,4,6,7)],10,.018)
         pieces=[(surface,(0,0,0),(1,1,1),white,(.96,0))]
         if name=='forearm':
-            cuff=lathe([(-.5,.27,.30),(-.46,.31,.33),(-.40,.31,.33),(-.365,.285,.31)],16)
+            cuff=lathe([(-.55,.285,.315),(-.49,.33,.355),(-.41,.33,.355),(-.365,.305,.33)],16)
             pieces.append((cuff,(0,0,0),(1,1,1),dark,(.90,0)))
-            pieces.append(soft((.12,-.435,-.26),(.31,.060,.044),edge))
-        model(name,pieces,[(far,(0,0,0),(1,1,1),white,(.96,0))],True)
-    torso_rings=[(-.5,.365,.34),(-.42,.36,.39),(-.28,.375,.435),(-.11,.44,.46),(.06,.475,.43),(.22,.495,.405),(.35,.43,.35),(.45,.33,.28),(.5,.265,.245)]
-    register('torso',cloth(torso_rings,28,.047,-.35),lathe([torso_rings[i] for i in (0,2,4,6,8)],12),True)
+            pieces.append(soft((.12,-.445,-.295),(.31,.060,.044),edge))
+        if name=='thigh':
+            for side in (-1,1):
+                pieces.append(soft((side*.445,.035,.025),(.135,.375,.56),fabric))
+                pieces.append(soft((side*.47,.205,.015),(.15,.085,.58),edge))
+                pieces.append(seam((side*.518,-.125,-.225),(side*.518,.14,-.225),.006))
+                pieces.append(seam((side*.518,-.125,.27),(side*.518,.14,.27),.006))
+        if name=='shin':
+            cuff=lathe([(-.55,.31,.345),(-.48,.34,.38),(-.41,.34,.38),(-.37,.315,.355)],16)
+            pieces.append((cuff,(0,0,0),(1,1,1),fabric,(.97,0)))
+        for side in (-1,1):
+            pieces.append(seam((side*.40,-.34,.18),(side*.465,.30,.19),.0055,edge))
+        model(name,pieces,[(far,(0,0,0),(1,1,1),white,(.96,0))]+pieces[1:2],True)
+    torso_rings=[(-.535,.385,.36),(-.42,.39,.41),(-.28,.40,.44),(-.11,.455,.47),(.06,.49,.455),(.22,.515,.43),(.35,.475,.385),(.45,.38,.30),(.54,.265,.245)]
+    torso=[(cloth(torso_rings,28,.047,-.35),(0,0,0),(1,1,1),white,(.97,0))]
+    collar=lathe([(.395,.245,.245),(.48,.29,.285),(.535,.27,.26),(.565,.24,.235)],20)
+    torso.append((collar,(0,0,0),(1,1,1),fabric,(.96,0)))
+    model('torso',torso,[(lathe([torso_rings[i] for i in (0,2,4,6,8)],12),(0,0,0),(1,1,1),white,(.97,0))]+torso[1:],True)
+
+    # Leather ankle, swept toe box and separate heel follow the unchanged foot
+    # rig; the former stack of bevelled blocks made every boot a square plinth.
+    sole=_chamfer_profile([(-.52,.24,.055,-.415),(-.46,.40,.067,-.418),(-.26,.47,.068,-.42),(.08,.43,.065,-.42),(.32,.36,.073,-.407),(.47,.285,.071,-.398)])
+    vamp=_chamfer_profile([(-.51,.21,.04,-.23),(-.44,.375,.09,-.235),(-.25,.43,.125,-.21),(-.02,.43,.15,-.18),(.20,.35,.17,-.155),(.40,.28,.13,-.16),(.47,.20,.055,-.21)])
+    ankle=cloth([(-.31,.35,.31),(-.18,.365,.325),(.01,.32,.285),(.20,.305,.255),(.40,.295,.245),(.54,.285,.235)],24,.025,-.10)
+    boots=[(sole,(0,0,0),(1,1,1),dark,(.96,0)),(vamp,(0,0,0),(1,1,1),white,(.89,0)),(ankle,(0,0,.145),(1,1,1),fabric,(.94,0))]
+    for y,z in ((-.065,-.205),(.025,-.155),(.115,-.115),(.205,-.095)):
+        boots.append(seam((-.19,y,z),(.19,y+.027,z-.012),.014,dark))
+        for side in (-1,1):boots.append(soft((side*.235,y,z),(.045,.052,.047),edge,(.71,.05)))
+    for side in (-1,1):boots.append(seam((side*.34,-.21,-.27),(side*.30,.40,.13),.008,edge))
+    for z in (-.36,-.18,.0,.19,.36):boots.append(strip((0,-.486,z),(.72,.025,.055),edge,(.96,0)))
+    model('boot',boots,boots[:3],True)
+
+    pad_outline=[(-.28,.49),(-.46,.27),(-.445,-.18),(-.29,-.47),(.29,-.47),(.445,-.18),(.46,.27),(.28,.49)]
+    pads=[(front_plate(pad_outline,[(-.49,.78),(-.39,.98),(.21,1),(.42,.88)]),(0,0,0),(1,1,1),dark,(.84,.015))]
+    pads.append(soft((0,0,.48),(.94,1.10,.45),white,(.98,0)))
+    for y in (-.29,.29):
+        pads.append(strip((0,y,.40),(1.06,.11,.15),fabric,(.97,0)))
+        pads.append(seam((-.30,y,-.415),(.30,y,-.415),.009,edge))
+    model('kneepad',pads,pads[:2],True)
     # Flattened metacarpals, thenar/palm swell and soft dorsal knuckle armour.
     # Finger pieces remain under the original pose/trigger rig.
     palm_rings=[(-.5,.27,.28),(-.40,.37,.31),(-.24,.45,.345),(-.07,.485,.37),(.11,.48,.395),(.29,.45,.37),(.43,.355,.305),(.5,.275,.25)]
@@ -351,6 +402,29 @@ def author_heroes(api):
     for side in (-1,1):h.append((sphere(12,8),(side*.405,-.035,.02),(.11,.255,.16),(.92,.85,.73),(.78,0)))
     model('head',h,h[:3],True)
 
+    # The lower-face rig slot becomes sewn fabric around the jaw and neck.
+    # Its local offset wraps behind the face while retaining the original slot.
+    mask=cloth([(-.60,.285,.33),(-.43,.31,.355),(-.25,.365,.39),(-.02,.435,.43),(.20,.48,.455),(.40,.48,.43),(.56,.445,.395)],28,.027,-.35)
+    masks=[(mask,(0,0,.34),(1,1,1),white,(.98,0))]
+    masks.append(seam((-.34,-.28,.01),(-.39,.29,-.015),.006,edge))
+    masks.append(seam((.34,-.28,.01),(.39,.29,-.015),.006,edge))
+    for y in (-.10,.02,.14):masks.append(strip((0,y,-.10),(.24,.014,.012),dark,(.99,0)))
+    model('balaclava',masks,masks[:1],True)
+
+    # Two smoked lenses, a nose bridge and straps read as goggles at combat
+    # distance. They replace the broad blue reflective rectangle over the face.
+    lens_outline=[(-.46,-.18),(-.30,-.38),(.20,-.41),(.40,-.30),(.46,.18),(.29,.43),(-.30,.43),(-.46,.23)]
+    frame=front_plate(lens_outline,[(-.48,.86),(-.36,1),(.31,1),(.52,.92)])
+    lens=front_plate(lens_outline,[(-.535,.80),(-.505,.84),(-.40,.84)])
+    goggles=[]
+    for side in (-1,1):
+        goggles.append((frame,(side*.245,0,0),(.465,.94,1),edge,(.79,0)))
+        goggles.append((lens,(side*.245,0,0),(.465,.94,1),(.24,.29,.245),(.27,.025)))
+        goggles.append(soft((side*.37,0,1.16),(.085,.31,2.05),dark,(.95,0)))
+        goggles.append(strip((side*.454,-.015,.01),(.035,.24,.035),dark,(.96,0)))
+    goggles.append(soft((0,-.04,-.015),(.085,.22,.32),edge,(.87,0)))
+    model('goggles',goggles,goggles[:2]+goggles[4:6]+goggles[-1:],True)
+
     helmet=lathe([(-.5,.445,.46),(-.41,.485,.49),(-.24,.5,.5),(-.06,.48,.47),(.13,.41,.40),(.31,.29,.28),(.44,.14,.13),(.5,.015,.015)],32)
     hp=[(helmet,(0,0,0),(1,1,1),white,(.83,.04))]
     for side in (-1,1):
@@ -375,4 +449,4 @@ def author_heroes(api):
     dummy={'w':.096,'h':.034,'d':.084}
     hood=_machining((vertices,faces),dummy,(),.0007,2)
     model('optic_hood',[(hood,(0,0,0),(1,1,1),white,(.38,.25))])
-    return []
+    return ['kneepad','balaclava','goggles']

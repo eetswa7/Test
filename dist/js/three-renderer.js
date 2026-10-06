@@ -701,6 +701,12 @@ export class Renderer {
       }
       const detailRange=(this.quality==='low'?24:38)*Math.tan(27.5*RAD)/Math.tan(this.camera.fov*RAD/2);
       a.renderLOD=actorDetailLevel(a.renderLOD,actorDistance,detailRange);const distant=!preparing&&a.renderLOD===1;
+      // Keep the anatomical silhouette; sub-pixel seams, laces and lens rims
+      // use the authored simplified meshes before whole equipment is omitted.
+      const bodyPixels=this.quality==='low'?110:this.quality==='medium'?85:this.quality==='ultra'?60:70;
+      const bodyRange=1.8*(this.height??600)/(2*Math.tan(this.camera.fov*RAD/2)*bodyPixels);
+      a.renderBodyLOD=actorDetailLevel(a.renderBodyLOD,actorDistance,bodyRange);
+      const bodyFar=!preparing&&a.renderBodyLOD===1;
       const death = a.dead ? Math.min(1, (3 - a.respawnLeft) * 2) : 0;
       if (a.dead && death >= 1) continue;
       compose(this.rawMatrix, a.x, a.y + death * .2, a.z, 1, 1, 1, -a.yaw, 0, death * 1.5); this.parentMatrix.fromArray(this.rawMatrix);
@@ -709,7 +715,7 @@ export class Renderer {
       a.nativeWeaponVisible=!!this.blenderAssets&&actorDistance<(a.nativeWeaponVisible?nativeRange*1.18:nativeRange*.92);
       for (let i = 0; i < parts.length; i++) {
         const q = parts[i]; let color;
-        if(this.blenderAssets){q.blenderBodyIndex=i<a.operatorBodyCount?i:undefined;q.blenderFar=distant;}
+        if(this.blenderAssets){q.blenderBodyIndex=i<a.operatorBodyCount?i:undefined;q.blenderFar=distant||bodyFar;}
         if (q.hidden || a.nativeWeaponVisible&&q.carried || distant && !FAR_ACTOR_PARTS.has(i) && !q.actorFar) continue;
         // Navy/cyan versus warm charcoal/crimson is stable after sides switch and in FFA.
         if (q.surface === 'fabric') color = q.operatorNeutral ? q.color ?? [.65,.64,.52] : identity.cloth;
@@ -723,14 +729,12 @@ export class Renderer {
         for(const q of groups)if(!q.hidden)this.addDynamic(this.actorBatches,this.scene,q,'actor',this.operatorWeaponMatrix);
         for(const q of a.nativeWeaponAccessories)if(!q.hidden)this.addDynamic(this.actorBatches,this.scene,q,'actor',this.operatorWeaponMatrix);
       }
-      // Visible identifiers on both arms and front/back vest; no through-wall outlines.
+      // Sewn arm identifiers follow the rig. Retain small front/back vest tabs.
       const identifiers = a.renderIdentifiers ?? (a.renderIdentifiers = [
-        part(-.30, 1.31, -.07, .06, .105, .21, 'white', { tile: -1 }),
-        part(.30, 1.31, -.07, .06, .105, .21, 'white', { tile: -1 }),
-        part(0, 1.18, -.225, .25, .075, .012, 'white', { tile: -1 }),
-        part(0, 1.18, .258, .25, .075, .012, 'white', { tile: -1 })]);
+        part(0, 1.18, -.244, .13, .035, .006, 'white', { tile: -1 }),
+        part(0, 1.18, .253, .13, .035, .006, 'white', { tile: -1 })]);
       for (let i = 0; i < identifiers.length; i++) { const q = identifiers[i];
-        q.y = (i < 2 ? 1.31 : 1.18) - (a.crouched ? .5 : 0);
+        q.y = 1.18-(a.animDuck??0)+(a.operatorSettle??0);q.blenderFar=distant||bodyFar;
         this.addDynamic(this.actorBatches, this.scene, q, 'actor', this.parentMatrix, identity.band);
       }
     }

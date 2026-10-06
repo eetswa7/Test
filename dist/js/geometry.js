@@ -19,16 +19,16 @@ export function actorModel(a,time,relation){
   add(0,.81,0,.39,.21,.27,'fabric',{color:team});add(0,1.13,0,.44,.57,.29,'fabric',{color:team});
   add(0,1.17,-.179,.37,.44,.12,'fabric',{operatorNeutral:true,color:[.69,.66,.54]});add(0,1.16,.17,.34,.38,.16,'fabric',{operatorNeutral:true,color:[.62,.64,.48]});
   add(0,1.51,0,.25,.30,.24,'skin',{mesh:'sphere'});add(0,1.67,.008,.32,.22,.31,'fabric',{mesh:'sphere',color:team});
-  add(0,1.555,-.113,.255,.073,.04,'glass',{color:[.26,.31,.30],rough:.18});add(0,1.45,-.087,.25,.14,.09,'fabric',{mesh:'sphere',color:[.53,.55,.44]});
+  add(0,1.555,-.113,.255,.073,.04,'rubber',{blenderKind:'goggles',operatorNeutral:true,color:[.29,.32,.28],rough:.8,metal:0});add(0,1.45,-.087,.25,.14,.23,'fabric',{blenderKind:'balaclava',operatorNeutral:true,color:[.16,.18,.145]});
   add(-.269,1.235,-.09,.17,.30,.18,'fabric',{pitch:-.62,color:team});add(.265,1.23,-.07,.17,.30,.18,'fabric',{pitch:-.55,color:team});
   add(-.233,1.095,-.235,.14,.31,.15,'fabric',{pitch:-1.25,roll:-.36,color:team});add(.22,1.10,-.215,.14,.29,.15,'fabric',{pitch:-1.4,roll:.35,color:team});
   add(-.09,1.135,-.344,.1,.1,.1,'rubber',{mesh:'sphere'});add(.09,1.15,-.27,.09,.1,.09,'rubber',{mesh:'sphere'});
   add(.075,1.14,-.43,.084,.10,.49,'dark');add(.075,1.17,-.72,.027,.17,.027,'steel',{mesh:'cylinder',pitch:Math.PI/2});add(.075,1.06,-.33,.056,.12,.08,'dark');
   for(const x of [-.12,0,.12])add(x,1.11,-.22,.093,.14,.07,'fabric',{color:[.57,.58,.41]});
-  for(const x of [-.13,.13])add(x,.40,-.10,.14,.14,.05,'rubber',{mesh:'sphere'});
+  for(const x of [-.13,.13])add(x,.40,-.10,.15,.15,.07,'fabric',{blenderKind:'kneepad',operatorNeutral:true,color:[.30,.33,.27],rough:.94,metal:0});
   // Contrasting arm identifiers preserve combat readability without luminous bodies.
-  add(-.29,1.30,-.082,.05,.095,.19,'white',{color:a.team===0?[.22,.72,.78]:[.92,.43,.22]});
-  add(.29,1.30,-.082,.05,.095,.19,'white',{color:relation?.band??(a.team===0?[.10,.72,.91]:[.94,.16,.11])});
+  add(-.29,1.30,-.082,.008,.075,.075,'white',{actorFar:true,color:a.team===0?[.22,.72,.78]:[.92,.43,.22]});
+  add(.29,1.30,-.082,.008,.075,.075,'white',{actorFar:true,color:relation?.band??(a.team===0?[.10,.72,.91]:[.94,.16,.11])});
   p[7].mesh='operatorTorso';for(const i of [0,1,2,3,14,15,16,17])p[i].mesh='operatorLimb';
   addOperatorGear(p,a);a.operatorBodyCount=p.length;a.renderParts=p;a.renderBase=p.map(p=>({...p}));
  }
@@ -40,6 +40,16 @@ export function actorModel(a,time,relation){
  for(let i=0;i<a.renderParts.length;i++){const q=a.renderParts[i],b=a.renderBase[i];q.x=b.x;q.z=b.z;q.roll=b.roll??0;q.y=b.y-(i>=6?duck:duck*.3);q.pitch=b.pitch??0;if(i<4){q.pitch=(i%2===0?walk:-walk)*(i<2?1:.7);q.z=b.z+Math.sin(q.pitch)*.13;}if(i>=14&&i<=19&&a.weapon.reloadLeft>0)q.pitch+=.55;}
  poseLegs(a,duck);
  poseOperator(a,duck);
+ // Sewn identifiers follow the posed upper sleeve, including crouch, reload
+ // and impact lean. Thin patches replace the rigid tabs beside the shoulders.
+ for(let arm=0;arm<2;arm++){
+  const sleeve=a.renderParts[14+arm],patch=a.renderParts[28+arm],side=arm?1:-1;
+  const lx=side*(sleeve.w*.48+.004),ly=sleeve.h*.26,lz=0;
+  const cr=Math.cos(sleeve.roll??0),sr=Math.sin(sleeve.roll??0),cp=Math.cos(sleeve.pitch??0),sp=Math.sin(sleeve.pitch??0),cy=Math.cos(sleeve.yaw??0),sy=Math.sin(sleeve.yaw??0);
+  const rx=cr*lx-sr*ly,ry=cp*(sr*lx+cr*ly)-sp*lz,rz=sp*(sr*lx+cr*ly)+cp*lz;
+  patch.x=sleeve.x+cy*rx+sy*rz;patch.y=sleeve.y+ry;patch.z=sleeve.z-sy*rx+cy*rz;
+  patch.yaw=sleeve.yaw??0;patch.pitch=sleeve.pitch??0;patch.roll=sleeve.roll??0;
+ }
  // A small pelvis-settle and breathing layer gives the rigid equipment a
  // coherent weight. The weapon, hands and body share the same visual offset.
  const gait=Math.min(1,a.animSpeed/4),settle=-Math.cos(a.stride*2)*.013*gait+Math.sin(time*2.15+a.id)*.003*(1-gait);a.operatorSettle=settle;
