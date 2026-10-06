@@ -1,0 +1,30 @@
+{
+  "kind": "actual_release57_visual_capture_preparation",
+  "commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415",
+  "release": 57,
+  "worktree": "/workspace/scratch/breachline-release57-review",
+  "output": "/workspace/scratch/release57-review",
+  "origin": "http://127.0.0.1:4193",
+  "viewport": {
+    "width": 1280,
+    "height": 600
+  },
+  "deviceScaleFactor": 1,
+  "seed": 817,
+  "quality": "high",
+  "fov": 80,
+  "frameRate": 60,
+  "mode": "domination",
+  "map": 14,
+  "trackedAssetSegmentsVerified": 49,
+  "nativeMeshDescriptors": 226,
+  "nativeWeaponRigs": 30,
+  "captureTargets": [
+    "blacksite-approach",
+    "blacksite-interior",
+    "blacksite-oblique",
+    "weapon-close"
+  ],
+  "cameraAndLightingMethod": "Same six gameplay shot states through weapon-close as current scripts/capture-art.mjs, including yard/services state settling; normal gameplay lighting methods only.",
+  "actual_iphone_data": false
+}

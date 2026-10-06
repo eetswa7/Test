@@ -20,7 +20,10 @@ Collision, spawns, objective positions and navigation remain simulation-owned.
 Manufactured weapon cores have shaped receivers, magwells, stocks, rails,
 perforated handguards, slides and magazines. Hollow optics preserve sight rays.
 Operators and first-person hands use tapered anatomical clothing, cuffs, smooth
-organic normals, stitched gloves, shaped armour and equipment. Existing joint
+organic normals, stitched gloves, shaped armour and equipment. Operator boots
+have swept toes, leather ankles, soles and lacing; fitted angular knee pads,
+sewn balaclavas, split smoked goggles and overlapping clothing replace the most
+mechanical shapes. Small affiliation patches follow the posed sleeves. Existing joint
 and mechanical anchors still drive recoil, handling and reloads. Close operators
 carry the native weapon construction; distant ones retain inexpensive proxies.
 The rig consists of animated rigid mesh groups rather than a new skinned human
@@ -58,20 +61,33 @@ visual result. The complete map sweep also exposed unsupported legacy service
 spans, plaster artwork on snow, hard cyan puddle edges and disconnected stock
 construction. The refined source removes the unsupported spans, calibrates snow
 and irregular transparent puddles, joins all helper-built stock families to their
-receivers and makes magazine sections continuous. Side views are included for
-every weapon to expose construction gaps hidden in the forward camera.
+receivers and makes magazine sections continuous. Side views exposed additional
+barrel, optic mount, butt and cheek-support gaps; those existing members now
+intersect their physical supports while muzzle tips, sight heights and gameplay
+anchors stay fixed. Menu framing keeps the complete weapon inside the landscape
+view. Side views are included for every weapon to expose construction gaps hidden
+in the forward camera.
 
 Matched actual Release 57 gameplay renders use the same software backend, camera,
 quality, seed and viewport as the new screenshots. Those images are visual
 evidence, not physical-device frame-rate measurements. Final image and
-scene-count evidence is stored with this release.
+scene-count evidence is stored with this release. Browse the
+[matched Blacksite approach](art-release60/comparison-blacksite-approach.webp),
+[interior](art-release60/comparison-blacksite-interior.webp),
+[oblique view](art-release60/comparison-blacksite-oblique.webp) and
+[weapon close-up](art-release60/comparison-weapon-close.webp).
+The [map gallery](art-release60/contact-maps.webp),
+[weapon side gallery](art-release60/contact-weapon-sides.webp) and
+[full-resolution image manifest](art-release60/manifest.json) cover the library.
 
 ## Cost controls and limits
 
 Native floor finishes share batches; substantial architecture retains spatial
 chunks. Per-instance projected-size near/far selection, mipmaps, static light
 bakes, throttled shadows and existing automatic quality/dynamic resolution bound
-rendering cost. Large textures are uploaded before controls activate in byte-sized
+rendering cost. Authored body detail follows projected character size separately
+from distant equipment omission; anatomical silhouettes and identification
+patches remain present. Large textures are uploaded before controls activate in byte-sized
 stages; background/resume and Benchmark Mode behavior remain intact.
 
 The asset download is deliberately larger than the old approximately 11 MiB art
@@ -80,7 +96,12 @@ buffers and estimated block storage from actual Safari process memory. The hero
 regression covers 52,920 weapon/attachment combinations with an absolute 32,000
 first-person triangle limit and sixteen active batches, or seventeen for drum
 magazines. Detailed hands/weapons cost more geometry than Release 59; this is a
-visible art investment, not a claim of free GPU headroom.
+visible art investment, not a claim of free GPU headroom. In matched static crowd
+fixtures, the operator art costs 20.9% more submitted actor triangles at five
+metres; authored body detail scaling reduces the twenty-metre count from
+101,936 to 48,892 triangles. These are geometry counts, not measured frame times.
+The [cost comparison](validation-release60-operator-art-cost.json) records both
+the close cost and distant saving.
 
 The physical iPhone 16 Pro Release 57 reference remains approximately 57.4 FPS,
 29 FPS at the 1% low, 17.4 ms average frame time, 3.74 ms measured CPU frame and
@@ -92,6 +113,12 @@ and exact JSON download remain available for the next physical-device report.
 This is a substantial complete-library production revision. It does not
 establish commercial reference-game fidelity, photoreal production humans,
 motion-captured animation or verified sustained iPhone frame rate.
+Sparse background foliage and faceted distant terrain remain visible limits
+in the full map gallery.
+Weapon close-ups still show broad flat receiver faces, coarse sight housings
+and limited visible finish variation. The pistol optics retain relatively tall
+gameplay mounts. These images show the actual production result and do not
+establish the requested premium mobile shooter art standard.
 
 ## Rebuild and recovery
 

@@ -1,0 +1,2923 @@
+{
+  "schemaVersion": 1,
+  "release": 60,
+  "review": "Actual final Release 60 static PNG visual inspection",
+  "writtenAtUTC": "2026-10-06T07:43:04.310003+00:00",
+  "status": "review_complete_with_material_visual_quality_limits",
+  "codeCommit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+  "buildStampCommit": "8b763c08f47fa4de676d01fd2f2fdaffb34a2fbf",
+  "distributionContentSha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+  "editableBlenderSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+  "identityEvidence": {
+    "file": "test-results/release60-ship/scene-counts.json",
+    "sha256": "6ee696e3914da8e94b325b4b9058ae5c86885799e3a1e030bb7982743e07f48a",
+    "recordedKind": "software_WebGL_visual_validation",
+    "metadataUse": "Binds recorded capture identities only. Render counts and metadata are not evidence of visual quality.",
+    "observedRepositoryHEAD": "8b763c08f47fa4de676d01fd2f2fdaffb34a2fbf"
+  },
+  "conclusion": {
+    "allThirtyWeaponPairsInspected": true,
+    "allNineBlacksitePlayerScenesIndividuallyInspected": true,
+    "allSixteenPriorFinalMapImageHashesMatch": true,
+    "newBlockingVisibleRenderOrModelConstructionDefectsObserved": [],
+    "staticReadability": "All 30 weapon types appear in both selected views. Major class silhouettes, palettes, stocks, magazines, sights and attachments are distinguishable. No conspicuous detached stock, receiver/barrel, magazine or optic is observed in the reviewed selected configurations.",
+    "qualityAcceptance": "Visual quality acceptance beyond sampled static coherence is not established. Broad flat faces, coarse optics, simplified anatomy and sparse finish/feed details remain visible.",
+    "aaaParityEstablished": false,
+    "physicalIPhonePerformanceEstablished": false
+  },
+  "reviewerProvenance": [
+    {
+      "reviewer": "/root/release60_final_review",
+      "role": "Primary final visual reviewer",
+      "directVisualInspection": "All 60 actual weapon PNGs in six full-frame paired coverage sheets and six paired fixed-crop detail sheets; six separately viewed full weapon originals; all nine Blacksite/player scene originals.",
+      "tools": "Local view_image plus standard PIL crop, resize, contact-sheet composition and SHA256; no browser or GPU process used.",
+      "sourceChanges": false,
+      "primaryFullWeaponOriginals": [
+        "weapon-0.png",
+        "weapon-side-0.png",
+        "weapon-9.png",
+        "weapon-side-9.png",
+        "weapon-27.png",
+        "weapon-side-10.png"
+      ],
+      "primaryFullSceneOriginals": [
+        "blacksite-approach.png",
+        "blacksite-interior.png",
+        "blacksite-yard.png",
+        "blacksite-oblique.png",
+        "blacksite-services.png",
+        "weapon-close.png",
+        "operator-close.png",
+        "combat.png",
+        "reload.png"
+      ]
+    },
+    {
+      "reviewer": "/root/release60_final_review/secondary_weapon_review",
+      "role": "Independent secondary weapon cross-check",
+      "scope": "IDs 15\u201329, both views: 30 weapon-region contact-sheet crops and 10 separately viewed originals",
+      "reportFile": "/workspace/scratch/release60-secondary-weapon-review.json",
+      "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e",
+      "frameHashesVerifiedAgainstFinalFiles": true
+    },
+    {
+      "reviewer": "Prior final 16-map reviewer; individual agent identity is not recorded in its report",
+      "role": "Existing actual final map pixel review incorporated after exact hash matching",
+      "reportFile": "/workspace/scratch/release60-ship-map-review.json",
+      "reportSha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+      "reportedScope": "All 16 actual final original map frames, two final eight-map contact sheets, final Blacksite oblique and operator-close frames",
+      "allSixteenImageHashesVerifiedAgainstFinalFiles": true
+    }
+  ],
+  "inspectionSets": {
+    "primaryWeaponForwardIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "primaryWeaponSideIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "primarySeparatelyViewedWeaponOriginals": [
+      "weapon-0",
+      "weapon-side-0",
+      "weapon-9",
+      "weapon-side-9",
+      "weapon-27",
+      "weapon-side-10"
+    ],
+    "primaryIndividuallyViewedSceneNames": [
+      "blacksite-approach",
+      "blacksite-interior",
+      "blacksite-yard",
+      "blacksite-oblique",
+      "blacksite-services",
+      "weapon-close",
+      "operator-close",
+      "combat",
+      "reload"
+    ],
+    "priorMatchingFinalMapIds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "secondaryWeaponForwardIds": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "secondaryWeaponSideIds": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ]
+  },
+  "contactSheets": [
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+      "sha256": "12220f418ff575b5d24a1462455fb32eedb5cf0be3db2e734f1c37bcca3a9de4",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-0.png",
+          "sha256": "599942933eaf0e5249e9d776760731f8b2ca0b4fe5167806ea8607152b389a91"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-0.png",
+          "sha256": "3248d79e31ca9969e05a1129db6a7cdb183dfa9c48fbe3d715ed8f6119b0c5d0"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-1.png",
+          "sha256": "fd30d7ba49329a6aef3bda6a5ec02a1dca3a5e69829346cd50995d0778af5444"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-1.png",
+          "sha256": "886a2e74fd4a15e5e0d878399968600ddb28153750f15b7dc71fcada706e0f0f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-2.png",
+          "sha256": "235d98ba71a209c91e93a485014d9c10d966183b20ec1d2ef603f9bb059fc841"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-2.png",
+          "sha256": "1baaea7c58551a57551c7deae4364263aa0ab35d1c4705f95208e73ecf18f730"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-3.png",
+          "sha256": "dac288e432c7a55a065eae51716618b0cb922e2cf41ecea14f80ad4a35d537b7"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-3.png",
+          "sha256": "2719b0d9e2e83ce58080eab2a162a8a30000475a5276b629511df24195910f09"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-4.png",
+          "sha256": "7d32c0866a94a333650397d500420674267597a22fe99ef6547e4778fa037d11"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-4.png",
+          "sha256": "c71b5ac8333d8cb9a92556896689304990ba6a3b0112c9677c2fd8cccfa6056b"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-00-04.png",
+      "sha256": "b50f679becdb777822de948cadb7f6981f22c4cbf306bfc035f9b6f56cb5d102",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-0.png",
+          "sha256": "599942933eaf0e5249e9d776760731f8b2ca0b4fe5167806ea8607152b389a91"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-0.png",
+          "sha256": "3248d79e31ca9969e05a1129db6a7cdb183dfa9c48fbe3d715ed8f6119b0c5d0"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-1.png",
+          "sha256": "fd30d7ba49329a6aef3bda6a5ec02a1dca3a5e69829346cd50995d0778af5444"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-1.png",
+          "sha256": "886a2e74fd4a15e5e0d878399968600ddb28153750f15b7dc71fcada706e0f0f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-2.png",
+          "sha256": "235d98ba71a209c91e93a485014d9c10d966183b20ec1d2ef603f9bb059fc841"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-2.png",
+          "sha256": "1baaea7c58551a57551c7deae4364263aa0ab35d1c4705f95208e73ecf18f730"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-3.png",
+          "sha256": "dac288e432c7a55a065eae51716618b0cb922e2cf41ecea14f80ad4a35d537b7"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-3.png",
+          "sha256": "2719b0d9e2e83ce58080eab2a162a8a30000475a5276b629511df24195910f09"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-4.png",
+          "sha256": "7d32c0866a94a333650397d500420674267597a22fe99ef6547e4778fa037d11"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-4.png",
+          "sha256": "c71b5ac8333d8cb9a92556896689304990ba6a3b0112c9677c2fd8cccfa6056b"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+      "sha256": "cc80135d9b961f4a03d2a0fc1e9d7b7d2e0f908e85636f2655a699874882a873",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-5.png",
+          "sha256": "bff92cd64d692499ea7f9b7b7b4309700f898f905b24a4c404968182a8d62729"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-5.png",
+          "sha256": "7e0b40e12763bff6fe217e63cf1c5ce3da7cc2a07475788accc94e4c9c1d00e0"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-6.png",
+          "sha256": "e44a2ccf8adf6461af271f8adae84ecb4214e084a7552348d7bfe41e081d5bd7"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-6.png",
+          "sha256": "e65c11ff0f7f33ddd0f87695862e4656c769ff546cbe9c3a16fc6648d20f1b94"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-7.png",
+          "sha256": "fd0332747c21842e32359f9f1985baaf220085f3160991e5a18b32a842151c89"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-7.png",
+          "sha256": "9bef5e6b442e1f1152c5072825369ae4b25250ccaf21c1c04ae8e6ca36ca5f8e"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-8.png",
+          "sha256": "ae5be52d150a534f49198208276e73d702103cdd7068759cf82bd78964524a5e"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-8.png",
+          "sha256": "7babf9b7d5092c2124c2494012fc058a015574df2171f4f149c5f571e130478c"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-9.png",
+          "sha256": "e44b03a010f4c06bc583384b0265e258cc5722892167a0c42fd12ad61e4317c3"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-9.png",
+          "sha256": "51a1bca412ecf44be983fc921e5da1aac09d70dd18d22a99292dfe8074108499"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-05-09.png",
+      "sha256": "15e3a3a03fd083aafda4cc6a95b13e71f186834064d07232c52209db7bb560d0",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-5.png",
+          "sha256": "bff92cd64d692499ea7f9b7b7b4309700f898f905b24a4c404968182a8d62729"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-5.png",
+          "sha256": "7e0b40e12763bff6fe217e63cf1c5ce3da7cc2a07475788accc94e4c9c1d00e0"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-6.png",
+          "sha256": "e44a2ccf8adf6461af271f8adae84ecb4214e084a7552348d7bfe41e081d5bd7"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-6.png",
+          "sha256": "e65c11ff0f7f33ddd0f87695862e4656c769ff546cbe9c3a16fc6648d20f1b94"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-7.png",
+          "sha256": "fd0332747c21842e32359f9f1985baaf220085f3160991e5a18b32a842151c89"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-7.png",
+          "sha256": "9bef5e6b442e1f1152c5072825369ae4b25250ccaf21c1c04ae8e6ca36ca5f8e"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-8.png",
+          "sha256": "ae5be52d150a534f49198208276e73d702103cdd7068759cf82bd78964524a5e"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-8.png",
+          "sha256": "7babf9b7d5092c2124c2494012fc058a015574df2171f4f149c5f571e130478c"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-9.png",
+          "sha256": "e44b03a010f4c06bc583384b0265e258cc5722892167a0c42fd12ad61e4317c3"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-9.png",
+          "sha256": "51a1bca412ecf44be983fc921e5da1aac09d70dd18d22a99292dfe8074108499"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+      "sha256": "8e893610c3c37a823e743aa335e36edb5d4f3055619925126c49103cdf8f91e2",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-10.png",
+          "sha256": "557f5df7ec1d312eca78fca62202dca23fa3106fffd6f98d9be348edbb3c1554"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-10.png",
+          "sha256": "0d34679eb5f5b8480d80d25de14f1abe7f3c803b79b61412816ce552a2a35f16"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-11.png",
+          "sha256": "119e4dd876abef50d74db88556a6e9e22e390c41b1c010686e83d14f18b07be3"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-11.png",
+          "sha256": "a83c82efd649c839b37be50acb007ac3423b1f03941333bca569d487d138accd"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-12.png",
+          "sha256": "a7711b1e0c922bfe8635f8cf26d636d4e0263235d66d0e051f0abab6bb11c877"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-12.png",
+          "sha256": "056d152a8e3a1e9bad9948103050dff9c3e4358132324bad4756133f304d0a5a"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-13.png",
+          "sha256": "af6ee1d376b3601b43931a662e00ab566c152a09bf53dea322ce82769b1792d5"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-13.png",
+          "sha256": "b3eabf01aa21d53d5d1678978e425c59a74afd1862a640c6148d8755bd37e2ff"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-14.png",
+          "sha256": "0df97078ba65deee47912a15c69f53b868dfab32b5241c83e82e832e0a3552f2"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-14.png",
+          "sha256": "a2a61f0bf75f1d0987ff1d1026a3c39883b23faf13e5dd2585e8c8333a365214"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-10-14.png",
+      "sha256": "cbd06931c389b16838f6c7dffcb4ab29ab3c237b37bb9f04b92b26003022ea5d",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-10.png",
+          "sha256": "557f5df7ec1d312eca78fca62202dca23fa3106fffd6f98d9be348edbb3c1554"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-10.png",
+          "sha256": "0d34679eb5f5b8480d80d25de14f1abe7f3c803b79b61412816ce552a2a35f16"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-11.png",
+          "sha256": "119e4dd876abef50d74db88556a6e9e22e390c41b1c010686e83d14f18b07be3"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-11.png",
+          "sha256": "a83c82efd649c839b37be50acb007ac3423b1f03941333bca569d487d138accd"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-12.png",
+          "sha256": "a7711b1e0c922bfe8635f8cf26d636d4e0263235d66d0e051f0abab6bb11c877"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-12.png",
+          "sha256": "056d152a8e3a1e9bad9948103050dff9c3e4358132324bad4756133f304d0a5a"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-13.png",
+          "sha256": "af6ee1d376b3601b43931a662e00ab566c152a09bf53dea322ce82769b1792d5"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-13.png",
+          "sha256": "b3eabf01aa21d53d5d1678978e425c59a74afd1862a640c6148d8755bd37e2ff"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-14.png",
+          "sha256": "0df97078ba65deee47912a15c69f53b868dfab32b5241c83e82e832e0a3552f2"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-14.png",
+          "sha256": "a2a61f0bf75f1d0987ff1d1026a3c39883b23faf13e5dd2585e8c8333a365214"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+      "sha256": "21676dfdefd387215885330d0a5457675e11f88da931ef773f93c769c1ab6e35",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-15.png",
+          "sha256": "d22df39998ae8e2ad9b651bae811fb34178d375ccbbf9c781d701484a948a009"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-15.png",
+          "sha256": "91a3e4f1cbc2e5a3067cebd2cab16757ebe439bc2f3a8bafd01b7b978af4be2f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-16.png",
+          "sha256": "fa4bb29629e8535d53b03d50416acd064aa11f22f9518715b04ca18f4288dad2"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-16.png",
+          "sha256": "de37f3e7fa8cfba57f0538230af44a31b67986e2b12c0c61915510dc00d1d020"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-17.png",
+          "sha256": "fdc6c2375c432ebb34fb0a28c8cce591f7979a8ada7ceb5ed8a62d0275b5d1c1"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-17.png",
+          "sha256": "4405515d490ff9ec379691a553e810a33c7ac4a95d29cb9cc0a4bcab32377966"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-18.png",
+          "sha256": "44ba6a32a67aae83262273596639910182767528cbc84b7e49e4e95efe8fc0a8"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-18.png",
+          "sha256": "4d1673f58b60c5ddf492dabaea4be15d0ed6f2b4ef77d4bb692b8ffa8bf995f6"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-19.png",
+          "sha256": "8cb49f6ea62be61d9609d8f82d27f08c3d4694c2890a2e4c9b5d9692fcbf0913"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-19.png",
+          "sha256": "9a030a2e02665e5d43567a5d1a8be03530f0d6e84fe3df508ca2226c6b0b1800"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-15-19.png",
+      "sha256": "00bb64b5cdea57a177344f1bab70ff2a7dc327d014f1fac9c774e1eaf87c5c88",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-15.png",
+          "sha256": "d22df39998ae8e2ad9b651bae811fb34178d375ccbbf9c781d701484a948a009"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-15.png",
+          "sha256": "91a3e4f1cbc2e5a3067cebd2cab16757ebe439bc2f3a8bafd01b7b978af4be2f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-16.png",
+          "sha256": "fa4bb29629e8535d53b03d50416acd064aa11f22f9518715b04ca18f4288dad2"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-16.png",
+          "sha256": "de37f3e7fa8cfba57f0538230af44a31b67986e2b12c0c61915510dc00d1d020"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-17.png",
+          "sha256": "fdc6c2375c432ebb34fb0a28c8cce591f7979a8ada7ceb5ed8a62d0275b5d1c1"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-17.png",
+          "sha256": "4405515d490ff9ec379691a553e810a33c7ac4a95d29cb9cc0a4bcab32377966"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-18.png",
+          "sha256": "44ba6a32a67aae83262273596639910182767528cbc84b7e49e4e95efe8fc0a8"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-18.png",
+          "sha256": "4d1673f58b60c5ddf492dabaea4be15d0ed6f2b4ef77d4bb692b8ffa8bf995f6"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-19.png",
+          "sha256": "8cb49f6ea62be61d9609d8f82d27f08c3d4694c2890a2e4c9b5d9692fcbf0913"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-19.png",
+          "sha256": "9a030a2e02665e5d43567a5d1a8be03530f0d6e84fe3df508ca2226c6b0b1800"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+      "sha256": "3bbfb04c7bef44ef6794e3086d317d7f99db38f0d917c910113996a3e04d8545",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-20.png",
+          "sha256": "b0b9d2764cf7f912346f29bae89f29b22eaac1d19de5bfa2cf557508c2986d69"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-20.png",
+          "sha256": "6c4afd8014dec7cdb4ca185bfa2ba990cd0d3e295cc96d78085b24162e0c54dc"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-21.png",
+          "sha256": "e982c22e57120ab7d359180db8b9d07d08a7394e9ee5c3ace768f24282274e22"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-21.png",
+          "sha256": "aeb2e0d74bd1f367d00881e96462a8b452d59dfec0b1a7a824d538cf64a71488"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-22.png",
+          "sha256": "42919a334616c31824f8a4b6d63d79eebf0920b6bb14086ae29b42b98d7899fe"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-22.png",
+          "sha256": "d0a8ee61a871e5fb97ce15698734a09bf4d5783739dc93b838ab4381d61b0556"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-23.png",
+          "sha256": "57eb70e33187256282c8b6564bc4871feae6a8c4a2c2c2298a31f12e6716c10a"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-23.png",
+          "sha256": "f1ff378cd6a6b64e029941ad9ffd3b87de5434f76060874e6babf3fc58b2351f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-24.png",
+          "sha256": "2b735aaec020af8018610b0c8cbebdffe5473e44058f6d89afd8bad34974df7f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-24.png",
+          "sha256": "f9ee5a1b0008ca78ac24583a056db30c1b980f3afe9559b3d8ed8f29f24bd50a"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-20-24.png",
+      "sha256": "0d275447ef6de42aa9a0dabb9fc8ca9e7e312bf64ad1a82f102d3b384e143b81",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-20.png",
+          "sha256": "b0b9d2764cf7f912346f29bae89f29b22eaac1d19de5bfa2cf557508c2986d69"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-20.png",
+          "sha256": "6c4afd8014dec7cdb4ca185bfa2ba990cd0d3e295cc96d78085b24162e0c54dc"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-21.png",
+          "sha256": "e982c22e57120ab7d359180db8b9d07d08a7394e9ee5c3ace768f24282274e22"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-21.png",
+          "sha256": "aeb2e0d74bd1f367d00881e96462a8b452d59dfec0b1a7a824d538cf64a71488"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-22.png",
+          "sha256": "42919a334616c31824f8a4b6d63d79eebf0920b6bb14086ae29b42b98d7899fe"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-22.png",
+          "sha256": "d0a8ee61a871e5fb97ce15698734a09bf4d5783739dc93b838ab4381d61b0556"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-23.png",
+          "sha256": "57eb70e33187256282c8b6564bc4871feae6a8c4a2c2c2298a31f12e6716c10a"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-23.png",
+          "sha256": "f1ff378cd6a6b64e029941ad9ffd3b87de5434f76060874e6babf3fc58b2351f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-24.png",
+          "sha256": "2b735aaec020af8018610b0c8cbebdffe5473e44058f6d89afd8bad34974df7f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-24.png",
+          "sha256": "f9ee5a1b0008ca78ac24583a056db30c1b980f3afe9559b3d8ed8f29f24bd50a"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+      "sha256": "4d794eb251678476c2517b3a607e03bd14ef38e94c72b259a06425f15118a6ad",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-25.png",
+          "sha256": "690329c5b0982cb2448fc67d283831f752fa0f54efff7fc5a24966136f24d823"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-25.png",
+          "sha256": "4d0af45d507939c52b06310c1aee3a0c517abe704222b47b7888b329facbd580"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-26.png",
+          "sha256": "e8c687bde0fae70e902c9a35ab0efc526ac380f24c3ea767b82f69d02ca3ea0f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-26.png",
+          "sha256": "42d37685b33f35100c5a9c61b710ace4e78d85062330734fc98a1bc8d439d321"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-27.png",
+          "sha256": "dd5bb24d8b9a3527eadc69eee49c97eeb609ccb6afaea239250531bd5a808a04"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-27.png",
+          "sha256": "f94e46f9db8214d007cfb60fe618460137102fc1e8443a11f8cb29da82e4d74f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-28.png",
+          "sha256": "12efb62d6d158c9ae47635e9281c34e3ac9efe51e3072cb8525c4ba127d80285"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-28.png",
+          "sha256": "420f85fe9b75efc00503ede8aec8ae303e6a112bac1bca7e503946ca26c4d114"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-29.png",
+          "sha256": "3548af40c24efd8bb44e0c0d968761c00058eddf12216bc6abf3f443dd617c94"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-29.png",
+          "sha256": "7a42f38cad1895c5933d908a27df737ff2d516893f395c17e1cf495d96ca2815"
+        }
+      ],
+      "type": "full_frame_reduced",
+      "cropRegions": null
+    },
+    {
+      "file": "/workspace/scratch/release60-ship-weapon-detail-25-29.png",
+      "sha256": "a21ab73e72c255380190f7ab1e99e8ffc4673fc93bc3c194ae5db7a9a6d88ed8",
+      "frames": [
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-25.png",
+          "sha256": "690329c5b0982cb2448fc67d283831f752fa0f54efff7fc5a24966136f24d823"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-25.png",
+          "sha256": "4d0af45d507939c52b06310c1aee3a0c517abe704222b47b7888b329facbd580"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-26.png",
+          "sha256": "e8c687bde0fae70e902c9a35ab0efc526ac380f24c3ea767b82f69d02ca3ea0f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-26.png",
+          "sha256": "42d37685b33f35100c5a9c61b710ace4e78d85062330734fc98a1bc8d439d321"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-27.png",
+          "sha256": "dd5bb24d8b9a3527eadc69eee49c97eeb609ccb6afaea239250531bd5a808a04"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-27.png",
+          "sha256": "f94e46f9db8214d007cfb60fe618460137102fc1e8443a11f8cb29da82e4d74f"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-28.png",
+          "sha256": "12efb62d6d158c9ae47635e9281c34e3ac9efe51e3072cb8525c4ba127d80285"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-28.png",
+          "sha256": "420f85fe9b75efc00503ede8aec8ae303e6a112bac1bca7e503946ca26c4d114"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-29.png",
+          "sha256": "3548af40c24efd8bb44e0c0d968761c00058eddf12216bc6abf3f443dd617c94"
+        },
+        {
+          "file": "/workspace/Test/test-results/release60-ship/weapon-side-29.png",
+          "sha256": "7a42f38cad1895c5933d908a27df737ff2d516893f395c17e1cf495d96ca2815"
+        }
+      ],
+      "type": "fixed_crop",
+      "cropRegions": {
+        "forward": [
+          620,
+          180,
+          1260,
+          600
+        ],
+        "side": [
+          400,
+          80,
+          1140,
+          565
+        ]
+      }
+    }
+  ],
+  "frames": [
+    {
+      "name": "blacksite-approach",
+      "file": "test-results/release60-ship/blacksite-approach.png",
+      "sha256": "0e0cb8190c7fcb31da00fb33ddc391ea0b6f70ac8145d383d000e252fe33f68f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "blacksite-interior",
+      "file": "test-results/release60-ship/blacksite-interior.png",
+      "sha256": "25bc05c49f7a253761317a408a58e5122842c73b51675c4ad0892da8c853b743",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "blacksite-yard",
+      "file": "test-results/release60-ship/blacksite-yard.png",
+      "sha256": "c05c2a7025ddb2031f353f427a57751458969a07b68822ceea0f62a2daa39dda",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "blacksite-oblique",
+      "file": "test-results/release60-ship/blacksite-oblique.png",
+      "sha256": "97f0de05026de5550173586628f49e6a79ba7cdd1f27b9fb50cfa30948a650f6",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "blacksite-services",
+      "file": "test-results/release60-ship/blacksite-services.png",
+      "sha256": "567f316fbec0e2bccc40a0673718820d0b713f826718ced270072d7533adf0ea",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "weapon-close",
+      "file": "test-results/release60-ship/weapon-close.png",
+      "sha256": "cddb76babb1bf423f999f8cd636ffca680a36c9935fe92b6be5a4c7e81d8efde",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "operator-close",
+      "file": "test-results/release60-ship/operator-close.png",
+      "sha256": "e4d7231c85ad7ec2a93879ab235933aaefa4a6558b4a14fb1cb42137a3a438db",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "combat",
+      "file": "test-results/release60-ship/combat.png",
+      "sha256": "79db965854d150cb21a48205c1e90e09bdc5e1d8994c9a327e715b6ec4f351b7",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "reload",
+      "file": "test-results/release60-ship/reload.png",
+      "sha256": "7b489a3fc6df8042ddae1892a01b4b46c73f665363dae354e96feed1f0f9f265",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "blacksite_player_scene",
+      "primaryInspection": [
+        "full original separately viewed with view_image at original detail"
+      ]
+    },
+    {
+      "name": "map-0",
+      "file": "test-results/release60-ship/map-0.png",
+      "sha256": "63f82b3e63486c57bcf8223f5bf82a0f15232944fd7039217f1a00a357205b00",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-1",
+      "file": "test-results/release60-ship/map-1.png",
+      "sha256": "e023006190ddf8ef550d4e6fb8a701f0e25e1e34ff69da99a7bc879b261e66b5",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-2",
+      "file": "test-results/release60-ship/map-2.png",
+      "sha256": "a2def7b8c50f732c086841c3c829ad4c11ada4c7d50463b86d8d308bbe7ed09b",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-3",
+      "file": "test-results/release60-ship/map-3.png",
+      "sha256": "4319e69983486ad9f14be687d3c1ab26cce2d4ed7a2fccaaa5406f01e5d2cf53",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-4",
+      "file": "test-results/release60-ship/map-4.png",
+      "sha256": "effbf86a351c33d533d8ba1788e4e0a5ee916d4e749046ce4f64f0a230a2a6ef",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-5",
+      "file": "test-results/release60-ship/map-5.png",
+      "sha256": "99fe2f67405feec468f369d8f760a6d3f820fc96c0737e4f036ba05dbef81f6e",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-6",
+      "file": "test-results/release60-ship/map-6.png",
+      "sha256": "2e3b88e16d0c785f55813a6cebfe0024539745941965dc6983547563879a978b",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-7",
+      "file": "test-results/release60-ship/map-7.png",
+      "sha256": "857894fe31e6c22d9199171628ee1092e64a2bcf9fe8623723603fecd8af5cc2",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-8",
+      "file": "test-results/release60-ship/map-8.png",
+      "sha256": "5c1a42c323e676dbc808494780173c52ae9733eb04e3567b25d78e4d5bf5265a",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-9",
+      "file": "test-results/release60-ship/map-9.png",
+      "sha256": "49b623430992a608bfb73a1472dbb70d36f50496369f66265fec7e5b17e4ba23",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-10",
+      "file": "test-results/release60-ship/map-10.png",
+      "sha256": "aa1c247ad9cb8641b03f485d79e4f1098a860acf84f80fd7ce99c2f36c0180ce",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-11",
+      "file": "test-results/release60-ship/map-11.png",
+      "sha256": "6083bceb782bf4ac99fcff10594c267585c223c98801236accc10ee4a30bef68",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-12",
+      "file": "test-results/release60-ship/map-12.png",
+      "sha256": "ebf50553fbc8feb5eafd75e8c5e8a2b172b9b53d7d5c0cef5e0db33315d25e02",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-13",
+      "file": "test-results/release60-ship/map-13.png",
+      "sha256": "b6146ae86238a601332d67a2784e7db0f4a69738dcca1f09e6f83dceb19d81aa",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-14",
+      "file": "test-results/release60-ship/map-14.png",
+      "sha256": "69d47f2416f18a7eda2711abacf04e916e16fd6367e7952b04a0d3c281b6e479",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "map-15",
+      "file": "test-results/release60-ship/map-15.png",
+      "sha256": "ca9bf9dcd9b74d4e8f44e2daeac183459cae752703b2621a963e794d26f20575",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "map_overview",
+      "primaryInspection": [],
+      "priorMatchingFinalMapReview": {
+        "file": "/workspace/scratch/release60-ship-map-review.json",
+        "sha256": "2ed52083f2a307a5c8d589e132649db6c5738cf0b3595ef301f98c357d1185cf",
+        "imageHashMatches": true,
+        "reportedInspection": "All 16 actual final original map frames and both newly generated eight-map contact sheets"
+      }
+    },
+    {
+      "name": "weapon-0",
+      "file": "test-results/release60-ship/weapon-0.png",
+      "sha256": "599942933eaf0e5249e9d776760731f8b2ca0b4fe5167806ea8607152b389a91",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 0,
+      "weaponName": "Kestrel AR",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-1",
+      "file": "test-results/release60-ship/weapon-1.png",
+      "sha256": "fd30d7ba49329a6aef3bda6a5ec02a1dca3a5e69829346cd50995d0778af5444",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 1,
+      "weaponName": "Bastion 7",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-2",
+      "file": "test-results/release60-ship/weapon-2.png",
+      "sha256": "235d98ba71a209c91e93a485014d9c10d966183b20ec1d2ef603f9bb059fc841",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 2,
+      "weaponName": "Raptor C",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-3",
+      "file": "test-results/release60-ship/weapon-3.png",
+      "sha256": "dac288e432c7a55a065eae51716618b0cb922e2cf41ecea14f80ad4a35d537b7",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 3,
+      "weaponName": "Vesper 9",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-4",
+      "file": "test-results/release60-ship/weapon-4.png",
+      "sha256": "7d32c0866a94a333650397d500420674267597a22fe99ef6547e4778fa037d11",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 4,
+      "weaponName": "Lynx PDW",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-5",
+      "file": "test-results/release60-ship/weapon-5.png",
+      "sha256": "bff92cd64d692499ea7f9b7b7b4309700f898f905b24a4c404968182a8d62729",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 5,
+      "weaponName": "Breach 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-6",
+      "file": "test-results/release60-ship/weapon-6.png",
+      "sha256": "e44a2ccf8adf6461af271f8adae84ecb4214e084a7552348d7bfe41e081d5bd7",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 6,
+      "weaponName": "Tempest S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-7",
+      "file": "test-results/release60-ship/weapon-7.png",
+      "sha256": "fd0332747c21842e32359f9f1985baaf220085f3160991e5a18b32a842151c89",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 7,
+      "weaponName": "Longbow M",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-8",
+      "file": "test-results/release60-ship/weapon-8.png",
+      "sha256": "ae5be52d150a534f49198208276e73d702103cdd7068759cf82bd78964524a5e",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 8,
+      "weaponName": "Warden D",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-9",
+      "file": "test-results/release60-ship/weapon-9.png",
+      "sha256": "e44b03a010f4c06bc583384b0265e258cc5722892167a0c42fd12ad61e4317c3",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 9,
+      "weaponName": "Atlas L",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-10",
+      "file": "test-results/release60-ship/weapon-10.png",
+      "sha256": "557f5df7ec1d312eca78fca62202dca23fa3106fffd6f98d9be348edbb3c1554",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 10,
+      "weaponName": "Sable P",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-11",
+      "file": "test-results/release60-ship/weapon-11.png",
+      "sha256": "119e4dd876abef50d74db88556a6e9e22e390c41b1c010686e83d14f18b07be3",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 11,
+      "weaponName": "Dire 50",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-12",
+      "file": "test-results/release60-ship/weapon-12.png",
+      "sha256": "a7711b1e0c922bfe8635f8cf26d636d4e0263235d66d0e051f0abab6bb11c877",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 12,
+      "weaponName": "Field blade",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-13",
+      "file": "test-results/release60-ship/weapon-13.png",
+      "sha256": "af6ee1d376b3601b43931a662e00ab566c152a09bf53dea322ce82769b1792d5",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 13,
+      "weaponName": "Harrow B3",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-14",
+      "file": "test-results/release60-ship/weapon-14.png",
+      "sha256": "0df97078ba65deee47912a15c69f53b868dfab32b5241c83e82e832e0a3552f2",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 14,
+      "weaponName": "Marten 45",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-15",
+      "file": "test-results/release60-ship/weapon-15.png",
+      "sha256": "d22df39998ae8e2ad9b651bae811fb34178d375ccbbf9c781d701484a948a009",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 15,
+      "weaponName": "Mako 7",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-16",
+      "file": "test-results/release60-ship/weapon-16.png",
+      "sha256": "fa4bb29629e8535d53b03d50416acd064aa11f22f9518715b04ca18f4288dad2",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 16,
+      "weaponName": "Peregrine 6",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-17",
+      "file": "test-results/release60-ship/weapon-17.png",
+      "sha256": "fdc6c2375c432ebb34fb0a28c8cce591f7979a8ada7ceb5ed8a62d0275b5d1c1",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 17,
+      "weaponName": "Osprey S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-18",
+      "file": "test-results/release60-ship/weapon-18.png",
+      "sha256": "44ba6a32a67aae83262273596639910182767528cbc84b7e49e4e95efe8fc0a8",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 18,
+      "weaponName": "Bison 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-19",
+      "file": "test-results/release60-ship/weapon-19.png",
+      "sha256": "8cb49f6ea62be61d9609d8f82d27f08c3d4694c2890a2e4c9b5d9692fcbf0913",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 19,
+      "weaponName": "Talon 338",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-20",
+      "file": "test-results/release60-ship/weapon-20.png",
+      "sha256": "b0b9d2764cf7f912346f29bae89f29b22eaac1d19de5bfa2cf557508c2986d69",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 20,
+      "weaponName": "Rampart 556",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-21",
+      "file": "test-results/release60-ship/weapon-21.png",
+      "sha256": "e982c22e57120ab7d359180db8b9d07d08a7394e9ee5c3ace768f24282274e22",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 21,
+      "weaponName": "Spectre SD",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-22",
+      "file": "test-results/release60-ship/weapon-22.png",
+      "sha256": "42919a334616c31824f8a4b6d63d79eebf0920b6bb14086ae29b42b98d7899fe",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 22,
+      "weaponName": "Krait R",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-23",
+      "file": "test-results/release60-ship/weapon-23.png",
+      "sha256": "57eb70e33187256282c8b6564bc4871feae6a8c4a2c2c2298a31f12e6716c10a",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 23,
+      "weaponName": "Swift 93",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-24",
+      "file": "test-results/release60-ship/weapon-24.png",
+      "sha256": "2b735aaec020af8018610b0c8cbebdffe5473e44058f6d89afd8bad34974df7f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 24,
+      "weaponName": "Storm 68",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-25",
+      "file": "test-results/release60-ship/weapon-25.png",
+      "sha256": "690329c5b0982cb2448fc67d283831f752fa0f54efff7fc5a24966136f24d823",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 25,
+      "weaponName": "Needle 57",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-26",
+      "file": "test-results/release60-ship/weapon-26.png",
+      "sha256": "e8c687bde0fae70e902c9a35ab0efc526ac380f24c3ea767b82f69d02ca3ea0f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 26,
+      "weaponName": "Jackal 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-27",
+      "file": "test-results/release60-ship/weapon-27.png",
+      "sha256": "dd5bb24d8b9a3527eadc69eee49c97eeb609ccb6afaea239250531bd5a808a04",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 27,
+      "weaponName": "Sentinel 762",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-28",
+      "file": "test-results/release60-ship/weapon-28.png",
+      "sha256": "12efb62d6d158c9ae47635e9281c34e3ac9efe51e3072cb8525c4ba127d80285",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 28,
+      "weaponName": "Heron S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-29",
+      "file": "test-results/release60-ship/weapon-29.png",
+      "sha256": "3548af40c24efd8bb44e0c0d968761c00058eddf12216bc6abf3f443dd617c94",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_forward",
+      "weaponId": 29,
+      "weaponName": "Paladin 45",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-0",
+      "file": "test-results/release60-ship/weapon-side-0.png",
+      "sha256": "3248d79e31ca9969e05a1129db6a7cdb183dfa9c48fbe3d715ed8f6119b0c5d0",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 0,
+      "weaponName": "Kestrel AR",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-side-1",
+      "file": "test-results/release60-ship/weapon-side-1.png",
+      "sha256": "886a2e74fd4a15e5e0d878399968600ddb28153750f15b7dc71fcada706e0f0f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 1,
+      "weaponName": "Bastion 7",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-side-2",
+      "file": "test-results/release60-ship/weapon-side-2.png",
+      "sha256": "1baaea7c58551a57551c7deae4364263aa0ab35d1c4705f95208e73ecf18f730",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 2,
+      "weaponName": "Raptor C",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-side-3",
+      "file": "test-results/release60-ship/weapon-side-3.png",
+      "sha256": "2719b0d9e2e83ce58080eab2a162a8a30000475a5276b629511df24195910f09",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 3,
+      "weaponName": "Vesper 9",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-side-4",
+      "file": "test-results/release60-ship/weapon-side-4.png",
+      "sha256": "c71b5ac8333d8cb9a92556896689304990ba6a3b0112c9677c2fd8cccfa6056b",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 4,
+      "weaponName": "Lynx PDW",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-00-04.png",
+        "/workspace/scratch/release60-ship-weapon-detail-00-04.png"
+      ]
+    },
+    {
+      "name": "weapon-side-5",
+      "file": "test-results/release60-ship/weapon-side-5.png",
+      "sha256": "7e0b40e12763bff6fe217e63cf1c5ce3da7cc2a07475788accc94e4c9c1d00e0",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 5,
+      "weaponName": "Breach 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-side-6",
+      "file": "test-results/release60-ship/weapon-side-6.png",
+      "sha256": "e65c11ff0f7f33ddd0f87695862e4656c769ff546cbe9c3a16fc6648d20f1b94",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 6,
+      "weaponName": "Tempest S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-side-7",
+      "file": "test-results/release60-ship/weapon-side-7.png",
+      "sha256": "9bef5e6b442e1f1152c5072825369ae4b25250ccaf21c1c04ae8e6ca36ca5f8e",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 7,
+      "weaponName": "Longbow M",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-side-8",
+      "file": "test-results/release60-ship/weapon-side-8.png",
+      "sha256": "7babf9b7d5092c2124c2494012fc058a015574df2171f4f149c5f571e130478c",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 8,
+      "weaponName": "Warden D",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-side-9",
+      "file": "test-results/release60-ship/weapon-side-9.png",
+      "sha256": "51a1bca412ecf44be983fc921e5da1aac09d70dd18d22a99292dfe8074108499",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 9,
+      "weaponName": "Atlas L",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-05-09.png",
+        "/workspace/scratch/release60-ship-weapon-detail-05-09.png"
+      ]
+    },
+    {
+      "name": "weapon-side-10",
+      "file": "test-results/release60-ship/weapon-side-10.png",
+      "sha256": "0d34679eb5f5b8480d80d25de14f1abe7f3c803b79b61412816ce552a2a35f16",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 10,
+      "weaponName": "Sable P",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet",
+        "full original separately viewed with view_image at original detail"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-side-11",
+      "file": "test-results/release60-ship/weapon-side-11.png",
+      "sha256": "a83c82efd649c839b37be50acb007ac3423b1f03941333bca569d487d138accd",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 11,
+      "weaponName": "Dire 50",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-side-12",
+      "file": "test-results/release60-ship/weapon-side-12.png",
+      "sha256": "056d152a8e3a1e9bad9948103050dff9c3e4358132324bad4756133f304d0a5a",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 12,
+      "weaponName": "Field blade",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-side-13",
+      "file": "test-results/release60-ship/weapon-side-13.png",
+      "sha256": "b3eabf01aa21d53d5d1678978e425c59a74afd1862a640c6148d8755bd37e2ff",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 13,
+      "weaponName": "Harrow B3",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-side-14",
+      "file": "test-results/release60-ship/weapon-side-14.png",
+      "sha256": "a2a61f0bf75f1d0987ff1d1026a3c39883b23faf13e5dd2585e8c8333a365214",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 14,
+      "weaponName": "Marten 45",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-10-14.png",
+        "/workspace/scratch/release60-ship-weapon-detail-10-14.png"
+      ]
+    },
+    {
+      "name": "weapon-side-15",
+      "file": "test-results/release60-ship/weapon-side-15.png",
+      "sha256": "91a3e4f1cbc2e5a3067cebd2cab16757ebe439bc2f3a8bafd01b7b978af4be2f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 15,
+      "weaponName": "Mako 7",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-16",
+      "file": "test-results/release60-ship/weapon-side-16.png",
+      "sha256": "de37f3e7fa8cfba57f0538230af44a31b67986e2b12c0c61915510dc00d1d020",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 16,
+      "weaponName": "Peregrine 6",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-17",
+      "file": "test-results/release60-ship/weapon-side-17.png",
+      "sha256": "4405515d490ff9ec379691a553e810a33c7ac4a95d29cb9cc0a4bcab32377966",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 17,
+      "weaponName": "Osprey S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-18",
+      "file": "test-results/release60-ship/weapon-side-18.png",
+      "sha256": "4d1673f58b60c5ddf492dabaea4be15d0ed6f2b4ef77d4bb692b8ffa8bf995f6",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 18,
+      "weaponName": "Bison 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-19",
+      "file": "test-results/release60-ship/weapon-side-19.png",
+      "sha256": "9a030a2e02665e5d43567a5d1a8be03530f0d6e84fe3df508ca2226c6b0b1800",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 19,
+      "weaponName": "Talon 338",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-15-19.png",
+        "/workspace/scratch/release60-ship-weapon-detail-15-19.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-20",
+      "file": "test-results/release60-ship/weapon-side-20.png",
+      "sha256": "6c4afd8014dec7cdb4ca185bfa2ba990cd0d3e295cc96d78085b24162e0c54dc",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 20,
+      "weaponName": "Rampart 556",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-21",
+      "file": "test-results/release60-ship/weapon-side-21.png",
+      "sha256": "aeb2e0d74bd1f367d00881e96462a8b452d59dfec0b1a7a824d538cf64a71488",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 21,
+      "weaponName": "Spectre SD",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-22",
+      "file": "test-results/release60-ship/weapon-side-22.png",
+      "sha256": "d0a8ee61a871e5fb97ce15698734a09bf4d5783739dc93b838ab4381d61b0556",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 22,
+      "weaponName": "Krait R",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-23",
+      "file": "test-results/release60-ship/weapon-side-23.png",
+      "sha256": "f1ff378cd6a6b64e029941ad9ffd3b87de5434f76060874e6babf3fc58b2351f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 23,
+      "weaponName": "Swift 93",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-24",
+      "file": "test-results/release60-ship/weapon-side-24.png",
+      "sha256": "f9ee5a1b0008ca78ac24583a056db30c1b980f3afe9559b3d8ed8f29f24bd50a",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 24,
+      "weaponName": "Storm 68",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-20-24.png",
+        "/workspace/scratch/release60-ship-weapon-detail-20-24.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-25",
+      "file": "test-results/release60-ship/weapon-side-25.png",
+      "sha256": "4d0af45d507939c52b06310c1aee3a0c517abe704222b47b7888b329facbd580",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 25,
+      "weaponName": "Needle 57",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-26",
+      "file": "test-results/release60-ship/weapon-side-26.png",
+      "sha256": "42d37685b33f35100c5a9c61b710ace4e78d85062330734fc98a1bc8d439d321",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 26,
+      "weaponName": "Jackal 12",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-27",
+      "file": "test-results/release60-ship/weapon-side-27.png",
+      "sha256": "f94e46f9db8214d007cfb60fe618460137102fc1e8443a11f8cb29da82e4d74f",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 27,
+      "weaponName": "Sentinel 762",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-28",
+      "file": "test-results/release60-ship/weapon-side-28.png",
+      "sha256": "420f85fe9b75efc00503ede8aec8ae303e6a112bac1bca7e503946ca26c4d114",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 28,
+      "weaponName": "Heron S",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    },
+    {
+      "name": "weapon-side-29",
+      "file": "test-results/release60-ship/weapon-side-29.png",
+      "sha256": "7a42f38cad1895c5933d908a27df737ff2d516893f395c17e1cf495d96ca2815",
+      "size": [
+        1280,
+        600
+      ],
+      "set": "weapon_side",
+      "weaponId": 29,
+      "weaponName": "Paladin 45",
+      "primaryInspection": [
+        "full-frame reduced paired coverage sheet",
+        "fixed weapon-region paired detail sheet"
+      ],
+      "primaryContactSheets": [
+        "/workspace/scratch/release60-ship-weapon-coverage-25-29.png",
+        "/workspace/scratch/release60-ship-weapon-detail-25-29.png"
+      ],
+      "secondaryInspection": {
+        "method": "paired weapon crop contact sheet; full original separately viewed",
+        "file": "/workspace/scratch/release60-secondary-weapon-review.json",
+        "reportSha256": "110023dd7be9ab263030e70dd67015b3d0166fa5f0d6bcf8543d802c5a5d734e"
+      }
+    }
+  ],
+  "weaponPairObservations": [
+    {
+      "id": 0,
+      "name": "Kestrel AR",
+      "observation": "Black vented fore-end, receiver, divided magazine silhouette and telescoping stock are visible; no conspicuous join gap in these two frames."
+    },
+    {
+      "id": 1,
+      "name": "Bastion 7",
+      "observation": "Red-brown stock, grip and fore-end contrast with the dark receiver and bent magazine. The finish reads as broad uniform colour rather than detailed wood."
+    },
+    {
+      "id": 2,
+      "name": "Raptor C",
+      "observation": "Green bullpup body and rear magazine distinguish the silhouette; receiver, magazine and butt appear joined in the sampled side view."
+    },
+    {
+      "id": 3,
+      "name": "Vesper 9",
+      "observation": "Compact dark body and long skeletal stock are visible. The tall sight and angular lower assembly remain coarse."
+    },
+    {
+      "id": 4,
+      "name": "Lynx PDW",
+      "observation": "Green compact body with broad upper rail and a short butt is distinguishable; large plain planar faces dominate."
+    },
+    {
+      "id": 5,
+      "name": "Breach 12",
+      "observation": "Long barrel, pump section, red-brown stock and side cartridge accents identify the shotgun-like silhouette. Small mechanical detail remains limited."
+    },
+    {
+      "id": 6,
+      "name": "Tempest S",
+      "observation": "Tan receiver, black vented fore-end and telescoping stock are visible. Divided magazine construction reads as a joined stylized assembly in the side view."
+    },
+    {
+      "id": 7,
+      "name": "Longbow M",
+      "observation": "Long scoped gun with tan skeletal stock is distinguishable. Both scope supports appear to meet the rail in the sampled side view; the dark rear optic face does not demonstrate aim-down-sights."
+    },
+    {
+      "id": 8,
+      "name": "Warden D",
+      "observation": "Tan receiver and fore-end with a skeletal stock and dark lower magazine are visible; broad angular surfaces remain apparent."
+    },
+    {
+      "id": 9,
+      "name": "Atlas L",
+      "observation": "Green box-fed body with copper cartridge row and angular stock is visible. Individual copper rounds lack readable belt links/feed detail in the forward original."
+    },
+    {
+      "id": 10,
+      "name": "Sable P",
+      "observation": "Compact gray pistol-like body, trigger guard and grip are visible. A very tall repeated block-based optic dominates the compact silhouette."
+    },
+    {
+      "id": 11,
+      "name": "Dire 50",
+      "observation": "Gray and tan pistol-like body with grip and trigger guard is visible. Tall repeated optic and block-like receiver make its proportions visibly coarse."
+    },
+    {
+      "id": 12,
+      "name": "Field blade",
+      "observation": "Knife blade, guard and ridged handle are visible in the side view; the forward view primarily exposes its narrow edge. No gun/optic is expected for this item."
+    },
+    {
+      "id": 13,
+      "name": "Harrow B3",
+      "observation": "Tan receiver and skeletal stock with a dark magazine/vented fore-end are visible; receiver transitions and optic remain simple shapes."
+    },
+    {
+      "id": 14,
+      "name": "Marten 45",
+      "observation": "Dark compact body with a long skeletal stock and elongated divided lower assembly is visible; the sampled joins do not show a conspicuous open gap."
+    },
+    {
+      "id": 15,
+      "name": "Mako 7",
+      "observation": "Tan vented fore-end, black receiver, and brown skeletal stock read clearly. Large planar faces and coarse sight frame remain visible."
+    },
+    {
+      "id": 16,
+      "name": "Peregrine 6",
+      "observation": "Green receiver and tan magazine differentiate this pair. Material treatment remains broad, flat, and minimally varied."
+    },
+    {
+      "id": 17,
+      "name": "Osprey S",
+      "observation": "Compact body with a tall lower grip/magazine assembly and long skeletal stock. Full side frame confirms the apparent crop truncation is only the contact-sheet crop, not the original image. Structural joins remain visibly coarse."
+    },
+    {
+      "id": 18,
+      "name": "Bison 12",
+      "observation": "Long barrel, tan block receiver, and green angular stock are visible. Flat faces and simple vent/slot shapes dominate."
+    },
+    {
+      "id": 19,
+      "name": "Talon 338",
+      "observation": "Scoped long gun is visible in both views. Full forward frame shows an opaque dark rear scope face; its viewing/aiming function cannot be assessed from this hip-fire frame. Cylindrical scope rings are visibly faceted."
+    },
+    {
+      "id": 20,
+      "name": "Rampart 556",
+      "observation": "Tan body, drum magazine, and short angular black stock are distinguishable. Drum contour and receiver transitions have visibly coarse facets."
+    },
+    {
+      "id": 21,
+      "name": "Spectre SD",
+      "observation": "Black compact receiver, suppressor-like muzzle cylinder, long skeletal stock, and tall lower assembly are visible. Full side frame contains the complete assembly; contact-sheet crop alone omitted its ends."
+    },
+    {
+      "id": 22,
+      "name": "Krait R",
+      "observation": "Gray cylindrical body and red-brown grip read as a pistol-like weapon. The tall block-based sight is visually dominant relative to the body in both full originals."
+    },
+    {
+      "id": 23,
+      "name": "Swift 93",
+      "observation": "Tan compact pistol-like body, black grip, and coarse longitudinal ridges are visible. The same tall block-based sight dominates its silhouette; lower receiver and trigger assembly are simple planar shapes."
+    },
+    {
+      "id": 24,
+      "name": "Storm 68",
+      "observation": "Tan body, rear tan magazine, short butt, and black vented fore-end distinguish the shape. The forward rail teeth and sight retain coarse angular edges."
+    },
+    {
+      "id": 25,
+      "name": "Needle 57",
+      "observation": "Green body with ribbed cylindrical under-barrel attachment and skeletal stock. Ribbing is visible but material variation and receiver detail remain sparse."
+    },
+    {
+      "id": 26,
+      "name": "Jackal 12",
+      "observation": "Tan body with green drum magazine, green fore-end, and short angular stock is readable. Broad plain faces and simple joins remain visible."
+    },
+    {
+      "id": 27,
+      "name": "Sentinel 762",
+      "observation": "Green box-fed long gun with red-brown stock and a copper cartridge row. Full forward original shows separated uniform cylinders without visibly modeled belt links or a clear feed path; this reads as unfinished ammunition detail at this angle."
+    },
+    {
+      "id": 28,
+      "name": "Heron S",
+      "observation": "Red-brown fore-end, grip, and stock contrast with black body and magazine. These red-brown parts are uniformly colored and do not show visible wood grain or wear at this capture scale."
+    },
+    {
+      "id": 29,
+      "name": "Paladin 45",
+      "observation": "Gray slide-like upper body and green grip/lower body read as a compact pistol-like weapon. The tall sight is visually dominant and the lower body/trigger assembly is coarse; full originals show no unintended screenshot-edge clipping beyond normal first-person framing."
+    }
+  ],
+  "sceneObservations": [
+    {
+      "name": "blacksite-approach",
+      "observation": "Concrete panel seams, apertures, vents, roof housings and entry opening are readable. Player rifle and optic are present; world materials show much more surface variation than the rifle."
+    },
+    {
+      "name": "blacksite-interior",
+      "observation": "Roof trusses, central lit fixture, objective marker/ring, two plant units and exit opening are visible. Interior and weapon are dark; broad plant silhouettes remain faceted."
+    },
+    {
+      "name": "blacksite-yard",
+      "observation": "The camera faces a container door almost filling an opening. Wall and door details render, but the occlusion means this frame gives little evidence of the wider yard or route readability."
+    },
+    {
+      "name": "blacksite-oblique",
+      "observation": "Concrete/asphalt boundaries, stairs, barrier, barrel and sparse distant foliage are visible. No earlier unsupported service rods are visible above the routes in this final frame."
+    },
+    {
+      "name": "blacksite-services",
+      "observation": "Plant casing, motor housing, crates, roof structure and mounted service manifold are visible. No conspicuous detached manifold assembly is observed; low light limits reading of small joints and textures."
+    },
+    {
+      "name": "weapon-close",
+      "observation": "Red-brown rifle fore-end and dark receiver/optic are visible. Broad uniformly coloured parts, large flat faces and an angular support forearm remain evident."
+    },
+    {
+      "name": "operator-close",
+      "observation": "Clothed tactical humanoid has helmet, goggles, vest, bent arms, knee pads and boots. The operator is visibly faceted and shaded dark, with limited small surface/anatomical detail."
+    },
+    {
+      "name": "combat",
+      "observation": "Player rifle, a small muzzle glow, bright ejected-case shape and nearby armed operator are present. The operator is partly hidden by the player weapon; a single still cannot establish effects or combat animation quality."
+    },
+    {
+      "name": "reload",
+      "observation": "Weapon is rotated across the lower-right foreground. Barrel, rail and tilted optic remain visible; a single pose cannot establish a complete magazine exchange, grip contact or animation continuity."
+    }
+  ],
+  "visualQualityFindings": [
+    {
+      "id": "VR-01",
+      "classification": "material visual quality limitation",
+      "blockingRenderIntegrityDefect": false,
+      "affected": "all 30 weapons",
+      "observation": "Weapon receivers, stocks, grips and round parts retain large flat faces, coarse bevels and visibly angular silhouettes. Material differentiation relies heavily on uniform black, green, tan and red-brown colour areas; finish, wear and fine mechanical detail are sparse at this capture scale.",
+      "impact": "The weapon pixels remain visibly stylized/coarse and do not establish AAA visual parity.",
+      "evidence": [
+        "weapon-side-0",
+        "weapon-side-1",
+        "weapon-side-4",
+        "weapon-side-10",
+        "weapon-side-15",
+        "weapon-side-19",
+        "weapon-side-22",
+        "weapon-side-28",
+        "weapon-side-29"
+      ]
+    },
+    {
+      "id": "VR-02",
+      "classification": "material visual quality limitation",
+      "blockingRenderIntegrityDefect": false,
+      "weaponIds": [
+        10,
+        11,
+        22,
+        23,
+        29
+      ],
+      "observation": "The repeated hollow polygon sight and solid rectangular mounting base form a very tall silhouette on the compact pistol-like weapons. The bulk of this generic optic dominates the smaller weapon bodies.",
+      "impact": "Pistol proportions and optic construction remain coarse and repetitive. No detached optic is inferred from the sampled side views.",
+      "evidence": [
+        "weapon-side-10",
+        "weapon-side-11",
+        "weapon-side-22",
+        "weapon-side-23",
+        "weapon-side-29"
+      ]
+    },
+    {
+      "id": "VR-03",
+      "classification": "visible visual polish defect",
+      "blockingRenderIntegrityDefect": false,
+      "weaponIds": [
+        9,
+        27
+      ],
+      "observation": "Rows of uniform copper cylinders project to the side of the receiver. Belt links and a readable feed transition are not visible in the full forward originals.",
+      "impact": "The ammunition detail reads as loose-looking or unfinished at this angle. This is an appearance finding; static pixels do not prove a detached runtime mesh or animation fault.",
+      "evidence": [
+        "weapon-9",
+        "weapon-side-9",
+        "weapon-27"
+      ]
+    },
+    {
+      "id": "VR-04",
+      "classification": "material visual quality limitation",
+      "blockingRenderIntegrityDefect": false,
+      "affected": "visible first-person hands and operator close-ups",
+      "observation": "The support forearm/hand has an angular green outline and dark triangular regions with little readable finger/contact detail. The tactical operator has recognizable gear but a dark, faceted silhouette and limited surface/anatomical detail.",
+      "impact": "Anatomy, hand contact and character material finish remain less developed than a realistic high-detail art target.",
+      "evidence": [
+        "weapon-0",
+        "weapon-close",
+        "operator-close",
+        "combat"
+      ]
+    },
+    {
+      "id": "VR-05",
+      "classification": "world visual quality limitation",
+      "blockingRenderIntegrityDefect": false,
+      "affected": "Blacksite and overview backgrounds",
+      "observation": "Plant machinery is built from broad faceted housings, and distant hills and foliage use simple sparse silhouettes. The Blacksite yard frame is substantially occluded by a container door.",
+      "impact": "World appearance is readable in the sampled views but these stills provide limited evidence of fine environmental polish or all playable routes.",
+      "evidence": [
+        "blacksite-services",
+        "blacksite-yard",
+        "blacksite-oblique"
+      ]
+    }
+  ],
+  "priorMatchingMapReview": {
+    "positiveFindings": [
+      "All 16 frames show their environment; no missing-texture checkerboards, magenta shader failures or empty world scenes are visible.",
+      "Frostline foreground snow and distant snowy hills no longer show the earlier diagonal repeating plaster checker pattern; low-contrast snowfield remains readable.",
+      "Monsoon asphalt no longer shows the earlier conspicuous hard cyan quadrilateral puddle tiles. Wet-ground response is restrained in this overview.",
+      "Industrial concrete and steel, urban plaster, arid sand, green grass and snowy terrain retain visibly different palettes. Recessed facade apertures, panel seams, roof equipment, stairs and route geometry remain readable.",
+      "The final Blacksite oblique player frame no longer contains the four earlier unsupported 23 m service rods over the catwalks.",
+      "Nuketown retains coloured houses, open apertures and supported balconies; District retains its elevated route and visible native vehicle.",
+      "Final operator-close depicts a clothed tactical humanoid with rounded upper limbs, helmet, goggles, vest, knee pads and boots; the silhouette remains visibly faceted."
+    ],
+    "newBlockingVisualFaultsObserved": [],
+    "limits": [
+      "One fixed menu/orbit overview per map does not establish player-camera appearance across every location; the displayed menu rifle also occludes part of each overview.",
+      "The subdued Monsoon overview resolves the cyan rectangle fault but discrete wet patches are difficult to distinguish at this camera.",
+      "Sparse background foliage and faceted distant hills remain simple silhouettes. This review establishes image appearance, not equivalence to AAA mobile art production.",
+      "Software WebGL screenshots provide no physical iPhone FPS, GPU-time, thermal or 60 FPS evidence.",
+      "Overview appearance does not establish a full play-through of every map or complete animated operator-state coverage."
+    ]
+  },
+  "supplementalMechanicalProof": {
+    "file": "docs/validation-release60-hero-joints.json",
+    "sha256": "465523d900614380224a4720d23aa7505f4638ca15179d8de38e1d8273eac384",
+    "recordedStatus": "pass",
+    "use": "Supplemental source/native contact measurements. It was not used to infer visual quality. This pixel review checks selected captured configurations, not every optic configuration."
+  },
+  "limits": [
+    "This is a static screenshot review of software WebGL renders. It measures neither audio quality nor interactive performance.",
+    "The art is still visibly stylized, with coarse shapes and sparse fine surface, mechanical and anatomical detail. No AAA art parity is claimed or established.",
+    "No physical iPhone FPS, GPU timing, thermal behavior, sustained frame rate or 60 FPS claim follows from these images.",
+    "The primary weapon comparison uses reduced full-frame contact sheets plus fixed crops. Six primary weapon originals and ten secondary originals were separately viewed; the exact methods for each frame are recorded.",
+    "Selected side/menu configurations and forward hip-fire views do not cover every attachment, aim-down-sights/reticle, alternative optic, weapon state or animation frame.",
+    "One combat still and one reload still do not establish temporal effects, animation continuity, magazine exchange, grip contact or all operator poses.",
+    "Low interior light and partial weapon/operator/door occlusion hide some detail. No full map play-through or collision/navigation acceptance is inferred.",
+    "The 16-map original inspection is inherited from the existing final-map reviewer and linked by exact matching current PNG hashes. The primary reviewer did not independently view every map original during this turn.",
+    "No quality conclusion is inferred from compilation, counts, asset inventories, polygon counts, budgets or successful checks alone. Capture identity comes from recorded scene metadata and exact file hashes."
+  ]
+}

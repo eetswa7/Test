@@ -1,7 +1,7 @@
 {
   "scope": "Read-only Blender graph construction using the actual LevelMaterials module and a native UV/vertex-colour fixture. Confirms Cycles snow reflectance and physical inputs, not a rendered-image or iPhone performance test.",
   "blender_version": "4.3.2",
-  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+  "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
   "snow": {
     "roughness": 0.98,
     "metalness": 0.0,
@@ -18,27 +18,13 @@
     "photographic_albedo_nodes": 1,
     "physical_uv_override_preserved": true
   },
-  "runtime_focused_checks": {
-    "passed": 4,
-    "failed": 0,
-    "command": "node --test tests/production-textures.test.mjs",
-    "duration_ms": 1208.43716,
-    "log": "/workspace/scratch/release60-final-production-textures-tests.log"
-  },
   "extra_runtime_textures": 0,
   "extra_geometry": 0,
   "extra_fullscreen_passes": 0,
   "material_module_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
   "material_module_path": "authoring/blender/level_materials.py",
-  "source_hash_scope": "Final authoring/blender/breachline-assets.blend bytes",
+  "source_hash_scope": "Final authoring/blender/breachline-assets.blend bytes after the native operator rebuild",
   "material_module_hash_scope": "Actual LevelMaterials Python module used by the fresh native Blender graph fixture; this is distinct from the final .blend byte hash.",
-  "runtime_ship_checks": {
-    "passed": 312,
-    "failed": 0,
-    "duration_ms": 118100.715029,
-    "log": "/workspace/scratch/release60-ship-tests.log",
-    "scope": "Existing fresh complete ship test log, independently checked for the reported summary; the focused texture suite was also rerun during this payload audit."
-  },
   "implementation_delta_scope": "The extra_runtime_textures, extra_geometry and extra_fullscreen_passes values describe the reviewed snow material policy implementation delta; they are not measured device performance results.",
   "graph_verification": {
     "status": "passed",
@@ -46,7 +32,9 @@
     "command": "blender --background --factory-startup --python-exit-code 1 --python /tmp/check-snow-level-material.py",
     "cwd": "/workspace/Test",
     "log": "/workspace/scratch/release60-final-material-graph-inspection.log",
-    "scope": "Fresh read-only native Blender fixture validates the actual material module graph. It does not render an image or inspect all saved level instances."
+    "scope": "Fresh read-only native Blender fixture validates the actual material module graph. It does not render an image or inspect all saved level instances.",
+    "module_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
+    "source_dependency_scope": "This fixture constructs graphs using the unchanged LevelMaterials Python module. Fresh saved final .blend snow and PBR graph validation is recorded separately in the Blender source report."
   },
   "runtime_material_payload": {
     "status": "passed",
@@ -147,6 +135,8 @@
       "method": "Decode every actual BTX1 mip payload using astcenc -ds for albedo or -dl for linear normal/ORM. Compare RGB pixels with the corresponding source bake tile resized to runtime resolution, flipped vertically for ASTC, and successively downsampled with Lanczos exactly as the checked-in packing script specifies. Normal angular errors normalize decoded/reference RGB vectors before comparison.",
       "scope": "Compression pixel statistics against native published Blender bake files; no rendered-material or iPhone quality test and no visual-realism claim.",
       "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+      "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+      "reuse_scope": "All six source material atlas PNGs, all 60 ASTC containers and every underlying segment hash are unchanged; the previous comparisons of all 663 mip images and 60 first-mip normal/channel statistics remain valid for these exact bytes.",
       "all_first_mip_error_ranges": {
         "albedo": {
           "maps": 20,
@@ -169,10 +159,18 @@
       },
       "psnr_null_meaning": "Exact decoded RGB byte match has zero RMSE and infinite PSNR, represented as null rather than a capped finite value."
     },
-    "runtime_test_command": "node --test tests/production-textures.test.mjs",
-    "runtime_tests_passed": 4,
-    "runtime_tests_failed": 0,
-    "runtime_test_log": "/workspace/scratch/release60-final-production-textures-tests.log"
+    "decode_evidence_reused": true,
+    "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "current_source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "reuse_verification_command": "python3 /tmp/inspect-breachline-final-payload-reuse60.py 9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "reuse_evidence_artifact": "/workspace/scratch/release60-final-payload-reuse-verification.json",
+    "reuse_scope": "663 independent ASTC mip decodes, fallback/GI pixel identity checks and source-reference compression metrics were completed against the previous source. After the final native operator rebuild, every one of 139 production segment byte lengths and SHA256 hashes, all 60 complete ASTC container hashes and map metadata, and all 25 published native bake PNG byte hashes were freshly checked and remained identical. The decoded input bytes and pixel-comparison source images are therefore unchanged; no redundant decoder run was performed. This reuse establishes material/GI payload equality only; separate fresh native-source, operator geometry and final ship-test verification cover the changed source.",
+    "production_manifest_bytes_identical_to_previous": true,
+    "unchanged_production_segments_verified": 139,
+    "unchanged_complete_astc_containers_verified": 60,
+    "unchanged_published_bake_pngs_verified": 25,
+    "unchanged_material_quality_reference_atlases_verified": 6,
+    "unchanged_gi_reference_pngs_verified": 16
   },
   "decoded_first_mip_material_statistics": {
     "scope": "Spatial means and channel variation from the actual independently decoded ASTC mip 0. Albedo sRGB values are converted per pixel to linear RGB before averaging; ORM channels are linear AO, roughness and metalness. These characterize the payload and do not prove surface identity or physical realism in a rendered scene.",
@@ -718,9 +716,25 @@
         "normal_angular_error_p99_degrees": 0.0
       }
     ],
-    "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json"
+    "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+    "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "current_source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "reuse_scope": "All source-reference atlas PNG bytes and all ASTC container bytes freshly matched their previous hashes after the final native operator rebuild; the stored first-mip statistics describe those identical payloads."
   },
   "status": "passed",
   "schema": "breachline.validation.material-identity.v1",
-  "release": 60
+  "release": 60,
+  "previous_runtime_test_evidence": [
+    {
+      "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+      "checks": {
+        "passed": 4,
+        "failed": 0,
+        "command": "node --test tests/production-textures.test.mjs",
+        "duration_ms": 1208.43716,
+        "log": "/workspace/scratch/release60-final-production-textures-tests.log"
+      },
+      "scope": "Production-texture suite executed before the final native operator rebuild; this is previous test evidence and is not the final source ship-test result."
+    }
+  ]
 }

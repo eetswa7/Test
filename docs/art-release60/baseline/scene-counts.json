@@ -1,0 +1,172 @@
+{
+  "kind": "software_WebGL_actual_release57_visual_validation",
+  "actual_iphone_data": false,
+  "commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415",
+  "release": 57,
+  "viewport": {
+    "width": 1280,
+    "height": 600
+  },
+  "quality": "high",
+  "fov": 80,
+  "errors": [],
+  "requestFailures": [],
+  "results": [
+    {
+      "name": "blacksite-approach",
+      "captured": true,
+      "map": "BLACKSITE",
+      "draws": 232,
+      "triangles": 152664,
+      "shadowDraws": 117,
+      "textureEstimateBytes": 44919467,
+      "programs": 22,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 71826,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "z": 27,
+        "yaw": 0,
+        "pitch": 0.02
+      },
+      "weapon": 0,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    },
+    {
+      "name": "blacksite-interior",
+      "captured": true,
+      "map": "BLACKSITE",
+      "draws": 196,
+      "triangles": 118336,
+      "shadowDraws": 109,
+      "textureEstimateBytes": 44919467,
+      "programs": 25,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 69622,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "z": 9,
+        "yaw": 0,
+        "pitch": 0
+      },
+      "weapon": 0,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    },
+    {
+      "name": "blacksite-yard",
+      "captured": false,
+      "map": "BLACKSITE",
+      "draws": 199,
+      "triangles": 131962,
+      "shadowDraws": 100,
+      "textureEstimateBytes": 44919467,
+      "programs": 25,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 67612,
+      "camera": {
+        "x": -31,
+        "y": 0,
+        "z": 25,
+        "yaw": -0.12,
+        "pitch": 0
+      },
+      "weapon": 0,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    },
+    {
+      "name": "blacksite-oblique",
+      "captured": true,
+      "map": "BLACKSITE",
+      "draws": 169,
+      "triangles": 85520,
+      "shadowDraws": 105,
+      "textureEstimateBytes": 44919467,
+      "programs": 25,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 63314,
+      "camera": {
+        "x": 12,
+        "y": 0,
+        "z": 30,
+        "yaw": 0.4,
+        "pitch": -0.015
+      },
+      "weapon": 0,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    },
+    {
+      "name": "blacksite-services",
+      "captured": false,
+      "map": "BLACKSITE",
+      "draws": 194,
+      "triangles": 134622,
+      "shadowDraws": 106,
+      "textureEstimateBytes": 44919467,
+      "programs": 25,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 66982,
+      "camera": {
+        "x": -5.5,
+        "y": 0,
+        "z": 8,
+        "yaw": -0.95,
+        "pitch": 0
+      },
+      "weapon": 0,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    },
+    {
+      "name": "weapon-close",
+      "captured": true,
+      "map": "BLACKSITE",
+      "draws": 232,
+      "triangles": 147380,
+      "shadowDraws": 117,
+      "textureEstimateBytes": 44919467,
+      "programs": 25,
+      "geometryCount": 226,
+      "activeWorldBatches": 170,
+      "selectedWorldTriangles": 67310,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "z": 27,
+        "yaw": 0,
+        "pitch": 0
+      },
+      "weapon": 1,
+      "runtimeApis": {
+        "prepareMatch": true,
+        "updateLighting": true,
+        "nativeUpdateLOD": true
+      }
+    }
+  ]
+}

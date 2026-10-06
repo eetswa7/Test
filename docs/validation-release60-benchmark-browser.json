@@ -1,6 +1,13 @@
 {
   "kind": "desktop_browser_validation",
   "actual_iphone_data": false,
+  "build": {
+    "release": "60",
+    "commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+    "source_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+    "content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+    "commit_resolution": "source_commit"
+  },
   "browser": "151.0.7922.173",
   "renderer": "software WebGL / SwiftShader",
   "viewport": {
@@ -27,7 +34,7 @@
   "external_request_count": 0,
   "write_request_count": 0,
   "normal_session_frame_count": 17,
-  "steady_frame_count": 12,
-  "normal_report_bytes": 29670,
+  "steady_frame_count": 11,
+  "normal_report_bytes": 28394,
   "json_download_verified": true
 }

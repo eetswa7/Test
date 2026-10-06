@@ -1,9 +1,9 @@
 {
   "scope": "Shipped Blender scene construction and conservative full-scene world counts. No frustum/occlusion subtraction, browser frames, iPhone FPS or thermal validation.",
   "library": {
-    "meshes": 329,
-    "decodedSha256": "73deaca650576eec7327f5ea3015173e375da9ccb9516df108f4a81b335c3e10",
-    "sourceSha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9"
+    "meshes": 330,
+    "decodedSha256": "d98ae1dc5b31203ca2d1f5b772adc62b229b637c5b08ec38396452ea38394e13",
+    "sourceSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821"
   },
   "maps": 16,
   "views": 49,

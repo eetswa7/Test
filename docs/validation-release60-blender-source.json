@@ -4,10 +4,10 @@
   "status": "passed",
   "scope": "Read-only Blender inspection of editable native source and SHA-256 reconstruction. This verifies source completeness, not visual quality or physical iPhone performance.",
   "blender": "4.3.2",
-  "source_bytes": 166125068,
-  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+  "source_bytes": 165942572,
+  "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
   "source_segments_verified": 80,
-  "runtime_native_meshes_verified": 329,
+  "runtime_native_meshes_verified": 330,
   "levels": [
     {
       "id": 0,
@@ -438,6 +438,8 @@
       "method": "Decode every actual BTX1 mip payload using astcenc -ds for albedo or -dl for linear normal/ORM. Compare RGB pixels with the corresponding source bake tile resized to runtime resolution, flipped vertically for ASTC, and successively downsampled with Lanczos exactly as the checked-in packing script specifies. Normal angular errors normalize decoded/reference RGB vectors before comparison.",
       "scope": "Compression pixel statistics against native published Blender bake files; no rendered-material or iPhone quality test and no visual-realism claim.",
       "evidence_artifact": "/workspace/scratch/release60-final-all-astc-verification.json",
+      "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+      "reuse_scope": "All six source material atlas PNGs, all 60 ASTC containers and every underlying segment hash are unchanged; the previous comparisons of all 663 mip images and 60 first-mip normal/channel statistics remain valid for these exact bytes.",
       "all_first_mip_error_ranges": {
         "albedo": {
           "maps": 20,
@@ -460,14 +462,21 @@
       },
       "psnr_null_meaning": "Exact decoded RGB byte match has zero RMSE and infinite PSNR, represented as null rather than a capped finite value."
     },
-    "runtime_test_command": "node --test tests/production-textures.test.mjs",
-    "runtime_tests_passed": 4,
-    "runtime_tests_failed": 0,
-    "runtime_test_log": "/workspace/scratch/release60-final-production-textures-tests.log"
+    "decode_evidence_reused": true,
+    "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "current_source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "reuse_verification_command": "python3 /tmp/inspect-breachline-final-payload-reuse60.py 9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "reuse_evidence_artifact": "/workspace/scratch/release60-final-payload-reuse-verification.json",
+    "reuse_scope": "663 independent ASTC mip decodes, fallback/GI pixel identity checks and source-reference compression metrics were completed against the previous source. After the final native operator rebuild, every one of 139 production segment byte lengths and SHA256 hashes, all 60 complete ASTC container hashes and map metadata, and all 25 published native bake PNG byte hashes were freshly checked and remained identical. The decoded input bytes and pixel-comparison source images are therefore unchanged; no redundant decoder run was performed. This reuse establishes material/GI payload equality only; separate fresh native-source, operator geometry and final ship-test verification cover the changed source.",
+    "production_manifest_bytes_identical_to_previous": true,
+    "unchanged_production_segments_verified": 139,
+    "unchanged_complete_astc_containers_verified": 60,
+    "unchanged_published_bake_pngs_verified": 25,
+    "unchanged_material_quality_reference_atlases_verified": 6,
+    "unchanged_gi_reference_pngs_verified": 16
   },
   "verification_commands": [
-    "python3 /tmp/inspect-breachline-all-astc-final60.py",
-    "node --test tests/production-textures.test.mjs",
+    "python3 /tmp/inspect-breachline-final-payload-reuse60.py 9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
     "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-source60.py",
     "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-saved-image-graphs60.py",
     "blender --background authoring/blender/breachline-assets.blend --python-exit-code 1 --python /tmp/inspect-breachline-saved-assemblies60.py",
@@ -971,15 +980,68 @@
     "schema": "breachline.validation.saved-assemblies.v1",
     "release": 60,
     "status": "passed",
-    "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
     "editable_level_instances_mesh_and_transform_verified": 10777,
     "maximum_level_matrix_component_error": 2.384185791015625e-06,
     "rigid_groups_rest_transforms_verified": 95,
     "maximum_rigid_group_matrix_component_error": 3.29055147470826e-08,
-    "native_mesh_triangle_positions_exactly_verified": 329,
-    "native_mesh_triangles_verified": 621910,
-    "runtime_compressed_library_sha256": "09011136044eb2d78f219ce82e9422cfc6b3f5c68937f841f31638d86ebcea29",
+    "native_mesh_triangle_positions_exactly_verified": 330,
+    "native_mesh_triangles_verified": 610526,
+    "runtime_compressed_library_sha256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
     "errors": [],
     "scope": "Read-only saved .blend comparison against final authored instance/rig matrices and runtime library triangle positions. Saved matrix_basis is inspected for unparented objects because hidden Blender collections have unevaluated matrix_world values at load. Native triangle positions are compared exactly after the documented Y-up coordinate conversion, retaining triangle multiplicity. Material, normal and UV quantization quality is covered separately; this does not verify collision, animation behavior or rendered visual quality."
+  },
+  "native_operator_mesh_inventory_verified": {
+    "meshes": [
+      {
+        "mesh": "boot__near",
+        "triangles": 2092,
+        "vertices": 1090,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "boot__far",
+        "triangles": 496,
+        "vertices": 254,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "kneepad__near",
+        "triangles": 452,
+        "vertices": 238,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "kneepad__far",
+        "triangles": 172,
+        "vertices": 90,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "balaclava__near",
+        "triangles": 780,
+        "vertices": 402,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "balaclava__far",
+        "triangles": 392,
+        "vertices": 198,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "goggles__near",
+        "triangles": 764,
+        "vertices": 400,
+        "vertexMaterial": true
+      },
+      {
+        "mesh": "goggles__far",
+        "triangles": 332,
+        "vertices": 176,
+        "vertexMaterial": true
+      }
+    ],
+    "scope": "Required final operator boot, kneepad, balaclava and goggles near/far native meshes are present and use BreachMaterial vertex physical inputs. Their saved native topology and triangle positions are included in the complete library verification; this inventory is not a rendered appearance assessment."
   }
 }

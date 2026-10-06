@@ -1,0 +1,598 @@
+{
+  "schema": "breachline.validation.release.v1",
+  "release": 60,
+  "status": "functionality_checks_passed",
+  "actual_iphone_data": false,
+  "scope": "Aggregate of final code regression, packaged JavaScript syntax, offline shader compile/link, exact native source and asset integrity, static geometry fixtures and actual software-WebGL capture evidence. Historical component and physical Release 57 evidence retain their own scope and provenance. This is not a physical iPhone Release 60 performance or commercial-reference fidelity certification.",
+  "provenance": {
+    "code_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+    "build_stamp_commit": "8b763c08f47fa4de676d01fd2f2fdaffb34a2fbf",
+    "dist_content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+    "distribution_dirty": false,
+    "source_blend_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "source_blend_bytes": 165942572,
+    "source_segments": 80,
+    "native_compressed_library_sha256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
+    "native_decoded_library_sha256": "d98ae1dc5b31203ca2d1f5b772adc62b229b637c5b08ec38396452ea38394e13",
+    "native_manifest_sha256": "5411d002a7a0e333167f19e29cd55940574b7b5cc5483779c9310bff33d9e4a7",
+    "scope": "Code commit identifies gameplay and authored source; the following build-stamp commit records the distribution provenance. Supporting evidence documents and their later Git commit do not become the measured code revision."
+  },
+  "regression_tests": {
+    "status": "passed",
+    "command": "npm test",
+    "tests": 313,
+    "passed": 313,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 117379.971491,
+    "log": "/workspace/scratch/release60-ship-final-tests.log",
+    "scope": "Final complete Node regression suite executed after the native operator rebuild. Tests include gameplay, all-map objective AI, native source/asset integrity, physical material payloads, input, offline shell, benchmark local data behavior and bounded rendering/audio policies. These are automated regression checks, not measured physical-device frame times."
+  },
+  "packaged_javascript": {
+    "status": "passed",
+    "modules": 77,
+    "method": "node --check",
+    "scope": "Syntax checks on packaged JavaScript modules; no GPU or physical-device performance measurement."
+  },
+  "gles_shaders": {
+    "status": "passed",
+    "variants": 49,
+    "passed": 49,
+    "failures": [],
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "version": "OpenGL ES 3.2 Mesa 25.0.7-2+deb13u1",
+    "scope": "Offline GLSL ES compile/link only; no rendered frames or iPhone validation",
+    "evidence": "shaders-release60.json"
+  },
+  "preserved": {
+    "maps": 16,
+    "weapons": 30,
+    "modes": 11,
+    "gameplay": "Existing modes, AI, movement, collision, ballistics, simulation-owned apertures, spawns and objective/navigation positions are retained and covered by final regressions.",
+    "benchmark": "Local normal-gameplay recording, saved sessions, manual exact JSON download and offline boot/export are retained and verified by the final 12-check browser lifecycle run.",
+    "editable_blender_source": "Complete segmented native .blend, packed original artwork and editable level/material/rig assemblies.",
+    "release57_recovery_ref": "origin/release57-baseline",
+    "release57_recovery_commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415",
+    "release57_recovery_scope": "Recoverable remote-tracking baseline ref; no local branch is asserted. Its manifest-stamp commit differs from the source commit recorded in the physical measurement."
+  },
+  "native_source": {
+    "status": "passed",
+    "blender": "4.3.2",
+    "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "source_bytes": 165942572,
+    "source_segments_verified": 80,
+    "runtime_native_meshes_verified": 330,
+    "levels_verified": 16,
+    "weapon_rigs_verified": 30,
+    "rig_type": "Rigid mesh groups with simulation anchor indices and animated tags; no skeletal armature is claimed.",
+    "editable_pbr_graphs_verified": 20,
+    "original_artwork_sha256_verified": 6,
+    "packed_images": 48,
+    "external_dependencies": [],
+    "errors": [],
+    "saved_assemblies": {
+      "schema": "breachline.validation.saved-assemblies.v1",
+      "release": 60,
+      "status": "passed",
+      "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+      "editable_level_instances_mesh_and_transform_verified": 10777,
+      "maximum_level_matrix_component_error": 2.384185791015625e-06,
+      "rigid_groups_rest_transforms_verified": 95,
+      "maximum_rigid_group_matrix_component_error": 3.29055147470826e-08,
+      "native_mesh_triangle_positions_exactly_verified": 330,
+      "native_mesh_triangles_verified": 610526,
+      "runtime_compressed_library_sha256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
+      "errors": [],
+      "scope": "Read-only saved .blend comparison against final authored instance/rig matrices and runtime library triangle positions. Saved matrix_basis is inspected for unparented objects because hidden Blender collections have unevaluated matrix_world values at load. Native triangle positions are compared exactly after the documented Y-up coordinate conversion, retaining triangle multiplicity. Material, normal and UV quantization quality is covered separately; this does not verify collision, animation behavior or rendered visual quality."
+    },
+    "saved_material_evidence": {
+      "packed_png_byte_hashes_verified": 25,
+      "editable_pbr_graph_routes_verified": 20,
+      "native_physical_instances": 1598,
+      "native_paint_instances": 504,
+      "snow_instances": 8,
+      "scope": "Saved level graphs verify native physical roughness and metallic UV routing, tile-8 paint reflectance and authored or instance tint. Snow graphs use fixed unlinked roughness .98 and metallic zero without photographic albedo. Graph inspection does not establish runtime rendered pixel equivalence."
+    },
+    "scope": "Read-only Blender inspection of editable native source and SHA-256 reconstruction. This verifies source completeness, not visual quality or physical iPhone performance.",
+    "evidence": "validation-release60-blender-source.json"
+  },
+  "materials_and_gi": {
+    "status": "passed",
+    "texture_maps_verified": 60,
+    "astc_mip_images_independently_decoded": 663,
+    "complete_astc_chains_verified": 60,
+    "fallback_webp_images_decoded": 60,
+    "lossless_orm_fallbacks_pixel_equal_to_source_resize": 20,
+    "lightmaps_pixel_equal_to_source_bakes": 16,
+    "gi_encoding": "Linear RGBM range 6, 512 pixels, 32 Cycles samples",
+    "decode_evidence_reused": true,
+    "decode_evidence_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+    "current_source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "fresh_payload_equality": {
+      "production_manifest_bytes_identical_to_previous": true,
+      "unchanged_production_segments_verified": 139,
+      "unchanged_complete_astc_containers_verified": 60,
+      "unchanged_published_bake_pngs_verified": 25,
+      "unchanged_material_quality_reference_atlases_verified": 6,
+      "unchanged_gi_reference_pngs_verified": 16
+    },
+    "reuse_scope": "663 independent ASTC mip decodes, fallback/GI pixel identity checks and source-reference compression metrics were completed against the previous source. After the final native operator rebuild, every one of 139 production segment byte lengths and SHA256 hashes, all 60 complete ASTC container hashes and map metadata, and all 25 published native bake PNG byte hashes were freshly checked and remained identical. The decoded input bytes and pixel-comparison source images are therefore unchanged; no redundant decoder run was performed. This reuse establishes material/GI payload equality only; separate fresh native-source, operator geometry and final ship-test verification cover the changed source.",
+    "snow_graph_fixture": {
+      "status": "passed",
+      "roughness": 0.98,
+      "metalness": 0.0,
+      "photographic_albedo_nodes": 0,
+      "material_module_sha256": "86cb0cc9fa718dd31fbb95937a9f7bb8b6153b55a508cec955527b11dbbdf14c",
+      "scope": "Fresh read-only native Blender fixture validates the actual material module graph. It does not render an image or inspect all saved level instances."
+    },
+    "scope": "Read-only verification of all current material ASTC mip images, WebP fallbacks and sixteen lossless RGBM GI images. Storage estimates count compressed material mip blocks or RGBA8 fallback texels and unmipped GI only; they exclude geometry, other textures, render targets, browser/driver overhead and duplicate upload buffers. Pixel errors describe bake compression, not rendered material realism, Safari process memory, iPhone performance or thermal behavior.",
+    "evidence": [
+      "validation-release60-material-identity.json",
+      "validation-release60-blender-source.json"
+    ]
+  },
+  "storage_and_transport": {
+    "compressed_native_library_bytes": 10009900,
+    "decoded_native_library_bytes": 32442076,
+    "retained_native_geometry_buffer_bytes": 36852938,
+    "geometry_scope": "Sum of retained native geometry typed-array attribute/index bytes, including metric UV attributes, using the actual runtime parser. Excludes scene instance attributes, transient decode/upload buffers, object metadata and browser/driver overhead. Not browser process memory, driver allocation, live GPU use, a Safari memory limit or physical iPhone measurement.",
+    "astc_map_payload_bytes": 54593984,
+    "astc_map_download_bytes": 54597356,
+    "primary_material_and_gi_download_bytes": 61277214,
+    "fallback_material_and_gi_download_bytes": 12715940,
+    "production_transport_bytes_including_both_formats": 67313296,
+    "primary_material_and_gi_gpu_storage_bytes_estimate": 71371200,
+    "fallback_material_and_gi_rgba_mip_bytes_estimate": 113246128,
+    "download_scope": "Segment payload byte sums exclude manifest JSON and HTTP headers. Primary and fallback figures are alternative texture paths; the combined-format figure includes both for offline cache.",
+    "texture_storage_scope": "Read-only verification of all current material ASTC mip images, WebP fallbacks and sixteen lossless RGBM GI images. Storage estimates count compressed material mip blocks or RGBA8 fallback texels and unmipped GI only; they exclude geometry, other textures, render targets, browser/driver overhead and duplicate upload buffers. Pixel errors describe bake compression, not rendered material realism, Safari process memory, iPhone performance or thermal behavior.",
+    "evidence": [
+      "validation-release60-geometry-storage.json",
+      "validation-release60-material-identity.json"
+    ]
+  },
+  "hero_geometry": {
+    "status": "pass",
+    "weapons": 30,
+    "stocks": 19,
+    "curved_magazines": 16,
+    "unique_native_mounts_checked": 193,
+    "native_mount_contact_tolerance_mm": 0.2,
+    "native_mount_contact_witnesses": 193,
+    "native_mount_separations": 0,
+    "containment_fallbacks": 0,
+    "targeted_exhaustive_zero_distance_intersections": 4,
+    "diagnostic_ray_grid_false_positives": 1,
+    "scope": "A positive underside support-height difference is geometric support evidence, not a general volume-intersection proof; a core surface can be higher than the mount top. Independent exact native surface checks adjudicate previously ambiguous mount positions separately. Bounds overlap does not prove a weld, collision response, watertightness, or every pixel of contact. Scope vertical bounds checks do not prove ring/post volume intersection. Values are numerical geometry checks, not real-world manufacturing precision. Independent surface-pair witnesses use an explicit 0.2 mm tolerance and do not measure the global nearest distance once a passing witness is found; the four targeted exhaustive zero-distance checks are separate.",
+    "evidence": "validation-release60-hero-joints.json"
+  },
+  "menu_framing": {
+    "status": "passed",
+    "weapons": 30,
+    "clipped_weapons": 0,
+    "scope": "Actual shipped native mesh vertex projection in menu-only pose; 1280x600 landscape, reflex default optic. No GPU frames.",
+    "evidence": "validation-release60-menu-framing.json"
+  },
+  "static_geometry_costs": {
+    "scene_budgets": {
+      "maps": 16,
+      "samples": 49,
+      "maximum_active_world_batches": 215,
+      "scope": "Shipped Blender scene construction and conservative full-scene world counts. No frustum/occlusion subtraction, browser frames, iPhone FPS or thermal validation.",
+      "evidence": "validation-release60-scene-budgets.json"
+    },
+    "wall_lod": {
+      "samples": 49,
+      "selected_world_triangles_before": 6523226,
+      "selected_world_triangles_after": 4752818,
+      "overall_triangle_reduction_percent": 27.1,
+      "maximum_active_world_batches_before": 215,
+      "maximum_active_world_batches_after": 215,
+      "comparison_method": "Same final library and unchanged presentation placement. Before disables only wall-specific feature criterion by substituting the pair kind in an isolated scene fixture; generic whole-object projected-size criterion, hysteresis, other kinds and camera samples remain identical. No shipped code changes.",
+      "scope": "Paired conservative selected world geometry counts using the same native library and 49 camera samples at 600 px height, 55 degree vertical FOV, High quality. No frustum or occlusion subtraction, browser GPU frames or physical iPhone performance measurement.",
+      "evidence": "validation-release60-wall-lod.json"
+    },
+    "operator_art": {
+      "previous_report_commit": "c68884bd4e2970411951f8a70164fbadd154dea1",
+      "previous_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+      "current_source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+      "results": [
+        {
+          "quality": "low",
+          "crowdRadius": 5,
+          "before": {
+            "quality": "low",
+            "crowdRadius": 5,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 6,
+            "nativeWeapons": 6,
+            "actorBatches": 41,
+            "actorTriangles": 185392,
+            "nativeWeaponBatches": 22,
+            "nativeWeaponTriangles": 72448
+          },
+          "after": {
+            "quality": "low",
+            "crowdRadius": 5,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 6,
+            "nativeWeapons": 6,
+            "actorBatches": 43,
+            "actorTriangles": 224176,
+            "nativeWeaponBatches": 22,
+            "nativeWeaponTriangles": 72448
+          },
+          "triangleChangePercent": 20.92
+        },
+        {
+          "quality": "low",
+          "crowdRadius": 20,
+          "before": {
+            "quality": "low",
+            "crowdRadius": 20,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 5,
+            "nativeWeapons": 0,
+            "actorBatches": 23,
+            "actorTriangles": 101936,
+            "nativeWeaponBatches": 0,
+            "nativeWeaponTriangles": 0
+          },
+          "after": {
+            "quality": "low",
+            "crowdRadius": 20,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 5,
+            "nativeWeapons": 0,
+            "actorBatches": 25,
+            "actorTriangles": 48892,
+            "nativeWeaponBatches": 0,
+            "nativeWeaponTriangles": 0
+          },
+          "triangleChangePercent": -52.04
+        },
+        {
+          "quality": "high",
+          "crowdRadius": 5,
+          "before": {
+            "quality": "high",
+            "crowdRadius": 5,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 6,
+            "nativeWeapons": 6,
+            "actorBatches": 41,
+            "actorTriangles": 185392,
+            "nativeWeaponBatches": 22,
+            "nativeWeaponTriangles": 72448
+          },
+          "after": {
+            "quality": "high",
+            "crowdRadius": 5,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 6,
+            "nativeWeapons": 6,
+            "actorBatches": 43,
+            "actorTriangles": 224176,
+            "nativeWeaponBatches": 22,
+            "nativeWeaponTriangles": 72448
+          },
+          "triangleChangePercent": 20.92
+        },
+        {
+          "quality": "high",
+          "crowdRadius": 20,
+          "before": {
+            "quality": "high",
+            "crowdRadius": 20,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 5,
+            "nativeWeapons": 0,
+            "actorBatches": 23,
+            "actorTriangles": 101936,
+            "nativeWeaponBatches": 0,
+            "nativeWeaponTriangles": 0
+          },
+          "after": {
+            "quality": "high",
+            "crowdRadius": 20,
+            "policy": "current",
+            "actorsTotal": 16,
+            "actorsRendered": 5,
+            "nativeWeapons": 0,
+            "actorBatches": 25,
+            "actorTriangles": 48892,
+            "nativeWeaponBatches": 0,
+            "nativeWeaponTriangles": 0
+          },
+          "triangleChangePercent": -52.04
+        }
+      ],
+      "scope": "Static submitted actor geometry comparison across the operator art and body detail revisions, excluding world, first-person weapon and effects. Same 15 remote operators, positions, standing poses, 55 degree vertical FOV, 874/402 aspect, 600 pixel fallback height, culling and weapon-distance policy. Different authored body meshes, new projected body detail and removal of duplicated arm tabs. No GPU timing or device FPS measurement.",
+      "evidence": "validation-release60-operator-art-cost.json"
+    },
+    "operator_crowd": {
+      "cases": 12,
+      "body_detail": {
+        "method": "Authored near/far meshes selected by projected 1.8 m body height, independently of whole-equipment omission. Rig, silhouette and sewn affiliation patches retained.",
+        "pixels": {
+          "low": 110,
+          "medium": 85,
+          "high": 70,
+          "ultra": 60
+        },
+        "hysteresis": {
+          "enterFar": 1.12,
+          "restoreNear": 0.88
+        },
+        "preparationRetainsNear": true
+      },
+      "scope": "Conservative static Blacksite 16-actor fixtures with 15 remote operators evenly distributed around the player. Same native mesh library, 55 degree vertical FOV, 874/402 aspect, standing poses and seed 817 for all three policies. Counts are submitted actor meshes excluding world, effects and first-person gun. Unbounded cases preserve the all-actor worst case; previous cases reproduce the former 12 m culling exemption and 1.5 m distant sphere. No GPU submission or physical iPhone FPS, timing, memory or thermal measurement.",
+      "comparison_scope": "The previous/current policies use the same final mesh library and compare culling policies. They are distinct from operator-art-cost, which compares the old/new authored body meshes at the same current culling policy. At 20 m current conservatively retains five actors versus four for previous; no triangle reduction against previous culling is claimed.",
+      "evidence": "validation-release60-operator-crowd.json"
+    },
+    "limits": "These fixtures count selected or submitted geometry for documented cameras, poses and policies. They do not establish measured GPU headroom, Safari process memory, sustained frame rate or thermals."
+  },
+  "actual_renderer_captures": {
+    "status": "passed",
+    "kind": "software_WebGL_visual_validation",
+    "actual_iphone_data": false,
+    "final_capture_count": 85,
+    "renderer": "Chromium ANGLE SwiftShader software WebGL",
+    "build": {
+      "release": "60",
+      "commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+      "source_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+      "content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+      "commit_resolution": "source_commit"
+    },
+    "source_blend_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+    "distribution_dirty": false,
+    "errors": [],
+    "request_failures": [],
+    "scope": "85 actual final-distribution gameplay/menu/map/weapon renders, including close operators, weapon side views and combat/reload. Software WebGL scene counters and visual evidence cannot establish physical iPhone FPS, GPU timings, process memory or thermals.",
+    "capture_evidence": "art-release60/scene-counts.json",
+    "gallery_evidence": "art-release60/manifest.json",
+    "gallery_packaging_status": "passed",
+    "matched_release57_comparison_images": 4,
+    "baseline_comparison_scope": "Matched software renderer, viewport, camera contract, quality and seed. This is visual comparison evidence, separate from the user physical Release 57 gameplay measurement.",
+    "gallery_packaging_verification": {
+      "status": "passed",
+      "release": 60,
+      "actual_iphone_data": false,
+      "finalActualImages": 85,
+      "verifiedBaselineImages": 4,
+      "comparisons": 4,
+      "contactSheets": 2,
+      "verifiedWebps": 95,
+      "qualities": [
+        92
+      ],
+      "largestImageBytes": 467238,
+      "totalImageBytes": 13935672,
+      "manifestSha256": "dd809877517ba2a152940ef05a4eaa5dc8dc0f317c41d606836b6b970f5fde3f",
+      "build": {
+        "release": "60",
+        "commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+        "source_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+        "content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+        "commit_resolution": "source_commit"
+      },
+      "editableBlenderSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+      "scope": "Independent file/count/hash/dimension verification of complete actual capture packaging; image appearance reviewed separately; no GPU/iPhone performance measurement.",
+      "independent_verification_runs": 2
+    },
+    "gallery_verification_artifact": "/workspace/scratch/release60-gallery-verification.json",
+    "gallery_method": "Actual software WebGL PNG captures only. Individual WebP conversion retains full resolution; comparison/contact compositing adds labels and documented resizing only.",
+    "capture_settings": {
+      "viewport": [
+        1280,
+        600
+      ],
+      "deviceScaleFactor": 1,
+      "seed": 817,
+      "quality": "high",
+      "horizontalGameplayFov": 80,
+      "motion": false,
+      "gameTime": 2,
+      "backend": "Chromium ANGLE SwiftShader"
+    },
+    "appearance_scope": "File/count/hash/dimension verification establishes complete actual-image packaging. Image appearance is reviewed separately; this status does not certify a fidelity target.",
+    "map_visual_review": {
+      "status": "review_completed",
+      "maps_reviewed": 16,
+      "code_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+      "build_stamp_commit": "8b763c08f47fa4de676d01fd2f2fdaffb34a2fbf",
+      "distribution_content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+      "editable_blender_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+      "method": "All 16 new PNG hashes differ from the diagnostic capture. Re-inspected every actual final 1280x600 original map frame and both newly generated eight-map contact sheets; additionally reviewed the actual final Blacksite oblique and operator-close frames.",
+      "positive_findings": [
+        "All 16 frames show their environment; no missing-texture checkerboards, magenta shader failures or empty world scenes are visible.",
+        "Frostline foreground snow and distant snowy hills no longer show the earlier diagonal repeating plaster checker pattern; low-contrast snowfield remains readable.",
+        "Monsoon asphalt no longer shows the earlier conspicuous hard cyan quadrilateral puddle tiles. Wet-ground response is restrained in this overview.",
+        "Industrial concrete and steel, urban plaster, arid sand, green grass and snowy terrain retain visibly different palettes. Recessed facade apertures, panel seams, roof equipment, stairs and route geometry remain readable.",
+        "The final Blacksite oblique player frame no longer contains the four earlier unsupported 23 m service rods over the catwalks.",
+        "Nuketown retains coloured houses, open apertures and supported balconies; District retains its elevated route and visible native vehicle.",
+        "Final operator-close depicts a clothed tactical humanoid with rounded upper limbs, helmet, goggles, vest, knee pads and boots; the silhouette remains visibly faceted."
+      ],
+      "new_blocking_visual_faults_observed": [],
+      "limits": [
+        "One fixed menu/orbit overview per map does not establish player-camera appearance across every location; the displayed menu rifle also occludes part of each overview.",
+        "The subdued Monsoon overview resolves the cyan rectangle fault but discrete wet patches are difficult to distinguish at this camera.",
+        "Sparse background foliage and faceted distant hills remain simple silhouettes. This review establishes image appearance, not equivalence to AAA mobile art production.",
+        "Software WebGL screenshots provide no physical iPhone FPS, GPU-time, thermal or 60 FPS evidence.",
+        "Overview appearance does not establish a full play-through of every map or complete animated operator-state coverage.",
+        "World, source and production code were not changed by this reviewer. Completion of the full 85-frame run and verification of the encoded gallery are required before publication."
+      ],
+      "scope": "Actual software WebGL frozen final Release 60 map overview visual review; 16 maps; no GPU or physical iPhone performance measurement",
+      "evidence_artifact": "/workspace/scratch/release60-ship-map-review.json"
+    }
+  },
+  "benchmark_browser": {
+    "status": "passed",
+    "kind": "desktop_browser_validation",
+    "actual_iphone_data": false,
+    "build": {
+      "release": "60",
+      "commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+      "source_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+      "content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+      "commit_resolution": "source_commit"
+    },
+    "browser": "151.0.7922.173",
+    "renderer": "software WebGL / SwiftShader",
+    "viewport": {
+      "width": 874,
+      "height": 402,
+      "dpr": 3
+    },
+    "checks_passed": 12,
+    "checks": [
+      "release_60_boot",
+      "legacy_measurements_preserved_obsolete_setup_removed",
+      "local_controls_without_account_setup",
+      "normal_gameplay_recording_watermark",
+      "final_json_valid_actual_browser_frames",
+      "saved_session_selected_for_export",
+      "actual_json_download_preserves_saved_copy",
+      "saved_reports_survive_reload",
+      "offline_boot_and_json_download",
+      "scripted_test_isolated_cancelled_and_restored",
+      "removal_requires_confirmation",
+      "no_page_errors_or_report_network_requests"
+    ],
+    "errors": [],
+    "external_request_count": 0,
+    "write_request_count": 0,
+    "normal_session_frame_count": 17,
+    "steady_frame_count": 11,
+    "normal_report_bytes": 28394,
+    "json_download_verified": true,
+    "scope": "Final exact-distribution software-WebGL browser lifecycle validation verifies normal gameplay recording, saved-copy JSON download, reload persistence, offline full boot/export, isolated scripted cancellation/restore and confirmed local removal. The 17 normal browser frames and 11 steady frames establish recording behavior, not physical iPhone performance.",
+    "evidence": "validation-release60-benchmark-browser.json",
+    "log": "/workspace/scratch/release60-ship-benchmark-browser.log"
+  },
+  "audio": {
+    "original_aac_takes": 364,
+    "event_keys": 164,
+    "design_provenance": "Original Breachline pressure/noise/mechanical and granular material-foley sound designs; no third-party samples.",
+    "asset_manifest": "../dist/assets/audio/manifest.json",
+    "bank_sha256": "426698a1be0cc88e7875cbd157c6ad2b2193abd20a0a3ef8588d30c631b897f0",
+    "previous_component_browser_evidence": {
+      "kind": "desktop_browser_audio_validation",
+      "actual_iphone_data": false,
+      "recordings": 364,
+      "decoded_keys": 164,
+      "decoded_bytes": 35485592,
+      "nonfinite_samples": 0,
+      "shared_convolvers": 2,
+      "peak_voices": 24,
+      "remaining_voices": 0,
+      "remaining_sources": 0,
+      "evidence": "validation-production-audio-browser.json",
+      "scope": "Existing independent desktop browser audio decode/playback/cleanup proof; the report does not bind code, source, build-stamp or distribution hashes and is not asserted to be a fresh final-distribution run. No physical-device listening or performance conclusion is claimed."
+    },
+    "final_regression_scope": "The final complete regression suite covers bank integrity, nonrepeating variants, player priority and bounded 24-source cleanup policies."
+  },
+  "physical_release57_reference": {
+    "evidence": "iphone-release57-baseline.json",
+    "actual_iphone_data": true,
+    "source": "User physical iPhone 16 Pro, Safari, Release 57 gameplay export",
+    "measurement_build": {
+      "release": "57",
+      "commit": "e00aad3d18a569aade107add0812235ef43d52f4",
+      "source_commit": "e00aad3d18a569aade107add0812235ef43d52f4",
+      "content_sha256": "7930f099c9ebfe153e2b833b7b540e045caf6771c2ac030e6b24d8aaa3a35230",
+      "commit_resolution": "source_commit"
+    },
+    "active_duration_ms": 634267,
+    "fps": {
+      "average": 57.363,
+      "median": 58.394,
+      "low_1_percent": 29.014
+    },
+    "frame_time_mean_ms": 17.433,
+    "cpu_frame_mean_ms": 3.737,
+    "stuttering_frames": 1315,
+    "availability": {
+      "cpu_frame": {
+        "status": "measured"
+      },
+      "gpu": {
+        "status": "unavailable",
+        "supported": false
+      },
+      "js_heap": {
+        "status": "unavailable"
+      },
+      "texture_bytes": {
+        "status": "estimate"
+      },
+      "process_memory": {
+        "status": "unavailable"
+      },
+      "vram": {
+        "status": "unavailable"
+      },
+      "temperature": {
+        "status": "unavailable"
+      },
+      "display_refresh_rate": {
+        "status": "unavailable"
+      }
+    },
+    "scope": "User physical iPhone 16 Pro Safari gameplay measurement of Release 57, with adaptive quality changing during the session. Recovery ref stamp 454a5a26a8418fa8db1d3cc1ec197f7e56c56415 is distinct from measured source e00aad3d18a569aade107add0812235ef43d52f4. This is historical reference evidence, not a Release 60 performance result."
+  },
+  "known_visual_limits": [
+    "Operators animate as rigid mesh groups; no new skinned human or motion-capture system is claimed.",
+    "Stylized sparse background foliage and faceted distant hills remain visible limits.",
+    "Weapon close-ups retain broad flat receiver faces, coarse sight housings and limited visible finish variation.",
+    "Pistol optics retain relatively tall gameplay mounts.",
+    "The actual reviewed images do not establish the requested premium mobile shooter or commercial AAA/reference-game art standard."
+  ],
+  "not_verified": [
+    "Commercial AAA/reference-game visual parity",
+    "Photoreal production humans or motion-captured animation",
+    "Physical iPhone 16 Pro Release 60 sustained 60 FPS and 1% lows",
+    "Physical iPhone GPU timings, Safari process memory/VRAM and thermal behavior",
+    "Physical-device audio listening"
+  ],
+  "production_brief": "PRODUCTION_BRIEF.md",
+  "art_review": "ART_RELEASE60.md",
+  "art_provenance": "ART_PROVENANCE.md",
+  "evidence_index": [
+    "shaders-release60.json",
+    "validation-release60-benchmark-browser.json",
+    "validation-release60-blender-source.json",
+    "validation-release60-geometry-storage.json",
+    "validation-release60-material-identity.json",
+    "validation-release60-hero-joints.json",
+    "validation-release60-menu-framing.json",
+    "validation-release60-scene-budgets.json",
+    "validation-release60-wall-lod.json",
+    "validation-release60-operator-art-cost.json",
+    "validation-release60-operator-crowd.json",
+    "validation-production-audio-browser.json",
+    "art-release60/manifest.json",
+    "art-release60/scene-counts.json",
+    "iphone-release57-baseline.json",
+    "PRODUCTION_BRIEF.md",
+    "ART_RELEASE60.md",
+    "ART_PROVENANCE.md"
+  ],
+  "validation_outcome": "Enumerated regression, syntax, shader, source, asset, benchmark lifecycle and actual-capture packaging checks passed. Visual review records the actual result and its remaining limits; no AAA fidelity attainment or physical Release 60 iPhone performance is asserted.",
+  "final_visual_review": {
+    "evidence": "validation-release60-visual-review.json",
+    "sha256": "2413a65c6a9b740bd0a861cba7f23af76032321d0ce7f86a826cf96479488128",
+    "status": "review_complete_with_documented_art_limits",
+    "coverage": "All 30 forward and 30 side weapon frames in full-frame and detail sheets, six weapon originals individually, all nine Blacksite gameplay originals individually, plus separately reviewed sixteen map overviews. Exact final frame hashes are preserved in the review.",
+    "scope": "Actual software-rendered image inspection. No blocking visible render or model construction fault was observed in these sampled configurations. This is not an AAA art acceptance, exhaustive animation/play-through check or physical iPhone performance result."
+  }
+}

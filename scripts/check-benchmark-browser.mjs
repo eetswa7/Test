@@ -5,6 +5,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {validateReport} from './benchmark-validation.mjs';
 import {reportFixture} from '../tests/benchmark-fixture.mjs';
+import {BENCHMARK_BUILD} from '../dist/js/benchmark-build.js';
 const release=/const RELEASE='(\d+)'/.exec(await readFile('dist/js/boot.js','utf8'))[1];
 const require=createRequire(import.meta.url),{chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const server=process.env.BENCHMARK_TEST_ORIGIN?null:spawn(process.execPath,['scripts/preview.mjs','--port','4189'],{stdio:['ignore','pipe','pipe']});
@@ -41,6 +42,7 @@ try{
  const next=(await readRows()).filter(r=>r.key.startsWith('report:'));assert.equal(next.length,3);const scripted=next.find(r=>r.value.report.session.kind==='scripted').value.report;validateReport(scripted);assert.equal(scripted.session.reason,'stress_cancelled');assert.equal(scripted.session.scenario.completed,false);checks.push('scripted_test_isolated_cancelled_and_restored');
  await page.locator('#settings-top').click();await page.locator('#benchmark-report').selectOption(legacy.session.id);await page.locator('#benchmark-remove').click();await page.getByRole('button',{name:'CANCEL',exact:true}).click();assert.equal((await readRows()).filter(r=>r.key.startsWith('report:')).length,3);checks.push('removal_requires_confirmation');
  assert.deepEqual(errors,[]);assert.deepEqual(externalRequests,[]);assert.deepEqual(writeRequests,[]);checks.push('no_page_errors_or_report_network_requests');await screenshot('benchmark-settings');
- const result={kind:'desktop_browser_validation',actual_iphone_data:false,browser:await browser.version(),renderer:'software WebGL / SwiftShader',viewport:{width:874,height:402,dpr:3},gamepad_hardware_backend_disabled:gamepadBackendDisabled,checks,errors,external_request_count:externalRequests.length,write_request_count:writeRequests.length,normal_session_frame_count:report.raw.seen,steady_frame_count:report.summary.steady.frame_time.count,normal_report_bytes:Buffer.byteLength(JSON.stringify(report)),json_download_verified:true};
+ assert.deepEqual(report.build,BENCHMARK_BUILD);
+ const result={kind:'desktop_browser_validation',actual_iphone_data:false,build:report.build,browser:await browser.version(),renderer:'software WebGL / SwiftShader',viewport:{width:874,height:402,dpr:3},gamepad_hardware_backend_disabled:gamepadBackendDisabled,checks,errors,external_request_count:externalRequests.length,write_request_count:writeRequests.length,normal_session_frame_count:report.raw.seen,steady_frame_count:report.summary.steady.frame_time.count,normal_report_bytes:Buffer.byteLength(JSON.stringify(report)),json_download_verified:true};
  await writeFile('docs/validation-release'+release+'-benchmark-browser.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }catch(e){await screenshot('benchmark-failure').catch(()=>{});console.error(JSON.stringify({checks,errors,failure:e.message}));throw e;}finally{await browser.close();server?.kill();}

@@ -1,0 +1,206 @@
+{
+  "scope": "Actual software WebGL frozen final Release 60 map overview visual review; 16 maps; no GPU or physical iPhone performance measurement",
+  "publication_status": "Map review complete; complete 85-frame final capture and 95-WebP gallery packaging verified.",
+  "codeCommit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+  "buildStampCommit": "8b763c08f47fa4de676d01fd2f2fdaffb34a2fbf",
+  "distributionContentSha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+  "editableBlenderSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+  "images": [
+    {
+      "map": 0,
+      "name": "OLD QUARTER",
+      "file": "/workspace/Test/test-results/release60-ship/map-0.png",
+      "sha256": "63f82b3e63486c57bcf8223f5bf82a0f15232944fd7039217f1a00a357205b00",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 1,
+      "name": "FOUNDRY",
+      "file": "/workspace/Test/test-results/release60-ship/map-1.png",
+      "sha256": "e023006190ddf8ef550d4e6fb8a701f0e25e1e34ff69da99a7bc879b261e66b5",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 2,
+      "name": "DUSTLINE",
+      "file": "/workspace/Test/test-results/release60-ship/map-2.png",
+      "sha256": "a2def7b8c50f732c086841c3c829ad4c11ada4c7d50463b86d8d308bbe7ed09b",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 3,
+      "name": "RELAY",
+      "file": "/workspace/Test/test-results/release60-ship/map-3.png",
+      "sha256": "4319e69983486ad9f14be687d3c1ab26cce2d4ed7a2fccaaa5406f01e5d2cf53",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 4,
+      "name": "BREAKWATER",
+      "file": "/workspace/Test/test-results/release60-ship/map-4.png",
+      "sha256": "effbf86a351c33d533d8ba1788e4e0a5ee916d4e749046ce4f64f0a230a2a6ef",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 5,
+      "name": "CITADEL",
+      "file": "/workspace/Test/test-results/release60-ship/map-5.png",
+      "sha256": "99fe2f67405feec468f369d8f760a6d3f820fc96c0737e4f036ba05dbef81f6e",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 6,
+      "name": "SWITCHYARD",
+      "file": "/workspace/Test/test-results/release60-ship/map-6.png",
+      "sha256": "2e3b88e16d0c785f55813a6cebfe0024539745941965dc6983547563879a978b",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 7,
+      "name": "CANOPY",
+      "file": "/workspace/Test/test-results/release60-ship/map-7.png",
+      "sha256": "857894fe31e6c22d9199171628ee1092e64a2bcf9fe8623723603fecd8af5cc2",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 8,
+      "name": "FROSTLINE",
+      "file": "/workspace/Test/test-results/release60-ship/map-8.png",
+      "sha256": "5c1a42c323e676dbc808494780173c52ae9733eb04e3567b25d78e4d5bf5265a",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 9,
+      "name": "IRON QUARRY",
+      "file": "/workspace/Test/test-results/release60-ship/map-9.png",
+      "sha256": "49b623430992a608bfb73a1472dbb70d36f50496369f66265fec7e5b17e4ba23",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 10,
+      "name": "SKYBRIDGE",
+      "file": "/workspace/Test/test-results/release60-ship/map-10.png",
+      "sha256": "aa1c247ad9cb8641b03f485d79e4f1098a860acf84f80fd7ce99c2f36c0180ce",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 11,
+      "name": "MONSOON",
+      "file": "/workspace/Test/test-results/release60-ship/map-11.png",
+      "sha256": "6083bceb782bf4ac99fcff10594c267585c223c98801236accc10ee4a30bef68",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 12,
+      "name": "EMBERWORKS",
+      "file": "/workspace/Test/test-results/release60-ship/map-12.png",
+      "sha256": "ebf50553fbc8feb5eafd75e8c5e8a2b172b9b53d7d5c0cef5e0db33315d25e02",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 13,
+      "name": "CROSSFIRE DISTRICT",
+      "file": "/workspace/Test/test-results/release60-ship/map-13.png",
+      "sha256": "b6146ae86238a601332d67a2784e7db0f4a69738dcca1f09e6f83dceb19d81aa",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 14,
+      "name": "BLACKSITE",
+      "file": "/workspace/Test/test-results/release60-ship/map-14.png",
+      "sha256": "69d47f2416f18a7eda2711abacf04e916e16fd6367e7952b04a0d3c281b6e479",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    },
+    {
+      "map": 15,
+      "name": "NUKETOWN",
+      "file": "/workspace/Test/test-results/release60-ship/map-15.png",
+      "sha256": "ca9bf9dcd9b74d4e8f44e2daeac183459cae752703b2621a963e794d26f20575",
+      "size": [
+        1280,
+        600
+      ],
+      "identicalToDiagnosticPNG": false
+    }
+  ],
+  "inspected_all_maps": true,
+  "method": "All 16 new PNG hashes differ from the diagnostic capture. Re-inspected every actual final 1280x600 original map frame and both newly generated eight-map contact sheets; additionally reviewed the actual final Blacksite oblique and operator-close frames.",
+  "positive_findings": [
+    "All 16 frames show their environment; no missing-texture checkerboards, magenta shader failures or empty world scenes are visible.",
+    "Frostline foreground snow and distant snowy hills no longer show the earlier diagonal repeating plaster checker pattern; low-contrast snowfield remains readable.",
+    "Monsoon asphalt no longer shows the earlier conspicuous hard cyan quadrilateral puddle tiles. Wet-ground response is restrained in this overview.",
+    "Industrial concrete and steel, urban plaster, arid sand, green grass and snowy terrain retain visibly different palettes. Recessed facade apertures, panel seams, roof equipment, stairs and route geometry remain readable.",
+    "The final Blacksite oblique player frame no longer contains the four earlier unsupported 23 m service rods over the catwalks.",
+    "Nuketown retains coloured houses, open apertures and supported balconies; District retains its elevated route and visible native vehicle.",
+    "Final operator-close depicts a clothed tactical humanoid with rounded upper limbs, helmet, goggles, vest, knee pads and boots; the silhouette remains visibly faceted."
+  ],
+  "new_blocking_visual_faults_observed": [],
+  "limits": [
+    "One fixed menu/orbit overview per map does not establish player-camera appearance across every location; the displayed menu rifle also occludes part of each overview.",
+    "The subdued Monsoon overview resolves the cyan rectangle fault but discrete wet patches are difficult to distinguish at this camera.",
+    "Sparse background foliage and faceted distant hills remain simple silhouettes. This review establishes image appearance, not equivalence to AAA mobile art production.",
+    "Software WebGL screenshots provide no physical iPhone FPS, GPU-time, thermal or 60 FPS evidence.",
+    "Overview appearance does not establish a full play-through of every map or complete animated operator-state coverage.",
+    "World, source and production code were not changed by this reviewer. The full 85-frame capture and gallery file/count/hash/dimension verification are complete; this review remains limited to the stated image appearance checks."
+  ]
+}

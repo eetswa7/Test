@@ -1,7 +1,26 @@
 {
   "scope": "Conservative static Blacksite 16-actor fixtures with 15 remote operators evenly distributed around the player. Same native mesh library, 55 degree vertical FOV, 874/402 aspect, standing poses and seed 817 for all three policies. Counts are submitted actor meshes excluding world, effects and first-person gun. Unbounded cases preserve the all-actor worst case; previous cases reproduce the former 12 m culling exemption and 1.5 m distant sphere. No GPU submission or physical iPhone FPS, timing, memory or thermal measurement.",
   "actual_iphone_data": false,
-  "meshes": 329,
+  "meshes": 330,
+  "library": {
+    "compressedSha256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
+    "decodedSha256": "d98ae1dc5b31203ca2d1f5b772adc62b229b637c5b08ec38396452ea38394e13",
+    "sourceSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821"
+  },
+  "bodyDetail": {
+    "method": "Authored near/far meshes selected by projected 1.8 m body height, independently of whole-equipment omission. Rig, silhouette and sewn affiliation patches retained.",
+    "pixels": {
+      "low": 110,
+      "medium": 85,
+      "high": 70,
+      "ultra": 60
+    },
+    "hysteresis": {
+      "enterFar": 1.12,
+      "restoreNear": 0.88
+    },
+    "preparationRetainsNear": true
+  },
   "envelope": {
     "centreY": 0.9,
     "liveRadius": 2,
@@ -17,8 +36,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 15,
-      "actorBatches": 56,
-      "actorTriangles": 453056,
+      "actorBatches": 58,
+      "actorTriangles": 550016,
       "nativeWeaponBatches": 37,
       "nativeWeaponTriangles": 170804
     },
@@ -29,8 +48,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 15,
-      "actorBatches": 56,
-      "actorTriangles": 453056,
+      "actorBatches": 58,
+      "actorTriangles": 550016,
       "nativeWeaponBatches": 37,
       "nativeWeaponTriangles": 170804
     },
@@ -41,8 +60,8 @@
       "actorsTotal": 16,
       "actorsRendered": 6,
       "nativeWeapons": 6,
-      "actorBatches": 41,
-      "actorTriangles": 185392,
+      "actorBatches": 43,
+      "actorTriangles": 224176,
       "nativeWeaponBatches": 22,
       "nativeWeaponTriangles": 72448
     },
@@ -53,8 +72,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 305572,
+      "actorBatches": 25,
+      "actorTriangles": 146464,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -65,8 +84,8 @@
       "actorsTotal": 16,
       "actorsRendered": 4,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 81488,
+      "actorBatches": 25,
+      "actorTriangles": 39048,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -77,8 +96,8 @@
       "actorsTotal": 16,
       "actorsRendered": 5,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 101936,
+      "actorBatches": 25,
+      "actorTriangles": 48892,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -89,8 +108,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 15,
-      "actorBatches": 56,
-      "actorTriangles": 453056,
+      "actorBatches": 58,
+      "actorTriangles": 550016,
       "nativeWeaponBatches": 37,
       "nativeWeaponTriangles": 170804
     },
@@ -101,8 +120,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 15,
-      "actorBatches": 56,
-      "actorTriangles": 453056,
+      "actorBatches": 58,
+      "actorTriangles": 550016,
       "nativeWeaponBatches": 37,
       "nativeWeaponTriangles": 170804
     },
@@ -113,8 +132,8 @@
       "actorsTotal": 16,
       "actorsRendered": 6,
       "nativeWeapons": 6,
-      "actorBatches": 41,
-      "actorTriangles": 185392,
+      "actorBatches": 43,
+      "actorTriangles": 224176,
       "nativeWeaponBatches": 22,
       "nativeWeaponTriangles": 72448
     },
@@ -125,8 +144,8 @@
       "actorsTotal": 16,
       "actorsRendered": 15,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 305572,
+      "actorBatches": 25,
+      "actorTriangles": 146464,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -137,8 +156,8 @@
       "actorsTotal": 16,
       "actorsRendered": 4,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 81488,
+      "actorBatches": 25,
+      "actorTriangles": 39048,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     },
@@ -149,8 +168,8 @@
       "actorsTotal": 16,
       "actorsRendered": 5,
       "nativeWeapons": 0,
-      "actorBatches": 23,
-      "actorTriangles": 101936,
+      "actorBatches": 25,
+      "actorTriangles": 48892,
       "nativeWeaponBatches": 0,
       "nativeWeaponTriangles": 0
     }

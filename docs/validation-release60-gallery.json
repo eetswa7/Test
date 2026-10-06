@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "release": 60,
+  "actual_iphone_data": false,
+  "finalActualImages": 85,
+  "verifiedBaselineImages": 4,
+  "comparisons": 4,
+  "contactSheets": 2,
+  "verifiedWebps": 95,
+  "qualities": [
+    92
+  ],
+  "largestImageBytes": 467238,
+  "totalImageBytes": 13935672,
+  "manifestSha256": "dd809877517ba2a152940ef05a4eaa5dc8dc0f317c41d606836b6b970f5fde3f",
+  "build": {
+    "release": "60",
+    "commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+    "source_commit": "00271cc3fdaeb65ca76ef5c5ed3e0676cd5e0c21",
+    "content_sha256": "96ea1515ec1d41eec17fa9a05143d3895698a33aceb1dbfbed8901aa2a786963",
+    "commit_resolution": "source_commit"
+  },
+  "editableBlenderSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
+  "scope": "Independent file/count/hash/dimension verification of complete actual capture packaging; image appearance reviewed separately; no GPU/iPhone performance measurement."
+}

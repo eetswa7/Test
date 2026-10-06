@@ -1,0 +1,55 @@
+{
+  "schema": "breachline.validation.actual-release57-visual.v1",
+  "status": "passed",
+  "commit": "454a5a26a8418fa8db1d3cc1ec197f7e56c56415",
+  "release": 57,
+  "actual_iphone_data": false,
+  "capture_script": "/workspace/scratch/capture-release57-review.mjs",
+  "capture_script_sha256": "d4673188c90b3e0cfaf445e5e10e1a1749ff3aceaea1090f91fb223544bceac2",
+  "captured_views": 4,
+  "gameplay_states_rendered": 6,
+  "errors": [],
+  "requestFailures": [],
+  "images": [
+    {
+      "name": "blacksite-approach",
+      "path": "/workspace/scratch/release57-review/blacksite-approach.png",
+      "bytes": 755725,
+      "dimensions": [
+        1280,
+        600
+      ],
+      "sha256": "0f7b5f6b1daa6f87e7a9920ab199057f33432508df1283206603b769f61e26c6"
+    },
+    {
+      "name": "blacksite-interior",
+      "path": "/workspace/scratch/release57-review/blacksite-interior.png",
+      "bytes": 725192,
+      "dimensions": [
+        1280,
+        600
+      ],
+      "sha256": "a5d421af180e90aa573fd9ceaa825fed642ce088b94b24523c1225ff6c2b0c93"
+    },
+    {
+      "name": "blacksite-oblique",
+      "path": "/workspace/scratch/release57-review/blacksite-oblique.png",
+      "bytes": 876126,
+      "dimensions": [
+        1280,
+        600
+      ],
+      "sha256": "e22816bec68263edd65885208874531ce4925c171c23f02855ca558c34f15236"
+    },
+    {
+      "name": "weapon-close",
+      "path": "/workspace/scratch/release57-review/weapon-close.png",
+      "bytes": 783312,
+      "dimensions": [
+        1280,
+        600
+      ],
+      "sha256": "993b95eb037b7c94319a4b1091db8a4166ce4175f5d79bb90c99b7af390c05e7"
+    }
+  ]
+}

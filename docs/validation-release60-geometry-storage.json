@@ -4,12 +4,12 @@
   "status": "passed",
   "scope": "Sum of retained native geometry typed-array attribute/index bytes, including metric UV attributes, using the actual runtime parser. Excludes scene instance attributes, transient decode/upload buffers, object metadata and browser/driver overhead. Not browser process memory, driver allocation, live GPU use, a Safari memory limit or physical iPhone measurement.",
   "actual_iphone_data": false,
-  "meshes": 329,
-  "compressedLibrarySHA256": "09011136044eb2d78f219ce82e9422cfc6b3f5c68937f841f31638d86ebcea29",
+  "meshes": 330,
+  "compressedLibrarySHA256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
   "blenderSegmentsSHA256Verified": 14,
-  "compressedLibraryBytes": 10166923,
-  "decodedLibraryBytes": 32911880,
-  "retainedGeometryBufferBytes": 37500654,
+  "compressedLibraryBytes": 10009900,
+  "decodedLibraryBytes": 32442076,
+  "retainedGeometryBufferBytes": 36852938,
   "largest": [
     {
       "name": "building_urban__near",
@@ -44,7 +44,7 @@
       "bytes": 455966
     }
   ],
-  "source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+  "source_sha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821",
   "verification_commands": [
     "node /tmp/inspect-breachline-geometry-storage60.mjs"
   ]

@@ -1,0 +1,129 @@
+{
+  "actual_iphone_data": false,
+  "scope": "Static submitted actor geometry comparison across the operator art and body detail revisions, excluding world, first-person weapon and effects. Same 15 remote operators, positions, standing poses, 55 degree vertical FOV, 874/402 aspect, 600 pixel fallback height, culling and weapon-distance policy. Different authored body meshes, new projected body detail and removal of duplicated arm tabs. No GPU timing or device FPS measurement.",
+  "previous_report_commit": "c68884bd4e2970411951f8a70164fbadd154dea1",
+  "previous_source_sha256": "5aa00f35f978efda01cad6be6cd6727cf80f51fe4bf610bb755f15efc73271f9",
+  "current_library": {
+    "compressedSha256": "8a121b045b7ede1f1ffc20013a36b94dd5dfdd61e46e32893dc9add9d0d909e2",
+    "decodedSha256": "d98ae1dc5b31203ca2d1f5b772adc62b229b637c5b08ec38396452ea38394e13",
+    "sourceSha256": "9faafa3c4eefa0bf05d4844eea4b51f42516b9f31c2aa07b321196803cd58821"
+  },
+  "results": [
+    {
+      "quality": "low",
+      "crowdRadius": 5,
+      "before": {
+        "quality": "low",
+        "crowdRadius": 5,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 6,
+        "nativeWeapons": 6,
+        "actorBatches": 41,
+        "actorTriangles": 185392,
+        "nativeWeaponBatches": 22,
+        "nativeWeaponTriangles": 72448
+      },
+      "after": {
+        "quality": "low",
+        "crowdRadius": 5,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 6,
+        "nativeWeapons": 6,
+        "actorBatches": 43,
+        "actorTriangles": 224176,
+        "nativeWeaponBatches": 22,
+        "nativeWeaponTriangles": 72448
+      },
+      "triangleChangePercent": 20.92
+    },
+    {
+      "quality": "low",
+      "crowdRadius": 20,
+      "before": {
+        "quality": "low",
+        "crowdRadius": 20,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 5,
+        "nativeWeapons": 0,
+        "actorBatches": 23,
+        "actorTriangles": 101936,
+        "nativeWeaponBatches": 0,
+        "nativeWeaponTriangles": 0
+      },
+      "after": {
+        "quality": "low",
+        "crowdRadius": 20,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 5,
+        "nativeWeapons": 0,
+        "actorBatches": 25,
+        "actorTriangles": 48892,
+        "nativeWeaponBatches": 0,
+        "nativeWeaponTriangles": 0
+      },
+      "triangleChangePercent": -52.04
+    },
+    {
+      "quality": "high",
+      "crowdRadius": 5,
+      "before": {
+        "quality": "high",
+        "crowdRadius": 5,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 6,
+        "nativeWeapons": 6,
+        "actorBatches": 41,
+        "actorTriangles": 185392,
+        "nativeWeaponBatches": 22,
+        "nativeWeaponTriangles": 72448
+      },
+      "after": {
+        "quality": "high",
+        "crowdRadius": 5,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 6,
+        "nativeWeapons": 6,
+        "actorBatches": 43,
+        "actorTriangles": 224176,
+        "nativeWeaponBatches": 22,
+        "nativeWeaponTriangles": 72448
+      },
+      "triangleChangePercent": 20.92
+    },
+    {
+      "quality": "high",
+      "crowdRadius": 20,
+      "before": {
+        "quality": "high",
+        "crowdRadius": 20,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 5,
+        "nativeWeapons": 0,
+        "actorBatches": 23,
+        "actorTriangles": 101936,
+        "nativeWeaponBatches": 0,
+        "nativeWeaponTriangles": 0
+      },
+      "after": {
+        "quality": "high",
+        "crowdRadius": 20,
+        "policy": "current",
+        "actorsTotal": 16,
+        "actorsRendered": 5,
+        "nativeWeapons": 0,
+        "actorBatches": 25,
+        "actorTriangles": 48892,
+        "nativeWeaponBatches": 0,
+        "nativeWeaponTriangles": 0
+      },
+      "triangleChangePercent": -52.04
+    }
+  ]
+}
